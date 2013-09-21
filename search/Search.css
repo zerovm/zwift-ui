@@ -1,0 +1,71 @@
+template {
+	display: none;
+}
+
+/* index */
+
+.index-container {
+	float: right;
+}
+
+.index-button {
+	position: absolute;
+	top: 3px;
+	right: 2px;
+}
+
+.index-input {
+	width: 220px;
+	padding: 10px;
+	font-size: large;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+}
+
+/* search */
+
+.search-container {
+	position: fixed;
+	top: 30%;
+	left: 30%;
+	right: 30%;
+	width: 40%;
+}
+
+.search-input {
+	width: 100%;
+	padding: 10px;
+	font-size: large;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+}
+
+.invalid-input {
+	background-color: #ffffe0 !important;
+	border-bottom: 2px #fa8072 dotted !important;
+}
+
+.search-results {
+	font-size: large;
+	line-height: 40px;
+	font-family: arial, serif;
+	padding: 3px;
+	height: 100%;
+	overflow-y: auto;
+	max-height: 150px;
+	border: 1px solid gainsboro;
+}
+
+.search-results img,
+.search-results a {
+	vertical-align: middle;
+}
+
+.search-results a {
+	color: #1B2781;
+	text-decoration: none;
+}
+
+.search-results a:visited {
+	color: #511977;
+}
