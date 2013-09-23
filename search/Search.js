@@ -38,27 +38,10 @@ if (!String.prototype.endsWith) {
 	});
 }
 
-document.addEventListener('keydown', function (e) {
+var SearchApp = {};
 
-	if (isSearchInput(e)) {
-		searchInputKeydown(e);
-	}
-
-	function isSearchInput(e) {
-		return e.target.classList.contains('search-input');
-	}
-
-	function searchInputKeydown(e) {
-		e.target.classList.remove('invalid-input');
-
-		if (e.keyCode === 13) {
-			if (e.target.value === '') {
-				e.target.classList.add('invalid-input');
-				return;
-			}
-			search(parse(e.target.value));
-		}
-	}
+SearchApp.search = function () {
+	var input = parse(document.querySelector('.search-input').value);
 
 	function parse(str) {
 		var arr = str.split('"');
@@ -75,105 +58,318 @@ document.addEventListener('keydown', function (e) {
 		return arr.join(' ');
 	}
 
-	function search(input) {
+	var searchResultsEl = document.querySelector('.search-results');
+	searchResultsEl.textContent = 'Loading...';
+	searchResultsEl.classList.remove('error');
+	searchResultsEl.removeAttribute('hidden');
 
-		var searchResultsEl = document.querySelector('.search-results');
-		searchResultsEl.textContent = 'Loading...';
-		searchResultsEl.classList.remove('error');
-		searchResultsEl.removeAttribute('hidden');
+	var data = JSON.stringify(createConfiguration());
+	execute(data);
 
-		var data = JSON.stringify(createConfiguration());
-		execute(data);
-
-		function createConfiguration() {
-			return [
+	function createConfiguration() {
+		return [
+			{
+				'name' : 'search',
+				'exec' :
 				{
-					'name' : 'search',
-					'exec' :
-					{
-						'path' : 'swift://' + FileStorage.getAccountId() + '/search/sys/search.nexe',
-						'args' : '-c index/zsphinx.conf -i mainindex -w -m ' + input
-					},
-					'file_list' :
-						[
-							{
-								'device' : 'input',
-								'path' : 'swift://' + FileStorage.getAccountId() + '/search/sys/rwindex'
-							},
-							{
-								'device' : 'stdout'
-							},
-							{
-								'device' : 'stderr'
-							}
-						]
-				}
-			];
-		}
-
-		function execute(data) {
-
-			FileStorage.execute({
-				dataToSend: data,
-				dataType: 'application/json',
-				success: function (blob, xhr) {
-					read(blob);
+					'path' : 'swift://' + FileStorage.getAccountId() + '/search/sys/search.nexe',
+					'args' : '-c index/zsphinx.conf -i mainindex -w -m ' + input
 				},
-				error: function (message) {
-					searchResultsEl.textContent = message;
-					searchResultsEl.classList.add('error');
-				}
-			});
-		}
-
-		function read(blob) {
-
-			var reader = new FileReader();
-
-			reader.addEventListener('load', function (e) {
-				var locations = [];
-				var spl = e.target.result.split('filename=/');
-				for (var i = 1; i < spl.length; i++) {
-					locations[locations.length] = spl[i].split(', ')[0];
-				}
-
-				var html = '';
-
-				if (locations.length == 0) {
-					html = 'No results.';
-				} else {
-					var iconHtml;
-					var iconMap = {
-						'.txt': 'img/file32_txt.png',
-						'.pdf': 'img/file32_pdf.png',
-						'.doc': 'img/file32_doc.png',
-						'.docx': 'img/file32_doc.png',
-						'.h': 'img/file32_c.png',
-						'.c': 'img/file32_c.png',
-						'.lua': 'img/file32_lua.png'
-					};
-					for (var i = 0; i < locations.length; i++) {
-						iconHtml = '<img src="img/file32.png" />';
-						for (var fileExtension in iconMap) {
-							if (locations[i].endsWith(fileExtension)) {
-								iconHtml = '<img src="' + iconMap[fileExtension] + '" />';
-								break;
-							}
+				'file_list' :
+					[
+						{
+							'device' : 'input',
+							'path' : 'swift://' + FileStorage.getAccountId() + '/search/sys/rwindex'
+						},
+						{
+							'device' : 'stdout'
+						},
+						{
+							'device' : 'stderr'
 						}
-						html += iconHtml + '<a href="https://z.litestack.com/v1/'+locations[i]+'">' + locations[i] + '</a><br>';
-						//html += iconHtml + '<a href="' + AppService.createFileUrl(locations[i]) + '">' + locations[i] + '</a><br>';
-					}
-				}
+					]
+			}
+		];
+	}
 
-				searchResultsEl.innerHTML = html;
-			});
+	function execute(data) {
 
-			reader.addEventListener('error', function (message) {
+		FileStorage.execute({
+			dataToSend: data,
+			dataType: 'application/json',
+			success: function (blob, xhr) {
+				read(blob);
+			},
+			error: function (message) {
 				searchResultsEl.textContent = message;
 				searchResultsEl.classList.add('error');
-			});
+			}
+		});
+	}
 
-			reader.readAsText(blob);
+	function read(blob) {
+
+		var reader = new FileReader();
+
+		reader.addEventListener('load', function (e) {
+			var locations = [];
+			var spl = e.target.result.split('filename=/');
+			for (var i = 1; i < spl.length; i++) {
+				locations[locations.length] = spl[i].split(', ')[0];
+			}
+
+			var html = '';
+
+			if (locations.length == 0) {
+				html = 'No results.';
+			} else {
+				var iconHtml;
+				var iconMap = {
+					'.txt': 'img/file32_txt.png',
+					'.pdf': 'img/file32_pdf.png',
+					'.doc': 'img/file32_doc.png',
+					'.docx': 'img/file32_doc.png',
+					'.h': 'img/file32_c.png',
+					'.c': 'img/file32_c.png',
+					'.lua': 'img/file32_lua.png'
+				};
+				for (var i = 0; i < locations.length; i++) {
+					iconHtml = '<img src="img/file32.png" />';
+					for (var fileExtension in iconMap) {
+						if (locations[i].endsWith(fileExtension)) {
+							iconHtml = '<img src="' + iconMap[fileExtension] + '" />';
+							break;
+						}
+					}
+					html += iconHtml + '<a href="'+FileStorage.getStorageUrl()+locations[i]+'">' + locations[i] + '</a><br>';
+					//html += iconHtml + '<a href="' + AppService.createFileUrl(locations[i]) + '">' + locations[i] + '</a><br>';
+				}
+			}
+
+			searchResultsEl.innerHTML = html;
+		});
+
+		reader.addEventListener('error', function (message) {
+			searchResultsEl.textContent = message;
+			searchResultsEl.classList.add('error');
+		});
+
+		reader.readAsText(blob);
+	}
+};
+
+SearchApp.index = function () {
+
+	var indexingResult, mergingResult;
+
+	var indexResultEl = document.querySelector('.index-result');
+	indexResultEl.classList.remove('error');
+	indexResultEl.textContent = '';
+	indexResultEl.removeAttribute('hidden');
+
+	index(JSON.stringify(createConfiguration()));
+
+	function createConfiguration() {
+		return [
+			{
+				"name" : "filesender",
+				"exec" :
+				{
+					"path": "swift://" + FileStorage.getAccountId() + "/search/sys/filesender.nexe"
+				},
+				"file_list" :
+					[
+						{"device" : "input", "path" : "swift://" + FileStorage.getAccountId() + "/" + document.querySelector('.index-input').value},
+						{"device" : "stderr"}
+					],
+				"connect" : ["pdf", "txt", "doc", "other"],
+				"replicate" : 0
+			},
+			{
+				"name" : "pdf",
+				"exec" : {"path" : "swift://" + FileStorage.getAccountId() + "/search/sys/pdf.nexe"},
+				"file_list" :
+					[
+						{"device" : "image", 	"path" : "swift://" + FileStorage.getAccountId() + "/search/sys/confpdf.tar"},
+						{"device" : "stderr",  	"path" : "swift://" + FileStorage.getAccountId() + "/search/outputfiles/pdf_stderr.txt"}
+					],
+				"connect" : ["xmlpipecreator"],
+				"replicate" : 0
+			},
+			{
+				"name" : "other",
+				"exec" : {"path" : "swift://" + FileStorage.getAccountId() + "/search/sys/other.nexe"},
+				"file_list" :
+					[
+						{"device" : "stdout",  	"path" : "swift://" + FileStorage.getAccountId() + "/search/outputfiles/other_stdout.txt"}
+					],
+				"connect" : ["xmlpipecreator"],
+				"replicate" : 0
+			},
+			{
+				"name" : "txt",
+				"exec" : {"path" : "swift://" + FileStorage.getAccountId() + "/search/sys/txt.nexe"},
+				"file_list" :
+					[
+						{"device" : "stderr",  	"path" : "swift://" + FileStorage.getAccountId() + "/search/outputfiles/txt_stderr.txt"}
+					],
+				"connect" : ["xmlpipecreator"],
+				"replicate" : 0
+			},
+			{
+				"name" : "doc",
+				"exec" :
+				{
+					"path" : "swift://" + FileStorage.getAccountId() + "/search/sys/doc.nexe",
+					"args" : "temp.doc"
+				},
+				"file_list" :
+					[
+						{"device" : "image", "path" :  "swift://" + FileStorage.getAccountId() + "/search/sys/antiword.tar"},
+						{"device" : "stderr",  	"path" : "swift://" + FileStorage.getAccountId() + "/search/outputfiles/doc_stderr.txt"}
+					],
+				"connect" : ["xmlpipecreator"],
+				"replicate" : 0
+			},
+			{
+				"name" : "xmlpipecreator",
+				"exec" :
+				{
+					"path" : "swift://" + FileStorage.getAccountId() + "/search/sys/xmlpipecreator.nexe",
+					"args" : "--duplicate"
+				},
+				"file_list" :
+					[
+						{"device" : "stdout", "path" :  "swift://" + FileStorage.getAccountId() + "/search/outputfiles/xmlpipecreator_stdout.txt"}
+					],
+				"connect" : ["indexer"],
+				"replicate" : 0
+			},
+			{
+				"name" : "indexer",
+				"exec" :
+				{
+					"path" : "swift://" + FileStorage.getAccountId() + "/search/sys/indexer.nexe",
+					"args" : "--config index/zsphinx.conf deltaindex"
+				},
+				"file_list" :
+					[
+						{"device" : "stdout",  "path" : "swift://" + FileStorage.getAccountId() + "/search/outputfiles/indexer_stdout.txt"},
+						{"device" : "input",   "path" : "swift://" + FileStorage.getAccountId() + "/search/sys/rwindex"},
+						{"device" : "output",  "path" : "swift://" + FileStorage.getAccountId() + "/search/sys/rwindex"},
+						{"device" : "stderr"}
+					],
+				"replicate" : 0
+			}
+		];
+	}
+
+	function index(data) {
+		indexResultEl.textContent = 'Indexing...';
+		FileStorage.execute({
+			dataToSend: data,
+			dataType: 'application/json',
+			success: function (blob, xhr) {
+				indexingResult = blob;
+				merge(JSON.stringify(createMergeConfiguration()));
+			},
+			error: function (message) {
+				indexResultEl.textContent = message;
+				indexResultEl.classList.add('error');
+			}
+		});
+	}
+
+	function read(blob) {
+		indexResultEl.textContent = 'Reading result...';
+		var reader = new FileReader();
+		reader.add=EventListener('load', function (e) {
+			indexResultEl.textContent = e.target.result;
+			document.querySelector('.index-result-close-button').removeAttribute('hidden');
+		});
+		reader.addEventListener('error', function (message) {
+			indexResultEl.textContent = message;
+			indexResultEl.classList.add('error');
+		});
+		reader.readAsText(blob);
+	}
+
+	function merge(data) {
+		indexResultEl.textContent = 'Merging...';
+		FileStorage.execute({
+			dataToSend: data,
+			dataType: 'application/json',
+			success: function (blob, xhr) {
+				indexResultEl.textContent = 'OK.';
+				document.querySelector('.index-result-close-button').removeAttribute('hidden');
+				mergingResult = blob;
+			},
+			error: function (message) {
+				indexResultEl.textContent = message;
+				indexResultEl.classList.add('error');
+			}
+		});
+	}
+
+	function createMergeConfiguration() {
+		return [
+			{
+				"name" : "indexer",
+				"exec" :
+				{
+					"path" : "swift://" + FileStorage.getAccountId() + "/search/sys/indexer.nexe",
+					"args" : "--config index/zsphinx.conf --merge mainindex deltaindex"
+				},
+				"file_list" :
+					[
+						{"device" : "stdout",  "path" : "swift://" + FileStorage.getAccountId() + "/search/outputfiles/indexer_stdout.txt"},
+						{"device" : "input",   "path" : "swift://" + FileStorage.getAccountId() + "/search/sys/rwindex"},
+						{"device" : "output",  "path" : "swift://" + FileStorage.getAccountId() + "/search/sys/rwindex"},
+						{"device" : "stderr"}
+					],
+				"replicate" : 0
+			}
+		];
+	}
+};
+
+document.addEventListener('keydown', function (e) {
+
+	if (isSearchInput(e)) {
+		searchInputKeydown(e);
+	} else if (isIndexInput(e)) {
+		indexInputKeyDown(e);
+	}
+
+	function isSearchInput(e) {
+		return e.target.classList.contains('search-input');
+	}
+
+	function isIndexInput(e) {
+		return e.target.classList.contains('index-input');
+	}
+
+	function searchInputKeydown(e) {
+		e.target.classList.remove('invalid-input');
+
+		if (e.keyCode === 13) {
+			if (e.target.value === '') {
+				e.target.classList.add('invalid-input');
+				return;
+			}
+			SearchApp.search();
+		}
+	}
+
+	function indexInputKeyDown(e) {
+		e.target.classList.remove('invalid-input');
+
+		if (e.keyCode === 13) {
+			if (e.target.value === '') {
+				e.target.classList.add('invalid-input');
+				return;
+			}
+			SearchApp.index();
 		}
 	}
 });
@@ -181,9 +377,11 @@ document.addEventListener('keydown', function (e) {
 document.addEventListener('click', function (e) {
 
 	if (isIndexButton(e)) {
-		indexButtonClick(e);
+		SearchApp.index();
 	} else if (isIndexResultCloseButton(e)) {
 		indexResultCloseButtonClick(e);
+	} else if (isSearchButton(e)) {
+		SearchApp.search();
 	}
 
 	function isIndexButton(e) {
@@ -194,58 +392,8 @@ document.addEventListener('click', function (e) {
 		return e.target.classList.contains('index-result-close-button');
 	}
 
-	function indexButtonClick(e) {
-
-		var indexResultEl = document.querySelector('.index-result');
-		indexResultEl.classList.remove('error');
-		indexResultEl.textContent = '';
-		indexResultEl.removeAttribute('hidden');
-
-		retrieveIndexFile();
-
-		function retrieveIndexFile() {
-			indexResultEl.textContent = 'Retrieving "search/indexing.json"...';
-			FileStorage.getFile({
-				path: AppService.getPath().split('/').splice(1).join('/') + 'execute/indexing.json',
-				success: function (data) {
-					execute(data);
-				},
-				error: function (message) {
-					indexResultEl.textContent = message;
-					indexResultEl.classList.add('error');
-				}
-			});
-		}
-
-		function execute(data) {
-			indexResultEl.textContent = 'Executing...';
-			FileStorage.execute({
-				dataToSend: data,
-				dataType: 'application/json',
-				success: function (blob, xhr) {
-					read(blob);
-				},
-				error: function (message) {
-					indexResultEl.textContent = message;
-					indexResultEl.classList.add('error');
-				}
-			});
-		}
-
-		function read(blob) {
-			indexResultEl.textContent = 'Reading result...';
-			var reader = new FileReader();
-			reader.addEventListener('load', function (e) {
-				indexResultEl.textContent = e.target.result;
-				document.querySelector('.index-result-close-button').removeAttribute('hidden');
-			});
-			reader.addEventListener('error', function (message) {
-				indexResultEl.textContent = message;
-				indexResultEl.classList.add('error');
-			});
-			reader.readAsText(blob);
-		}
-
+	function isSearchButton(e) {
+		return e.target.classList.contains('search-button');
 	}
 
 	function indexResultCloseButtonClick(e) {
