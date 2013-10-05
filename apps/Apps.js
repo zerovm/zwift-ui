@@ -1,3 +1,11 @@
+// Message for old Internet Explorer.
+document.onload = function () {
+	if (navigator.userAgent.indexOf('MSIE') != -1) {
+		$('body').html('<h1 style="margin:5% auto; text-align: center;font-family: arial; color: #8b0000;">Internet Explorer is not supported. Please open in other browser.</h1>');
+		return;
+	}
+}
+
 var Apps = {};
 
 Apps.disableAll = function () {
@@ -73,7 +81,7 @@ Apps.upload.fileUnzip = function (zipFiles) {
 	}
 
 	function uploadApp() {
-		FileStorage.Apps.createAppDir({
+		ZeroAppsOnSwift.createAppDir({
 			appAuthor: appAuthor,
 			appName: appName,
 			appVersion: appVersion,
@@ -85,7 +93,7 @@ Apps.upload.fileUnzip = function (zipFiles) {
 			}
 		});
 
-		FileStorage.Apps.addAppLocation({
+		ZeroAppsOnSwift.addAppLocation({
 			appLocation: appAuthor + '/' + appName + '/' + appVersion
 		});
 
@@ -100,7 +108,7 @@ Apps.upload.fileUnzip = function (zipFiles) {
 			var path = appAuthor + '/' + appName + '/' + appVersion + '/' + files[i];
 			var data = zipFiles[files[i]];
 
-			FileStorage.Apps.uploadAppFile({
+			ZeroAppsOnSwift.uploadAppFile({
 				filePath: path,
 				fileData: data,
 				callback: function () {
@@ -152,7 +160,8 @@ Apps.email.update = function (email) {
 Apps.signOut = {};
 
 Apps.signOut.click = function () {
-	FileStorage.signOut();
+	ZLitestackDotCom.signOut();
+	//ClusterAuth.signOut();
 };
 
 Apps.app = {};
@@ -162,7 +171,7 @@ Apps.app.click = function (el) {
 
 		var appLocation = el.getAttribute('data-app-path');
 		var defaultPage = el.getAttribute('data-default-page');
-		FileStorage.Apps.openApp({
+		ZeroAppsOnSwift.openApp({
 			appLocation: appLocation,
 			defaultPage: defaultPage
 		});
@@ -173,10 +182,17 @@ Apps.app.click = function (el) {
 		el.querySelector('label.remove').setAttribute('hidden', 'hidden');
 		el.querySelector('progress').removeAttribute('hidden');
 		var appPath = el.getAttribute('data-app-path');
-		FileStorage.Apps.removeApp(appPath, function () {
+		ZeroAppsOnSwift.removeApp(appPath, function () {
 			el.parentNode.removeChild(el);
 			Apps.enableAll();
-		});
+		},
+			// progress:
+			function (totalFiles, deletedFiles) {
+				//var percentComplete = totalFiles / deletedFiles * 100;
+				el.querySelector('progress').setAttribute('max', totalFiles);
+				el.querySelector('progress').setAttribute('value', deletedFiles);
+			}
+		);
 
 	}
 };
@@ -216,36 +232,40 @@ document.addEventListener('change', function (e) {
 document.addEventListener('DOMContentLoaded', function () {
 	'use strict';
 
-	Apps.email.update(FileStorage.getAccountId());
+	ZLitestackDotCom.init(function () {
+		Apps.email.update(ZLitestackDotCom.getAccount());
+	});
+	//Apps.email.update(ClusterAuth.getAccount());
+	//Apps.email.update(ZLitestackDotCom.getAccount());
 
 	function checkReady(callback) {
 
-		FileStorage.checkContainerExist({
+		SwiftV1.checkContainerExist({
 			containerName: '.gui',
-			exist: function () {
+			success: function () {
 				file();
 			},
 			notExist: function () {
-				FileStorage.createContainer({
+				SwiftV1.createContainer({
 					containerName: '.gui',
 					created: function () {
 						file();
 					},
 					error: function () {
-
+						file();
 					}
 				});
 			},
 			error: function () {
-
+				file();
 			}
 		});
 
 		function file() {
-			FileStorage.checkFileExist({
+			SwiftV1.checkFileExist({
 				path: '.gui/app-locations',
 				notExist: function () {
-					FileStorage.createFile({
+					SwiftV1.createFile({
 						path: '.gui/app-locations',
 						contentType: 'application/json',
 						data: '[]',
@@ -258,11 +278,11 @@ document.addEventListener('DOMContentLoaded', function () {
 					});
 					callback();
 				},
-				exist: function () {
+				success: function () {
 					callback();
 				},
 				error: function () {
-
+					callback();
 				}
 			});
 		}
@@ -270,9 +290,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	checkReady(function () {
 
-		FileStorage.Apps.getAppLocations({
+		ZeroAppsOnSwift.getAppLocations({
 			success: callback_appLocations,
 			error: function (message) {
+				// TODO: error treatment.
 				console.log(message);
 			}
 		});
@@ -289,7 +310,7 @@ document.addEventListener('DOMContentLoaded', function () {
 					return;
 				}
 
-				FileStorage.Apps.getManifest({
+				ZeroAppsOnSwift.getManifest({
 					appPath: appLocations[i],
 					callback: function (manifest) {
 
@@ -301,24 +322,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
 						appName = manifest['name'];
 						appIcon = manifest['icon'];
-						var iconUrl = FileStorage.Apps.getAppIconUrl({
+						var iconUrl = ZeroAppsOnSwift.getAppIconUrl({
 							appLocation: appLocations[i],
 							appIcon: appIcon
 						});
 
-						var appTemplate = document.querySelector('#appTemplate');
+						document.querySelector('.content').innerHTML += document.querySelector('#appTemplate').innerHTML;
 
-						var appDocumentFragment;
-
-						if (appTemplate.content) {
-							appDocumentFragment = appTemplate.content.cloneNode(true);
-						} else {
-							appDocumentFragment = appTemplate.querySelector('button').cloneNode(true);
-						}
-
-						var contentEl = document.querySelector('.content');
-						contentEl.appendChild(appDocumentFragment);
-						var appEl = contentEl.querySelector('.app:last-child');
+						var appEl = document.querySelector('.app:last-child');
 						appEl.style.backgroundImage = 'url("' + iconUrl + '")';
 						appEl.querySelector('label.name').textContent = appName;
 						appEl.setAttribute('data-app-path', appLocations[i]);
@@ -332,4 +343,3 @@ document.addEventListener('DOMContentLoaded', function () {
 		}
 	});
 });
-

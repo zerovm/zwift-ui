@@ -2,17 +2,6 @@ template {
 	display: none;
 }
 
-input {
-	border-color: transparent;
-	border-bottom-color: black !important;
-}
-
-input:focus,
-input:active {
-	border-color: black;
-	outline: none;
-}
-
 /* index */
 
 .index-container {
@@ -22,12 +11,16 @@ input:active {
 .index-button {
 	position: absolute;
 	top: 3px;
-	right: 2px;
+	right: 1px;
+	font-size: large;
+	vertical-align: middle;
 }
-
+.index-button img {
+	vertical-align: middle;
+}
 .index-input {
-	width: 220px;
-	padding: 10px;
+	width: 420px;
+	padding: 13px;
 	font-size: large;
 	box-sizing: border-box;
 	-moz-box-sizing: border-box;

@@ -1,0 +1,85 @@
+[
+	{
+		"name" : "filesender",
+		"exec" : 
+		{
+			"path": "swift://g_116439323025896979253/search/sys/filesender.nexe"
+		},
+		"file_list" : 
+		[
+			{"device" : "input", "path" : "swift://g_116439323025896979253/search/doc/*"},
+			{"device" : "stderr"}
+		],
+		"connect" : ["pdf", "txt", "doc"],
+        "replicate" : 0
+	},
+	{
+		"name" : "pdf",
+		"exec" : {"path" : "swift://g_116439323025896979253/search/sys/pdf.nexe"},
+		"file_list" : 
+		[
+			{"device" : "image", 	"path" : "swift://g_116439323025896979253/search/sys/confpdf.tar"},
+			{"device" : "stderr",  	"path" : "swift://g_116439323025896979253/search/outputfiles/pdf_stderr.txt"}
+		],
+		"connect" : ["xmlpipecreator"],
+        "replicate" : 0
+	},
+	{
+		"name" : "txt",
+		"exec" : {"path" : "swift://g_116439323025896979253/search/sys/txt.nexe"},
+		"file_list" : 
+		[
+			{"device" : "stderr",  	"path" : "swift://g_116439323025896979253/search/outputfiles/pdf_stderr.txt"}
+		],
+		"connect" : ["xmlpipecreator"],
+        "replicate" : 0
+	},
+	{
+		"name" : "doc",
+		"exec" : 
+		{
+			"path" : "swift://g_116439323025896979253/search/sys/doc.nexe",
+			"args" : "temp.doc"
+		},
+		"file_list" : 
+		[
+			{"device" : "image", "path" :  "swift://g_116439323025896979253/search/sys/antiword.tar"},
+			{"device" : "stderr",  	"path" : "swift://g_116439323025896979253/search/outputfiles/doc_stderr.txt"}
+		],
+		"connect" : ["xmlpipecreator"],
+        "replicate" : 0
+	},
+	{
+		"name" : "xmlpipecreator",
+		"exec" : 
+		{
+			"path" : "swift://g_116439323025896979253/search/sys/xmlpipecreator.nexe",
+			"args" : "--duplicate"
+		},
+		"file_list" : 
+		[
+			{"device" : "stdout", "path" :  "swift://g_116439323025896979253/search/outputfiles/xmlpipecreator_stdout.txt"},
+			{"device" : "input",   "path" : "swift://g_116439323025896979253/search/sys/xml_maxindex.data"},
+			{"device" : "output",  "path" : "swift://g_116439323025896979253/search/sys/xml_maxindex.data"},
+			{"device" : "stderr"}
+		],
+        "connect" : ["indexer"],
+        "replicate" : 0
+	},
+	{
+		"name" : "indexer",
+		"exec" : 
+		{
+			"path" : "swift://g_116439323025896979253/search/sys/indexer.nexe",
+			"args" : "--config index/zsphinx.conf deltaindex"
+		},
+		"file_list" : 
+		[
+			{"device" : "stdout",  "path" : "swift://g_116439323025896979253/search/outputfiles/indexer_stdout.txt"},
+			{"device" : "input",   "path" : "swift://g_116439323025896979253/search/sys/rwindex"},
+			{"device" : "output",  "path" : "swift://g_116439323025896979253/search/sys/rwindex"},
+			{"device" : "stderr"}
+		],
+        "replicate" : 0
+	}
+]
