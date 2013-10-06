@@ -325,12 +325,12 @@ var ClusterAuth = {};
 
 	SwiftV1.File.head = function (args) {
 		var xhr = new XMLHttpRequest();
-		var url = xStorageUrl + account + '/' + args.path;
+		var accountId = args.hasOwnProperty('account') ? args.account : account;
+		var url = xStorageUrl + accountId + '/' + args.path;
 		xhr.open('HEAD', url);
 		if (xAuthToken !== null) {
 			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
 		}
-		xhr.setRequestHeader('Accept-Encoding', 'identity');
 		xhr.addEventListener('load', function (e) {
 			if (e.target.status == 401) {
 				unauthorized();
@@ -352,7 +352,8 @@ var ClusterAuth = {};
 
 	SwiftV1.File.get = function (args) {
 		var xhr = new XMLHttpRequest();
-		var url = xStorageUrl + account + '/' + args.path;
+		var accountId = args.hasOwnProperty('account') ? args.account : account;
+		var url = xStorageUrl + accountId + '/' + args.path;
 		if (args.hasOwnProperty('ifMatch')) {
 			xhr.setRequestHeader('If-Match', args.ifMatch);
 		}
@@ -372,7 +373,6 @@ var ClusterAuth = {};
 		if (xAuthToken !== null) {
 			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
 		}
-		xhr.setRequestHeader('Accept-Encoding', 'identity');
 		xhr.addEventListener('load', function (e) {
 			if (e.target.status == 401) {
 				unauthorized();
@@ -393,7 +393,8 @@ var ClusterAuth = {};
 
 	SwiftV1.File.post = function (args) {
 		var xhr = new XMLHttpRequest();
-		var url = xStorageUrl + account + '/' + args.path;
+		var accountId = args.hasOwnProperty('account') ? args.account : account;
+		var url = xStorageUrl + accountId + '/' + args.path;
 		xhr.open('POST', url);
 		if (xAuthToken !== null) {
 			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
@@ -421,7 +422,8 @@ var ClusterAuth = {};
 
 	SwiftV1.File.put = function (args) {
 		var xhr = new XMLHttpRequest();
-		var url = xStorageUrl + account + '/' + args.path;
+		var accountId = args.hasOwnProperty('account') ? args.account : account;
+		var url = xStorageUrl + accountId + '/' + args.path;
 		xhr.open('PUT', url, true);
 		if (xAuthToken !== null) {
 			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
@@ -457,7 +459,8 @@ var ClusterAuth = {};
 
 	SwiftV1.File.delete = function (args) {
 		var xhr = new XMLHttpRequest();
-		var url = xStorageUrl + account + '/' + args.path;
+		var accountId = args.hasOwnProperty('account') ? args.account : account;
+		var url = xStorageUrl + accountId + '/' + args.path;
 		xhr.open('DELETE', url);
 		if (xAuthToken !== null) {
 			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
@@ -547,6 +550,7 @@ var ClusterAuth = {};
 	}
 
 	ZeroVmOnSwift.open = function (args) {
+		var accountId = args.hasOwnProperty('account') ? args.account : account;
 		var url = xStorageUrl + 'open/' + account + '/' + args.path;
 		var xhr = new XMLHttpRequest();
 		xhr.open('GET', url);
@@ -561,6 +565,7 @@ var ClusterAuth = {};
 
 	ZeroVmOnSwift.execute = function (args) {
 		var xhr = new XMLHttpRequest();
+		var accountId = args.hasOwnProperty('account') ? args.account : account;
 		var url = xStorageUrl + account;
 		xhr.open('POST', url, true);
 		xhr.responseType = 'blob';

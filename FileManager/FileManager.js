@@ -1,44 +1,138 @@
 'use strict';
 
-/*
- Add String.contains for not supported browsers.
- */
-if (!('contains' in String.prototype)) {
-	String.prototype.contains = function (str, startIndex) {
-		return -1 !== String.prototype.indexOf.call(this, str, startIndex);
-	};
-}
 
-/*
- Add String.startsWith for not supported browsers.
- */
-if (!String.prototype.startsWith) {
-	Object.defineProperty(String.prototype, 'startsWith', {
-		enumerable: false,
-		configurable: false,
-		writable: false,
-		value: function (searchString, position) {
-			position = position || 0;
-			return this.indexOf(searchString, position) === position;
+//TODO: globals treatment: options variables and functions below.
+
+
+// OPTIONS
+var enableSharedContainers = true;
+var enableZeroVM = true;
+var enableEmail = true;
+
+var getEmail = function (callback) {
+	ZLitestackDotCom.getEmail({
+		success: function (email) {
+			callback(email);
+		},
+		error: function (status, statusText) {
+			callback(ZLitestackDotCom.getAccount());
 		}
 	});
+};
+
+//SHARED-CONTAINERS
+var isShared = function (path) {
+	return path.split('/')[0] != getAccount();
+};
+
+function listSharedContainers(sharedContainers, scrollingContentEl) {
+
+	for (var i = 0; i < sharedContainers.length; i++) {
+		add(sharedContainers[i]);
+		update(sharedContainers[i]);
+	}
+
+	function add(sharedContainer) {
+		var name = makeShortName(sharedContainer);
+		var title = sharedContainer;
+		var html = document.querySelector('#sharedContainerTemplate').innerHTML;
+		html = html.replace('{{name}}', htmlEscape(name));
+		html = html.replace('{{title}}', htmlEscape(title));
+		scrollingContentEl.insertAdjacentHTML('afterbegin', html);
+	}
+
+	function update(path) {
+		SharedContainersOnSwift.getContainerSize({
+			account: FileManager.Path(path).account(),
+			container: FileManager.Path(path).container(),
+			success: function (bytes, count) {
+				var size = bytesToSize(bytes);
+				var files = count;
+
+				var selector = '.item[title="' + path + '"]';
+				var el = scrollingContentEl.querySelector(selector);
+
+				el.querySelector('.size').textContent = size;
+				el.querySelector('.files').textContent = files;
+			},
+			error: function (status, statusText) {
+				var selector = '.item[title="' + path + '"]';
+				var el = scrollingContentEl.querySelector(selector);
+				el.querySelector('.size').textContent = 'Error: ' + status + ' ' + statusText;
+			}
+		});
+	}
 }
 
-/*
- Add String.endsWith for not supported browsers.
- */
-if (!String.prototype.endsWith) {
-	Object.defineProperty(String.prototype, 'endsWith', {
-		enumerable: false,
-		configurable: false,
-		writable: false,
-		value: function (searchString, position) {
-			position = position || this.length;
-			position = position - searchString.length;
-			return this.lastIndexOf(searchString) === position;
-		}
-	});
+// Auth methods
+var init = ZLitestackDotCom.init;
+//var init = ClusterAuth.init;
+var getAccount = ZLitestackDotCom.getAccount;
+//var getAccount = ClusterAuth.getAccount;
+var getStorageUrl = ZLitestackDotCom.getStorageUrl;
+//var getStorageUrl = ClusterAuth.getStorageUrl;
+var signOut = ZLitestackDotCom.signOut;
+//var signOut = ClusterAuth.signOut;
+
+function htmlEscape(str) {
+	return String(str)
+		.replace('&raquo;', '///')
+		.replace(/&/g, '&amp;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#39;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace('///', '&raquo;');
 }
+
+function makeShortName(name, len) {
+	if (!name) {
+		return '';
+	}
+
+	len = len || 30;
+
+	if (name.length <= len) {
+		return name;
+	}
+
+	return name.substr(0, len) + '&raquo;';
+}
+
+function bytesToSize(bytes, precision) {
+	var kilobyte = 1024;
+	var megabyte = kilobyte * 1024;
+	var gigabyte = megabyte * 1024;
+	var terabyte = gigabyte * 1024;
+
+	if ((bytes >= 0) && (bytes < kilobyte)) {
+		return bytes + ' B';
+
+	} else if ((bytes >= kilobyte) && (bytes < megabyte)) {
+		return (bytes / kilobyte).toFixed(precision) + ' KB';
+
+	} else if ((bytes >= megabyte) && (bytes < gigabyte)) {
+		return (bytes / megabyte).toFixed(precision) + ' MB';
+
+	} else if ((bytes >= gigabyte) && (bytes < terabyte)) {
+		return (bytes / gigabyte).toFixed(precision) + ' GB';
+
+	} else if (bytes >= terabyte) {
+		return (bytes / terabyte).toFixed(precision) + ' TB';
+
+	} else {
+		return bytes + ' B';
+	}
+}
+
+function addLoadMoreButton(scrollingContentEl) {
+	var html = document.querySelector('#loadMoreButtonTemplate').innerHTML;
+	scrollingContentEl.insertAdjacentHTML('beforeend', html);
+}
+
+
+
+
 
 var FileManager = {};
 
@@ -50,49 +144,85 @@ FileManager.disableAll = function () {
 	document.body.classList.add('disabled');
 };
 
+FileManager.Path = function (path) {
+	this.path = function () {
+		return path;
+	};
+	this.account = function () {
+		return path.split('/')[0];
+	};
+	this.container = function () {
+		return path.split('/')[1];
+	};
+	this.withoutAccount = function () {
+		return path.split('/').splice(1).join('/');
+	};
+	this.prefix = function () {
+		return path.split('/').splice(2).join('/');
+	};
+	this.isContainersList = function () {
+		return path.indexOf('/') == -1;
+	};
+	this.isFilesList = function () {
+		return this.isContainer() || this.isDirectory();
+	};
+	this.isContainer = function () {
+		return path.split('/').length == 2;
+	};
+	this.isDirectory = function () {
+		return path.lastIndexOf('/') == path.length - 1
+	};
+	this.isFile = function () {
+		return !this.isContainer() && !this.isDirectory();
+	};
+	this.up = function () {
+		var newPathParts = path.split('/');
 
-FileManager.Path = {};
+		if (newPathParts[newPathParts.length - 1] == '') {
+			newPathParts.splice(-2);
+		} else {
+			newPathParts.splice(-1);
+		}
 
-FileManager.Path.get = function () {
-	return location.hash.substr(1);
+		if (newPathParts.length == 1) {
+
+			if (enableSharedContainers && isShared(newPathParts[0])) {
+				return getAccount();
+			}
+
+			return newPathParts[0];
+		}
+
+		if (newPathParts.length == 2) {
+			return newPathParts.join('/');
+		}
+
+		return newPathParts.join('/') + '/';
+	};
+	this.add = function (name) {
+
+		if (enableSharedContainers && this.isContainersList() && name.indexOf('/') != -1) {
+			return name;
+		}
+
+		if (path.lastIndexOf('/') == path.length - 1) {
+			return path + name;
+		}
+		return  path + '/' + name;
+	};
+	return this;
 };
 
-FileManager.Path.removeAccount = function (path) {
-	return path.split('/').splice(1).join('/');
+FileManager.Current = function () {
+	return FileManager.Path(location.hash.substr(1));
 };
-
-FileManager.Path.withoutAccount = function () {
-	return FileManager.Path.removeAccount(FileManager.Path.get());
-};
-
 
 FileManager.BackButton = {};
 
 FileManager.BackButton.clickCallback = function () {
 	FileManager.disableAll();
 	FileManager.CurrentDirLabel.showLoading();
-
-	var currentPath = location.hash;
-	var newPathComponents = currentPath.split('/');
-	var newPath = '';
-
-	if (currentPath.endsWith('/')) {
-		newPathComponents.pop();
-		newPathComponents.pop();
-	} else {
-		newPathComponents.pop();
-	}
-
-	if (newPathComponents.length == 1) {
-		newPath = ZLitestackDotCom.getAccount();
-		//newPath = ClusterAuth.getAccount();
-	} else if (newPathComponents.length == 2) {
-		newPath = newPathComponents.join('/');
-	} else {
-		newPath = newPathComponents.join('/') + '/';
-	}
-
-	location.hash = newPath;
+	location.hash = FileManager.Current().up();
 };
 
 FileManager.BackButton.enable = function () {
@@ -107,49 +237,47 @@ FileManager.BackButton.disable = function () {
 FileManager.CurrentDirLabel = {};
 
 FileManager.CurrentDirLabel.update = function (name) {
-	var name = name;
-	var title = location.hash.substring(1);
-
+	var title = FileManager.Current().add(name);
 	var el = document.querySelector('.current-dir-label');
 	el.innerHTML = htmlEscape(name);
 	el.setAttribute('title', htmlEscape(title));
 };
 
 FileManager.CurrentDirLabel.root = function () {
-	//FileManager.CurrentDirLabel.update(makeShortName(ClusterAuth.getAccount()));
 
-	ZLitestackDotCom.getEmail({
-		success: function (email) {
-			FileManager.CurrentDirLabel.update(makeShortName(email));
-		},
-		error: function (status, statusText) {
-			FileManager.CurrentDirLabel.update(makeShortName(ZLitestackDotCom.getAccount()));
-			console.log('HEAD account returned error: ' + status + ' ' + statusText);
-		}
-	});
+	if (enableEmail) {
+		getEmail(function (email) {
+			var shortName = makeShortName(email);
+			FileManager.CurrentDirLabel.update(shortName);
+		});
+		return;
+	}
+
+	var shortName = makeShortName(getAccount());
+	FileManager.CurrentDirLabel.update(shortName);
 };
 
 FileManager.CurrentDirLabel.showLoading = function () {
-	FileManager.CurrentDirLabel.update('Loading...');
+	var el = document.querySelector('.current-dir-label');
+	el.textContent = 'Loading...';
+	el.removeAttribute('title');
 };
 
-FileManager.CurrentDirLabel.showError = function () {
+// TODO: Unused method: ??? use it or delete it!
+FileManager.CurrentDirLabel.showError = function (message) {
 	var el = document.querySelector('.current-dir-label');
-	el.innerHTML = htmlEscape('Error (I) (R)');
-	el.setAttribute('title', 'Error');
+	el.textContent = message;
+	el.removeAttribute('title');
 };
 
 
 FileManager.EditButton = {};
 
 FileManager.EditButton.clickCallback = function () {
-	var path = location.hash;
-	var isContainer = path.split('/').length == 1;
-	var isFiles = path.endsWith('/') || path.split('/').length == 2;
 
-	if (isContainer) {
+	if (FileManager.isContainersList()) {
 		FileManager.ContainersMenu.show();
-	} else if (isFiles) {
+	} else if (FileManager.isFilesList()) {
 		FileManager.FilesMenu.show();
 		FileManager.BackButton.disable();
 	}
@@ -163,13 +291,11 @@ FileManager.EditButton.clickCallback = function () {
 FileManager.DoneButton = {};
 
 FileManager.DoneButton.clickCallback = function () {
-	var path = location.hash;
-	var isFiles = path.split('/').length > 1;
 
 	FileManager.ContainersMenu.hide();
 	FileManager.FilesMenu.hide();
 
-	if (isFiles) {
+	if (FileManager.isFilesList()) {
 		FileManager.BackButton.enable();
 	}
 
@@ -184,8 +310,7 @@ FileManager.DoneButton.clickCallback = function () {
 FileManager.SignOutButton = {};
 
 FileManager.SignOutButton.clickCallback = function () {
-	ZLitestackDotCom.signOut();
-	//ClusterAuth.signOut();
+	signOut();
 };
 
 
@@ -193,7 +318,7 @@ FileManager.ExecuteButton = {};
 
 FileManager.ExecuteButton.clickCallback = function () {
 
-	//document.querySelector('.open-button').setAttribute('hidden', 'hidden');
+	FileManager.disableAll();
 	document.querySelector('.execute-button').setAttribute('hidden', 'hidden');
 	FileManager.ExecuteLabel.start();
 
@@ -204,11 +329,12 @@ FileManager.ExecuteButton.clickCallback = function () {
 			FileManager.ExecuteLabel.hide();
 			FileManager.Report.create(report);
 			showResult(result);
-			//FileManager.ExecuteLabel.executed();
+			FileManager.enableAll();
 		},
 		error: function (status, statusText, result) {
 			// TODO: show error message with status.
 			showResult(result);
+			FileManager.enableAll();
 		}
 	});
 
@@ -220,11 +346,11 @@ FileManager.ExecuteButton.clickCallback = function () {
 			mode: 'text/plain',
 			lineNumbers: false
 		});
+		FileManager.Layout.adjust();
 	}
 };
 
 FileManager.ExecuteLabel = {};
-
 
 FileManager.ExecuteLabel.start = function () {
 	var el = document.querySelector('.execute-label');
@@ -346,7 +472,7 @@ FileManager.ContainersMenu = {};
 
 FileManager.ContainersMenu.show = function () {
 	FileManager.CreateContainer.clear();
-	FileManager.AddShared.clear(); //SHARED-CONTAINERS
+	enableSharedContainers && FileManager.AddShared.clear();
 	document.querySelector('.menu-containers').removeAttribute('hidden');
 	FileManager.Layout.adjust();
 };
@@ -402,17 +528,17 @@ FileManager.CreateContainer.clickCallback = function () {
 		return;
 	}
 
-	if (input.contains('/')) {
+	if (input.indexOf('/') != -1) {
 		inputEl.classList.add('invalid-input');
 		document.querySelector('.create-container-error-invalid-character').removeAttribute('hidden');
-		layout.fix();
+		FileManager.Layout.adjust();
 		return;
 	}
 
 	SwiftV1.createContainer({
 		containerName: input,
 		created: function () {
-			var currentPath = FileManager.Path.get();
+			var currentPath = FileManager.Current().path();
 			FileManager.ContentChange.withoutAnimation(currentPath);
 			FileManager.CreateContainer.clear();
 		},
@@ -467,7 +593,8 @@ FileManager.AddShared.clickCallback = function () {
 		account: account,
 		container: container,
 		added: function () {
-			FileManager.ContentChange.withoutAnimation(location.hash.substr(0));
+			var currentPath = FileManager.Current().path();
+			FileManager.ContentChange.withoutAnimation(currentPath);
 			FileManager.AddShared.clear();
 		},
 		notAuthorized: function () {
@@ -516,18 +643,18 @@ FileManager.CreateDirectory.clickCallback = function () {
 		return;
 	}
 
-	if (inputEl.value.contains('/')) {
+	if (inputEl.value.indexOf('/') != -1) {
 		inputEl.classList.add('invalid-input');
 		document.querySelector('.create-directory-error-invalid-character').removeAttribute('hidden');
 		return;
 	}
 
-	var path = FileManager.Path.withoutAccount();
 	var dirName = inputEl.value + '/';
-	var dirPath = path.endsWith('/') ? path + dirName : path + '/' + dirName;
+	var dirPath = FileManager.Current().add(dirName);
+	var dirPathWithoutAccount = FileManager.Path(dirPath).withoutAccount();
 
 	SwiftV1.checkDirectoryExist({
-		path: dirPath,
+		path: dirPathWithoutAccount,
 		success: function () {
 			inputEl.classList.add('invalid-input');
 			document.querySelector('.create-directory-error-already-exist').removeAttribute('hidden');
@@ -535,9 +662,9 @@ FileManager.CreateDirectory.clickCallback = function () {
 		notExist: function () {
 
 			SwiftV1.createDirectory({
-				path: dirPath,
+				path: dirPathWithoutAccount,
 				created: function () {
-					FileManager.ContentChange.withoutAnimation(FileManager.Path.get());
+					FileManager.ContentChange.withoutAnimation(FileManager.Current().path());
 					FileManager.CreateDirectory.clear();
 				},
 				error: function (status, statusText) {
@@ -569,7 +696,6 @@ FileManager.CreateDirectory.clearErrors = function () {
 FileManager.CreateFile = {};
 
 FileManager.CreateFile.clickCallback = function () {
-	var currentPath = FileManager.Path.get();
 	var nameEl = document.querySelector('.create-file-input-name');
 	var typeEl = document.querySelector('.create-file-input-type');
 
@@ -578,14 +704,14 @@ FileManager.CreateFile.clickCallback = function () {
 		return;
 	}
 
-	var path = currentPath.endsWith('/') ? currentPath + nameEl.value : currentPath + '/' + nameEl.value;
+	var filePath = FileManager.Current().add(nameEl.value);
 
 	SwiftV1.createFile({
-		path: FileManager.Path.removeAccount(path),
+		path: FileManager.Path(filePath).withoutAccount(),
 		contentType: typeEl.value,
 		data: '',
 		created: function () {
-			FileManager.ContentChange.withoutAnimation(FileManager.Path.get());
+			FileManager.ContentChange.withoutAnimation(FileManager.Current().path());
 			FileManager.CreateFile.clear();
 		},
 		error: function (status, statusText) {
@@ -615,21 +741,11 @@ FileManager.CreateFile.clearErrors = function () {
 	FileManager.UploadFiles.changeCallback = function (files) {
 		var el = document.querySelector('.upload-files');
 		el.innerHTML = el.innerHTML;
-		var currentPath = FileManager.Path.withoutAccount();
 
 		for (var i = 0; i < files.length; i++) {
-
 			var name = files[i].name;
-			var path;
-
+			var path = FileManager.Current().add(files[i].name);
 			createUploadEl(name);
-
-			if (currentPath.endsWith('/')) {
-				path = currentPath + files[i].name;
-			}  else {
-				path = currentPath + '/' + files[i].name;
-			}
-
 			uploadFile(path, files[i]);
 		}
 
@@ -653,7 +769,7 @@ FileManager.CreateFile.clearErrors = function () {
 			created: function () {
 				var el = document.querySelector('#upload-' + index);
 				el.parentNode.removeChild(el);
-				FileManager.ContentChange.withoutAnimation(FileManager.Path.get());
+				FileManager.ContentChange.withoutAnimation(FileManager.Current().path());
 				FileManager.Layout.adjust();
 			},
 			progress: function (percent, loaded, total) {
@@ -711,78 +827,33 @@ FileManager.UploadExecute.changeCallback = function (file) {
 FileManager.ConfirmDelete = {};
 
 FileManager.ConfirmDelete.clickCallback = function (el) {
-	var itemEl = el.parentNode.parentNode.previousElementSibling;
-	var name = itemEl.title;
-	var currentPath = FileManager.Path.get();
-	var newPath = currentPath.endsWith('/') ? currentPath + name : currentPath + '/' + name;
-	var pathWithoutAccount = FileManager.Path.removeAccount(newPath);
+	el.parentNode.innerHTML = 'Deleting...';
 
-	var isSharedContainer = !currentPath.contains('/') && name.contains('/');//SHARED-CONTAINERS
+	var name = document.querySelector('delete-label').title;
+	var itemPath = FileManager.Current().add(name);
 
-	//SHARED-CONTAINERS
-	if (isSharedContainer) {
-		var account = name.split('/')[0];
-		var container = name.split('/')[1];
-
+	if (enableSharedContainers && isShared(itemPath)) {
 		SharedContainersOnSwift.removeSharedContainer({
-			account: account,
-			container: container,
+			account: FileManager.Path(name).account(),
+			container: FileManager.Path(name).container(),
 			removed: function () {
+				var currentPath = FileManager.Current().path();
 				FileManager.ContentChange.withoutAnimation(currentPath);
 			},
 			error: function (status, statusText) {
 				var errMsg = 'Error occurred: ' + status + ' ' + statusText;
-				document.querySelector('.delete-label').innerHTML = errMsg;
+				document.querySelector('.delete-label').textContent = errMsg;
 			}
 		});
-
 		return;
 	}
 
-	var isContainerOrDirectory = !currentPath.contains('/') || name.endsWith('/');
-
-	if (isContainerOrDirectory) {
-
-		var containerName = newPath.split('/')[1];
-		var path = newPath.split('/').splice(2).join('/');
-
-		if (!path.endsWith('/')) {
-			path += '/';
-		}
-
-
-		el.parentNode.innerHTML = 'Deleting...';
-
-		if (path) {
-			if (path.indexOf('/') == 0) {
-				path = containerName + path;
-			} else {
-				path = containerName + '/' + path;
-			}
-		} else {
-			path = containerName;
-		}
-
-		SwiftAdvancedFunctionality.deleteAll({
-			path: path,
-			deleted: function () {
-				FileManager.ContentChange.withoutAnimation(currentPath);
-			},
-			progress: function (totalFiles, deletedFiles, message) {
-				var percentComplete = totalFiles / deletedFiles * 100;
-				var html = 'Deleting... (' + deletedFiles + '/' + totalFiles + ') ' + percentComplete + '% complete.';
-				document.querySelector('.delete-label').innerHTML = html;
-			},
-			error: function (status, statusText) {
-				var errMsg = 'Error occurred: ' + status + ' ' + statusText;
-				document.querySelector('.delete-label').innerHTML = errMsg;
-			}
-		});
-	} else {
+	if (FileManager.Path(itemPath).isFile()) {
 
 		SwiftAdvancedFunctionality.delete({
-			path: pathWithoutAccount,
+			path: FileManager.Path(itemPath).withoutAccount(),
 			deleted: function () {
+				var currentPath = FileManager.Current().path();
 				FileManager.ContentChange.withoutAnimation(currentPath);
 			},
 			error: function(status, statusText) {
@@ -790,10 +861,30 @@ FileManager.ConfirmDelete.clickCallback = function (el) {
 				document.querySelector('.delete-label').innerHTML = errMsg;
 			},
 			notExist: function () {
+				var currentPath = FileManager.Current().path();
 				FileManager.ContentChange.withoutAnimation(currentPath);
 			}
 		});
+		return;
 	}
+
+	SwiftAdvancedFunctionality.deleteAll({
+		path: FileManager.Path(itemPath).withoutAccount(),
+		deleted: function () {
+			var currentPath = FileManager.Current().path();
+			FileManager.ContentChange.withoutAnimation(currentPath);
+		},
+		progress: function (totalFiles, deletedFiles, message) {
+			var percentComplete = totalFiles / deletedFiles * 100;
+			var progressMsg = 'Deleting... (' + deletedFiles + '/' + totalFiles + ') ' + percentComplete + '% complete.';
+			document.querySelector('.delete-label').textContent = progressMsg;
+		},
+		error: function (status, statusText) {
+			var errMsg = 'Error occurred: ' + status + ' ' + statusText;
+			document.querySelector('.delete-label').textContent = errMsg;
+		}
+	});
+
 };
 
 
@@ -804,13 +895,7 @@ FileManager.Item.selectedPath = null;
 FileManager.Item.clickCallback = function (itemEl) {
 
 	var name = itemEl.getAttribute('title');
-	var currentPath = FileManager.Path.get();
-
-	if (currentPath.endsWith('/')) {
-		FileManager.Item.selectedPath = currentPath + name;
-	} else {
-		FileManager.Item.selectedPath = currentPath + '/' + name;
-	}
+	FileManager.Item.selectedPath = FileManager.Current().add(name);
 
 	if (document.body.classList.contains('view-mode')) {
 		viewMode();
@@ -821,25 +906,9 @@ FileManager.Item.clickCallback = function (itemEl) {
 	}
 
 	function viewMode() {
-
 		FileManager.disableAll();
 		FileManager.Item.showLoading(itemEl);
-
-		var maybeSharedContainer = name.contains('/'); //SHARED-CONTAINERS
-		var isDirectory = name.endsWith('/');
-
-		//SHARED-CONTAINERS
-		if (maybeSharedContainer && !isDirectory) {
-			location.hash = name;
-			return;
-		}
-
-		if (location.hash.endsWith('/')) {
-			location.hash += name;
-			return;
-		}
-
-		location.hash += '/' + name;
+		location.hash = FileManager.Item.selectedPath;
 	}
 
 	function editMode() {
@@ -851,12 +920,10 @@ FileManager.Item.clickCallback = function (itemEl) {
 		var itemMenuHtml = document.querySelector('#itemMenuTemplate').innerHTML;
 		itemEl.insertAdjacentHTML('afterend', itemMenuHtml);
 
-		var isContainer = location.hash.split('/').length == 1;
-
 		FileManager.Metadata.show();
 
-		if (isContainer) {
-
+		if (FileManager.isContainersList()) {
+			// TODO: Rights
 		} else {
 			FileManager.ContentType.show();
 		}
@@ -901,7 +968,7 @@ FileManager.Item.showLoading = function (itemEl) {
 FileManager.LoadMoreButton = {};
 
 FileManager.LoadMoreButton.clickCallback = function () {
-	if (!location.hash.contains('/')) {
+	if (FileManager.isContainersList()) {
 		FileManager.Containers.loadMore();
 	} else {
 		FileManager.Files.loadMore();
@@ -919,28 +986,24 @@ FileManager.LoadMoreButton.clickCallback = function () {
 
 	FileManager.Metadata.show = function () {
 		var path = FileManager.Item.selectedPath;
-		var isContainersList = location.hash.split('/').length === 1;
 		var html = '<tr><td colspan="3">Loading...</td></tr>';
 		document.querySelector('.metadata-table tbody').innerHTML = html;
 
-
-		//SHARED-CONTAINERS
-		var isSharedContainer = isContainersList && path.split('/').count > 2;
-		if (isSharedContainer) {
+		if (enableSharedContainers && isShared(path)) {
 			var html = '<tr><td colspan="3">Cannot show metadata for shared container.</td></tr>';
 			document.querySelector('.metadata-table tbody').innerHTML = html;
 			return;
 		}
 
-		if (isContainersList) {
+		if (FileManager.Path(path).isContainer()) {
 			SwiftV1.getContainerMetadata({
-				containerName: FileManager.Path.removeAccount(path),
+				containerName: FileManager.Path(path).container(),
 				success: success,
 				error: error
 			});
 		} else {
 			SwiftV1.getFileMetadata({
-				path: FileManager.Path.removeAccount(path),
+				path: FileManager.Path(path).withoutAccount(),
 				success: function (metadata, contentType, contentLength, lastModified) {
 					FileManager.Item.contentType = contentType;
 					success(metadata);
@@ -1017,7 +1080,6 @@ FileManager.LoadMoreButton.clickCallback = function () {
 	};
 
 	FileManager.Metadata.save = function () {
-		var isContainersList = location.hash.split('/').length === 1;
 		var path = FileManager.Item.selectedPath;
 		var args = {
 			metadata: metadataToAdd(),
@@ -1034,11 +1096,11 @@ FileManager.LoadMoreButton.clickCallback = function () {
 		document.querySelector('.metadata-table tbody').innerHTML = '<tr><td colspan="3">Loading...</td></tr>';
 		document.querySelector('.metadata-table tfoot').setAttribute('hidden', 'hidden');
 
-		if (isContainersList) {
-			args.containerName = FileManager.Path.removeAccount(path);
+		if (FileManager.isContainersList()) {
+			args.containerName = FileManager.Path(path).withoutAccount();
 			SwiftV1.updateContainerMetadata(args);
 		} else {
-			args.path = FileManager.Path.removeAccount(path);
+			args.path = FileManager.Path(path).withoutAccount();
 			SwiftV1.updateFileMetadata(args);
 		}
 
@@ -1080,7 +1142,7 @@ FileManager.ContentType.show = function () {
 	var path = FileManager.Item.selectedPath;
 
 	SwiftV1.File.head({
-		path: FileManager.Path.removeAccount(path),
+		path: FileManager.Path(path).withoutAccount(),
 		success: function (metadata, contentType) {
 			FileManager.Item.metadata = metadata;
 
@@ -1102,11 +1164,11 @@ FileManager.ContentType.clickCallback = function () {
 	var path = FileManager.Item.selectedPath;
 
 	SwiftV1.File.post({
-		path: FileManager.Path.removeAccount(path),
+		path: FileManager.Path(path).withoutAccount(),
 		contentType: input,
 		metadata: FileManager.Item.metadata,
 		updated: function () {
-			FileManager.ContentChange.withoutAnimation(FileManager.Path.get());
+			FileManager.ContentChange.withoutAnimation(FileManager.Current().path());
 		},
 		error: function (status, statusText) {
 			// TODO: error treatment.
@@ -1125,7 +1187,7 @@ FileManager.File.contentType = '';
 FileManager.File.open = function (path, el, callback) {
 
 	SwiftV1.checkFileExist({
-		path: FileManager.Path.removeAccount(path),
+		path: FileManager.Path(path).withoutAccount(),
 		success: function (metadata, contentType, contentLength, lastModified) {
 
 			if (!isTextFile(contentType)) {
@@ -1146,9 +1208,8 @@ FileManager.File.open = function (path, el, callback) {
 
 			//document.querySelector('.open-button').removeAttribute('hidden');
 			document.querySelector('.execute-button').removeAttribute('hidden');
-			document.querySelector('.download-link').setAttribute('href', ZLitestackDotCom.getStorageUrl() + path);
-			//document.querySelector('.download-link').setAttribute('href', ClusterAuth.getStorageUrl() + path);
-			document.querySelector('.download-link').setAttribute('download', path.substr(path.lastIndexOf('/')));
+			document.querySelector('.download-link').setAttribute('href', getStorageUrl() + path);
+			document.querySelector('.download-link').setAttribute('download', path.substr(path.lastIndexOf('/') + 1));
 
 			callback();
 		},
@@ -1178,16 +1239,8 @@ FileManager.File.open = function (path, el, callback) {
 			|| contentType == 'application/json'
 			|| contentType == 'application/php'
 			|| contentType == 'application/x-php'
-			|| contentType.startsWith('text')) {
+			|| contentType.indexOf('text') == 0) {
 
-			return true;
-		}
-		return false;
-	}
-
-	function isLargeFile(fileSize) {
-		var maxSize = 3;
-		if (Number(fileSize) > maxSize) {
 			return true;
 		}
 		return false;
@@ -1195,9 +1248,8 @@ FileManager.File.open = function (path, el, callback) {
 };
 
 FileManager.File.edit = function (path, el) {
-	SwiftV1.getFile({
-		path: FileManager.Path.removeAccount(path),
-		//range: 'bytes=0-' + String(1024 * 1024),
+	var args = {
+		path: FileManager.Path(path).withoutAccount(),
 		success: handleResponse,
 		error: function (status, statusText) {
 			el.textContent = 'Error occurred: ' + status + ' ' + statusText;
@@ -1209,7 +1261,11 @@ FileManager.File.edit = function (path, el) {
 			alert('File not exist.');
 			FileManager.BackButton.enable();
 		}
-	});
+	};
+	if (enableSharedContainers) {
+		args.account = FileManager.Path(path).account();
+	}
+	SwiftV1.getFile(args);
 
 	function handleResponse(data, contentType) {
 
@@ -1287,7 +1343,7 @@ FileManager.File.save = function () {
 	document.querySelector('.menu-file button.redo').setAttribute('disabled', 'disabled');
 
 	SwiftV1.createFile({
-		path: FileManager.Path.get().split('/').splice(1).join('/'),
+		path: FileManager.Current().withoutAccount(),
 		contentType: FileManager.File.contentType,
 		data: FileManager.File.codeMirror.getValue(),
 		created: function () {
@@ -1316,7 +1372,7 @@ FileManager.File.saveAs = function (el) {
 		el.classList.add('selected');
 		document.querySelector('.save-as-dialog').removeAttribute('hidden');
 		FileManager.Layout.adjust();
-		document.querySelector('.save-as-input-path').value = FileManager.Path.get();
+		document.querySelector('.save-as-input-path').value = FileManager.Current().path();
 		document.querySelector('.save-as-input-type').value = FileManager.File.contentType;
 	}
 };
@@ -1334,8 +1390,8 @@ FileManager.SaveAs.clickCallback = function () {
 		return;
 	}
 
-	SwiftV1.createFile({
-		path: FileManager.Path.removeAccount(path),
+	var args = {
+		path: FileManager.Path(path).withoutAccount(),
 		contentType: typeEl.value,
 		data: FileManager.File.codeMirror.getValue(),
 		created: function () {
@@ -1346,7 +1402,13 @@ FileManager.SaveAs.clickCallback = function () {
 			// TODO: error treatment.
 			alert('Error occurred: ' + status + ' ' + statusText);
 		}
-	});
+	};
+
+	if (enableSharedContainers) {
+		args.account = FileManager.Path(path).account();
+	}
+
+	SwiftV1.createFile(args);
 };
 
 FileManager.SaveAs.clearErrors = function () {
@@ -1367,8 +1429,18 @@ FileManager.SaveAs.clearErrors = function () {
 			limit: 20,
 			success: function (response) {
 				var containers = JSON.parse(response);
-				var sharedContainers = SharedContainersOnSwift.getFromXhr(xhr); //SHARED-CONTAINERS
-				list(containers, sharedContainers); //SHARED-CONTAINERS
+
+				if (enableSharedContainers) {
+					var sharedContainers = SharedContainersOnSwift.getFromXhr(xhr);
+					if (containers.length == 0 && sharedContainers.length == 0) {
+						noContainers();
+						callback();
+						return;
+					}
+					listSharedContainers(sharedContainers);
+				}
+
+				list(containers);
 			},
 			error: function (status, statusText) {
 				// TODO: error treatment.
@@ -1376,9 +1448,9 @@ FileManager.SaveAs.clearErrors = function () {
 			}
 		});
 
-		function list(containers, sharedContainers) { //SHARED-CONTAINERS
+		function list(containers) {
 
-			if (containers.length == 0 && sharedContainers.length == 0) { //SHARED-CONTAINERS
+			if (containers.length == 0) {
 				noContainers();
 				callback();
 				return;
@@ -1388,84 +1460,21 @@ FileManager.SaveAs.clearErrors = function () {
 			FileManager.CurrentDirLabel.root();
 
 
-			listContainers(containers);
-			listShared(sharedContainers); //SHARED-CONTAINERS
-			callback();
-
-			if (containers.length == 20) {
-				addLoadMoreButton(scrollingContentEl);
-			}
-
-			if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
-				FileManager.Containers.loadMore();
-			}
-		}
-
-		function listContainers(containers) {
 			for (var i = 0; i < containers.length; i++) {
 				var container = containers[i];
 				var html = createContainer(container);
 				scrollingContentEl.insertAdjacentHTML('beforeend', html);
 			}
-		}
 
-		//SHARED-CONTAINERS
-		function listShared(sharedContainers) {
-			for (var i = 0; i < sharedContainers.length; i++) {
-				addShared(sharedContainers[i]);
-				updateShared(sharedContainers[i]);
-			}
-		}
+			callback();
 
-		//SHARED-CONTAINERS
-		function addShared(sharedContainer) {
-			var html = createShared(sharedContainer);
-			scrollingContentEl.insertAdjacentHTML('afterbegin', html);
-		}
-
-		//SHARED-CONTAINERS
-		function updateShared(path) {
-
-			var account = path.substring(0, path.indexOf('/'));
-			var container = path.substring(path.indexOf('/') + 1);
-
-			SharedContainersOnSwift.getContainerSize({
-				account: account,
-				container: container,
-				success: update,
-				error: error
-			});
-
-			function update(bytes, count) {
-				var size = bytesToSize(bytes);
-				var files = count;
-
-				var selector = '.item[title="' + path + '"]';
-				var el = scrollingContentEl.querySelector(selector);
-
-				el.querySelector('.size').textContent = size;
-				el.querySelector('.files').textContent = files;
+			if (containers.length == 20) {
+				addLoadMoreButton(scrollingContentEl, scrollingContentEl);
 			}
 
-			function error(status, statusText) {
-				var selector = '.item[title="' + path + '"]';
-				var el = scrollingContentEl.querySelector(selector);
-				el.querySelector('.size').textContent = 'Error: ' + status + ' ' + statusText;
+			if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
+				FileManager.Containers.loadMore();
 			}
-		}
-
-		//SHARED-CONTAINERS
-		function createShared(sharedContainer) {
-
-			var name = makeShortName(sharedContainer);
-			var title = sharedContainer;
-
-			var html = document.querySelector('#sharedContainerTemplate').innerHTML;
-
-			html = html.replace('{{name}}', htmlEscape(name));
-			html = html.replace('{{title}}', htmlEscape(title));
-
-			return html;
 		}
 
 		function noContainers() {
@@ -1476,8 +1485,6 @@ FileManager.SaveAs.clearErrors = function () {
 	};
 
 	FileManager.Containers.loadMore = function () {
-
-		//FileManager.Error.setLastAction(FileManager.Containers.loadMore, arguments);
 
 		if (document.querySelector('.load-more-button') == null) {
 			return;
@@ -1549,22 +1556,23 @@ FileManager.SaveAs.clearErrors = function () {
 	FileManager.Files = {};
 
 	FileManager.Files.list = function (path, scrollingContentEl, callback) {
-
-		var pathComponents = path.split('/');
-
+		var prefix = FileManager.Path(path).prefix();
 		var requestArgs = {};
+
 		requestArgs.success = list;
 		requestArgs.error = error;
 		requestArgs.notExist = notExist;
-		//requestArgs.account = pathComponents[0]; //SHARED-CONTAINERS
-		requestArgs.containerName = pathComponents[1];
+		requestArgs.containerName = FileManager.Path(path).container();
 		requestArgs.delimiter = '/';
 		requestArgs.limit = 20;
 		requestArgs.format = 'json';
-		requestArgs.account = pathComponents[0];
 
-		if (pathComponents.length > 2) {
-			requestArgs.prefix = pathComponents.slice(2).join('/');
+		if (enableSharedContainers) {
+			requestArgs.account = FileManager.Path(path).account();
+		}
+
+		if (prefix) {
+			requestArgs.prefix = prefix;
 		}
 
 		SwiftV1.listFiles(requestArgs);
@@ -1619,7 +1627,7 @@ FileManager.SaveAs.clearErrors = function () {
 		}
 
 		function notExist() {
-			if (location.hash.split('/').length == 2) {
+			if (FileManager.isContainersList()) {
 				scrollingContentEl.innerHTML = 'Container not exist.';
 			} else {
 				scrollingContentEl.innerHTML = 'beforeend', 'Directory not exist.';
@@ -1632,13 +1640,11 @@ FileManager.SaveAs.clearErrors = function () {
 		}
 
 		function checkFirstFile(files) {
-			if (files.length > 0 && pathComponents.length > 2) {
+			if (files.length > 0 && prefix) {
 				var file = files[0];
-
-				var nameInPath = pathComponents.splice(2).join('/');
 				var nameInFiles = file.hasOwnProperty('subdir') ? file.subdir : file.name;
 
-				if (nameInPath == nameInFiles) {
+				if (prefix == nameInFiles) {
 					return true;
 				}
 			}
@@ -1654,20 +1660,15 @@ FileManager.SaveAs.clearErrors = function () {
 		document.querySelector('.load-more-button').textContent = 'Loading...';
 		document.querySelector('.load-more-button').setAttribute('disabled', 'disabled');
 
-		var pathComponents = location.hash.substring(1).split('/');
-		var account = pathComponents[0];
-		var container = pathComponents[1];
-
 		var marker = document.querySelector('.item:nth-last-child(2)').getAttribute('title');
+		var prefix = FileManager.Current().prefix();
 
-		if (pathComponents.length > 2) {
-			var markerPrefix = pathComponents.slice(2).join('/');
-			marker = markerPrefix + marker;
+		if (prefix) {
+			marker = prefix + marker;
 		}
 
 		var filesArgs = {
-			account: account,
-			containerName: container,
+			containerName: FileManager.Current().container(),
 			delimiter: '/',
 			marker: marker,
 			format: 'json',
@@ -1708,10 +1709,13 @@ FileManager.SaveAs.clearErrors = function () {
 			}
 		};
 
-		if (pathComponents.length > 2) {
-			filesArgs.prefix = pathComponents.splice(2).join('/');
+		if (enableSharedContainers) {
+			filesArgs.account = FileManager.Current().account();
 		}
 
+		if (prefix) {
+			filesArgs.prefix = prefix;
+		}
 
 		SwiftV1.listFiles(filesArgs);
 
@@ -1903,7 +1907,9 @@ FileManager.SaveAs.clearErrors = function () {
 		fillScrollingContent(path, el, function () {
 			inProcess = false;
 			isTryingAgain = false;
+			FileManager.Layout.adjust();
 		});
+		FileManager.Layout.adjust();
 
 	};
 
@@ -1946,7 +1952,7 @@ FileManager.SaveAs.clearErrors = function () {
 	};
 
 	function fillScrollingContent(path, el, callback) {
-		if (path.indexOf('/') == -1) {
+		if (FileManager.isContainersList()) {
 			FileManager.Containers.list(el, callback);
 
 			var editButtonEl = document.querySelector('.edit-button');
@@ -1956,9 +1962,8 @@ FileManager.SaveAs.clearErrors = function () {
 			}
 
 			FileManager.File.hideMenu();
-			//document.querySelector('.open-button').setAttribute('hidden', 'hidden');
 			document.querySelector('.execute-button').setAttribute('hidden', 'hidden');
-		} else if (path.split('/').length == 2 || path.lastIndexOf('/') == path.length - 1) {
+		} else if (FileManager.isFilesList()) {
 		  	FileManager.Files.list(path, el, callback);
 
 			var editButtonEl = document.querySelector('.edit-button');
@@ -1968,7 +1973,6 @@ FileManager.SaveAs.clearErrors = function () {
 			}
 
 			FileManager.File.hideMenu();
-			//document.querySelector('.open-button').setAttribute('hidden', 'hidden');
 			document.querySelector('.execute-button').setAttribute('hidden', 'hidden');
 		} else {
 			// load file
@@ -2012,11 +2016,58 @@ FileManager.SaveAs.clearErrors = function () {
 			document.body.classList.remove('disabled');
 		}
 
-
 	};
+
+	document.addEventListener('transitionend', FileManager.ContentChange.transition);
+	document.addEventListener('webkitTransitionEnd', FileManager.ContentChange.transition);
 
 })();
 
+
+
+// TODO: Internet Explorer (including version 10) is not supporting e.oldURL and e.newURL
+window.addEventListener('hashchange', function (e) {
+	var newPath = e.newURL.split('#')[1];
+
+	if (e.oldURL.indexOf('#') == -1) {
+		FileManager.ContentChange.withoutAnimation(newPath);
+		return;
+	}
+
+	var oldPath = e.oldURL.split('#')[1];
+
+	if (newPath.indexOf('/') == -1) {
+		// in order to support returning from shared container //SHARED-CONTAINERS
+		FileManager.ContentChange.animateFromLeftToRight(newPath);
+	} else if (oldPath.indexOf('/') == -1) {
+		// in order to support moving to shared container //SHARED-CONTAINERS
+		FileManager.ContentChange.animateFromRightToLeft(newPath);
+	} else if(newPath.indexOf(oldPath) === 0) {
+		FileManager.ContentChange.animateFromRightToLeft(newPath);
+	} else if (oldPath.indexOf(newPath) === 0) {
+		FileManager.ContentChange.animateFromLeftToRight(newPath);
+	} else {
+		FileManager.ContentChange.withoutAnimation(newPath);
+	}
+
+});
+
+window.addEventListener('scroll', function (e) {
+	var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+	var position = window.scrollY;
+
+	if (position == height) {
+		if (FileManager.isContainersList()) {
+			FileManager.Containers.loadMore();
+		} else {
+			FileManager.Files.loadMore();
+		}
+	}
+});
+
+window.addEventListener('resize', function (e) {
+	FileManager.Layout.adjust();
+});
 
 document.addEventListener('click', function (e) {
 	var el;
@@ -2112,13 +2163,11 @@ document.addEventListener('keydown', function (e) {
 		FileManager.CreateContainer.clearErrors(e.target);
 	}
 
-	//SHARED-CONTAINERS
-	if (e.target.classList.contains('add-shared-input-account')) {
+	if (enableSharedContainers && e.target.classList.contains('add-shared-input-account')) {
 		FileManager.AddShared.clearErrors(e.target);
 	}
 
-	//SHARED-CONTAINERS
-	if (e.target.classList.contains('add-shared-input-container')) {
+	if (enableSharedContainers && e.target.classList.contains('add-shared-input-container')) {
 		if (e.which == 13) {
 			FileManager.AddShared.clickCallback();
 			return;
@@ -2208,119 +2257,13 @@ document.addEventListener('change', function (e) {
 	}
 });
 
-window.addEventListener('hashchange', function (e) {
-	var newPath = e.newURL.split('#')[1];
-
-	if (e.oldURL.indexOf('#') == -1) {
-		FileManager.ContentChange.withoutAnimation(newPath);
-		return;
-	}
-
-	var oldPath = e.oldURL.split('#')[1];
-
-	if (newPath.indexOf('/') == -1) {
-		// in order to support returning from shared container //SHARED-CONTAINERS
-		FileManager.ContentChange.animateFromLeftToRight(newPath);
-	} else if (oldPath.indexOf('/') == -1) {
-		// in order to support moving to shared container //SHARED-CONTAINERS
-		FileManager.ContentChange.animateFromRightToLeft(newPath);
-	} else if(newPath.indexOf(oldPath) === 0) {
-		FileManager.ContentChange.animateFromRightToLeft(newPath);
-	} else if (oldPath.indexOf(newPath) === 0) {
-		FileManager.ContentChange.animateFromLeftToRight(newPath);
-	} else {
-		FileManager.ContentChange.withoutAnimation(newPath);
-	}
-
-});
-
-document.addEventListener('transitionend', FileManager.ContentChange.transition);
-document.addEventListener('webkitTransitionEnd', FileManager.ContentChange.transition);
-
 document.addEventListener('DOMContentLoaded', function () {
-
-	ZLitestackDotCom.init(callback);
-	//ClusterAuth.init(callback);
-
-	function callback() {
+	init(function () {
 		if (!location.hash) {
-			location.hash = ZLitestackDotCom.getAccount();
-			//location.hash = ClusterAuth.getAccount();
+			location.hash = getAccount();
 		} else {
-			FileManager.ContentChange.withoutAnimation(location.hash.substring(1));
+			FileManager.ContentChange.withoutAnimation(FileManager.Current().path());
 		}
-	}
+		FileManager.Layout.adjust();
+	});
 });
-
-window.addEventListener('scroll', function (e) {
-	var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-	var position = window.scrollY;
-
-	if (position == height) {
-		if (location.hash.indexOf('/') == -1) {
-			FileManager.Containers.loadMore();
-		} else {
-			FileManager.Files.loadMore();
-		}
-	}
-});
-
-window.addEventListener('resize', function (e) {
-	FileManager.Layout.adjust();
-});
-
-function htmlEscape(str) {
-	return String(str)
-		.replace('&raquo;', '///')
-		.replace(/&/g, '&amp;')
-		.replace(/"/g, '&quot;')
-		.replace(/'/g, '&#39;')
-		.replace(/</g, '&lt;')
-		.replace(/>/g, '&gt;')
-		.replace('///', '&raquo;');
-}
-
-function makeShortName(name, len) {
-	if (!name) {
-		return '';
-	}
-
-	len = len || 30;
-
-	if (name.length <= len) {
-		return name;
-	}
-
-	return name.substr(0, len) + '&raquo;';
-}
-
-function bytesToSize(bytes, precision) {
-	var kilobyte = 1024;
-	var megabyte = kilobyte * 1024;
-	var gigabyte = megabyte * 1024;
-	var terabyte = gigabyte * 1024;
-
-	if ((bytes >= 0) && (bytes < kilobyte)) {
-		return bytes + ' B';
-
-	} else if ((bytes >= kilobyte) && (bytes < megabyte)) {
-		return (bytes / kilobyte).toFixed(precision) + ' KB';
-
-	} else if ((bytes >= megabyte) && (bytes < gigabyte)) {
-		return (bytes / megabyte).toFixed(precision) + ' MB';
-
-	} else if ((bytes >= gigabyte) && (bytes < terabyte)) {
-		return (bytes / gigabyte).toFixed(precision) + ' GB';
-
-	} else if (bytes >= terabyte) {
-		return (bytes / terabyte).toFixed(precision) + ' TB';
-
-	} else {
-		return bytes + ' B';
-	}
-}
-
-function addLoadMoreButton(scrollingContentEl) {
-	var html = document.querySelector('#loadMoreButtonTemplate').innerHTML;
-	scrollingContentEl.insertAdjacentHTML('beforeend', html);
-}
