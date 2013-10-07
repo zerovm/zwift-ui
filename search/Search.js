@@ -272,7 +272,7 @@ SearchApp.index = function () {
 	function read(blob) {
 		indexResultEl.textContent = 'Reading result...';
 		var reader = new FileReader();
-		reader.add=EventListener('load', function (e) {
+		reader.addEventListener('load', function (e) {
 			indexResultEl.textContent = e.target.result;
 			document.querySelector('.index-result-close-button').removeAttribute('hidden');
 		});
