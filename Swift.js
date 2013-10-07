@@ -613,11 +613,11 @@ var ClusterAuth = {};
 
 			for (var key in headers) {
 
-				if (key.toLowerCase() == 'x-nexe-cdr-line') {
+				if (key == 'X-Nexe-Cdr-Line') {
 					report.billing = billingReport(headers[key]);
 
-				} else if (key.toLowerCase().startsWith('x-nexe')) {
-					var executionReportKey = key.substr('x-nexe-'.length);
+				} else if (key.indexOf('X-Nexe') == 0) {
+					var executionReportKey = key.substr('X-Nexe-'.length);
 					report.execution[executionReportKey.toLowerCase()] = headers[key];
 				}
 			}
