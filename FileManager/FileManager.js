@@ -275,9 +275,9 @@ FileManager.EditButton = {};
 
 FileManager.EditButton.clickCallback = function () {
 
-	if (FileManager.isContainersList()) {
+	if (FileManager.Current().isContainersList()) {
 		FileManager.ContainersMenu.show();
-	} else if (FileManager.isFilesList()) {
+	} else if (FileManager.Current().isFilesList()) {
 		FileManager.FilesMenu.show();
 		FileManager.BackButton.disable();
 	}
@@ -295,7 +295,7 @@ FileManager.DoneButton.clickCallback = function () {
 	FileManager.ContainersMenu.hide();
 	FileManager.FilesMenu.hide();
 
-	if (FileManager.isFilesList()) {
+	if (FileManager.Current().isFilesList()) {
 		FileManager.BackButton.enable();
 	}
 
@@ -922,7 +922,7 @@ FileManager.Item.clickCallback = function (itemEl) {
 
 		FileManager.Metadata.show();
 
-		if (FileManager.isContainersList()) {
+		if (FileManager.Current().isContainersList()) {
 			// TODO: Rights
 		} else {
 			FileManager.ContentType.show();
@@ -968,7 +968,7 @@ FileManager.Item.showLoading = function (itemEl) {
 FileManager.LoadMoreButton = {};
 
 FileManager.LoadMoreButton.clickCallback = function () {
-	if (FileManager.isContainersList()) {
+	if (FileManager.Current().isContainersList()) {
 		FileManager.Containers.loadMore();
 	} else {
 		FileManager.Files.loadMore();
@@ -1096,7 +1096,7 @@ FileManager.LoadMoreButton.clickCallback = function () {
 		document.querySelector('.metadata-table tbody').innerHTML = '<tr><td colspan="3">Loading...</td></tr>';
 		document.querySelector('.metadata-table tfoot').setAttribute('hidden', 'hidden');
 
-		if (FileManager.isContainersList()) {
+		if (FileManager.Current().isContainersList()) {
 			args.containerName = FileManager.Path(path).withoutAccount();
 			SwiftV1.updateContainerMetadata(args);
 		} else {
@@ -1437,7 +1437,7 @@ FileManager.SaveAs.clearErrors = function () {
 						callback();
 						return;
 					}
-					listSharedContainers(sharedContainers);
+					listSharedContainers(sharedContainers, scrollingContentEl);
 				}
 
 				list(containers);
@@ -1469,7 +1469,7 @@ FileManager.SaveAs.clearErrors = function () {
 			callback();
 
 			if (containers.length == 20) {
-				addLoadMoreButton(scrollingContentEl, scrollingContentEl);
+				addLoadMoreButton(scrollingContentEl);
 			}
 
 			if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
@@ -1627,7 +1627,7 @@ FileManager.SaveAs.clearErrors = function () {
 		}
 
 		function notExist() {
-			if (FileManager.isContainersList()) {
+			if (FileManager.Current().isContainersList()) {
 				scrollingContentEl.innerHTML = 'Container not exist.';
 			} else {
 				scrollingContentEl.innerHTML = 'beforeend', 'Directory not exist.';
@@ -1952,7 +1952,7 @@ FileManager.SaveAs.clearErrors = function () {
 	};
 
 	function fillScrollingContent(path, el, callback) {
-		if (FileManager.isContainersList()) {
+		if (FileManager.Current().isContainersList()) {
 			FileManager.Containers.list(el, callback);
 
 			var editButtonEl = document.querySelector('.edit-button');
@@ -1963,7 +1963,7 @@ FileManager.SaveAs.clearErrors = function () {
 
 			FileManager.File.hideMenu();
 			document.querySelector('.execute-button').setAttribute('hidden', 'hidden');
-		} else if (FileManager.isFilesList()) {
+		} else if (FileManager.Current().isFilesList()) {
 		  	FileManager.Files.list(path, el, callback);
 
 			var editButtonEl = document.querySelector('.edit-button');
@@ -2057,7 +2057,7 @@ window.addEventListener('scroll', function (e) {
 	var position = window.scrollY;
 
 	if (position == height) {
-		if (FileManager.isContainersList()) {
+		if (FileManager.Current().isContainersList()) {
 			FileManager.Containers.loadMore();
 		} else {
 			FileManager.Files.loadMore();
