@@ -384,10 +384,11 @@ var ClusterAuth = {};
 				args.error(e.target.status, e.target.statusText);
 			}
 		});
-		xhr.addEventListener('progress', function (e) {
-			console.log(e);
-			console.log(Object.keys(e));
-		});
+		if (args.hasOwnProperty('progress')) {
+			xhr.addEventListener('progress', function (e) {
+				args.progress(e.loaded);
+			});
+		}
 		xhr.send();
 	};
 

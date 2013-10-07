@@ -1,14 +1,11 @@
 'use strict';
 
-
-//TODO: globals treatment: options variables and functions below.
-
+//TODO: move the variables and functions below to a proper place.
 
 // OPTIONS
 var enableSharedContainers = true;
 var enableZeroVM = true;
 var enableEmail = true;
-
 var getEmail = function (callback) {
 	ZLitestackDotCom.getEmail({
 		success: function (email) {
@@ -24,8 +21,7 @@ var getEmail = function (callback) {
 var isShared = function (path) {
 	return path.split('/')[0] != getAccount();
 };
-
-function listSharedContainers(sharedContainers, scrollingContentEl) {
+var listSharedContainers = function (sharedContainers, scrollingContentEl) {
 
 	for (var i = 0; i < sharedContainers.length; i++) {
 		add(sharedContainers[i]);
@@ -62,7 +58,7 @@ function listSharedContainers(sharedContainers, scrollingContentEl) {
 			}
 		});
 	}
-}
+};
 
 // Auth methods
 var init = ZLitestackDotCom.init;
@@ -144,82 +140,19 @@ FileManager.disableAll = function () {
 	document.body.classList.add('disabled');
 };
 
-FileManager.Path = function (path) {
-	this.path = function () {
-		return path;
-	};
-	this.account = function () {
-		return path.split('/')[0];
-	};
-	this.container = function () {
-		return path.split('/')[1];
-	};
-	this.withoutAccount = function () {
-		return path.split('/').splice(1).join('/');
-	};
-	this.prefix = function () {
-		return path.split('/').splice(2).join('/');
-	};
-	this.isContainersList = function () {
-		return path.indexOf('/') == -1;
-	};
-	this.isFilesList = function () {
-		return this.isContainer() || this.isDirectory();
-	};
-	this.isContainer = function () {
-		return path.split('/').length == 2;
-	};
-	this.isDirectory = function () {
-		return path.lastIndexOf('/') == path.length - 1
-	};
-	this.isFile = function () {
-		return !this.isContainer() && !this.isDirectory();
-	};
-	this.up = function () {
-		var newPathParts = path.split('/');
-
-		if (newPathParts[newPathParts.length - 1] == '') {
-			newPathParts.splice(-2);
-		} else {
-			newPathParts.splice(-1);
-		}
-
-		if (newPathParts.length == 1) {
-
-			if (enableSharedContainers && isShared(newPathParts[0])) {
-				return getAccount();
-			}
-
-			return newPathParts[0];
-		}
-
-		if (newPathParts.length == 2) {
-			return newPathParts.join('/');
-		}
-
-		return newPathParts.join('/') + '/';
-	};
-	this.add = function (name) {
-
-		if (enableSharedContainers && this.isContainersList() && name.indexOf('/') != -1) {
-			return name;
-		}
-
-		if (path.lastIndexOf('/') == path.length - 1) {
-			return path + name;
-		}
-		return  path + '/' + name;
-	};
-	return this;
+FileManager.setViewMode = function () {
+	document.body.classList.remove('edit-mode');
+	document.body.classList.add('view-mode');
 };
 
-FileManager.Current = function () {
-	return FileManager.Path(location.hash.substr(1));
+FileManager.setEditMode = function () {
+	document.body.classList.remove('view-mode');
+	document.body.classList.add('edit-mode');
 };
 
 FileManager.BackButton = {};
 
-FileManager.BackButton.clickCallback = function () {
+FileManager.BackButton.click = function () {
 	FileManager.disableAll();
 	FileManager.CurrentDirLabel.showLoading();
 	location.hash = FileManager.Current().up();
@@ -233,47 +166,51 @@ FileManager.BackButton.disable = function () {
 	document.querySelector('.back-button').setAttribute('disabled', 'disabled');
 };
 
-
 FileManager.CurrentDirLabel = {};
 
-FileManager.CurrentDirLabel.update = function (name) {
-	var title = FileManager.Current().add(name);
+FileManager.CurrentDirLabel.MAX_LENGTH = 30;
+
+FileManager.CurrentDirLabel.setContent = function (content) {
 	var el = document.querySelector('.current-dir-label');
-	el.innerHTML = htmlEscape(name);
-	el.setAttribute('title', htmlEscape(title));
+	if (content.length > FileManager.CurrentDirLabel.MAX_LENGTH) {
+		el.textContent = content.substr(0, FileManager.CurrentDirLabel.MAX_LENGTH);
+		el.innerHTML += '&raquo;';
+	} else {
+		el.textContent = content;
+	}
+};
+
+FileManager.CurrentDirLabel.setTooltip = function (content) {
+	document.querySelector('.current-dir-label').title = content;
+};
+
+FileManager.CurrentDirLabel.removeTooltip = function () {
+	document.querySelector('.current-dir-label').removeAttribute('title');
 };
 
 FileManager.CurrentDirLabel.root = function () {
 
 	if (enableEmail) {
 		getEmail(function (email) {
-			var shortName = makeShortName(email);
-			FileManager.CurrentDirLabel.update(shortName);
+			FileManager.CurrentDirLabel.setContent(email);
+			FileManager.CurrentDirLabel.setTooltip(email);
 		});
 		return;
 	}
 
-	var shortName = makeShortName(getAccount());
-	FileManager.CurrentDirLabel.update(shortName);
+	var account = getAccount();
+	FileManager.CurrentDirLabel.setContent(account);
+	FileManager.CurrentDirLabel.setTooltip(account);
 };
 
 FileManager.CurrentDirLabel.showLoading = function () {
-	var el = document.querySelector('.current-dir-label');
-	el.textContent = 'Loading...';
-	el.removeAttribute('title');
+	FileManager.CurrentDirLabel.setContent('Loading...');
+	FileManager.CurrentDirLabel.removeTooltip();
 };
-
-// TODO: Unused method: ??? use it or delete it!
-FileManager.CurrentDirLabel.showError = function (message) {
-	var el = document.querySelector('.current-dir-label');
-	el.textContent = message;
-	el.removeAttribute('title');
-};
-
 
 FileManager.EditButton = {};
 
-FileManager.EditButton.clickCallback = function () {
+FileManager.EditButton.click = function () {
 
 	if (FileManager.Current().isContainersList()) {
 		FileManager.ContainersMenu.show();
@@ -282,15 +219,22 @@ FileManager.EditButton.clickCallback = function () {
 		FileManager.BackButton.disable();
 	}
 
+	FileManager.EditButton.hide();
+	FileManager.DoneButton.show();
+	FileManager.setEditMode();
+};
+
+FileManager.EditButton.hide = function () {
 	document.querySelector('.edit-button').setAttribute('hidden', 'hidden');
-	document.querySelector('.done-button').removeAttribute('hidden');
-	document.body.classList.remove('view-mode');
-	document.body.classList.add('edit-mode');
+};
+
+FileManager.EditButton.show = function () {
+	document.querySelector('.edit-button').removeAttribute('hidden');
 };
 
 FileManager.DoneButton = {};
 
-FileManager.DoneButton.clickCallback = function () {
+FileManager.DoneButton.click = function () {
 
 	FileManager.ContainersMenu.hide();
 	FileManager.FilesMenu.hide();
@@ -299,41 +243,48 @@ FileManager.DoneButton.clickCallback = function () {
 		FileManager.BackButton.enable();
 	}
 
-	document.querySelector('.done-button').setAttribute('hidden', 'hidden');
-	document.querySelector('.edit-button').removeAttribute('hidden');
+	FileManager.DoneButton.hide();
+	FileManager.EditButton.show();
 	FileManager.Item.unselect();
-	document.body.classList.remove('edit-mode');
-	document.body.classList.add('view-mode');
+	FileManager.setViewMode();
 };
 
+FileManager.DoneButton.hide = function () {
+	document.querySelector('.done-button').setAttribute('hidden', 'hidden');
+};
+
+FileManager.DoneButton.show = function () {
+	document.querySelector('.done-button').removeAttribute('hidden');
+};
 
 FileManager.SignOutButton = {};
 
-FileManager.SignOutButton.clickCallback = function () {
+FileManager.SignOutButton.click = function () {
 	signOut();
 };
 
-
 FileManager.ExecuteButton = {};
 
-FileManager.ExecuteButton.clickCallback = function () {
+FileManager.ExecuteButton.click = function () {
 
 	FileManager.disableAll();
-	document.querySelector('.execute-button').setAttribute('hidden', 'hidden');
-	FileManager.ExecuteLabel.start();
+	FileManager.ExecuteButton.hide();
+	FileManager.ExecuteTimer.start();
 
 	ZeroVmOnSwift.execute({
 		data: FileManager.File.codeMirror.getValue(),
 		contentType: 'application/json',
 		success: function (result, report) {
-			FileManager.ExecuteLabel.hide();
-			FileManager.Report.create(report);
+			FileManager.ExecuteTimer.stop();
+			FileManager.ExecuteTimer.hide();
+			FileManager.ExecuteReport.create(report);
 			showResult(result);
 			FileManager.enableAll();
 		},
 		error: function (status, statusText, result) {
-			// TODO: show error message with status.
-			showResult(result);
+			FileManager.ExecuteTimer.stop();
+			FileManager.ExecuteTimer.hide();
+			showResult(result); // TODO: show error message with status.
 			FileManager.enableAll();
 		}
 	});
@@ -350,39 +301,64 @@ FileManager.ExecuteButton.clickCallback = function () {
 	}
 };
 
-FileManager.ExecuteLabel = {};
+FileManager.ExecuteButton.hide = function () {
+	document.querySelector('.execute-button').setAttribute('hidden', 'hidden');
+};
 
-FileManager.ExecuteLabel.start = function () {
-	var el = document.querySelector('.execute-label');
-	el.textContent = 'Executing... 00:00';
+FileManager.ExecuteButton.show = function () {
+	document.querySelector('.execute-button').removeAttribute('hidden');
+};
 
-	var count = 0;
+FileManager.ExecuteTimer = {};
 
-	setTimeout(timer, 1000);
+FileManager.ExecuteTimer.secondsCounter = -1;
 
-	function timer() {
-		count++;
-		var seconds = count % 60 < 10 ? '0' + String(count % 60) : String(count % 60);
-		var minutes = Math.floor(count / 60) < 10 ? '0' + String(Math.floor(count / 60)) : String(Math.floor(count / 60));
-		el.textContent = 'Executing... ' + minutes + ':' + seconds;
-		setTimeout(timer, 1000);
+FileManager.ExecuteTimer.start = function () {
+	FileManager.ExecuteTimer.secondsCounter = 0;
+	FileManager.ExecuteTimer.next();
+	FileManager.ExecuteTimer.show();
+};
+
+FileManager.ExecuteTimer.stop = function () {
+	FileManager.ExecuteTimer.secondsCounter = -1;
+};
+
+FileManager.ExecuteTimer.next = function () {
+	if (FileManager.ExecuteTimer.secondsCounter == -1) {
+		return;
 	}
-	el.removeAttribute('hidden');
+	FileManager.ExecuteTimer.secondsCounter++;
+	var minutes = Math.floor(FileManager.ExecuteTimer.secondsCounter / 60);
+	var seconds = FileManager.ExecuteTimer.secondsCounter % 60;
+	FileManager.ExecuteButton.updateExecutingClock(minutes, seconds);
+	setTimeout(FileManager.ExecuteTimer.next, 1000);
 };
 
-FileManager.ExecuteLabel.hide = function () {
-	var el = document.querySelector('.execute-label');
-	el.setAttribute('hidden', 'hidden');
+FileManager.ExecuteTimer.show = function () {
+	document.querySelector('.execute-label').removeAttribute('hidden');
 };
 
+FileManager.ExecuteTimer.hide = function () {
+	document.querySelector('.execute-label').setAttribute('hidden', 'hidden');
+};
 
-FileManager.Report = {};
+FileManager.ExecuteButton.updateExecutingClock = function (minutes, seconds) {
+	var secondsStr = seconds < 10 ? '0' + String(seconds) : String(seconds);
+	var minutesStr = minutes < 10 ? '0' + String(minutes) : String(minutes);
+	FileManager.ExecuteTimer.setContent('Executing... ' + minutesStr + ':' + secondsStr);
+};
 
-FileManager.Report.report;
+FileManager.ExecuteTimer.setContent = function (content) {
+	document.querySelector('.execute-label').textContent = content;
+};
 
-FileManager.Report.create = function (report) {
+FileManager.ExecuteReport = {};
 
-	FileManager.Report.report = report;
+FileManager.ExecuteReport.report = null;
+
+FileManager.ExecuteReport.create = function (report) {
+
+	FileManager.ExecuteReport.report = report;
 
 	var scrollingContentEl = document.querySelector('.scrolling-content');
 	var reportTemplate = document.querySelector('#reportTemplate').innerHTML;
@@ -447,14 +423,14 @@ FileManager.Report.create = function (report) {
 	}
 };
 
-FileManager.Report.remove = function () {
+FileManager.ExecuteReport.remove = function () {
 	var billingEl = document.querySelector('#report');
 	billingEl.parentNode.removeChild(billingEl);
 };
 
-FileManager.Report.full = function (el) {
+FileManager.ExecuteReport.showFullReport = function (el) {
 
-	var executionReport = FileManager.Report.report.execution;
+	var executionReport = FileManager.ExecuteReport.report.execution;
 
 	el.setAttribute('hidden', 'hidden');
 
@@ -471,8 +447,12 @@ FileManager.Report.full = function (el) {
 FileManager.ContainersMenu = {};
 
 FileManager.ContainersMenu.show = function () {
+
+	if (enableSharedContainers) {
+		FileManager.AddShared.clear();
+	}
+
 	FileManager.CreateContainer.clear();
-	enableSharedContainers && FileManager.AddShared.clear();
 	document.querySelector('.menu-containers').removeAttribute('hidden');
 	FileManager.Layout.adjust();
 };
@@ -511,7 +491,7 @@ FileManager.Layout.adjust = function () {
 
 FileManager.CreateContainer = {};
 
-FileManager.CreateContainer.clickCallback = function () {
+FileManager.CreateContainer.click = function () {
 
 	var inputEl = document.querySelector('.create-container-input');
 	var input = inputEl.value;
@@ -538,8 +518,7 @@ FileManager.CreateContainer.clickCallback = function () {
 	SwiftV1.createContainer({
 		containerName: input,
 		created: function () {
-			var currentPath = FileManager.Current().path();
-			FileManager.ContentChange.withoutAnimation(currentPath);
+			FileManager.ContentChange.withoutAnimation();
 			FileManager.CreateContainer.clear();
 		},
 		alreadyExisted: function () {
@@ -573,7 +552,7 @@ FileManager.CreateContainer.clearErrors = function (inputEl) {
 FileManager.AddShared = {};
 
 //SHARED-CONTAINERS
-FileManager.AddShared.clickCallback = function () {
+FileManager.AddShared.click = function () {
 
 	var sharedAccountEl = document.querySelector('.add-shared-input-account');
 	var sharedContainerEl = document.querySelector('.add-shared-input-container');
@@ -593,8 +572,7 @@ FileManager.AddShared.clickCallback = function () {
 		account: account,
 		container: container,
 		added: function () {
-			var currentPath = FileManager.Current().path();
-			FileManager.ContentChange.withoutAnimation(currentPath);
+			FileManager.ContentChange.withoutAnimation();
 			FileManager.AddShared.clear();
 		},
 		notAuthorized: function () {
@@ -634,7 +612,7 @@ FileManager.AddShared.clearErrors = function (inputEl1, inputEl2) {
 
 FileManager.CreateDirectory = {};
 
-FileManager.CreateDirectory.clickCallback = function () {
+FileManager.CreateDirectory.click = function () {
 
 	var inputEl = document.querySelector('.create-directory-input');
 
@@ -664,7 +642,7 @@ FileManager.CreateDirectory.clickCallback = function () {
 			SwiftV1.createDirectory({
 				path: dirPathWithoutAccount,
 				created: function () {
-					FileManager.ContentChange.withoutAnimation(FileManager.Current().path());
+					FileManager.ContentChange.withoutAnimation();
 					FileManager.CreateDirectory.clear();
 				},
 				error: function (status, statusText) {
@@ -695,7 +673,7 @@ FileManager.CreateDirectory.clearErrors = function () {
 
 FileManager.CreateFile = {};
 
-FileManager.CreateFile.clickCallback = function () {
+FileManager.CreateFile.click = function () {
 	var nameEl = document.querySelector('.create-file-input-name');
 	var typeEl = document.querySelector('.create-file-input-type');
 
@@ -711,7 +689,7 @@ FileManager.CreateFile.clickCallback = function () {
 		contentType: typeEl.value,
 		data: '',
 		created: function () {
-			FileManager.ContentChange.withoutAnimation(FileManager.Current().path());
+			FileManager.ContentChange.withoutAnimation();
 			FileManager.CreateFile.clear();
 		},
 		error: function (status, statusText) {
@@ -733,27 +711,25 @@ FileManager.CreateFile.clearErrors = function () {
 };
 
 
-(function () {
-	var uploadRequests = [];
+FileManager.UploadFiles = {};
 
-	FileManager.UploadFiles = {};
+FileManager.UploadFiles.uploadRequests = [];
 
-	FileManager.UploadFiles.changeCallback = function (files) {
-		var el = document.querySelector('.upload-files');
-		el.innerHTML = el.innerHTML;
+FileManager.UploadFiles.change = function (files) {
+	var el = document.querySelector('.upload-files');
+	el.innerHTML = el.innerHTML;
 
-		for (var i = 0; i < files.length; i++) {
-			var name = files[i].name;
-			var path = FileManager.Current().add(files[i].name);
-			createUploadEl(name);
-			uploadFile(path, files[i]);
-		}
+	for (var i = 0; i < files.length; i++) {
+		var name = files[i].name;
+		var path = FileManager.Current().add(files[i].name);
+		createUploadEl(name);
+		uploadFile(path, files[i]);
+	}
 
-		FileManager.Layout.adjust();
-	};
+	FileManager.Layout.adjust();
 
 	function createUploadEl(name) {
-		var index = uploadRequests.length;
+		var index = FileManager.UploadFiles.uploadRequests.length;
 		var template = document.querySelector('#uploadTemplate').innerHTML;
 		template = template.replace('{{upload-label-name}}', name);
 		template = template.replace('{{upload-id}}', 'upload-' + index);
@@ -761,15 +737,15 @@ FileManager.CreateFile.clearErrors = function () {
 	}
 
 	function uploadFile(path, file) {
-		var index = uploadRequests.length;
-		uploadRequests[index] = SwiftV1.createFile({
+		var index = FileManager.UploadFiles.uploadRequests.length;
+		FileManager.UploadFiles.uploadRequests[index] = SwiftV1.createFile({
 			path: path,
 			data: file,
 			contentType: file.type,
 			created: function () {
 				var el = document.querySelector('#upload-' + index);
 				el.parentNode.removeChild(el);
-				FileManager.ContentChange.withoutAnimation(FileManager.Current().path());
+				FileManager.ContentChange.withoutAnimation();
 				FileManager.Layout.adjust();
 			},
 			progress: function (percent, loaded, total) {
@@ -790,21 +766,20 @@ FileManager.CreateFile.clearErrors = function () {
 			}
 		});
 	}
+};
 
-	FileManager.UploadFiles.cancelClickCallback  = function (el) {
-		var index = parseInt(el.parentNode.parentNode.parentNode.id.substr('upload-'.length));
-		uploadRequests[index].abort();
-		el.parentNode.parentNode.parentNode.parentNode.removeChild(el.parentNode.parentNode.parentNode);
-		FileManager.Layout.adjust();
-	};
-
-})();
+FileManager.UploadFiles.cancelClick  = function (el) {
+	var index = parseInt(el.parentNode.parentNode.parentNode.id.substr('upload-'.length));
+	FileManager.UploadFiles.uploadRequests[index].abort();
+	el.parentNode.parentNode.parentNode.parentNode.removeChild(el.parentNode.parentNode.parentNode);
+	FileManager.Layout.adjust();
+};
 
 
 
 FileManager.UploadAs = {};
 
-FileManager.UploadAs.changeCallback = function (files) {
+FileManager.UploadAs.change = function (files) {
 
 	for (var i = 0; i < files.length; i++) {
 		var template = document.querySelector('#uploadAsTemplate').innerHTML;
@@ -817,16 +792,16 @@ FileManager.UploadAs.changeCallback = function (files) {
 };
 
 
-FileManager.UploadExecute = {};
+FileManager.UploadAndExecute = {};
 
-FileManager.UploadExecute.changeCallback = function (file) {
+FileManager.UploadAndExecute.change = function (file) {
 
 };
 
 
 FileManager.ConfirmDelete = {};
 
-FileManager.ConfirmDelete.clickCallback = function (el) {
+FileManager.ConfirmDelete.click = function (el) {
 	el.parentNode.innerHTML = 'Deleting...';
 
 	var name = document.querySelector('delete-label').title;
@@ -837,8 +812,7 @@ FileManager.ConfirmDelete.clickCallback = function (el) {
 			account: FileManager.Path(name).account(),
 			container: FileManager.Path(name).container(),
 			removed: function () {
-				var currentPath = FileManager.Current().path();
-				FileManager.ContentChange.withoutAnimation(currentPath);
+				FileManager.ContentChange.withoutAnimation();
 			},
 			error: function (status, statusText) {
 				var errMsg = 'Error occurred: ' + status + ' ' + statusText;
@@ -853,16 +827,14 @@ FileManager.ConfirmDelete.clickCallback = function (el) {
 		SwiftAdvancedFunctionality.delete({
 			path: FileManager.Path(itemPath).withoutAccount(),
 			deleted: function () {
-				var currentPath = FileManager.Current().path();
-				FileManager.ContentChange.withoutAnimation(currentPath);
+				FileManager.ContentChange.withoutAnimation();
 			},
 			error: function(status, statusText) {
 				var errMsg = 'Error occurred: ' + status + ' ' + statusText;
 				document.querySelector('.delete-label').innerHTML = errMsg;
 			},
 			notExist: function () {
-				var currentPath = FileManager.Current().path();
-				FileManager.ContentChange.withoutAnimation(currentPath);
+				FileManager.ContentChange.withoutAnimation();
 			}
 		});
 		return;
@@ -871,8 +843,7 @@ FileManager.ConfirmDelete.clickCallback = function (el) {
 	SwiftAdvancedFunctionality.deleteAll({
 		path: FileManager.Path(itemPath).withoutAccount(),
 		deleted: function () {
-			var currentPath = FileManager.Current().path();
-			FileManager.ContentChange.withoutAnimation(currentPath);
+			FileManager.ContentChange.withoutAnimation();
 		},
 		progress: function (totalFiles, deletedFiles, message) {
 			var percentComplete = totalFiles / deletedFiles * 100;
@@ -892,7 +863,7 @@ FileManager.Item = {};
 
 FileManager.Item.selectedPath = null;
 
-FileManager.Item.clickCallback = function (itemEl) {
+FileManager.Item.click = function (itemEl) {
 
 	var name = itemEl.getAttribute('title');
 	FileManager.Item.selectedPath = FileManager.Current().add(name);
@@ -930,7 +901,7 @@ FileManager.Item.clickCallback = function (itemEl) {
 	}
 };
 
-FileManager.Item.deleteClickCallback = function (el) {
+FileManager.Item.deleteclick = function (el) {
 
 	FileManager.Item.unselect();
 
@@ -967,7 +938,7 @@ FileManager.Item.showLoading = function (itemEl) {
 
 FileManager.LoadMoreButton = {};
 
-FileManager.LoadMoreButton.clickCallback = function () {
+FileManager.LoadMoreButton.click = function () {
 	if (FileManager.Current().isContainersList()) {
 		FileManager.Containers.loadMore();
 	} else {
@@ -1157,7 +1128,7 @@ FileManager.ContentType.show = function () {
 	});
 };
 
-FileManager.ContentType.clickCallback = function () {
+FileManager.ContentType.click = function () {
 	document.querySelector('.content-type-table .loading').removeAttribute('hidden');
 	document.querySelector('.content-type-table .input-group-table').setAttribute('hidden', 'hidden');
 	var input = document.querySelector('.content-type-table .content-type-input').value;
@@ -1168,7 +1139,7 @@ FileManager.ContentType.clickCallback = function () {
 		contentType: input,
 		metadata: FileManager.Item.metadata,
 		updated: function () {
-			FileManager.ContentChange.withoutAnimation(FileManager.Current().path());
+			FileManager.ContentChange.withoutAnimation();
 		},
 		error: function (status, statusText) {
 			// TODO: error treatment.
@@ -1184,94 +1155,108 @@ FileManager.File.codeMirror = null;
 
 FileManager.File.contentType = '';
 
-FileManager.File.open = function (path, el, callback) {
+FileManager.File.open = function (el, callback) {
 
-	SwiftV1.checkFileExist({
-		path: FileManager.Path(path).withoutAccount(),
-		success: function (metadata, contentType, contentLength, lastModified) {
+	function fileExist(metadata, contentType, contentLength, lastModified) {
+		var Current = FileManager.Current();
+		var href = getStorageUrl() + Current.path();
+		var filename = Current.name();
 
-			if (!isTextFile(contentType)) {
-				el.innerHTML = document.querySelector('#notTextFileTemplate').innerHTML;
-				FileManager.File.hideTxtButton();
-				FileManager.File.showMenu();
+		if (isTextFile(contentType)) {
+			FileManager.File.edit(el);
+		} else {
+			FileManager.File.notTextFile(el);
+		}
 
-				var fileName = path.split('/').pop();
-				FileManager.CurrentDirLabel.update(fileName);
-				FileManager.Layout.adjust();
-				FileManager.BackButton.enable();
-			} else {
-				FileManager.File.edit(path, el);
+		FileManager.EditButton.hide();
+		FileManager.DoneButton.hide();
+
+		FileManager.ExecuteButton.show();
+		document.querySelector('.download-link').setAttribute('href', href);
+		document.querySelector('.download-link').setAttribute('download', filename);
+
+		callback();
+
+		function isTextFile(contentType) {
+
+			if (!contentType) {
+				return false;
 			}
 
-			document.querySelector('.edit-button').setAttribute('hidden', 'hidden');
-			document.querySelector('.done-button').setAttribute('hidden', 'hidden');
+			contentType = contentType.split(';')[0];
 
-			//document.querySelector('.open-button').removeAttribute('hidden');
-			document.querySelector('.execute-button').removeAttribute('hidden');
-			document.querySelector('.download-link').setAttribute('href', getStorageUrl() + path);
-			document.querySelector('.download-link').setAttribute('download', path.substr(path.lastIndexOf('/') + 1));
+			if (contentType == 'application/javascript'
+				|| contentType == 'application/xml'
+				|| contentType == 'application/x-httpd-php'
+				|| contentType == 'application/json'
+				|| contentType == 'application/php'
+				|| contentType == 'application/x-php'
+				|| contentType.indexOf('text') == 0) {
 
-			callback();
-		},
-		notExist: function () {
-			FileManager.BackButton.enable();
-			el.textContent = "File not found.";
-			callback();
-		},
-		error: function (status, statusText) {
-			el.textContent = 'Error: ' + status + ' ' + statusText;
-			callback();
-			FileManager.BackButton.enable();
-		}
-	});
-
-	function isTextFile(contentType) {
-
-		if (!contentType) {
+				return true;
+			}
 			return false;
 		}
-
-		contentType = contentType.split(';')[0];
-
-		if (contentType == 'application/javascript'
-			|| contentType == 'application/xml'
-			|| contentType == 'application/x-httpd-php'
-			|| contentType == 'application/json'
-			|| contentType == 'application/php'
-			|| contentType == 'application/x-php'
-			|| contentType.indexOf('text') == 0) {
-
-			return true;
-		}
-		return false;
 	}
+
+	function fileNotExist() {
+		FileManager.BackButton.enable();
+		el.textContent = "File not found.";
+		callback();
+	}
+
+	function ajaxError(status, statusText) {
+		FileManager.BackButton.enable();
+		el.textContent = 'Error: ' + status + ' ' + statusText;
+		callback();
+	}
+
+	var args = {
+		path: FileManager.Current().withoutAccount(),
+		success: fileExist,
+		notExist: fileNotExist,
+		error: ajaxError
+	};
+
+	if (enableSharedContainers) {
+		args.account = FileManager.Current().account();
+	}
+
+	SwiftV1.checkFileExist(args);
 };
 
-FileManager.File.edit = function (path, el) {
+FileManager.File.edit = function (el) {
 	var args = {
-		path: FileManager.Path(path).withoutAccount(),
+		path: FileManager.Current().withoutAccount(),
 		success: handleResponse,
 		error: function (status, statusText) {
+			el.innerHTML = '';
 			el.textContent = 'Error occurred: ' + status + ' ' + statusText;
 			FileManager.BackButton.enable();
 		},
 		notExist: function () {
+			el.innerHTML = '';
 			// TODO: error treatment.
 			el.textContent = 'File Not Found.';
 			alert('File not exist.');
 			FileManager.BackButton.enable();
+		},
+		progress: function (loaded) {
+			el.textContent = loaded + ' bytes loaded...';
 		}
 	};
 	if (enableSharedContainers) {
-		args.account = FileManager.Path(path).account();
+		args.account = FileManager.Current().account();
 	}
 	SwiftV1.getFile(args);
 
 	function handleResponse(data, contentType) {
+		el.innerHTML = '';
 
-		var fileName = path.split('/').pop();
-		FileManager.CurrentDirLabel.update(fileName);
-
+		var fileName = FileManager.Current().name();
+		var filePath = FileManager.Current().path();
+		FileManager.CurrentDirLabel.setContent(fileName);
+		FileManager.CurrentDirLabel.setTooltip(filePath);
 
 		FileManager.File.contentType = contentType;
 		FileManager.File.codeMirror = CodeMirror(el, {
@@ -1295,6 +1280,17 @@ FileManager.File.edit = function (path, el) {
 		FileManager.Layout.adjust();
 		FileManager.BackButton.enable();
 	}
+};
+
+FileManager.File.notTextFile = function (el) {
+	el.innerHTML = '';
+	var fileName = FileManager.Current().name();
+	FileManager.CurrentDirLabel.setContent(fileName);
+	el.innerHTML = document.querySelector('#notTextFileTemplate').innerHTML;
+	FileManager.File.hideTxtButton();
+	FileManager.File.showMenu();
+	FileManager.Layout.adjust();
+	FileManager.BackButton.enable();
 };
 
 FileManager.File.showMenu = function () {
@@ -1380,7 +1376,7 @@ FileManager.File.saveAs = function (el) {
 
 FileManager.SaveAs = {};
 
-FileManager.SaveAs.clickCallback = function () {
+FileManager.SaveAs.click = function () {
 	var pathEl = document.querySelector('.save-as-input-path');
 	var typeEl = document.querySelector('.save-as-input-type');
 	var path = pathEl.value;
@@ -1395,7 +1391,7 @@ FileManager.SaveAs.clickCallback = function () {
 		contentType: typeEl.value,
 		data: FileManager.File.codeMirror.getValue(),
 		created: function () {
-			FileManager.DoneButton.clickCallback();
+			FileManager.DoneButton.click();
 			location.hash = path;
 		},
 		error: function (status, statusText) {
@@ -1428,6 +1424,7 @@ FileManager.SaveAs.clearErrors = function () {
 			format: 'json',
 			limit: 20,
 			success: function (response) {
+				scrollingContentEl.innerHTML = '';
 				var containers = JSON.parse(response);
 
 				if (enableSharedContainers) {
@@ -1443,6 +1440,7 @@ FileManager.SaveAs.clearErrors = function () {
 				list(containers);
 			},
 			error: function (status, statusText) {
+				scrollingContentEl.innerHTML = '';
 				// TODO: error treatment.
 				alert('Error occurred: ' + status + ' ' + statusText);
 			}
@@ -1555,20 +1553,20 @@ FileManager.SaveAs.clearErrors = function () {
 
 	FileManager.Files = {};
 
-	FileManager.Files.list = function (path, scrollingContentEl, callback) {
-		var prefix = FileManager.Path(path).prefix();
+	FileManager.Files.list = function (scrollingContentEl, callback) {
+		var prefix = FileManager.Current().prefix();
 		var requestArgs = {};
 
 		requestArgs.success = list;
 		requestArgs.error = error;
 		requestArgs.notExist = notExist;
-		requestArgs.containerName = FileManager.Path(path).container();
+		requestArgs.containerName = FileManager.Current().container();
 		requestArgs.delimiter = '/';
 		requestArgs.limit = 20;
 		requestArgs.format = 'json';
 
 		if (enableSharedContainers) {
-			requestArgs.account = FileManager.Path(path).account();
+			requestArgs.account = FileManager.Current().account();
 		}
 
 		if (prefix) {
@@ -1579,12 +1577,13 @@ FileManager.SaveAs.clearErrors = function () {
 
 
 		function error(status, statusText) {
+			scrollingContentEl.innerHTML = '';
 			var loadingEl = document.querySelector('.item-loading') || document.querySelector('.scrolling-content-loading');
 			loadingEl.textContent = 'Error: ' + status + ' ' + statusText;
 		}
 
 		function list(response) {
-
+			scrollingContentEl.innerHTML = '';
 			var FILES = JSON.parse(response);
 			var files = FILES.slice(0); // copy (clone) array
 
@@ -1619,14 +1618,12 @@ FileManager.SaveAs.clearErrors = function () {
 
 			}
 			FileManager.BackButton.enable();
-			var current = makeShortName(pathToName(decodeURIComponent(path)));
-			FileManager.CurrentDirLabel.update(current);
-
+			FileManager.CurrentDirLabel.setContent(FileManager.Current().name());
 			callback();
-
 		}
 
 		function notExist() {
+			scrollingContentEl.innerHTML = '';
 			if (FileManager.Current().isContainersList()) {
 				scrollingContentEl.innerHTML = 'Container not exist.';
 			} else {
@@ -1734,7 +1731,7 @@ FileManager.SaveAs.clearErrors = function () {
 			_name = file.name;
 		}
 
-		_name = pathToName(_name);
+		_name = FileManager.Path(_name).name();
 
 		var name = makeShortName(_name);
 		var title = _name;
@@ -1748,7 +1745,7 @@ FileManager.SaveAs.clearErrors = function () {
 	}
 
 	function createFile(file) {
-		var _name = pathToName(file.name);
+		var _name = FileManager.Path(file.name).name();
 		var icon = typeToIcon(file.content_type);
 		var name = makeShortFileName(_name);
 		var title = _name;
@@ -1764,15 +1761,6 @@ FileManager.SaveAs.clearErrors = function () {
 		html = html.replace('{{modified}}', htmlEscape(modified));
 
 		return html;
-	}
-
-	function pathToName(path) {
-		var parts = path.trim().split('/');
-		var last = parts[parts.length - 1];
-		if (last) {
-			return last;
-		}
-		return parts[parts.length - 2] + '/';
 	}
 
 	function typeToIcon(type) {
@@ -1886,12 +1874,12 @@ FileManager.SaveAs.clearErrors = function () {
 
 	FileManager.ContentChange = {};
 
-	FileManager.ContentChange.withoutAnimation = function (path) {
+	FileManager.ContentChange.withoutAnimation = function () {
 
 		if (inProcess) {
 			if (!isTryingAgain) {
 				setTimeout(function() {
-					FileManager.ContentChange.withoutAnimation(path);
+					FileManager.ContentChange.withoutAnimation();
 				}, 800);
 				isTryingAgain = true;
 			}
@@ -1904,7 +1892,7 @@ FileManager.SaveAs.clearErrors = function () {
 		var el = document.querySelector('.scrolling-content');
 		el.innerHTML = loadingTemplate;
 
-		fillScrollingContent(path, el, function () {
+		fillScrollingContent(el, function () {
 			inProcess = false;
 			isTryingAgain = false;
 			FileManager.Layout.adjust();
@@ -1913,7 +1901,7 @@ FileManager.SaveAs.clearErrors = function () {
 
 	};
 
-	FileManager.ContentChange.animateFromRightToLeft = function (path) {
+	FileManager.ContentChange.animateFromRightToLeft = function () {
 		var parentEl, newEl, oldEl, template;
 
 		oldEl = document.querySelector('.scrolling-content');
@@ -1925,14 +1913,14 @@ FileManager.SaveAs.clearErrors = function () {
 
 		newEl.style.paddingTop = window.scrollY + 'px';
 
-		fillScrollingContent(path, newEl, function () {
+		fillScrollingContent(newEl, function () {
 			oldEl.classList.add('left-scrolling-content');
 			newEl.classList.remove('right-scrolling-content');
 		});
 
 	};
 
-	FileManager.ContentChange.animateFromLeftToRight = function (path) {
+	FileManager.ContentChange.animateFromLeftToRight = function () {
 
 		var parentEl, newEl, oldEl, template;
 
@@ -1944,39 +1932,40 @@ FileManager.SaveAs.clearErrors = function () {
 		newEl = document.querySelector('.left-scrolling-content');
 		newEl.style.paddingTop = window.scrollY + 'px';
 
-		fillScrollingContent(path, newEl, function () {
+		fillScrollingContent(newEl, function () {
 			oldEl.classList.add('right-scrolling-content');
 			newEl.classList.remove('left-scrolling-content');
 		});
 
 	};
 
-	function fillScrollingContent(path, el, callback) {
+	function fillScrollingContent(el, callback) {
+		el.textContent = 'Loading...';
 		if (FileManager.Current().isContainersList()) {
 			FileManager.Containers.list(el, callback);
 
 			var editButtonEl = document.querySelector('.edit-button');
 			var doneButtonEl = document.querySelector('.done-button');
 			if (editButtonEl.hasAttribute('hidden') && doneButtonEl.hasAttribute('hidden')) {
-				FileManager.DoneButton.clickCallback();
+				FileManager.DoneButton.click();
 			}
 
 			FileManager.File.hideMenu();
-			document.querySelector('.execute-button').setAttribute('hidden', 'hidden');
+			FileManager.ExecuteButton.hide();
 		} else if (FileManager.Current().isFilesList()) {
-		  	FileManager.Files.list(path, el, callback);
+		  	FileManager.Files.list(el, callback);
 
 			var editButtonEl = document.querySelector('.edit-button');
 			var doneButtonEl = document.querySelector('.done-button');
 			if (editButtonEl.hasAttribute('hidden') && doneButtonEl.hasAttribute('hidden')) {
-				FileManager.DoneButton.clickCallback();
+				FileManager.DoneButton.click();
 			}
 
 			FileManager.File.hideMenu();
-			document.querySelector('.execute-button').setAttribute('hidden', 'hidden');
+			FileManager.ExecuteButton.hide();
 		} else {
 			// load file
-			FileManager.File.open(path, el, callback);
+			FileManager.File.open(el, callback);
 		}
 		FileManager.Layout.adjust();
 
@@ -2025,12 +2014,93 @@ FileManager.SaveAs.clearErrors = function () {
 
 
 
+FileManager.Path = function (path) {
+	this.path = function () {
+		return path;
+	};
+	this.account = function () {
+		return path.split('/')[0];
+	};
+	this.container = function () {
+		return path.split('/')[1];
+	};
+	this.withoutAccount = function () {
+		return path.split('/').splice(1).join('/');
+	};
+	this.prefix = function () {
+		return path.split('/').splice(2).join('/');
+	};
+	this.name = function () {
+		var pathParts = path.split('/');
+		if (this.isDirectory()) {
+			return pathParts.splice(-2).join('/');
+		}
+		return pathParts[pathParts.length - 1];
+	};
+	this.isContainersList = function () {
+		return path.indexOf('/') == -1;
+	};
+	this.isFilesList = function () {
+		return this.isContainer() || this.isDirectory();
+	};
+	this.isContainer = function () {
+		return path.split('/').length == 2;
+	};
+	this.isDirectory = function () {
+		return path.lastIndexOf('/') == path.length - 1
+	};
+	this.isFile = function () {
+		return !this.isContainer() && !this.isDirectory();
+	};
+	this.up = function () {
+		var newPathParts = path.split('/');
+
+		if (newPathParts[newPathParts.length - 1] == '') {
+			newPathParts.splice(-2);
+		} else {
+			newPathParts.splice(-1);
+		}
+
+		if (newPathParts.length == 1) {
+
+			if (enableSharedContainers && isShared(newPathParts[0])) {
+				return getAccount();
+			}
+
+			return newPathParts[0];
+		}
+
+		if (newPathParts.length == 2) {
+			return newPathParts.join('/');
+		}
+
+		return newPathParts.join('/') + '/';
+	};
+	this.add = function (name) {
+
+		if (enableSharedContainers && this.isContainersList() && name.indexOf('/') != -1) {
+			return name;
+		}
+
+		if (path.lastIndexOf('/') == path.length - 1) {
+			return path + name;
+		}
+		return  path + '/' + name;
+	};
+	return this;
+};
+
+FileManager.Current = function () {
+	return FileManager.Path(location.hash.substr(1));
+};
+
+
 // TODO: Internet Explorer (including version 10) is not supporting e.oldURL and e.newURL
 window.addEventListener('hashchange', function (e) {
 	var newPath = e.newURL.split('#')[1];
 
 	if (e.oldURL.indexOf('#') == -1) {
-		FileManager.ContentChange.withoutAnimation(newPath);
+		FileManager.ContentChange.withoutAnimation();
 		return;
 	}
 
@@ -2038,16 +2108,16 @@ window.addEventListener('hashchange', function (e) {
 
 	if (newPath.indexOf('/') == -1) {
 		// in order to support returning from shared container //SHARED-CONTAINERS
-		FileManager.ContentChange.animateFromLeftToRight(newPath);
+		FileManager.ContentChange.animateFromLeftToRight();
 	} else if (oldPath.indexOf('/') == -1) {
 		// in order to support moving to shared container //SHARED-CONTAINERS
-		FileManager.ContentChange.animateFromRightToLeft(newPath);
+		FileManager.ContentChange.animateFromRightToLeft();
 	} else if(newPath.indexOf(oldPath) === 0) {
-		FileManager.ContentChange.animateFromRightToLeft(newPath);
+		FileManager.ContentChange.animateFromRightToLeft();
 	} else if (oldPath.indexOf(newPath) === 0) {
-		FileManager.ContentChange.animateFromLeftToRight(newPath);
+		FileManager.ContentChange.animateFromLeftToRight();
 	} else {
-		FileManager.ContentChange.withoutAnimation(newPath);
+		FileManager.ContentChange.withoutAnimation();
 	}
 
 });
@@ -2073,7 +2143,7 @@ document.addEventListener('click', function (e) {
 	var el;
 
 	if (el = is('sign-out-button')) {
-		FileManager.SignOutButton.clickCallback(el);
+		FileManager.SignOutButton.click(el);
 	}
 
 	if (document.body.classList.contains('disabled')) {
@@ -2081,31 +2151,33 @@ document.addEventListener('click', function (e) {
 	}
 
 	if (el = is('back-button')) {
-		FileManager.BackButton.clickCallback(el);
+		FileManager.BackButton.click(el);
 	} else if (el = is('edit-button')) {
-		FileManager.EditButton.clickCallback(el);
+		FileManager.EditButton.click(el);
 	} else if (el = is('done-button')) {
-		FileManager.DoneButton.clickCallback(el);
+		FileManager.DoneButton.click(el);
 	} else if (el = is('execute-button')) {
-		FileManager.ExecuteButton.clickCallback(el);
+		if (enableZeroVM) {
+			FileManager.ExecuteButton.click(el);
+		}
 	} else if (el = is('delete')) {
-		FileManager.Item.deleteClickCallback(el);
+		FileManager.Item.deleteclick(el);
 		return;
 	} else if (el = is('item')) {
-		FileManager.Item.clickCallback(el);
+		FileManager.Item.click(el);
 	} else if (el = is('load-more-button')) {
-		FileManager.LoadMoreButton.clickCallback(el);
+		FileManager.LoadMoreButton.click(el);
 	} else if (el = is('create-container-button')) {
-		FileManager.CreateContainer.clickCallback(el);
+		FileManager.CreateContainer.click(el);
 	} else if (el = is('add-shared-button')) {
 		//SHARED-CONTAINERS
-		FileManager.AddShared.clickCallback(el);
+		FileManager.AddShared.click(el);
 	} else if (el = is('create-directory-button')) {
-		FileManager.CreateDirectory.clickCallback(el);
+		FileManager.CreateDirectory.click(el);
 	} else if (el = is('create-file-button')) {
-		FileManager.CreateFile.clickCallback(el);
+		FileManager.CreateFile.click(el);
 	} else if (el = is('delete-button')) {
-		FileManager.ConfirmDelete.clickCallback(el);
+		FileManager.ConfirmDelete.click(el);
 	} else if (el = is('metadata-save')) {
 		FileManager.Metadata.save(el);
 	} else if (el = is('metadata-discard-changes')) {
@@ -2121,15 +2193,15 @@ document.addEventListener('click', function (e) {
 	} else if (el = is('save-as')) {
 		FileManager.File.saveAs(el);
 	} else if (el = is('save-as-button')) {
-		FileManager.SaveAs.clickCallback(el);
+		FileManager.SaveAs.click(el);
 	} else if (el = is('content-type-button')) {
-		FileManager.ContentType.clickCallback(el);
+		FileManager.ContentType.click(el);
 	} else if (el = is('cancel-upload-button')) {
-		FileManager.UploadFiles.cancelClickCallback(el);
+		FileManager.UploadFiles.cancelClick(el);
 	} else if (el = is('execute-close-button')) {
-		FileManager.Report.remove();
+		FileManager.ExecuteReport.remove();
 	} else if (el = is('execute-full-button')) {
-		FileManager.Report.full(el);
+		FileManager.ExecuteReport.showFullReport(el);
 	}
 
 	function is(className) {
@@ -2156,7 +2228,7 @@ document.addEventListener('keydown', function (e) {
 	if (e.target.classList.contains('create-container-input')) {
 
 		if (e.which == 13) {
-			FileManager.CreateContainer.clickCallback();
+			FileManager.CreateContainer.click();
 			return;
 		}
 
@@ -2169,7 +2241,7 @@ document.addEventListener('keydown', function (e) {
 
 	if (enableSharedContainers && e.target.classList.contains('add-shared-input-container')) {
 		if (e.which == 13) {
-			FileManager.AddShared.clickCallback();
+			FileManager.AddShared.click();
 			return;
 		}
 		FileManager.AddShared.clearErrors(e.target);
@@ -2178,7 +2250,7 @@ document.addEventListener('keydown', function (e) {
 	if (e.target.classList.contains('create-directory-input')) {
 
 		if (e.which == 13) {
-			FileManager.CreateDirectory.clickCallback();
+			FileManager.CreateDirectory.click();
 			return;
 		}
 
@@ -2197,7 +2269,7 @@ document.addEventListener('keydown', function (e) {
 	if (e.target.classList.contains('create-file-input-type')) {
 
 		if (e.which == 13) {
-			FileManager.CreateFile.clickCallback();
+			FileManager.CreateFile.click();
 			return;
 		}
 
@@ -2216,7 +2288,7 @@ document.addEventListener('keydown', function (e) {
 	if (e.target.classList.contains('save-as-input-type')) {
 
 		if (e.which == 13) {
-			FileManager.SaveAs.clickCallback();
+			FileManager.SaveAs.click();
 			return;
 		}
 
@@ -2226,7 +2298,7 @@ document.addEventListener('keydown', function (e) {
 	if (e.target.classList.contains('content-type-input')) {
 
 		if (e.which == 13) {
-			FileManager.ContentType.clickCallback();
+			FileManager.ContentType.click();
 			return;
 		}
 	}
@@ -2242,17 +2314,17 @@ document.addEventListener('keyup', function (e) {
 
 document.addEventListener('change', function (e) {
 	if (e.target.parentNode.classList.contains('upload-files')) {
-		FileManager.UploadFiles.changeCallback(e.target.files);
+		FileManager.UploadFiles.change(e.target.files);
 		return;
 	}
 
 	if (e.target.parentNode.classList.contains('upload-as')) {
-		FileManager.UploadAs.changeCallback(e.target.files);
+		FileManager.UploadAs.change(e.target.files);
 		return;
 	}
 
 	if (e.target.parentNode.classList.contains('upload-execute')) {
-		FileManager.UploadExecute.changeCallback(e.target.files[0]);
+		FileManager.UploadAndExecute.change(e.target.files[0]);
 		return;
 	}
 });
@@ -2262,7 +2334,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		if (!location.hash) {
 			location.hash = getAccount();
 		} else {
-			FileManager.ContentChange.withoutAnimation(FileManager.Current().path());
+			FileManager.ContentChange.withoutAnimation();
 		}
 		FileManager.Layout.adjust();
 	});
