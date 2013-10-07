@@ -42,7 +42,6 @@ var SearchApp = {};
 
 SearchApp.search = function () {
 	var input = parse(document.querySelector('.search-input').value);
-
 	function parse(str) {
 		var arr = str.split('"');
 		for (var i = 1; i < arr.length; i += 2) {
@@ -329,6 +328,24 @@ SearchApp.index = function () {
 	}
 };
 
+function ProgressBar(ele, partsNum){
+	var chunkNum, chunkSize = 50, curChunk = 0, chunkPercent;
+	chunkNum = partsNum % chunkSize;
+	if(partsNum - chunkNum * chunkSize !== 0){
+		chunkNum += 1;
+	}
+	chunkPercent = 100 / chunkNum;
+	ele.progressbar({
+		value: 0
+	});
+	this.setValue = function(value){
+		ele.progressbar({value: value});
+	};
+	this.updateChunk = function(){
+		this.setValue(++curChunk);
+	}
+}
+
 document.addEventListener('keydown', function (e) {
 
 	if (isSearchInput(e)) {
@@ -403,4 +420,5 @@ document.addEventListener('click', function (e) {
 
 document.addEventListener('DOMContentLoaded', function () {
 	ZLitestackDotCom.init();
-})
+	window.progressBar = new ProgressBar($(".progress-bar"), 53);//TODO: is there any name space?
+});
