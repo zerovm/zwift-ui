@@ -257,8 +257,8 @@ SearchApp.index = function () {
 	function index(data) {
 		indexResultEl.textContent = 'Indexing...';
 		ZeroVmOnSwift.execute({
-			dataToSend: data,
-			dataType: 'application/json',
+			data: data,
+			contentType: 'application/json',
 			success: function (result, report) {
 				indexingResult = result;
 				merge(JSON.stringify(createMergeConfiguration()));
