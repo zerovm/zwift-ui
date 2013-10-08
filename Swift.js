@@ -163,8 +163,9 @@ var ClusterAuth = {};
 	SwiftV1.Container = {};
 
 	SwiftV1.Container.head = function (args) {
+		var accountId = args.hasOwnProperty('account') ? args.account : account;
 		var xhr = new XMLHttpRequest();
-		var url = xStorageUrl + account + '/' + args.containerName;
+		var url = xStorageUrl + accountId + '/' + args.containerName;
 		xhr.open('HEAD', url);
 		if (xAuthToken !== null) {
 			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
@@ -185,6 +186,7 @@ var ClusterAuth = {};
 			}
 		});
 		xhr.send();
+		return xhr;
 	};
 
 	SwiftV1.Container.get = function (args) {
@@ -666,7 +668,7 @@ var ClusterAuth = {};
 
 	SharedContainersOnSwift.updateRights = function (args) {
 		var xhr = new XMLHttpRequest();
-		var url = xStorageUrl + account + '/' + args.path;
+		var url = xStorageUrl + account + '/' + args.containerName;
 		xhr.open('POST', url);
 		xhr.setRequestHeader('X-Container-Read', args.readRights);
 		xhr.setRequestHeader('X-Container-Write', args.writeRights);
@@ -682,22 +684,11 @@ var ClusterAuth = {};
 		xhr.send();
 	};
 
-	SharedContainersOnSwift.getRights = function (args) {
-		var xhr = new XMLHttpRequest();
-		var url = xStorageUrl + account + '/' + args.path;
-		xhr.open('HEAD', url);
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status >= 200 && e.target.status <= 299) {
-				var readRights = xhr.getResponseHeader('X-Container-Read');
-				var writeRights = xhr.getResponseHeader('X-Container-Write');
-				args.success(readRights, writeRights);
-			} else {
-				args.error(e.target.status, e.target.statusText);
-			}
-		});
-		xhr.send();
+	SharedContainersOnSwift.getRights = function (xhr) {
+		return {
+			read: xhr.getResponseHeader('X-Container-Read') || '',
+			write: xhr.getResponseHeader('X-Container-Write') || ''
+		};
 	};
 
 	SharedContainersOnSwift.addSharedContainer = function (args) {
@@ -705,7 +696,7 @@ var ClusterAuth = {};
 		var tempStorageUrlArr = xStorageUrl.split('/');
 		tempStorageUrlArr.pop();
 		tempStorageUrlArr.pop();
-		var url = tempStorageUrlArr.join('/') + args.account + '/' + args.container;
+		var url = tempStorageUrlArr.join('/') + '/load-share/' + args.account + '/' + args.container;
 		xhr.open('GET', url);
 		xhr.addEventListener('load', function (e) {
 			if (e.target.status == 401) {
@@ -1213,6 +1204,16 @@ var ClusterAuth = {};
 	};
 
 	ClusterAuth.getStorageUrl = function () {
+		return xStorageUrl;
+	};
+
+	ClusterAuth.signOut = function () {
+		document.querySelector('.cluster-auth .account').value = '';
+		document.querySelector('.cluster-auth .storage-url').value = '';
+		document.querySelector('.cluster-auth').parentNode.removeAttribute('hidden');
+	};
+
+})();on () {
 		return xStorageUrl;
 	};
 

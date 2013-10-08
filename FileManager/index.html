@@ -101,14 +101,14 @@
 				<tr>
 					<td><img src="img/file_txt.png"></td>
 					<td><input class="create-file-input-name" placeholder="File Name"></td>
-					<td><input class="create-file-input-type" placeholder="Content Type"></td>
+					<td><input class="create-file-input-type" placeholder="Content Type" value="text/plain"></td>
 					<td class="create-file-button">+</td>
 				</tr>
 			</table>
 
-			<div class="div-button upload-files" style="width: 99%;"><input type="file" multiple><img src="img/upload.png"><span>Upload Files</span></div>
-			<!--				<div class="div-button upload-as" style="width: 32%;"><input type="file" multiple><img src="img/upload-as.png"><span>Upload As</span></div>
-							<div class="div-button upload-execute" style="width: 33%;"><input type="file"><img src="img/execute.png"><span>Upload & Execute</span></div>-->
+			<div class="div-button upload-files" style="width: 49%;"><input type="file" multiple><img src="img/upload.png"><span>Upload Files</span></div>
+							<div class="div-button upload-as" style="width: 48%;"><input type="file" multiple><img src="img/upload-as.png"><span>Upload As</span></div>
+			<!--				<div class="div-button upload-execute" style="width: 33%;"><input type="file"><img src="img/execute.png"><span>Upload & Execute</span></div>-->
 		</div>
 		<div class="menu-file dialog" hidden>
 			<button class="undo txt-btn" disabled></button><button class="redo txt-btn" disabled></button><button class="save txt-btn" disabled></button><button class="save-as">Save As...</button>
@@ -241,6 +241,32 @@
 		</menu>
 		-->
 
+		<table class="rights-table" hidden>
+			<thead>
+			<tr>
+				<th colspan="3">Rights</th>
+			</tr>
+			<tr class="loading">
+				<td colspan="3">Loading...</td>
+			</tr>
+			</thead>
+			<tbody hidden>
+			<tr>
+				<td style="width: 1px;">Read</td>
+				<td><input class="read-rights-input" placeholder="Read Rights" style="width: 98%;"></td>
+			</tr>
+			<tr style="width: 1px;">
+				<td>Write</td>
+				<td><input class="write-rights-input" placeholder="Write Rights" style="width: 98%;"></td>
+			</tr>
+			</tbody>
+			<tfoot hidden>
+			<tr>
+				<td colspan="2"><button class="rights-save">Save</button><button class="rights-discard-changes">Discard Changes</button></td>
+			</tr>
+			</tfoot>
+		</table>
+
 		<table class="content-type-table" hidden>
 			<thead>
 			<tr>
@@ -276,6 +302,24 @@
 			</tr>
 			</tfoot>
 		</table>
+
+		<table class="copy-table" hidden>
+			<thead>
+			<tr>
+				<th colspan="3">Copy</th>
+			</tr>
+			<tr class="copy-loading" hidden="">
+				<td colspan="3">Loading...</td>
+			</tr>
+			</thead>
+			<tbody class="input-group-table">
+			<tr>
+				<td><img src="img/copy.png"></td>
+				<td><input class="copy-input" placeholder="Copy to..."></td>
+				<td class="copy-button">+</td>
+			</tr>
+			</tbody>
+		</table>
 	</div>
 </template>
 
@@ -307,11 +351,11 @@
 
 <template id="uploadAsTemplate">
 	<table class="input-group-table">
-		<tr>
+		<tr id="upload-as-{{index}}">
 			<td><img src="img/file.png"></td>
-			<td><input class="upload-as-input-name" placeholder="File Name" value="{{upload-input-name}}"></td>
-			<td><input class="upload-as-input-type" placeholder="Content Type" value="{{upload-input-type}}"></td>
-			<td class="upload-as-button">+</td>
+			<td><input data-index="{{index}}" class="upload-as-input-name" placeholder="File Name" value="{{upload-input-name}}"></td>
+			<td><input data-index="{{index}}" class="upload-as-input-type" placeholder="Content Type" value="{{upload-input-type}}"></td>
+			<td data-index="{{index}}" class="upload-as-button">+</td>
 		</tr>
 	</table>
 </template>

@@ -624,13 +624,47 @@ FileManager.UploadFiles.change = function (files) {
 	el.innerHTML = el.innerHTML;
 
 	for (var i = 0; i < files.length; i++) {
-		var name = files[i].name;
-		var path = FileManager.Current().add(files[i].name);
-		createUploadEl(name);
-		uploadFile(path, files[i]);
+		FileManager.UploadFiles.uploadFile(files[i], files[i].name, files[i].type);
 	}
 
 	FileManager.Layout.adjust();
+
+	function uploadFile(path, file) {
+	}
+};
+
+FileManager.UploadFiles.uploadFile = function (file, name, contentType) {
+
+	createUploadEl(name);
+	var index = FileManager.UploadFiles.uploadRequests.length;
+	var path = FileManager.Current().add(name);
+	FileManager.UploadFiles.uploadRequests[index] = SwiftV1.createFile({
+		path: FileManager.Path(path).withoutAccount(),
+		data: file,
+		contentType: contentType,
+		created: function () {
+			var el = document.querySelector('#upload-' + index);
+			el.parentNode.removeChild(el);
+			FileManager.ContentChange.withoutAnimation();
+			FileManager.Layout.adjust();
+		},
+		progress: function (percent, loaded, total) {
+			document.querySelector('#upload-' + index + ' progress').value = percent;
+			var percentStr = '&nbsp;0%&nbsp;';
+			if (percent < 10) {
+				percentStr = '&nbsp;' + percent + '%&nbsp;';
+			} else if (percent < 100) {
+				percentStr = '&nbsp;' + percent + '%';
+			} else {
+				percentStr = percent + '%';
+			}
+			document.querySelector('#upload-' + index + ' .progresslabel').innerHTML = percentStr;
+		},
+		error: function (status, statusText) {
+			// TODO: error treatment.
+			alert('Error: ' + status + ' ' + statusText);
+		}
+	});
 
 	function createUploadEl(name) {
 		var index = FileManager.UploadFiles.uploadRequests.length;
@@ -638,37 +672,6 @@ FileManager.UploadFiles.change = function (files) {
 		template = template.replace('{{upload-label-name}}', name);
 		template = template.replace('{{upload-id}}', 'upload-' + index);
 		document.querySelector('.menu-files').insertAdjacentHTML('beforeend', template);
-	}
-
-	function uploadFile(path, file) {
-		var index = FileManager.UploadFiles.uploadRequests.length;
-		FileManager.UploadFiles.uploadRequests[index] = SwiftV1.createFile({
-			path: path,
-			data: file,
-			contentType: file.type,
-			created: function () {
-				var el = document.querySelector('#upload-' + index);
-				el.parentNode.removeChild(el);
-				FileManager.ContentChange.withoutAnimation();
-				FileManager.Layout.adjust();
-			},
-			progress: function (percent, loaded, total) {
-				document.querySelector('#upload-' + index + ' progress').value = percent;
-				var percentStr = '&nbsp;0%&nbsp;';
-				if (percent < 10) {
-					percentStr = '&nbsp;' + percent + '%&nbsp;';
-				} else if (percent < 100) {
-					percentStr = '&nbsp;' + percent + '%';
-				} else {
-					percentStr = percent + '%';
-				}
-				document.querySelector('#upload-' + index + ' .progresslabel').innerHTML = percentStr;
-			},
-			error: function (status, statusText) {
-				// TODO: error treatment.
-				alert('Error: ' + status + ' ' + statusText);
-			}
-		});
 	}
 };
 
@@ -683,16 +686,34 @@ FileManager.UploadFiles.cancelClick  = function (el) {
 
 FileManager.UploadAs = {};
 
+FileManager.UploadAs.files = [];
+
 FileManager.UploadAs.change = function (files) {
 
 	for (var i = 0; i < files.length; i++) {
+		FileManager.UploadAs.files.push(files[i]);
+		var index = FileManager.UploadAs.files.length - 1;
 		var template = document.querySelector('#uploadAsTemplate').innerHTML;
+		var find = '{{index}}', re = new RegExp(find, 'g');
+		template = template.replace(re, String(index));
+		if (files[i].hasOwnProperty('override_name')) {}
 		template = template.replace('{{upload-input-name}}', files[i].name);
 		template = template.replace('{{upload-input-type}}', files[i].type);
 		document.querySelector('.menu-files').insertAdjacentHTML('beforeend', template);
 	}
 
 	FileManager.Layout.adjust();
+};
+
+FileManager.UploadAs.click = function (el) {
+	var indexStr = el.getAttribute('data-index');
+	var index = Number(indexStr);
+	var uploadAsEl = document.querySelector('#upload-as-' + indexStr);
+	var name = uploadAsEl.querySelector('.upload-as-input-name').value;
+	var contentType = uploadAsEl.querySelector('.upload-as-input-type').value;
+	uploadAsEl.parentNode.removeChild(uploadAsEl);
+	FileManager.UploadFiles.uploadFile(FileManager.UploadAs.files[index], name, contentType);
+	FileManager.UploadAs.files[index] = null;
 };
 
 
@@ -706,9 +727,10 @@ FileManager.UploadAndExecute.change = function (file) {
 FileManager.ConfirmDelete = {};
 
 FileManager.ConfirmDelete.click = function (el) {
+	var itemEl = el.parentNode.parentNode.previousElementSibling;
 	el.parentNode.innerHTML = 'Deleting...';
 
-	var name = document.querySelector('delete-label').title;
+	var name = itemEl.title;
 	var itemPath = FileManager.Current().add(name);
 
 	if (FileManager.SHARED_CONTAINERS && FileManager.Shared.isShared(itemPath)) {
@@ -795,12 +817,68 @@ FileManager.Item.click = function (itemEl) {
 		var itemMenuHtml = document.querySelector('#itemMenuTemplate').innerHTML;
 		itemEl.insertAdjacentHTML('afterend', itemMenuHtml);
 
-		FileManager.Metadata.show();
+		FileManager.Metadata.showLoading();
 
-		if (FileManager.Current().isContainersList()) {
-			// TODO: Rights
+		var path = FileManager.Item.selectedPath;
+
+		if (FileManager.Path(path).isContainer()) {
+
+			var xhr;
+			var args = {
+				containerName: FileManager.Path(path).container(),
+				success: function (metadata, objectCount, bytesUsed) {
+
+					FileManager.Item.metadata = metadata;
+					if (FileManager.SHARED_CONTAINERS && FileManager.Shared.isShared(path)) {
+						FileManager.Metadata.sharedContainers();
+						FileManager.Rights.sharedContainers();
+					} else {
+						FileManager.Metadata.load(metadata);
+
+						if (FileManager.SHARED_CONTAINERS) {
+							var rights = SharedContainersOnSwift.getRights(xhr);
+							FileManager.Rights.load(rights);
+						}
+					}
+				},
+				error: FileManager.Metadata.showError,
+				notExist: function () {
+					// TODO:
+					alert('Not Exist');
+				}
+			};
+
+			if (FileManager.SHARED_CONTAINERS) {
+				FileManager.Rights.showLoading();
+				args.account = FileManager.Path(FileManager.Item.selectedPath).account();
+			}
+
+			xhr = SwiftV1.Container.head(args);
 		} else {
-			FileManager.ContentType.show();
+			FileManager.ContentType.showLoading();
+			FileManager.Copy.show();
+
+			var args = {
+				path: FileManager.Path(path).withoutAccount(),
+				success: function (metadata, contentType, contentLength, lastModified) {
+					FileManager.Item.metadata = metadata;
+					FileManager.Item.contentType = contentType;
+					FileManager.ContentType.load(contentType);
+
+					if (FileManager.SHARED_CONTAINERS && FileManager.Shared.isShared(path)) {
+						FileManager.Metadata.sharedContainers();
+					} else {
+						FileManager.Metadata.load(metadata);
+					}
+
+				},
+				error: FileManager.Metadata.showError
+			};
+
+			if (FileManager.SHARED_CONTAINERS) {
+				args.account = FileManager.Path(FileManager.Item.selectedPath).account();
+			}
+			SwiftV1.File.head(args);
 		}
 	}
 };
@@ -851,185 +929,156 @@ FileManager.LoadMoreButton.click = function () {
 };
 
 
-/* FileManager.Metadata */
-(function () {
-	'use strict';
+FileManager.Metadata = {};
 
-	var initialMetadata;
+FileManager.Metadata.initialMetadata = null;
 
-	FileManager.Metadata = {};
+FileManager.Metadata.showLoading = function () {
+	var html = '<tr><td colspan="3">Loading...</td></tr>';
+	document.querySelector('.metadata-table tbody').innerHTML = html;
+};
 
-	FileManager.Metadata.show = function () {
-		var path = FileManager.Item.selectedPath;
-		var html = '<tr><td colspan="3">Loading...</td></tr>';
-		document.querySelector('.metadata-table tbody').innerHTML = html;
+FileManager.Metadata.sharedContainers = function () {
+	var html = '<tr><td colspan="3">Cannot show metadata for shared container.</td></tr>';
+	document.querySelector('.metadata-table tbody').innerHTML = html;
+};
 
-		if (FileManager.SHARED_CONTAINERS && FileManager.Shared.isShared(path)) {
-			var html = '<tr><td colspan="3">Cannot show metadata for shared container.</td></tr>';
-			document.querySelector('.metadata-table tbody').innerHTML = html;
-			return;
-		}
+FileManager.Metadata.load = function (metadata) {
+	FileManager.Metadata.initialMetadata = metadata;
+	document.querySelector('.metadata-table tbody').innerHTML = '';
 
-		if (FileManager.Path(path).isContainer()) {
-			SwiftV1.getContainerMetadata({
-				containerName: FileManager.Path(path).container(),
-				success: success,
-				error: error
-			});
-		} else {
-			SwiftV1.getFileMetadata({
-				path: FileManager.Path(path).withoutAccount(),
-				success: function (metadata, contentType, contentLength, lastModified) {
-					FileManager.Item.contentType = contentType;
-					success(metadata);
-				},
-				error: error
-			});
-		}
+	var keys = Object.keys(metadata);
 
-		function success(metadata) {
-			initialMetadata = metadata;
-			document.querySelector('.metadata-table tbody').innerHTML = '';
+	for (var i = 0; i < keys.length; i++) {
+		var key = keys[i];
+		var value = metadata[key];
 
-			var keys = Object.keys(metadata);
+		var html = document.querySelector('#metadataRowTemplate').innerHTML;
 
-			for (var i = 0; i < keys.length; i++) {
-				var key = keys[i];
-				var value = metadata[key];
+		html = html.replace('{{key}}', FileManager.Utils.htmlEscape(key));
+		html = html.replace('{{value}}', FileManager.Utils.htmlEscape(value));
 
-				var html = document.querySelector('#metadataRowTemplate').innerHTML;
+		document.querySelector('.metadata-table tbody').insertAdjacentHTML('beforeend', html);
+	}
 
-				html = html.replace('{{key}}', FileManager.Utils.htmlEscape(key));
-				html = html.replace('{{value}}', FileManager.Utils.htmlEscape(value));
+	FileManager.Metadata.addBlankRow();
+};
 
-				document.querySelector('.metadata-table tbody').insertAdjacentHTML('beforeend', html);
-			}
+FileManager.Metadata.showError = function (status, statusText) {
+	var html = '<tr><td colspan="3">Error: ' + status + ' ' + statusText + '</td></tr>';
+	document.querySelector('.metadata-table tbody').innerHTML = html;
+};
 
-			FileManager.Metadata.addBlankRow();
-		}
+FileManager.Metadata.remove = function (removeEl) {
+	removeEl.parentNode.parentNode.removeChild(removeEl.parentNode);
+	document.querySelector('.metadata-table tfoot').removeAttribute('hidden');
+};
 
-		function error(status, statusText) {
+FileManager.Metadata.keyup = function (inputEl) {
+	document.querySelector('.metadata-table tfoot').removeAttribute('hidden');
+
+	var thisRow = inputEl.parentNode.parentNode;
+
+	if (!thisRow.querySelector('.metadata-key').value && !thisRow.querySelector('.metadata-value').value) {
+		thisRow.parentNode.removeChild(thisRow);
+	}
+
+	var lastRowEl = document.querySelector('.metadata-table tbody tr:last-child');
+
+	if (lastRowEl.querySelector('.metadata-key:last-child').value ||
+		lastRowEl.querySelector('.metadata-value:last-child').value) {
+
+		lastRowEl.querySelector('.remove-metadata:last-child').textContent = 'X';
+		FileManager.Metadata.addBlankRow();
+	}
+};
+
+FileManager.Metadata.addBlankRow = function () {
+
+	var html = document.querySelector('#metadataRowTemplate').innerHTML;
+
+	html = html.replace('>X<', '>+<');
+	html = html.replace('{{key}}', '');
+	html = html.replace('{{value}}', '');
+
+	document.querySelector('.metadata-table tbody').insertAdjacentHTML('beforeend', html);
+};
+
+FileManager.Metadata.discardChanges = function () {
+	document.querySelector('.metadata-table tfoot').setAttribute('hidden', 'hidden');
+	document.querySelector('.clicked').click();
+};
+
+FileManager.Metadata.save = function () {
+	var path = FileManager.Item.selectedPath;
+	var args = {
+		metadata: metadataToAdd(),
+		removeMetadata: metadataToRemove(),
+		contentType: FileManager.Item.contentType,
+		updated: function () {
+			document.querySelector('.clicked').click();
+		},
+		error: function (status, statusText) {
 			var html = '<tr><td colspan="3">Error: ' + status + ' ' + statusText + '</td></tr>';
 			document.querySelector('.metadata-table tbody').innerHTML = html;
 		}
 	};
+	document.querySelector('.metadata-table tbody').innerHTML = '<tr><td colspan="3">Loading...</td></tr>';
+	document.querySelector('.metadata-table tfoot').setAttribute('hidden', 'hidden');
 
-	FileManager.Metadata.remove = function (removeEl) {
-		removeEl.parentNode.parentNode.removeChild(removeEl.parentNode);
-		document.querySelector('.metadata-table tfoot').removeAttribute('hidden');
-	};
+	if (FileManager.Current().isContainersList()) {
+		args.containerName = FileManager.Path(path).withoutAccount();
+		SwiftV1.updateContainerMetadata(args);
+	} else {
+		args.path = FileManager.Path(path).withoutAccount();
+		SwiftV1.updateFileMetadata(args);
+	}
 
-	FileManager.Metadata.keyup = function (inputEl) {
-		document.querySelector('.metadata-table tfoot').removeAttribute('hidden');
-
-		var thisRow = inputEl.parentNode.parentNode;
-
-		if (!thisRow.querySelector('.metadata-key').value && !thisRow.querySelector('.metadata-value').value) {
-			thisRow.parentNode.removeChild(thisRow);
-		}
-
-		var lastRowEl = document.querySelector('.metadata-table tbody tr:last-child');
-
-		if (lastRowEl.querySelector('.metadata-key:last-child').value ||
-			lastRowEl.querySelector('.metadata-value:last-child').value) {
-
-			lastRowEl.querySelector('.remove-metadata:last-child').textContent = 'X';
-			FileManager.Metadata.addBlankRow();
-		}
-	};
-
-	FileManager.Metadata.addBlankRow = function () {
-
-		var html = document.querySelector('#metadataRowTemplate').innerHTML;
-
-		html = html.replace('>X<', '>+<');
-		html = html.replace('{{key}}', '');
-		html = html.replace('{{value}}', '');
-
-		document.querySelector('.metadata-table tbody').insertAdjacentHTML('beforeend', html);
-	};
-
-	FileManager.Metadata.discardChanges = function () {
-		document.querySelector('.metadata-table tfoot').setAttribute('hidden', 'hidden');
-		FileManager.Metadata.show();
-	};
-
-	FileManager.Metadata.save = function () {
-		var path = FileManager.Item.selectedPath;
-		var args = {
-			metadata: metadataToAdd(),
-			removeMetadata: metadataToRemove(),
-			contentType: FileManager.Item.contentType,
-			updated: function () {
-				FileManager.Metadata.show();
-			},
-			error: function (status, statusText) {
-				var html = '<tr><td colspan="3">Error: ' + status + ' ' + statusText + '</td></tr>';
-				document.querySelector('.metadata-table tbody').innerHTML = html;
+	function metadataToAdd() {
+		var metadata = {};
+		var metadataRows = document.querySelectorAll('.metadata-table tbody tr');
+		for (var i = 0; i < metadataRows.length - 1; i++) {
+			var key = metadataRows[i].querySelector('.metadata-key').value;
+			var value = metadataRows[i].querySelector('.metadata-value').value;
+			if (key) {
+				metadata[key] = value;
 			}
-		};
-		document.querySelector('.metadata-table tbody').innerHTML = '<tr><td colspan="3">Loading...</td></tr>';
-		document.querySelector('.metadata-table tfoot').setAttribute('hidden', 'hidden');
-
-		if (FileManager.Current().isContainersList()) {
-			args.containerName = FileManager.Path(path).withoutAccount();
-			SwiftV1.updateContainerMetadata(args);
-		} else {
-			args.path = FileManager.Path(path).withoutAccount();
-			SwiftV1.updateFileMetadata(args);
 		}
+		return metadata;
+	}
 
-		function metadataToAdd() {
-			var metadata = {};
-			var metadataRows = document.querySelectorAll('.metadata-table tbody tr');
-			for (var i = 0; i < metadataRows.length - 1; i++) {
-				var key = metadataRows[i].querySelector('.metadata-key').value;
-				var value = metadataRows[i].querySelector('.metadata-value').value;
-				if (key) {
-					metadata[key] = value;
-				}
+	function metadataToRemove() {
+		var metadataToRemoveList = [];
+		var metadataToAddList = metadataToAdd();
+		var metadataToAddKeys = Object.keys(metadataToAddList);
+		var initialKeys = Object.keys(FileManager.Metadata.initialMetadata);
+		for (var i = 0; i < initialKeys.length; i++) {
+			var initialKey = initialKeys[i];
+			if (metadataToAddKeys.indexOf(initialKey) == -1) {
+				metadataToRemoveList.push(initialKey);
 			}
-			return metadata;
 		}
-
-		function metadataToRemove() {
-			var metadataToRemoveList = [];
-			var metadataToAddList = metadataToAdd();
-			var metadataToAddKeys = Object.keys(metadataToAddList);
-			var initialKeys = Object.keys(initialMetadata);
-			for (var i = 0; i < initialKeys.length; i++) {
-				var initialKey = initialKeys[i];
-				if (metadataToAddKeys.indexOf(initialKey) == -1) {
-					metadataToRemoveList.push(initialKey);
-				}
-			}
-			return metadataToRemoveList;
-		}
-	};
-
-})();
+		return metadataToRemoveList;
+	}
+};
 
 
 FileManager.ContentType = {};
 
-FileManager.ContentType.show = function () {
+FileManager.ContentType.showLoading = function () {
 	document.querySelector('.content-type-table').removeAttribute('hidden');
-	var path = FileManager.Item.selectedPath;
+};
 
-	SwiftV1.File.head({
-		path: FileManager.Path(path).withoutAccount(),
-		success: function (metadata, contentType) {
-			FileManager.Item.metadata = metadata;
+FileManager.ContentType.showError = function (status, statusText) {
+	// TODO: error treatment.
+	alert('Error' + status + ' ' + statusText);
+};
 
-			document.querySelector('.content-type-table .content-type-input').value = contentType;
-			document.querySelector('.content-type-table .loading').setAttribute('hidden', 'hidden');
-			document.querySelector('.content-type-table .input-group-table').removeAttribute('hidden');
-		},
-		error: function (status, statusText) {
-			// TODO: error treatment.
-			alert('Error' + status + ' ' + statusText);
-		}
-	});
+FileManager.ContentType.load = function (contentType) {
+
+	document.querySelector('.content-type-table .content-type-input').value = contentType;
+	document.querySelector('.content-type-table .loading').setAttribute('hidden', 'hidden');
+	document.querySelector('.content-type-table .input-group-table').removeAttribute('hidden');
 };
 
 FileManager.ContentType.click = function () {
@@ -1052,6 +1101,80 @@ FileManager.ContentType.click = function () {
 	});
 };
 
+FileManager.Rights = {};
+
+FileManager.Rights.showLoading = function () {
+	document.querySelector('.rights-table').removeAttribute('hidden');
+};
+
+FileManager.Rights.load = function (rights) {
+	document.querySelector('.read-rights-input').value = rights.read;
+	document.querySelector('.write-rights-input').value = rights.write;
+	document.querySelector('.rights-table .loading').setAttribute('hidden', 'hidden');
+	document.querySelector('.rights-table tbody').removeAttribute('hidden');
+};
+
+FileManager.Rights.sharedContainers = function () {
+	var html = '<tr><td colspan="3">Cannot show metadata for shared container.</td></tr>';
+	document.querySelector('.rights-table tbody').innerHTML = html;
+	document.querySelector('.rights-table .loading').setAttribute('hidden', 'hidden');
+	document.querySelector('.rights-table tbody').removeAttribute('hidden');
+};
+
+FileManager.Rights.hide = function () {
+	document.querySelector('.rights-table').setAttribute('hidden', 'hidden');
+};
+
+FileManager.Rights.keyup = function () {
+	document.querySelector('.rights-table tfoot').removeAttribute('hidden');
+};
+
+FileManager.Rights.save = function () {
+	SharedContainersOnSwift.updateRights({
+		containerName: FileManager.Path(FileManager.Item.selectedPath).container(),
+		readRights: document.querySelector('.read-rights-input').value,
+		writeRights: document.querySelector('.write-rights-input').value,
+		updated: function () {
+			document.querySelector('.clicked').click();
+		},
+		error: function (status, statusText) {
+			// TODO: error treatment.
+			alert(status + ' ' + statusText);
+		}
+	});
+};
+
+FileManager.Rights.discardChanges = function () {
+	document.querySelector('.clicked').click();
+};
+
+FileManager.Copy = {};
+
+FileManager.Copy.show = function () {
+	document.querySelector('.copy-input').value = FileManager.Item.selectedPath;
+	document.querySelector('.copy-table').removeAttribute('hidden');
+};
+
+FileManager.Copy.click = function () {
+	document.querySelector('.copy-table tbody').setAttribute('hidden', 'hidden');
+	document.querySelector('.copy-loading').removeAttribute('hidden');
+	var copyTo = FileManager.Path(document.querySelector('.copy-input').value).withoutAccount();
+	SwiftV1.copyFile({
+		path: copyTo,
+		copyFrom: FileManager.Path(FileManager.Item.selectedPath).withoutAccount(),
+		copied: function () {
+			alert('File copied successfully!');
+			document.querySelector('.copy-loading').setAttribute('hidden', 'hidden');
+			document.querySelector('.copy-table tbody').removeAttribute('hidden');
+		},
+		error: function (status, statusText) {
+			// TODO: error treatment.
+			alert(status + ' ' + statusText);
+			document.querySelector('.copy-loading').setAttribute('hidden', 'hidden');
+			document.querySelector('.copy-table tbody').removeAttribute('hidden');
+		}
+	});
+};
 
 FileManager.File = {};
 
@@ -2106,6 +2229,18 @@ document.addEventListener('click', function (e) {
 		FileManager.ExecuteReport.remove();
 	} else if (el = is('execute-full-button')) {
 		FileManager.ExecuteReport.showFullReport(el);
+	} else if (el = is('copy-button')) {
+		FileManager.Copy.click(el);
+	} else if (el = is('upload-as-button')) {
+		FileManager.UploadAs.click(el);
+	}
+
+	else if (FileManager.SHARED_CONTAINERS) {
+		if (el = is('rights-save')) {
+			FileManager.Rights.save();
+		} else if (el = is('rights-discard-changes')) {
+			FileManager.Rights.discardChanges();
+		}
 	}
 
 	function is(className) {
@@ -2207,12 +2342,25 @@ document.addEventListener('keydown', function (e) {
 		}
 	}
 
+	if (e.target.classList.contains('copy-input')) {
+
+		if (e.which == 13) {
+			FileManager.Copy.click();
+			return;
+		}
+	}
 });
 
 document.addEventListener('keyup', function (e) {
 
 	if (e.target.classList.contains('metadata-key') || e.target.classList.contains('metadata-value')) {
 		FileManager.Metadata.keyup(e.target);
+	}
+
+	if (FileManager.SHARED_CONTAINERS) {
+		if (e.target.classList.contains('read-rights-input') || e.target.classList.contains('write-rights-input')) {
+			FileManager.Rights.keyup(e.target);
+		}
 	}
 });
 
