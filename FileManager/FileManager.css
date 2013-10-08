@@ -491,8 +491,7 @@ input[type=file] {
 	border-bottom: 2px #fa8072 dotted !important;
 }
 
-.metadata-table,
-.content-type-table {
+.item-menu table {
 	width: calc(100% - 10px);
 	width: -webkit-calc(100% - 10px);
 	margin: 10px 5px;
@@ -525,7 +524,9 @@ input[type=file] {
 }
 
 .metadata-save,
-.metadata-discard-changes {
+.metadata-discard-changes,
+.rights-save,
+.rights-discard-changes {
 	width: 120px;
 	height: 30px;
 	padding: 5px;
@@ -539,6 +540,10 @@ input[type=file] {
 
 .metadata-save {
 	float: right;
+}
+
+.rights-table tfoot td {
+	text-align: center;
 }
 
 .err-msg {
