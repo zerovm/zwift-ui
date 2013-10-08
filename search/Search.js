@@ -420,5 +420,5 @@ document.addEventListener('click', function (e) {
 
 document.addEventListener('DOMContentLoaded', function () {
 	ZLitestackDotCom.init();
-	window.progressBar = new ProgressBar($(".progress-bar"), 53);//TODO: is there any name space?
+	//window.progressBar = new ProgressBar($(".progress-bar"), 53);//TODO: is there any name space?
 });
