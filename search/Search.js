@@ -40,8 +40,9 @@ if (!String.prototype.endsWith) {
 
 var SearchApp = {};
 
-SearchApp.search = function () {
-	var input = parse(document.querySelector('.search-input').value);
+SearchApp.search = function (callbackObj) {
+	var input, text = callbackObj.searchText;
+	input = parse(text);
 	function parse(str) {
 		var arr = str.split('"');
 		for (var i = 1; i < arr.length; i += 2) {
@@ -75,7 +76,7 @@ SearchApp.search = function () {
 				'exec' :
 				{
 					'path' : 'swift://' + account + '/search/sys/search.nexe',
-					'args' : '-c index/zsphinx.conf -i mainindex -w -m ' + input
+					'args' : '-c index/zsphinx.conf -i mainindex -ws -m ' + input
 				},
 				'file_list' :
 					[
@@ -100,15 +101,16 @@ SearchApp.search = function () {
 			data: data,
 			contentType: 'application/json',
 			success: function (result, report) {
-				var locations = [];
-				var spl = result.split('filename=/');
-				for (var i = 1; i < spl.length; i++) {
-					locations[locations.length] = spl[i].split(', ')[0];
-				}
+				var locations;
+				locations = result.split(/\d. document=/).map(function(str){
+					return str && str.split(",")[2];
+				}).filter(function(str){
+						return str;
+					});
 
 				var html = '';
 
-				if (locations.length == 0) {
+				if (!result) {
 					html = 'No results.';
 				} else {
 					var iconHtml;
@@ -134,7 +136,20 @@ SearchApp.search = function () {
 					}
 				}
 
+				if(callbackObj.callbackInit){
+					if (!result) {
+						callbackObj.searchFail = true;
+						console.log(result)
+					}else{
+						callbackObj.searchFail = false;
+					}
+					callbackObj.callbackInit(callbackObj);
+				}
 				searchResultsEl.innerHTML = html;
+				console.log("---------------------------------------")
+				console.log(result)
+				console.log(report)
+				console.log("---------------------------------------")
 			},
 			error: function (status, statusText, response) {
 				searchResultsEl.textContent = 'Http Error: ' + status + ' ' + statusText + '. Execute response: ' + response;
@@ -144,7 +159,7 @@ SearchApp.search = function () {
 	}
 };
 
-SearchApp.index = function () {
+SearchApp.index = function (path, callback, callbackParams) {
 
 	var indexingResult;
 
@@ -159,6 +174,7 @@ SearchApp.index = function () {
 	function createConfiguration() {
 		var account = ZLitestackDotCom.getAccount();
 		//var account = ClusterAuth.getAccount();
+		console.log("swift://" + account + "/" + path)
 		return [
 			{
 				"name" : "filesender",
@@ -168,7 +184,7 @@ SearchApp.index = function () {
 				},
 				"file_list" :
 					[
-						{"device" : "input", "path" : "swift://" + account + "/" + document.querySelector('.index-input').value},
+						{"device" : "input", "path" : "swift://" + account + "/" + path},
 						{"device" : "stderr"}
 					],
 				"connect" : ["pdf", "txt", "doc", "other"],
@@ -261,6 +277,7 @@ SearchApp.index = function () {
 			success: function (result, report) {
 				indexingResult = result;
 				merge(JSON.stringify(createMergeConfiguration()));
+				callback(callbackParams);
 			},
 			error: function (status, statusText, response) {
 				indexResultEl.textContent = 'Http Error: ' + status + ' ' + statusText + '. Execute response: ' + response;
@@ -272,7 +289,7 @@ SearchApp.index = function () {
 	function read(blob) {
 		indexResultEl.textContent = 'Reading result...';
 		var reader = new FileReader();
-		reader.addEventListener('load', function (e) {
+		reader.add=EventListener('load', function (e) {
 			indexResultEl.textContent = e.target.result;
 			document.querySelector('.index-result-close-button').removeAttribute('hidden');
 		});
@@ -327,98 +344,3 @@ SearchApp.index = function () {
 		];
 	}
 };
-
-function ProgressBar(ele, partsNum){
-	var chunkNum, chunkSize = 50, curChunk = 0, chunkPercent;
-	chunkNum = partsNum % chunkSize;
-	if(partsNum - chunkNum * chunkSize !== 0){
-		chunkNum += 1;
-	}
-	chunkPercent = 100 / chunkNum;
-	ele.progressbar({
-		value: 0
-	});
-	this.setValue = function(value){
-		ele.progressbar({value: value});
-	};
-	this.updateChunk = function(){
-		this.setValue(++curChunk);
-	}
-}
-
-document.addEventListener('keydown', function (e) {
-
-	if (isSearchInput(e)) {
-		searchInputKeydown(e);
-	} else if (isIndexInput(e)) {
-		indexInputKeyDown(e);
-	}
-
-	function isSearchInput(e) {
-		return e.target.classList.contains('search-input');
-	}
-
-	function isIndexInput(e) {
-		return e.target.classList.contains('index-input');
-	}
-
-	function searchInputKeydown(e) {
-		e.target.classList.remove('invalid-input');
-
-		if (e.keyCode === 13) {
-			if (e.target.value === '') {
-				e.target.classList.add('invalid-input');
-				return;
-			}
-			SearchApp.search();
-		} else {
-			document.querySelector('.search-results').innerHTML = 'Type "Enter" to view results.';
-		}
-	}
-
-	function indexInputKeyDown(e) {
-		e.target.classList.remove('invalid-input');
-
-		if (e.keyCode === 13) {
-			if (e.target.value === '') {
-				e.target.classList.add('invalid-input');
-				return;
-			}
-			SearchApp.index();
-		}
-	}
-});
-
-document.addEventListener('click', function (e) {
-
-	if (isIndexButton(e)) {
-		SearchApp.index();
-	} else if (isIndexResultCloseButton(e)) {
-		indexResultCloseButtonClick(e);
-	} else if (isSearchButton(e)) {
-		SearchApp.search();
-	}
-
-	function isIndexButton(e) {
-		return e.target.classList.contains('index-button');
-	}
-
-	function isIndexResultCloseButton(e) {
-		return e.target.classList.contains('index-result-close-button');
-	}
-
-	function isSearchButton(e) {
-		return e.target.classList.contains('search-button');
-	}
-
-	function indexResultCloseButtonClick(e) {
-		var indexResultEl = document.querySelector('.index-result');
-		indexResultEl.setAttribute('hidden', 'hidden');
-		e.target.setAttribute('hidden', 'hidden');
-	}
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-	ZLitestackDotCom.init();
-	//window.progressBar = new ProgressBar($(".progress-bar"), 53);//TODO: is there any name space?
-});
