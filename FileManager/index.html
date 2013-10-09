@@ -22,8 +22,6 @@
 
 <div class="center">
 	<div class="fixed-background"></div>
-	<div class="fixed-background-left"></div>
-	<div class="fixed-background-right"></div>
 
 	<!-- header -->
 	<div class="fixed-top center">
@@ -49,6 +47,11 @@
 					<td><input class="create-container-input" placeholder="Container Name"></td>
 					<td class="create-container-button">+</td>
 				</tr>
+				<tr class="err-msg create-container-error-ajax" hidden>
+					<td></td>
+					<td>Error: <span class="status"></span> <span class="status-text"></span>.</td>
+					<td></td>
+				</tr>
 				<tr class="err-msg create-container-error-max-length" hidden>
 					<td></td>
 					<td>Container name must be until 256 characters.</td>
@@ -72,6 +75,11 @@
 					<td><input class="add-shared-input-container" placeholder="Container Name"></td>
 					<td class="add-shared-button">+</td>
 				</tr>
+				<tr class="err-msg add-shared-error-ajax" hidden>
+					<td></td>
+					<td>Error: <span class="status"></span> <span class="status-text"></span>.</td>
+					<td></td>
+				</tr>
 				<tr class="err-msg add-shared-error" hidden>
 					<td></td>
 					<td colspan="2">Cannot add specified container.</td>
@@ -85,6 +93,11 @@
 					<td><img src="img/folder.png"></td>
 					<td><input class="create-directory-input" placeholder="Directory Name"></td>
 					<td class="create-directory-button">+</td>
+				</tr>
+				<tr class="err-msg create-directory-error-ajax" hidden>
+					<td></td>
+					<td>Error: <span class="status"></span> <span class="status-text"></span>.</td>
+					<td></td>
 				</tr>
 				<tr class="err-msg create-directory-error-invalid-character" hidden>
 					<td></td>
@@ -104,21 +117,30 @@
 					<td><input class="create-file-input-type" placeholder="Content Type" value="text/plain"></td>
 					<td class="create-file-button">+</td>
 				</tr>
+				<tr class="err-msg create-file-error-ajax" hidden>
+					<td></td>
+					<td>Error: <span class="status"></span> <span class="status-text"></span>.</td>
+					<td></td>
+				</tr>
 			</table>
 
-			<div class="div-button upload-files" style="width: 49%;"><input type="file" multiple><img src="img/upload.png"><span>Upload Files</span></div>
-							<div class="div-button upload-as" style="width: 48%;"><input type="file" multiple><img src="img/upload-as.png"><span>Upload As</span></div>
+			<div class="div-button upload-files" style="width: 49.5%;"><input type="file" multiple><img src="img/upload.png"><span>Upload Files</span></div>
+							<div class="div-button upload-as" style="width: 49%;"><input type="file" multiple><img src="img/upload-as.png"><span>Upload As</span></div>
 			<!--				<div class="div-button upload-execute" style="width: 33%;"><input type="file"><img src="img/execute.png"><span>Upload & Execute</span></div>-->
 		</div>
 		<div class="menu-file dialog" hidden>
 			<button class="undo txt-btn" disabled></button><button class="redo txt-btn" disabled></button><button class="save txt-btn" disabled></button><button class="save-as">Save As...</button>
 			<a href="#" class="download-link" target="_blank">Download</a>
+			<div class="editor-toolbar-error" hidden>Error: <span class="status"></span> <span class="status-text"></span>.</div>
 			<table class="input-group-table save-as-dialog" hidden>
 				<tr>
 					<td><img src="img/file_txt.png"></td>
 					<td><input class="save-as-input-path" placeholder="File Path"></td>
 					<td><input class="save-as-input-type" placeholder="Content Type"></td>
 					<td class="save-as-button">+</td>
+				</tr>
+				<tr class="save-as-error-ajax" hidden>
+					<td colspan="4">Error: <span class="status"></span> <span class="status-text"></span>.</td>
 				</tr>
 			</table>
 		</div>
@@ -153,8 +175,8 @@
 				<label class="name">{{name}}</label>
 			</span>
 			<span class="right">
-				<label class="size"></label>
-				<label class="files"></label>
+				<label class="size">...</label>
+				<label class="files">...</label>
 				<label class="delete">X</label>
 			</span>
 	</div>
@@ -186,12 +208,8 @@
 	</div>
 </template>
 
-<template id="leftScrollingContentTemplate">
-	<div class="left-scrolling-content scrolling-content"></div>
-</template>
-
-<template id="rightScrollingContentTemplate">
-	<div class="right-scrolling-content scrolling-content"></div>
+<template id="newScrollingContentTemplate">
+	<div class="new-scrolling-content scrolling-content"></div>
 </template>
 
 <template id="itemLoadingTemplate">
@@ -243,21 +261,24 @@
 
 		<table class="rights-table" hidden>
 			<thead>
-			<tr>
-				<th colspan="3">Rights</th>
-			</tr>
-			<tr class="loading">
-				<td colspan="3">Loading...</td>
-			</tr>
+				<tr>
+					<th colspan="3">Rights</th>
+				</tr>
+				<tr class="loading">
+					<td colspan="3">Loading...</td>
+				</tr>
+				<tr class="rights-error-ajax" hidden>
+					<td colspan="3">Error: <span class="status"></span> <span class="status-text"></span>.</td>
+				</tr>
 			</thead>
 			<tbody hidden>
 			<tr>
 				<td style="width: 1px;">Read</td>
-				<td><input class="read-rights-input" placeholder="Read Rights" style="width: 98%;"></td>
+				<td><input class="read-rights-input" placeholder="Read Rights"></td>
 			</tr>
 			<tr style="width: 1px;">
 				<td>Write</td>
-				<td><input class="write-rights-input" placeholder="Write Rights" style="width: 98%;"></td>
+				<td><input class="write-rights-input" placeholder="Write Rights"></td>
 			</tr>
 			</tbody>
 			<tfoot hidden>
@@ -269,14 +290,17 @@
 
 		<table class="content-type-table" hidden>
 			<thead>
-			<tr>
-				<th colspan="3">Content Type</th>
-			</tr>
-			<tr class="loading">
-				<td colspan="3">Loading...</td>
-			</tr>
+				<tr>
+					<th colspan="3">Content Type</th>
+				</tr>
+				<tr class="loading">
+					<td colspan="3">Loading...</td>
+				</tr>
+				<tr class="content-type-error-ajax" hidden>
+					<td colspan="3">Error: <span class="status"></span> <span class="status-text"></span>.</td>
+				</tr>
 			</thead>
-			<tbody class="input-group-table" hidden>
+			<tbody class="input-group-table" style="background: transparent;" hidden>
 			<tr>
 				<td><img src="img/file_type.png"></td>
 				<td><input class="content-type-input" placeholder="Content Type"></td>
@@ -287,32 +311,41 @@
 
 		<table class="metadata-table">
 			<thead>
-			<tr>
-				<th colspan="2">Metadata</th>
-				<td></td>
-			</tr>
+				<tr>
+					<th colspan="2">Metadata</th>
+					<td></td>
+				</tr>
+				<tr class="metadata-loading">
+					<td colspan="3">Loading...</td>
+				</tr>
+				<tr class="metadata-error-ajax" hidden>
+					<td colspan="3">Error: <span class="status"></span> <span class="status-text"></span>.</td>
+				</tr>
 			</thead>
 			<tbody>
 			</tbody>
 			<tfoot hidden>
-			<tr>
-				<td><button class="metadata-save">Save</button></td>
-				<td><button class="metadata-discard-changes">Discard Changes</button></td>
-				<td></td>
-			</tr>
+				<tr>
+					<td><button class="metadata-save">Save</button></td>
+					<td><button class="metadata-discard-changes">Discard Changes</button></td>
+					<td></td>
+				</tr>
 			</tfoot>
 		</table>
 
 		<table class="copy-table" hidden>
 			<thead>
-			<tr>
-				<th colspan="3">Copy</th>
-			</tr>
-			<tr class="copy-loading" hidden="">
-				<td colspan="3">Loading...</td>
-			</tr>
+				<tr>
+					<th colspan="3">Copy</th>
+				</tr>
+				<tr class="copy-loading" hidden="">
+					<td colspan="3">Loading...</td>
+				</tr>
+				<tr class="copy-error-ajax" hidden>
+					<td colspan="3">Error: <span class="status"></span> <span class="status-text"></span>.</td>
+				</tr>
 			</thead>
-			<tbody class="input-group-table">
+			<tbody class="input-group-table" style="background: transparent;">
 			<tr>
 				<td><img src="img/copy.png"></td>
 				<td><input class="copy-input" placeholder="Copy to..."></td>
@@ -327,14 +360,16 @@
 	<tr>
 		<td><input class="metadata-key" placeholder="Key" value="{{key}}"></td>
 		<td><input class="metadata-value" placeholder="Value" value="{{value}}"></td>
-		<td class="remove-metadata">X</td>
+		<td class="remove-metadata">x</td>
 	</tr>
 </template>
 
 <template id="itemConfirmDeleteTemplate">
 	<div class="item-confirm-delete">
-		<span style="float: left;margin: 5px;">Are you sure you want delete?</span>
-		<span class="delete-label" style="float: right;"><button class="delete-button"> Delete</button></span>
+		<div class="delete-label" style="margin: 8px;display: inline-block;">Are you sure you want delete?</div>
+		<button class="delete-button" style="float: right;">Delete</button>
+		<label class="delete-deleting-label" hidden>Deleting...</label>
+		<label class="delete-error-ajax" hidden>Error: <span class="status"></span> <span class="status-text"></span>.</label>
 	</div>
 </template>
 
@@ -344,7 +379,12 @@
 			<td><img src="img/file.png"></td>
 			<td style="text-align: left;"><label class="upload-label-name">{{upload-label-name}}</label></td>
 			<td style="text-align: right;"><span class="progresslabel">&nbsp;0%&nbsp;</span><progress style="width: 100px;" class="upload-progress" max="100" value="0"></progress></td>
-			<td class="cancel-upload-button">X</td>
+			<td class="cancel-upload-button">x</td>
+		</tr>
+		<tr class="err-msg error" hidden>
+			<td></td>
+			<td colspan="2">Error: <span class="status"></span> <span class="status-text"></span>.</td>
+			<td></td>
 		</tr>
 	</table>
 </template>
@@ -376,17 +416,17 @@
 							<td class="execute-report-part-name">
 								Status
 							</td>
-							<td id="execute-status-val">
-
-							</td>
+						</tr>
+						<tr>
+							<td id="execute-status-val"></td>
 						</tr>
 						<tr id="execute-error-tr" hidden>
 							<td class="execute-report-part-name">
 								Error
 							</td>
-							<td id="execute-error-val">
-
-							</td>
+						</tr>
+						<tr>
+							<td id="execute-error-val"></td>
 						</tr>
 						</tbody>
 					</table>
@@ -398,7 +438,7 @@
 				</td>
 			</tr>
 			<tr><td>
-				<table>
+				<table class="billing-report-table">
 					<thead>
 					<tr>
 						<th id="billing-report-title">Billing Report</th>
