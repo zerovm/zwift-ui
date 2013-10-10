@@ -12,6 +12,9 @@ var ZipLib = {};
 		if (entryIndex == entries.length) {
 			entryIndex = 0;
 			entries = null;
+			Object.keys(zipFiles).forEach(function(fileObjName){
+				zipFiles[fileObjName].type = extToMIME(fileObjName);
+			});
 			callback(zipFiles);
 			return;
 		}
