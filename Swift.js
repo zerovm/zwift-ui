@@ -392,6 +392,7 @@ var ClusterAuth = {};
 			});
 		}
 		xhr.send();
+		return xhr;
 	};
 
 	SwiftV1.File.post = function (args) {
@@ -1213,8 +1214,7 @@ var ClusterAuth = {};
 		document.querySelector('.cluster-auth').parentNode.removeAttribute('hidden');
 	};
 
-})();on () {
-		return xStorageUrl;
+})();rn xStorageUrl;
 	};
 
 	ClusterAuth.signOut = function () {
