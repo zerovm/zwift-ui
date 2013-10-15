@@ -54,6 +54,7 @@ function ProgressBar(selector, len, chunkSize){//TODO: extract into separated fi
 	function GrepApp(indexInputEl, searchInputEl){
 		that = this;
 		indexInput = indexInputEl;
+		indexInputValue = indexInputEl.value;
 		searchInput = searchInputEl;
 	}
 
@@ -62,9 +63,6 @@ function ProgressBar(selector, len, chunkSize){//TODO: extract into separated fi
 			path;
 		if(indexInputValue !== el.value){
 			pathFiles = null;
-			if(!indexInputValue){
-				indexInputValue = el.value;
-			}
 			splittedPath = el.value.split(/(\/.*)/);
 			path = splittedPath[1];
 			containerName = splittedPath[0];
@@ -82,7 +80,7 @@ function ProgressBar(selector, len, chunkSize){//TODO: extract into separated fi
 					if(response.length){
 						pathFiles = [];
 						indexResultEl.setAttribute(HIDDEN_ATTRIBUTE, HIDDEN_ATTRIBUTE);
-						createIndexedFIlesArray(response, callback);
+						createIndexedFilesArray(response, callback);
 					}else{
 						indexResultEl.innerHTML = 'There is no such directory.';
 					}
@@ -117,6 +115,7 @@ function ProgressBar(selector, len, chunkSize){//TODO: extract into separated fi
 				}
 				console.log("search ended")
 			}else{
+				console.log("searched again")
 				isSearchEnded = false;
 				chunkCallsCounter++;
 				if(!paramObj.callbackInit){
@@ -128,12 +127,12 @@ function ProgressBar(selector, len, chunkSize){//TODO: extract into separated fi
 				//second parameter is callback on success request
 				//paramObj contains link to this function (chunkCalls), which will be called from callback of callback passed to SearchApp.index
 				//this case on success index calls search, on search success calls chunkCalls, which handles how much times search should be called
-				SearchApp.index(containerName + DELIMITER + pathFiles[chunkCallsCounter].name, SearchApp.search, paramObj);
+				SearchApp.search(paramObj);
 			}
 		}
 	}
 
-	function createIndexedFIlesArray(response, callback){
+	function createIndexedFilesArray(response, callback){
 		var i;
 		if(response){
 			for(i = 0; i < response.length; i++){
@@ -162,7 +161,7 @@ function ProgressBar(selector, len, chunkSize){//TODO: extract into separated fi
 
 	};
 	GrepApp.prototype.index = function(){
-
+		SearchApp.index(indexInputValue);
 	};
 	GrepApp.prototype.disableSearch = function(){
 		isStopSearch = true;
@@ -195,3 +194,38 @@ function ProgressBar(selector, len, chunkSize){//TODO: extract into separated fi
 
 	window.scrollHendler = scrollHendler;
 })();
+
+/*
+ function ProgressBar(selector, len){//TODO: extract into separated file
+ var chunkNum, curChunk = 0, chunkPercent, that = this, ele;
+
+ function updateChunk(){
+ var value = ++curChunk * chunkPercent;
+ that.setValue(value);
+ if(value > 99){
+ setTimeout(function(){
+ that.reset();
+ }, 100);
+ }
+ }
+
+ function resetProgress(){
+ ele.progressbar({
+ value: 0
+ });
+ }
+
+ ele = $(selector);
+ resetProgress();
+ this.setValue = function(value){
+ ele.progressbar({value: value});
+ };
+ this.updateChunk = function(){
+ chunkNum = Math.ceil(len / INDEX_LIMIT);
+ chunkPercent = 100 / chunkNum;
+ updateChunk();
+ that.updateChunk = updateChunk;
+ };
+ this.reset = resetProgress;
+ }
+*/

@@ -158,7 +158,7 @@ SearchApp.search = function () {
 	}
 };
 
-SearchApp.index = function () {
+SearchApp.index = function (path) {
 
 	var indexingResult, mergingResult;
 
@@ -179,7 +179,7 @@ SearchApp.index = function () {
 				},
 				"file_list" :
 					[
-						{"device" : "input", "path" : "swift://" + FileStorage.getAccountId() + "/" + document.querySelector('.index-input').value},
+						{"device" : "input", "path" : "swift://" + FileStorage.getAccountId() + "/" + path},
 						{"device" : "stderr"}
 					],
 				"connect" : ["pdf", "txt", "doc", "other"],
@@ -283,7 +283,7 @@ SearchApp.index = function () {
 	function read(blob) {
 		indexResultEl.textContent = 'Reading result...';
 		var reader = new FileReader();
-		reader.add=EventListener('load', function (e) {
+		reader.addEventListener('load', function (e) {
 			indexResultEl.textContent = e.target.result;
 			document.querySelector('.index-result-close-button').removeAttribute('hidden');
 		});

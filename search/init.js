@@ -21,7 +21,14 @@ document.addEventListener('DOMContentLoaded', function(){
 			}
 
 		}else if(isIndexInput(e)){
-			indexInputKeyDown(e);
+			if(e.keyCode === 13){
+				if(e.target.value === ''){
+					e.target.classList.add('invalid-input');
+					return;
+				}
+				e.target.classList.remove('invalid-input');
+				index();
+			}
 		}
 
 		function isSearchInput(e){
@@ -58,9 +65,6 @@ document.addEventListener('DOMContentLoaded', function(){
 			}, 300);
 		}
 
-		function indexInputKeyDown(e){
-			e.target.classList.remove('invalid-input');
-		}
 	});
 
 	document.addEventListener('click', function(e){

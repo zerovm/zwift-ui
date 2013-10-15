@@ -3,12 +3,12 @@
     	"name" : "search",
 		"exec" : 
         {
-        	"path" : "swift://g_116439323025896979253/search/sys/search.nexe",
+        	"path" : "swift://g_111470454273605712703/search/sys/search.nexe",
             "args" : "-c index/zsphinx.conf -stdin -i mainindex -w -m manifest"
         },
 		"file_list" : 
 		[
-			{"device" : "input", "path" : "swift://g_116439323025896979253/search/sys/rwindex"},
+			{"device" : "input", "path" : "swift://g_111470454273605712703/search/sys/rwindex"},
 			{"device" : "stdout"},
 			{"device" : "stderr"}
 		]

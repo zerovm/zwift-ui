@@ -41,16 +41,16 @@ if (!String.prototype.endsWith) {
 var SearchApp = {};
 
 SearchApp.search = function (callbackObj) {
-	var input, text = callbackObj.searchText;
+	var input, text = callbackObj.searchText, i;
 	input = parse(text);
 	function parse(str) {
 		var arr = str.split('"');
-		for (var i = 1; i < arr.length; i += 2) {
+		for (i = 1; i < arr.length; i += 2) {
 			arr[i] = arr[i].replace(':', ' ');
 		}
 		str = arr.join('');
 		arr = str.split(' ');
-		for (var i = 0; i < arr.length; i++) {
+		for (i = 0; i < arr.length; i++) {
 			if (arr[i].indexOf(':') != -1) {
 				arr[i] = '-j ' + arr[i].replace(':', ' ');
 			}
@@ -76,7 +76,7 @@ SearchApp.search = function (callbackObj) {
 				'exec' :
 				{
 					'path' : 'swift://' + account + '/search/sys/search.nexe',
-					'args' : '-c index/zsphinx.conf -i mainindex -ws -m ' + input
+					'args' : '-c index/zsphinx.conf -i mainindex -w -m ' + input
 				},
 				'file_list' :
 					[
@@ -271,13 +271,15 @@ SearchApp.index = function (path, callback, callbackParams) {
 
 	function index(data) {
 		indexResultEl.textContent = 'Indexing...';
+		console.log("execute index")
+		console.log(data)
 		ZeroVmOnSwift.execute({
 			data: data,
 			contentType: 'application/json',
 			success: function (result, report) {
 				indexingResult = result;
 				merge(JSON.stringify(createMergeConfiguration()));
-				callback(callbackParams);
+				callback && callback(callbackParams);
 			},
 			error: function (status, statusText, response) {
 				indexResultEl.textContent = 'Http Error: ' + status + ' ' + statusText + '. Execute response: ' + response;
