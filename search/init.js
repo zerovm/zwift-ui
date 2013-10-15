@@ -74,6 +74,8 @@ document.addEventListener('DOMContentLoaded', function(){
 			indexResultCloseButtonClick(e);
 		}else if(isSearchButton(e)){
 			search();
+		}else if(isPreferences(e)){
+			preferences.clickHandler(e.target);
 		}
 
 		function isIndexButton(e){
@@ -86,6 +88,10 @@ document.addEventListener('DOMContentLoaded', function(){
 
 		function isSearchButton(e){
 			return e.target.classList.contains('search-button');
+		}
+
+		function isPreferences(e){
+			return e.target.classList.contains('preferences-element');
 		}
 
 		function indexResultCloseButtonClick(e){

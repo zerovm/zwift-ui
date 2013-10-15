@@ -8,13 +8,34 @@
 	<script src="../../jquery-1.9.1.js"></script>
 	<script src="../../jquery-ui-1.10.3.custom.js"></script>
 	<link rel="stylesheet" href="Search.css" type="text/css">
+	<link rel="stylesheet" href="preferences/preferences.css" type="text/css">
 	<link rel="stylesheet" href="../../jquery-ui-1.10.3.custom.css" type="text/css">
 	<link rel="stylesheet" href="../../progress-bar-customization.css" type="text/css">
 	<script src="Search.js" type="text/javascript"></script>
 	<script src="Grep.js" type="application/javascript"></script>
+	<script src="preferences/preferences.js" type="application/javascript"></script>
 	<script src="init.js" type="text/javascript"></script>
 </head>
 <body>
+<div class="preferences">
+	<button role="toggle" class="show-preferences preferences-element"></button>
+	<div class="preferences-list-wrapper">
+		<ul class="preferences-list">
+			<li>
+				<input role="suggest" class="preferences-element" type="checkbox"/><span>autosuggest</span>
+				<div class="input-slider"></div>
+			</li>
+			<li>
+				<input role="indexing" class="preferences-element" type="checkbox"/><span>indexing</span>
+				<div class="input-slider"></div>
+			</li>
+			<li>
+				<input role="shorttext" class="preferences-element" type="checkbox"/><span>full text</span>
+				<div class="input-slider"></div>
+			</li>
+		</ul>
+	</div>
+</div>
 <div class="index-container">
 	<div style="display: block;position: relative;">
 		<input class="index-input" placeholder="index" value="search/doc/*">

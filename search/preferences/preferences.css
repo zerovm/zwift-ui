@@ -1,0 +1,93 @@
+.preferences{
+	position: relative;
+	float: left;
+}
+.preferences .show-preferences{
+	border: none;
+	outline: none;
+	width: 36px;
+	height: 36px;
+	background: url(gear.jpeg) center center no-repeat;
+	background-size: 100% auto;
+}
+.preferences .preferences-list-wrapper{
+	overflow: hidden;
+	display: inline-block;
+	position: absolute;
+	left: 46px;
+	top: 0;
+}
+.preferences .preferences-list{
+	width: 100px;
+	padding: 0;
+	margin: 0;
+	transform: translate3d(0,-100%,0);
+	-moz-transform: translate3d(0,-100%,0);
+	-webkit-transform: translate3d(0,-100%,0);
+	transition: 155ms transform 0 ease-out;
+	-moz-transition: 155ms -moz-transform 0 ease-out;
+	-webkit-transition: 155ms -webkit-transform 0 ease-out;
+}
+.preferences.visible .preferences-list{
+	transform: translate3d(0,0,0);
+	-moz-transform: translate3d(0,0,0);
+	-webkit-transform: translate3d(0,0,0);
+	transition-duration: 333ms;
+	-moz-transition: 333ms;
+	-webkit-transition: 333ms;
+}
+.preferences .preferences-list li{
+	font-size: 14px;
+	white-space: nowrap;
+	list-style: none;
+	position: relative;
+	margin-bottom: 5px;
+	text-align: right;
+}
+.preferences input{
+	appearance:none;
+	-moz-appearance:none;
+	-webkit-appearance:none;
+	border: none;
+	outline: none;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	left: 0;
+	top: 0;
+	z-index: 10;
+	transform: translateZ(10px);
+	-moz-transform: translateZ(10px);
+	-webkit-transform: translateZ(10px);
+}
+.preferences .input-slider{
+	width: 15px;
+	height: 15px;
+	background: darkgray;
+	border-radius: 50%;
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+.preferences .input-slider,
+.preferences li span{
+	transition: 150ms transform 0 ease-in-out;
+	-moz-transition: 150ms -moz-transform 0 ease-in-out;
+	-webkit-transition: 150ms -webkit-transform 0 ease-in-out;
+}
+.preferences li span{
+	color: #d3d3d3;
+	font-size: 14px;
+	line-height: 14px;
+	transition-property: color;
+	-moz-transition-property: color;
+	-webkit-transition-property: color;
+}
+.preferences li input:checked ~ span{
+	color: black;
+}
+.preferences input:checked ~ .input-slider{
+	transform: translate3d(100%, 0, 0);
+	-moz-transform: translate3d(100%, 0, 0);
+	-webkit-transform: translate3d(100%, 0, 0);
+}
