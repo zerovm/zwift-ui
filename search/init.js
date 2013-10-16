@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function(){
 	var timeout, isIntervalStarted;
 	ZLitestackDotCom.init();
-	window.progressBar = new ProgressBar($(".progress-bar"), 53);//TODO: is there any name space?
+	window.progressBar = new ProgressBar(document.getElementsByClassName("progress-bar")[0]);//TODO: is there any name space?
 	window.grepApp = new GrepApp(document.getElementsByClassName("index-input")[0], document.getElementsByClassName("search-input")[0]);
 
 	document.getElementsByClassName("search-results")[0].addEventListener("scroll", scrollHendler);

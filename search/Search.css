@@ -80,3 +80,7 @@ template {
 .search-results a:visited {
 	color: #511977;
 }
+
+.hide{
+	opacity: 0 !important;
+}

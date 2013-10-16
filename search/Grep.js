@@ -1,36 +1,3 @@
-function ProgressBar(selector, len, chunkSize){//TODO: extract into separated file
-	var chunkNum, curChunk = 0, chunkPercent, that = this, ele;
-
-	function updateChunk(){
-		var value = ++curChunk * chunkPercent;
-		that.setValue(value);
-		if(value > 99){
-			setTimeout(function(){
-				that.reset();
-			}, 100);
-		}
-	}
-
-	function resetProgress(){
-		ele.progressbar({
-			value: 0
-		});
-	}
-
-	ele = $(selector);
-	resetProgress();
-	this.setValue = function(value){
-		ele.progressbar({value: value});
-	};
-	this.updateChunk = function(){
-		chunkNum = Math.ceil(len / chunkSize);
-		chunkPercent = 100 / chunkNum;
-		updateChunk();
-		that.updateChunk = updateChunk;
-	};
-	this.reset = resetProgress;
-}
-
 (function(){
 
 	"use strict"
@@ -124,9 +91,6 @@ function ProgressBar(selector, len, chunkSize){//TODO: extract into separated fi
 				if(!paramObj.searchText){
 					paramObj.searchText = searchInput.value;
 				}
-				//second parameter is callback on success request
-				//paramObj contains link to this function (chunkCalls), which will be called from callback of callback passed to SearchApp.index
-				//this case on success index calls search, on search success calls chunkCalls, which handles how much times search should be called
 				SearchApp.search(paramObj);
 			}
 		}
@@ -194,38 +158,3 @@ function ProgressBar(selector, len, chunkSize){//TODO: extract into separated fi
 
 	window.scrollHendler = scrollHendler;
 })();
-
-/*
- function ProgressBar(selector, len){//TODO: extract into separated file
- var chunkNum, curChunk = 0, chunkPercent, that = this, ele;
-
- function updateChunk(){
- var value = ++curChunk * chunkPercent;
- that.setValue(value);
- if(value > 99){
- setTimeout(function(){
- that.reset();
- }, 100);
- }
- }
-
- function resetProgress(){
- ele.progressbar({
- value: 0
- });
- }
-
- ele = $(selector);
- resetProgress();
- this.setValue = function(value){
- ele.progressbar({value: value});
- };
- this.updateChunk = function(){
- chunkNum = Math.ceil(len / INDEX_LIMIT);
- chunkPercent = 100 / chunkNum;
- updateChunk();
- that.updateChunk = updateChunk;
- };
- this.reset = resetProgress;
- }
-*/
