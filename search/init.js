@@ -1,16 +1,21 @@
 document.addEventListener('DOMContentLoaded', function(){
 	var timeout, isIntervalStarted;
 	ZLitestackDotCom.init();
-	window.progressBar = new ProgressBar(document.getElementsByClassName("progress-bar")[0]);//TODO: is there any name space?
-	window.grepApp = new GrepApp(document.getElementsByClassName("index-input")[0], document.getElementsByClassName("search-input")[0]);
+	if(!window.searchApp){
+		window.searchApp = {};
+	}else{
+		console.log("searchApp already exist");
+	}
+	window.searchApp.progressBar = new window.searchApp.ProgressBar(document.getElementsByClassName("progress-bar")[0]);
+	window.searchApp.grepApp = new GrepApp(document.getElementsByClassName("index-input")[0], document.getElementsByClassName("search-input")[0]);//TODO: rename grep
 
 	document.getElementsByClassName("search-results")[0].addEventListener("scroll", scrollHendler);
 	function index(){
-		grepApp.index();
+		window.searchApp.grepApp.index();
 	}
 
 	function search(){
-		grepApp.search();
+		window.searchApp.grepApp.search();
 	}
 
 	document.addEventListener('keydown', function(e){
@@ -75,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function(){
 		}else if(isSearchButton(e)){
 			search();
 		}else if(isPreferences(e)){
-			preferences.clickHandler(e.target);
+			window.searchApp.preferences.clickHandler(e.target);
 		}
 
 		function isIndexButton(e){

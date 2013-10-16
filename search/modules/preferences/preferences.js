@@ -2,9 +2,9 @@
 	"use strict"
 
 	var preferenceValue = {
-			suggest: false,
-			indexing: false,
-			shorttext: false
+			suggest: true,
+			indexing: true,
+			shorttext: true
 		},
 		showPreferencesClass = "visible";
 
@@ -34,7 +34,7 @@
 		return preferenceValue[name];
 	}
 
-	window.preferences = {
+	window.searchApp.preferences = {
 		clickHandler: clickHandler,
 		getPreference: getPreference
 	};
