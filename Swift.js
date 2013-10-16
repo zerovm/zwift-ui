@@ -555,16 +555,16 @@ var ClusterAuth = {};
 
 	ZeroVmOnSwift.open = function (args) {
 		var accountId = args.hasOwnProperty('account') ? args.account : account;
-		var url = xStorageUrl + 'open/' + account + '/' + args.path;
+		var zwiftUrlPrefix = xStorageUrl.split('/').slice(0, -2).join('/') + '/';
+		var url = zwiftUrlPrefix + 'open/' + accountId + '/' + args.path;
+		window.location = url;
+		/*
 		var xhr = new XMLHttpRequest();
 		xhr.open('GET', url);
 		xhr.addEventListener('load', function (e) {
-			console.log(e);
-			console.log(e.target);
-			console.log(e.target.responseText);
-			console.log(this);
+			args.callback(e.target.responseText);
 		});
-		xhr.send();
+		xhr.send();*/
 	};
 
 	ZeroVmOnSwift.execute = function (args) {
@@ -694,10 +694,8 @@ var ClusterAuth = {};
 
 	SharedContainersOnSwift.addSharedContainer = function (args) {
 		var xhr = new XMLHttpRequest();
-		var tempStorageUrlArr = xStorageUrl.split('/');
-		tempStorageUrlArr.pop();
-		tempStorageUrlArr.pop();
-		var url = tempStorageUrlArr.join('/') + '/load-share/' + args.account + '/' + args.container;
+		var sharedUrlPrefix = xStorageUrl.split('/').slice(0, -2).join('/') + '/';
+		var url = sharedUrlPrefix + '/load-share/' + args.account + '/' + args.container;
 		xhr.open('GET', url);
 		xhr.addEventListener('load', function (e) {
 			if (e.target.status == 401) {
@@ -715,10 +713,8 @@ var ClusterAuth = {};
 
 	SharedContainersOnSwift.removeSharedContainer = function (args) {
 		var xhr = new XMLHttpRequest();
-		var tempStorageUrlArr = xStorageUrl.split('/');
-		tempStorageUrlArr.pop();
-		tempStorageUrlArr.pop();
-		var url = tempStorageUrlArr.join('/') + '/drop-share/' + args.account + '/' + args.container;
+		var sharedUrlPrefix = xStorageUrl.split('/').slice(0, -2).join('/') + '/';
+		var url = sharedUrlPrefix + '/drop-share/' + args.account + '/' + args.container;
 		xhr.open('GET', url);
 		xhr.addEventListener('load', function (e) {
 			if (e.target.status == 401) {
@@ -1025,6 +1021,7 @@ var ClusterAuth = {};
 		var xhr = new XMLHttpRequest();
 		var url = xStorageUrl + account + '/.gui/' + args.filePath;
 		xhr.open('PUT', url);
+		xhr.setRequestHeader('Content-Type', args.contentType);
 		xhr.addEventListener('load', args.callback);
 		xhr.send(args.fileData);
 	};
@@ -1214,13 +1211,7 @@ var ClusterAuth = {};
 		document.querySelector('.cluster-auth').parentNode.removeAttribute('hidden');
 	};
 
-})();rn xStorageUrl;
-	};
-
-	ClusterAuth.signOut = function () {
-		document.querySelector('.cluster-auth .account').value = '';
-		document.querySelector('.cluster-auth .storage-url').value = '';
-		document.querySelector('.cluster-auth').parentNode.removeAttribute('hidden');
+})();ttribute('hidden');
 	};
 
 })();

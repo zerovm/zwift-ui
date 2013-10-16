@@ -2,8 +2,12 @@ html {
 	transition: 5s all;
 	-webkit-transition: 5s all;
 	background-repeat: no-repeat;
-	background-color: #6b91b6;
+
 	background-attachment: fixed;
+	background-image: url('http://www.hdwallpapers.in/walls/small_sea_wave_hdtv_1080p-HD.jpg');
+	/*
+	background-color: #6b91b6;
+	*/
 }
 
 body {
@@ -95,7 +99,7 @@ input[type=file] {
 	width: 32px;
 	height: 32px;
 	border-radius: 5px;
-	border: 0 solid #d3d3d3;
+	border: 0 solid rgba(0, 0, 0, 0.35);
 }
 #header .icon-button:disabled {
 	opacity: 0.5;
@@ -104,8 +108,11 @@ input[type=file] {
 	border-width: 1px;
 }
 #header .icon-button:enabled:active {
-	background-color: #dcdcdc;
+	background-color: rgba(0, 0, 0, 0.35);
 	border-width: 1px;
+	outline: 0;
+}
+#header .icon-button:focus {
 	outline: 0;
 }
 .back-button {
@@ -412,7 +419,7 @@ input[type=file] {
 }
 
 .menu-file .selected {
-	background-color: #D3D3D3;
+	background-color: rgba(0, 0, 0, 0.35);
 }
 
 .menu-file button:disabled {
@@ -420,7 +427,7 @@ input[type=file] {
 }
 
 .menu-file button:enabled:hover {
-	background-color: gainsboro;
+	background-color: rgba(0, 0, 0, 0.35);
 }
 .menu-file button:enabled:active {
 	background-color: rgba(0, 0, 0, 0.35);

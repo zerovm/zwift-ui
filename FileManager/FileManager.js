@@ -171,6 +171,32 @@ FileManager.SignOutButton.click = function () {
 	FileManager.Auth.signOut();
 };
 
+FileManager.OpenButton = {};
+
+FileManager.OpenButton.click = function () {
+
+	var options = {
+		path: FileManager.CurrentPath().withoutAccount(),
+		callback: function (message) {
+			FileManager.ExecuteButton.hide();
+		}
+	};
+
+	if (FileManager.ENABLE_SHARED_CONTAINERS) {
+		options.account = FileManager.CurrentPath().account();
+	}
+
+	ZeroVmOnSwift.open(options);
+};
+
+FileManager.OpenButton.show = function () {
+	document.querySelector('.open-button').removeAttribute('hidden');
+};
+
+FileManager.OpenButton.hide = function () {
+	document.querySelector('.open-button').setAttribute('hidden', 'hidden');
+};
+
 FileManager.ExecuteButton = {};
 
 FileManager.ExecuteButton.click = function () {
@@ -216,7 +242,6 @@ FileManager.ExecuteButton.hide = function () {
 FileManager.ExecuteButton.show = function () {
 	document.querySelector('.execute-button').removeAttribute('hidden');
 };
-
 
 FileManager.ExecuteTimer = {};
 
@@ -295,7 +320,7 @@ FileManager.ExecuteReport.create = function (report) {
 
 		var nodesLength = report.billing.nodes.length;
 		for (var i = 0; i < nodesLength; i++) {
-			document.querySelector('#node-number-tr').insertAdjacentHTML('beforeend', td(getOrdinal(i+1)));
+			document.querySelector('#node-number-tr').insertAdjacentHTML('beforeend', td(i+1));
 			document.querySelector('#node-server-time-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['nodeServerTime'] || '-'));
 
 			document.querySelector('#system-time-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['systemTime'] || '-'));
@@ -324,12 +349,6 @@ FileManager.ExecuteReport.create = function (report) {
 
 		function td(txt) {
 			return '<td class="auto-created-report-td">' + txt + '</td>';
-		}
-
-		function getOrdinal(n) {
-			var s=["th","st","nd","rd"],
-				v=n%100;
-			return n+(s[(v-20)%10]||s[v]||s[0]);
 		}
 	}
 };
@@ -458,7 +477,7 @@ FileManager.CreateDirectory.click = function () {
 		return;
 	}
 
-	if (inputEl.value.indexOf('/') != -1) {
+	if (inputEl.value.indexOf('/') !== -1) {
 		inputEl.classList.add('invalid-input');
 		document.querySelector('.create-directory-error-invalid-character').removeAttribute('hidden');
 		return;
@@ -556,7 +575,7 @@ FileManager.UploadFiles.uploadRequests = [];
 
 FileManager.UploadFiles.change = function (files) {
 	var el = document.querySelector('.upload-files');
-	el.innerHTML = el.innerHTML;
+	el.value = null;
 
 	for (var i = 0; i < files.length; i++) {
 		FileManager.UploadFiles.uploadFile(files[i], files[i].name, files[i].type);
@@ -1061,6 +1080,7 @@ FileManager.Copy.click = function () {
 		path: copyTo,
 		copyFrom: FileManager.Path(FileManager.Item.selectedPath).withoutAccount(),
 		copied: function () {
+			// TODO:
 			alert('File copied successfully!');
 			document.querySelector('.copy-loading').setAttribute('hidden', 'hidden');
 			document.querySelector('.copy-table tbody').removeAttribute('hidden');
@@ -1097,11 +1117,20 @@ FileManager.File.open = function (el, callback) {
 		FileManager.EditButton.hide();
 		FileManager.DoneButton.hide();
 
-		FileManager.ExecuteButton.show();
+		FileManager.OpenButton.show();
+
+		if (isExecutable(contentType)) {
+			FileManager.ExecuteButton.show();
+		}
+
 		document.querySelector('.download-link').setAttribute('href', href);
 		document.querySelector('.download-link').setAttribute('download', filename);
 
 		callback();
+
+		function isExecutable(contentType) {
+			return contentType === 'application/json' || contentType === 'application/x-tar' || contentType === 'application/gtar';
+		}
 
 		function isTextFile(contentType) {
 
@@ -1111,17 +1140,13 @@ FileManager.File.open = function (el, callback) {
 
 			contentType = contentType.split(';')[0];
 
-			if (contentType == 'application/javascript'
+			return (contentType == 'application/javascript'
 				|| contentType == 'application/xml'
 				|| contentType == 'application/x-httpd-php'
 				|| contentType == 'application/json'
 				|| contentType == 'application/php'
 				|| contentType == 'application/x-php'
-				|| contentType.indexOf('text') == 0) {
-
-				return true;
-			}
-			return false;
+				|| contentType.indexOf('text') == 0);
 		}
 	}
 
@@ -1832,6 +1857,7 @@ FileManager.ContentChange.animate = function () {
 
 			FileManager.File.hideMenu();
 			FileManager.ExecuteButton.hide();
+			FileManager.OpenButton.hide();
 		} else if (FileManager.CurrentPath().isFilesList()) {
 			FileManager.Files.list(el, callback);
 
@@ -1843,6 +1869,7 @@ FileManager.ContentChange.animate = function () {
 
 			FileManager.File.hideMenu();
 			FileManager.ExecuteButton.hide();
+			FileManager.OpenButton.hide();
 		} else {
 			// load file
 			FileManager.File.open(el, callback);
@@ -2129,6 +2156,8 @@ document.addEventListener('click', function (e) {
 		FileManager.Copy.click(el);
 	} else if (el = is('upload-as-button')) {
 		FileManager.UploadAs.click(el);
+	} else if (el = is('open-button')) {
+		FileManager.OpenButton.click(el);
 	}
 
 	else if (FileManager.ENABLE_SHARED_CONTAINERS) {

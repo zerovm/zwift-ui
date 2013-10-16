@@ -26,18 +26,18 @@
 	<!-- header -->
 	<div class="fixed-top center">
 		<div id="header" class="center">
-				<span class="left">
-					<button class="back-button icon-button" disabled></button>
-					<label class="current-dir-label"></label>
-				</span>
-				<span class="right">
-					<!--<button class="open-button icon-button" hidden></button>-->
-					<label class="execute-label" hidden></label>
-					<button class="execute-button icon-button" hidden></button>
-					<button class="edit-button icon-button"></button>
-					<button class="done-button icon-button" hidden></button>
-					<button class="sign-out-button icon-button"></button>
-				</span>
+			<span class="left">
+				<button class="back-button icon-button" disabled></button>
+				<label class="current-dir-label"></label>
+			</span>
+			<span class="right">
+				<button class="open-button icon-button" title="Open" hidden></button>
+				<label class="execute-label" hidden></label>
+				<button class="execute-button icon-button" title="Execute" hidden></button>
+				<button class="edit-button icon-button" title="Edit"></button>
+				<button class="done-button icon-button" title="Done" hidden></button>
+				<button class="sign-out-button icon-button" title="Sign Out"></button>
+			</span>
 		</div>
 
 		<div class="menu-containers dialog" hidden>
@@ -125,7 +125,7 @@
 			</table>
 
 			<div class="div-button upload-files" style="width: 49.5%;"><input type="file" multiple><img src="img/upload.png"><span>Upload Files</span></div>
-							<div class="div-button upload-as" style="width: 49%;"><input type="file" multiple><img src="img/upload-as.png"><span>Upload As</span></div>
+			<div class="div-button upload-as" style="width: 49%;"><input type="file" multiple><img src="img/upload-as.png"><span>Upload As</span></div>
 			<!--				<div class="div-button upload-execute" style="width: 33%;"><input type="file"><img src="img/execute.png"><span>Upload & Execute</span></div>-->
 		</div>
 		<div class="menu-file dialog" hidden>
@@ -246,19 +246,6 @@
 
 <template id="itemMenuTemplate">
 	<div class="item-menu">
-		<!--
-		<menu>
-			<button class="execute-button">Execute</button>
-			<button class="open-button">Open</button>
-			<button class="edit-button">Edit</button>
-			<button class="board-button">Board</button>
-			<button class="download-button">Download</button>
-			<button class="copy-button">Copy</button>
-			<button class="rights-button">Rights</button>
-			<button class="type-button">Change Type</button>
-		</menu>
-		-->
-
 		<table class="rights-table" hidden>
 			<thead>
 				<tr>
