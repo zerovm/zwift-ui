@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function(){
 					e.target.classList.add('invalid-input');
 					return;
 				}
-				searchMemo.onInput(e, window.searchApp.search);
+				searchMemo.onInput(window.searchApp.searchInput, window.searchApp.search);
 			}else{
 				if(window.searchApp.preferences.getPreference("suggest")){
 					timeout = setTimeout(function(){
@@ -50,12 +50,12 @@ document.addEventListener('DOMContentLoaded', function(){
 
 	document.addEventListener('click', function(e){
 		if(isIndexButton(e)){
-			indexMemo.onInput(window.searchApp.searchInput, window.searchApp.index);
+			indexMemo.onInput(window.searchApp.indexInput, window.searchApp.index);
 		}else if(isIndexResultCloseButton(e)){
 			indexResultCloseButtonClick(e);
 		}else if(isSearchButton(e)){
 			clearTimeout(timeout);
-			searchMemo.onInput(window.searchApp.indexInput, window.searchApp.search);
+			searchMemo.onInput(window.searchApp.searchInput, window.searchApp.search);
 		}else if(isPreferences(e)){
 			window.searchApp.preferences.clickHandler(e.target);
 		}
