@@ -128,13 +128,23 @@ input[type=file] {
 	background: url('img/pencil.png') no-repeat 7px 8px;
 }
 .done-button {
-	background: url('img/done.png') no-repeat 7px 8px;
+	background: url('img/pencil.png') no-repeat 7px 8px;
+	background-color: rgba(0, 0, 0, 0.35) !important;
+	border-width: 1px !important;
 }
 .execute-button {
 	background: url('img/execute.png') no-repeat 7px 8px;
 }
 .open-button {
 	background: url('img/arrowright.png') no-repeat 7px 8px;
+}
+.wide-button {
+	background: url('img/wide.png') no-repeat 7px 8px;
+}
+.unwide-button {
+	background: url('img/wide.png') no-repeat 7px 8px;
+	background-color: rgba(0, 0, 0, 0.35) !important;
+	border-width: 1px !important;
 }
 
 .disabled .back-button,
@@ -608,6 +618,7 @@ input[type=file] {
 
 .billing-report-table td {
 	text-align: center;
+	height: 35px;
 }
 
 #billing-tbody tr:nth-child(even) {

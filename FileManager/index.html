@@ -36,6 +36,8 @@
 				<button class="execute-button icon-button" title="Execute" hidden></button>
 				<button class="edit-button icon-button" title="Edit"></button>
 				<button class="done-button icon-button" title="Done" hidden></button>
+				<button class="wide-button icon-button" title="Wide"></button>
+				<button class="unwide-button icon-button" title="Unwide" hidden></button>
 				<button class="sign-out-button icon-button" title="Sign Out"></button>
 			</span>
 		</div>
@@ -124,9 +126,9 @@
 				</tr>
 			</table>
 
-			<div class="div-button upload-files" style="width: 49.5%;"><input type="file" multiple><img src="img/upload.png"><span>Upload Files</span></div>
-			<div class="div-button upload-as" style="width: 49%;"><input type="file" multiple><img src="img/upload-as.png"><span>Upload As</span></div>
-			<!--				<div class="div-button upload-execute" style="width: 33%;"><input type="file"><img src="img/execute.png"><span>Upload & Execute</span></div>-->
+			<div class="div-button upload-files" style="width: 33%;"><input type="file" multiple><img src="img/upload.png"><span>Upload Files</span></div>
+			<div class="div-button upload-as" style="width: 32%;"><input type="file" multiple><img src="img/upload-as.png"><span>Upload As</span></div>
+			<div class="div-button upload-execute" style="width: 33%;"><input type="file"><img src="img/execute.png"><span>Upload & Execute</span></div>
 		</div>
 		<div class="menu-file dialog" hidden>
 			<button class="undo txt-btn" disabled></button><button class="redo txt-btn" disabled></button><button class="save txt-btn" disabled></button><button class="save-as">Save As...</button>
@@ -191,6 +193,7 @@
 			<span class="right">
 				<label class="size">{{size}}</label>
 				<label class="modified">{{modified}}</label>
+				<span class="item-execute" hidden><img src="img/execute.png" title="execute"></span>
 				<label class="delete">X</label>
 			</span>
 	</div>
@@ -438,7 +441,7 @@
 						</td>
 					</tr>
 					<tr id="node-number-tr">
-						<td class="billing-report-part-name">
+						<td class="billing-report-part-name" style="width: 120px;">
 							Node #
 						</td>
 					</tr>
@@ -455,16 +458,6 @@
 					<tr id="user-time-tr">
 						<td class="billing-report-part-name">
 							User time
-						</td>
-					</tr>
-					<tr id="memory-used-tr">
-						<td class="billing-report-part-name">
-							Memory used
-						</td>
-					</tr>
-					<tr id="swap-used-tr">
-						<td class="billing-report-part-name">
-							Swap used
 						</td>
 					</tr>
 					<tr id="reads-from-disk-tr">

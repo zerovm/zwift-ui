@@ -199,15 +199,18 @@ FileManager.OpenButton.hide = function () {
 
 FileManager.ExecuteButton = {};
 
-FileManager.ExecuteButton.click = function () {
+FileManager.execute = function (data, contentType) {
 
 	FileManager.disableAll();
 	FileManager.ExecuteButton.hide();
 	FileManager.ExecuteTimer.start();
+	FileManager.OpenButton.hide();
+	FileManager.DoneButton.hide();
+	FileManager.FilesMenu.hide();
 
 	ZeroVmOnSwift.execute({
-		data: FileManager.File.codeMirror.getValue(),
-		contentType: 'application/json',
+		data: data,
+		contentType: contentType,
 		success: function (result, report) {
 			FileManager.ExecuteTimer.stop();
 			FileManager.ExecuteTimer.hide();
@@ -233,6 +236,10 @@ FileManager.ExecuteButton.click = function () {
 		});
 		FileManager.Layout.adjust();
 	}
+};
+
+FileManager.ExecuteButton.click = function () {
+	FileManager.execute(FileManager.File.codeMirror.getValue(), 'application/json');
 };
 
 FileManager.ExecuteButton.hide = function () {
@@ -325,20 +332,18 @@ FileManager.ExecuteReport.create = function (report) {
 
 			document.querySelector('#system-time-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['systemTime'] || '-'));
 			document.querySelector('#user-time-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['userTime'] || '-'));
-			var memoryUsed = report.billing.nodes[i]['memoryUsed'];
-			document.querySelector('#memory-used-tr').insertAdjacentHTML('beforeend', td(FileManager.Utils.bytesToSize(memoryUsed)));
 
-			document.querySelector('#swap-used-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['SwapUsed'] || '-'));
+
 			document.querySelector('#reads-from-disk-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['readsFromDisk'] || '-'));
-			document.querySelector('#bytes-read-from-disk-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['bytesReadFromDisk'] || '-'));
+			document.querySelector('#bytes-read-from-disk-tr').insertAdjacentHTML('beforeend', td(FileManager.Utils.bytesToSize(report.billing.nodes[i]['bytesReadFromDisk']) || '-'));
 
 			document.querySelector('#writes-to-disk-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['writesToDisk'] || '-'));
-			document.querySelector('#bytes-written-to-disk-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['bytesWrittenToDisk'] || '-'));
+			document.querySelector('#bytes-written-to-disk-tr').insertAdjacentHTML('beforeend', td(FileManager.Utils.bytesToSize(report.billing.nodes[i]['bytesWrittenToDisk']) || '-'));
 			document.querySelector('#reads-from-network-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['readsFromNetwork'] || '-'));
 
-			document.querySelector('#bytes-read-from-network-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['bytesReadFromNetwork'] || '-'));
+			document.querySelector('#bytes-read-from-network-tr').insertAdjacentHTML('beforeend', td(FileManager.Utils.bytesToSize(report.billing.nodes[i]['bytesReadFromNetwork']) || '-'));
 			document.querySelector('#writes-to-network-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['writesToNetwork'] || '-'));
-			document.querySelector('#bytes-written-to-network-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['bytesWrittenToNetwork'] || '-'));
+			document.querySelector('#bytes-written-to-network-tr').insertAdjacentHTML('beforeend', td(FileManager.Utils.bytesToSize(report.billing.nodes[i]['bytesWrittenToNetwork']) || '-'));
 		}
 		document.querySelector('#billing-report-title').setAttribute('colspan', String(1+nodesLength));
 		if (nodesLength > 3) {
@@ -673,7 +678,7 @@ FileManager.UploadAs.click = function (el) {
 FileManager.UploadAndExecute = {};
 
 FileManager.UploadAndExecute.change = function (file) {
-
+	FileManager.execute(file, file.type);
 };
 
 
@@ -1565,6 +1570,9 @@ FileManager.SaveAs.clearErrors = function () {
 						html = createFile(file);
 					}
 					scrollingContentEl.insertAdjacentHTML('beforeend', html);
+					if (file.hasOwnProperty('')) {
+
+					}
 				}
 
 				if (FILES.length == 20) {
@@ -2158,6 +2166,22 @@ document.addEventListener('click', function (e) {
 		FileManager.UploadAs.click(el);
 	} else if (el = is('open-button')) {
 		FileManager.OpenButton.click(el);
+	} else if (el = is('wide-button')) {
+		var centerEls = document.querySelectorAll('.center');
+		for (var i = 0; i < centerEls.length; i++) {
+			centerEls[i].style.maxWidth = '100%';
+		}
+		el.setAttribute('hidden', 'hidden');
+		document.querySelector('.fixed-background').style.width = '100%';
+		document.querySelector('.unwide-button').removeAttribute('hidden');
+	} else if (el = is('unwide-button')) {
+		var centerEls = document.querySelectorAll('.center');
+		for (var i = 0; i < centerEls.length; i++) {
+			centerEls[i].style.maxWidth = '800px';
+		}
+		el.setAttribute('hidden', 'hidden');
+		document.querySelector('.fixed-background').style.width = '800px';
+		document.querySelector('.wide-button').removeAttribute('hidden');
 	}
 
 	else if (FileManager.ENABLE_SHARED_CONTAINERS) {
@@ -2322,6 +2346,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			FileManager.ContentChange.animate();
 		}
 		FileManager.Layout.adjust();
+		FileManager.reAuth();
 	});
 	FileManager.changeBackground();
 });
@@ -2501,4 +2526,9 @@ FileManager.changeBackground = function () {
 	var hue = 'rgb(' + (Math.floor(Math.random() * 180)) + ',' + (Math.floor(Math.random() * 180)) + ',' + (Math.floor(Math.random() * 180)) + ')';*/
 	//document.querySelector('html').style.background = colors[Math.floor(Math.random() * 8)];
 	//setTimeout(FileManager.changeBackground, 20000);
+};
+
+FileManager.reAuth = function () {
+	SwiftV1.Account.head({success:function(){},error:function(){}});
+	setTimeout(FileManager.reAuth, 100000);
 };

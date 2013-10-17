@@ -646,19 +646,20 @@ var ClusterAuth = {};
 
 					report.nodes[j].systemTime = nodeCdrResult[0];
 					report.nodes[j].userTime = nodeCdrResult[1];
+
 					report.nodes[j].memoryUsed = nodeCdrResult[2];
-
 					report.nodes[j].SwapUsed = nodeCdrResult[3];
-					report.nodes[j].readsFromDisk = nodeCdrResult[4];
-					report.nodes[j].bytesReadFromDisk = nodeCdrResult[5];
 
-					report.nodes[j].writesToDisk = nodeCdrResult[6];
-					report.nodes[j].bytesWrittenToDisk = nodeCdrResult[7];
-					report.nodes[j].readsFromNetwork = nodeCdrResult[8];
+					report.nodes[j].readsFromDisk = nodeCdrResult[2];
+					report.nodes[j].bytesReadFromDisk = nodeCdrResult[3];
 
-					report.nodes[j].bytesReadFromNetwork = nodeCdrResult[9];
-					report.nodes[j].writesToNetwork = nodeCdrResult[10];
-					report.nodes[j].bytesWrittenToNetwork = nodeCdrResult[11];
+					report.nodes[j].writesToDisk = nodeCdrResult[4];
+					report.nodes[j].bytesWrittenToDisk = nodeCdrResult[5];
+					report.nodes[j].readsFromNetwork = nodeCdrResult[6];
+
+					report.nodes[j].bytesReadFromNetwork = nodeCdrResult[7];
+					report.nodes[j].writesToNetwork = nodeCdrResult[8];
+					report.nodes[j].bytesWrittenToNetwork = nodeCdrResult[9];
 					j++;
 				}
 			}
@@ -1209,9 +1210,6 @@ var ClusterAuth = {};
 		document.querySelector('.cluster-auth .account').value = '';
 		document.querySelector('.cluster-auth .storage-url').value = '';
 		document.querySelector('.cluster-auth').parentNode.removeAttribute('hidden');
-	};
-
-})();ttribute('hidden');
 	};
 
 })();
