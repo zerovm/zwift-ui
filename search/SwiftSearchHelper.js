@@ -1,8 +1,8 @@
 /*
  Add String.contains for not supported browsers.
  */
-if (!('contains' in String.prototype)) {
-	String.prototype.contains = function (str, startIndex) {
+if(!('contains' in String.prototype)){
+	String.prototype.contains = function(str, startIndex){
 		return -1 !== String.prototype.indexOf.call(this, str, startIndex);
 	};
 }
@@ -10,12 +10,12 @@ if (!('contains' in String.prototype)) {
 /*
  Add String.startsWith for not supported browsers.
  */
-if (!String.prototype.startsWith) {
+if(!String.prototype.startsWith){
 	Object.defineProperty(String.prototype, 'startsWith', {
 		enumerable: false,
 		configurable: false,
 		writable: false,
-		value: function (searchString, position) {
+		value: function(searchString, position){
 			position = position || 0;
 			return this.indexOf(searchString, position) === position;
 		}
@@ -25,12 +25,12 @@ if (!String.prototype.startsWith) {
 /*
  Add String.endsWith for not supported browsers.
  */
-if (!String.prototype.endsWith) {
+if(!String.prototype.endsWith){
 	Object.defineProperty(String.prototype, 'endsWith', {
 		enumerable: false,
 		configurable: false,
 		writable: false,
-		value: function (searchString, position) {
+		value: function(searchString, position){
 			position = position || this.length;
 			position = position - searchString.length;
 			return this.lastIndexOf(searchString) === position;
@@ -40,18 +40,18 @@ if (!String.prototype.endsWith) {
 
 var SearchApp = {};
 
-SearchApp.search = function (callbackObj) {
+SearchApp.search = function(callbackObj){
 	var input, text = callbackObj.searchText, i;
 	input = parse(text);
-	function parse(str) {
+	function parse(str){
 		var arr = str.split('"');
-		for (i = 1; i < arr.length; i += 2) {
+		for(i = 1; i < arr.length; i += 2){
 			arr[i] = arr[i].replace(':', ' ');
 		}
 		str = arr.join('');
 		arr = str.split(' ');
-		for (i = 0; i < arr.length; i++) {
-			if (arr[i].indexOf(':') != -1) {
+		for(i = 0; i < arr.length; i++){
+			if(arr[i].indexOf(':') != -1){
 				arr[i] = '-j ' + arr[i].replace(':', ' ');
 			}
 		}
@@ -66,41 +66,38 @@ SearchApp.search = function (callbackObj) {
 	var data = JSON.stringify(createConfiguration());
 	execute(data);
 
-
-	function createConfiguration() {
+	function createConfiguration(){
 		var account = ZLitestackDotCom.getAccount();
 		//var account = ClusterAuth.getAccount();
 		return [
 			{
-				'name' : 'search',
-				'exec' :
-				{
-					'path' : 'swift://' + account + '/search/sys/search.nexe',
-					'args' : '-c index/zsphinx.conf -i mainindex -w -m ' + input
+				'name': 'search',
+				'exec': {
+					'path': 'swift://' + account + '/search/sys/search.nexe',
+					'args': '-c index/zsphinx.conf -i mainindex -w -m ' + input
 				},
-				'file_list' :
-					[
-						{
-							'device' : 'input',
-							'path' : 'swift://' + account + '/search/sys/rwindex'
-						},
-						{
-							'device' : 'stdout'
-						},
-						{
-							'device' : 'stderr'
-						}
-					]
+				'file_list': [
+					{
+						'device': 'input',
+						'path': 'swift://' + account + '/search/sys/rwindex'
+					},
+					{
+						'device': 'stdout'
+					},
+					{
+						'device': 'stderr'
+					}
+				]
 			}
 		];
 	}
 
-	function execute(data) {
+	function execute(data){
 
 		ZeroVmOnSwift.execute({
 			data: data,
 			contentType: 'application/json',
-			success: function (result, report) {
+			success: function(result, report){
 				var locations;
 				locations = result.split(/\d. document=/).map(function(str){
 					return str && str.split(",")[2];
@@ -110,9 +107,9 @@ SearchApp.search = function (callbackObj) {
 
 				var html = '';
 
-				if (!result) {
+				if(!result){
 					html = 'No results.';
-				} else {
+				}else{
 					var iconHtml;
 					var iconMap = {
 						'.txt': 'img/file32_txt.png',
@@ -123,10 +120,10 @@ SearchApp.search = function (callbackObj) {
 						'.c': 'img/file32_c.png',
 						'.lua': 'img/file32_lua.png'
 					};
-					for (var i = 0; i < locations.length; i++) {
+					for(var i = 0; i < locations.length; i++){
 						iconHtml = '<img src="img/file32.png" />';
-						for (var fileExtension in iconMap) {
-							if (locations[i].endsWith(fileExtension)) {
+						for(var fileExtension in iconMap){
+							if(locations[i].endsWith(fileExtension)){
 								iconHtml = '<img src="' + iconMap[fileExtension] + '" />';
 								break;
 							}
@@ -137,7 +134,7 @@ SearchApp.search = function (callbackObj) {
 				}
 
 				if(callbackObj.callbackInit){
-					if (!result) {
+					if(!result){
 						callbackObj.searchFail = true;
 						console.log(result)
 					}else{
@@ -151,7 +148,7 @@ SearchApp.search = function (callbackObj) {
 				console.log(report)
 				console.log("---------------------------------------")
 			},
-			error: function (status, statusText, response) {
+			error: function(status, statusText, response){
 				searchResultsEl.textContent = 'Http Error: ' + status + ' ' + statusText + '. Execute response: ' + response;
 				searchResultsEl.classList.add('error');
 			}
@@ -159,161 +156,154 @@ SearchApp.search = function (callbackObj) {
 	}
 };
 
-SearchApp.index = function (path, callback, callbackParams) {
+SearchApp.index = function(paramsObj){
 
-	var indexingResult;
-
-	var indexResultEl = document.querySelector('.index-result');
+	var pathesObjs = paramsObj.pathes,//TODO: rename both
+		callback = paramsObj.callbackInit,
+		indexResultEl = document.querySelector('.index-result');
 	indexResultEl.classList.remove('error');
 	indexResultEl.textContent = '';
 	indexResultEl.removeAttribute('hidden');
 
 	index(JSON.stringify(createConfiguration()));
 
-
-	function createConfiguration() {
-		var account = ZLitestackDotCom.getAccount();
-		//var account = ClusterAuth.getAccount();
-		console.log("swift://" + account + "/" + path)
-		return [
-			{
-				"name" : "filesender",
-				"exec" :
+	function createConfiguration(){
+		var account = ZLitestackDotCom.getAccount(),
+			request = [
 				{
+					"name": "pdf",
+					"exec": {"path": "swift://" + account + "/search/sys/pdf.nexe"},
+					"file_list": [
+						{"device": "image", "path": "swift://" + account + "/search/sys/confpdf.tar"},
+						{"device": "stderr", "path": "swift://" + account + "/search/outputfiles/pdf_stderr.txt"}
+					],
+					"connect": ["xmlpipecreator"],
+					"replicate": 0
+				},
+				{
+					"name": "other",
+					"exec": {"path": "swift://" + account + "/search/sys/other.nexe"},
+					"file_list": [
+						{"device": "stdout", "path": "swift://" + account + "/search/outputfiles/other_stdout.txt"}
+					],
+					"connect": ["xmlpipecreator"],
+					"replicate": 0
+				},
+				{
+					"name": "txt",
+					"exec": {"path": "swift://" + account + "/search/sys/txt.nexe"},
+					"file_list": [
+						{"device": "stderr", "path": "swift://" + account + "/search/outputfiles/txt_stderr.txt"}
+					],
+					"connect": ["xmlpipecreator"],
+					"replicate": 0
+				},
+				{
+					"name": "doc",
+					"exec": {
+						"path": "swift://" + account + "/search/sys/doc.nexe",
+						"args": "temp.doc"
+					},
+					"file_list": [
+						{"device": "image", "path": "swift://" + account + "/search/sys/antiword.tar"},
+						{"device": "stderr", "path": "swift://" + account + "/search/outputfiles/doc_stderr.txt"}
+					],
+					"connect": ["xmlpipecreator"],
+					"replicate": 0
+				},
+				{
+					"name": "xmlpipecreator",
+					"exec": {
+						"path": "swift://" + account + "/search/sys/xmlpipecreator.nexe",
+						"args": "--duplicate"
+					},
+					"file_list": [
+						{"device": "stdout", "path": "swift://" + account + "/search/outputfiles/xmlpipecreator_stdout.txt"}
+					],
+					"connect": ["indexer"],
+					"replicate": 0
+				},
+				{
+					"name": "indexer",
+					"exec": {
+						"path": "swift://" + account + "/search/sys/indexer.nexe",
+						"args": "--config index/zsphinx.conf deltaindex"
+					},
+					"file_list": [
+						{"device": "stdout", "path": "swift://" + account + "/search/outputfiles/indexer_stdout.txt"},
+						{"device": "input", "path": "swift://" + account + "/search/sys/rwindex"},
+						{"device": "output", "path": "swift://" + account + "/search/sys/rwindex"},
+						{"device": "stderr"}
+					],
+					"replicate": 0
+				}
+			];
+		//var account = ClusterAuth.getAccount();
+		pathesObjs.forEach(function(pathObj, index){
+			request.push({
+				"name": "filesender" + index,
+				"exec": {
 					"path": "swift://" + account + "/search/sys/filesender.nexe"
 				},
-				"file_list" :
-					[
-						{"device" : "input", "path" : "swift://" + account + "/" + path},
-						{"device" : "stderr"}
-					],
-				"connect" : ["pdf", "txt", "doc", "other"],
-				"replicate" : 0
-			},
-			{
-				"name" : "pdf",
-				"exec" : {"path" : "swift://" + account + "/search/sys/pdf.nexe"},
-				"file_list" :
-					[
-						{"device" : "image", 	"path" : "swift://" + account + "/search/sys/confpdf.tar"},
-						{"device" : "stderr",  	"path" : "swift://" + account + "/search/outputfiles/pdf_stderr.txt"}
-					],
-				"connect" : ["xmlpipecreator"],
-				"replicate" : 0
-			},
-			{
-				"name" : "other",
-				"exec" : {"path" : "swift://" + account + "/search/sys/other.nexe"},
-				"file_list" :
-					[
-						{"device" : "stdout",  	"path" : "swift://" + account + "/search/outputfiles/other_stdout.txt"}
-					],
-				"connect" : ["xmlpipecreator"],
-				"replicate" : 0
-			},
-			{
-				"name" : "txt",
-				"exec" : {"path" : "swift://" + account + "/search/sys/txt.nexe"},
-				"file_list" :
-					[
-						{"device" : "stderr",  	"path" : "swift://" + account + "/search/outputfiles/txt_stderr.txt"}
-					],
-				"connect" : ["xmlpipecreator"],
-				"replicate" : 0
-			},
-			{
-				"name" : "doc",
-				"exec" :
-				{
-					"path" : "swift://" + account + "/search/sys/doc.nexe",
-					"args" : "temp.doc"
-				},
-				"file_list" :
-					[
-						{"device" : "image", "path" :  "swift://" + account + "/search/sys/antiword.tar"},
-						{"device" : "stderr",  	"path" : "swift://" + account + "/search/outputfiles/doc_stderr.txt"}
-					],
-				"connect" : ["xmlpipecreator"],
-				"replicate" : 0
-			},
-			{
-				"name" : "xmlpipecreator",
-				"exec" :
-				{
-					"path" : "swift://" + account + "/search/sys/xmlpipecreator.nexe",
-					"args" : "--duplicate"
-				},
-				"file_list" :
-					[
-						{"device" : "stdout", "path" :  "swift://" + account + "/search/outputfiles/xmlpipecreator_stdout.txt"}
-					],
-				"connect" : ["indexer"],
-				"replicate" : 0
-			},
-			{
-				"name" : "indexer",
-				"exec" :
-				{
-					"path" : "swift://" + account + "/search/sys/indexer.nexe",
-					"args" : "--config index/zsphinx.conf deltaindex"
-				},
-				"file_list" :
-					[
-						{"device" : "stdout",  "path" : "swift://" + account + "/search/outputfiles/indexer_stdout.txt"},
-						{"device" : "input",   "path" : "swift://" + account + "/search/sys/rwindex"},
-						{"device" : "output",  "path" : "swift://" + account + "/search/sys/rwindex"},
-						{"device" : "stderr"}
-					],
-				"replicate" : 0
-			}
-		];
+				"file_list": [
+					{"device": "input", "path": "swift://" + account + "/" + paramsObj.containerName + "/" + pathObj.name},
+					{"device": "stderr"}
+				],
+				"connect": ["pdf", "txt", "doc", "other"],
+				"replicate": 0
+			});
+		});
+		console.clear();
+		request.forEach(function(obj, index){
+			console.log("----------" + index + "----------")
+			console.log(obj.name)
+			obj.file_list && console.log(obj.file_list[0].path)
+		})
+		return request;
 	}
 
-	function index(data) {
+	function index(data){
 		indexResultEl.textContent = 'Indexing...';
-		console.log("execute index")
-		console.log(data)
 		ZeroVmOnSwift.execute({
 			data: data,
 			contentType: 'application/json',
-			success: function (result, report) {
-				indexingResult = result;
+			success: function(result, report){
 				merge(JSON.stringify(createMergeConfiguration()));
-				callback && callback(callbackParams);
+				callback && callback(paramsObj);
 			},
-			error: function (status, statusText, response) {
+			error: function(status, statusText, response){
 				indexResultEl.textContent = 'Http Error: ' + status + ' ' + statusText + '. Execute response: ' + response;
 				indexResultEl.classList.add('error');
 			}
 		});
 	}
 
-	function read(blob) {
+	function read(blob){
 		indexResultEl.textContent = 'Reading result...';
 		var reader = new FileReader();
-		reader.add=EventListener('load', function (e) {
+		reader.add = EventListener('load', function(e){
 			indexResultEl.textContent = e.target.result;
 			document.querySelector('.index-result-close-button').removeAttribute('hidden');
 		});
-		reader.addEventListener('error', function (message) {
+		reader.addEventListener('error', function(message){
 			indexResultEl.textContent = message;
 			indexResultEl.classList.add('error');
 		});
 		reader.readAsText(blob);
 	}
 
-	function merge(data) {
+	function merge(data){
 		indexResultEl.textContent = 'Merging...';
 		ZeroVmOnSwift.execute({
 			data: data,
 			contentType: 'application/json',
-			success: function (result, report) {
+			success: function(result, report){
 				indexResultEl.textContent = 'Merge completed. ' + result;
 				document.querySelector('.index-result-close-button').removeAttribute('hidden');
 			},
-			error: function (status, statusText, response) {
+			error: function(status, statusText, response){
 				var errorMessage = '';
-				if (status != -1) {
+				if(status != -1){
 					errorMessage += 'Http Error: ' + status + ' ' + statusText + '. ';
 				}
 				errorMessage += 'Execute response: ' + response;
@@ -323,25 +313,23 @@ SearchApp.index = function (path, callback, callbackParams) {
 		});
 	}
 
-	function createMergeConfiguration() {
+	function createMergeConfiguration(){
 		var account = ZLitestackDotCom.getAccount();
 		//var account = ClusterAuth.getAccount();
 		return [
 			{
-				"name" : "indexer",
-				"exec" :
-				{
-					"path" : "swift://" + account + "/search/sys/indexer.nexe",
-					"args" : "--config index/zsphinx.conf --merge mainindex deltaindex"
+				"name": "indexer",
+				"exec": {
+					"path": "swift://" + account + "/search/sys/indexer.nexe",
+					"args": "--config index/zsphinx.conf --merge mainindex deltaindex"
 				},
-				"file_list" :
-					[
-						{"device" : "stdout",  "path" : "swift://" + account + "/search/outputfiles/indexer_stdout.txt"},
-						{"device" : "input",   "path" : "swift://" + account + "/search/sys/rwindex"},
-						{"device" : "output",  "path" : "swift://" + account + "/search/sys/rwindex"},
-						{"device" : "stderr"}
-					],
-				"replicate" : 0
+				"file_list": [
+					{"device": "stdout", "path": "swift://" + account + "/search/outputfiles/indexer_stdout.txt"},
+					{"device": "input", "path": "swift://" + account + "/search/sys/rwindex"},
+					{"device": "output", "path": "swift://" + account + "/search/sys/rwindex"},
+					{"device": "stderr"}
+				],
+				"replicate": 0
 			}
 		];
 	}

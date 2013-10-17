@@ -15,8 +15,8 @@
 			that.setValue(value);
 			if(value > 99){
 				setTimeout(function(){
-					that.reset();
 					that.hide();
+					that.reset();
 				}, 100);
 			}
 		}
@@ -49,14 +49,14 @@
 		};
 		this.show = function(){
 			ele.parentNode.classList.remove(hideClass);
-		}
+		};
 		this.hide = function(){
 			ele.parentNode.classList.add(hideClass);
-		}
+		};
 	}
 
 	if(!window.searchApp){
 		window.searchApp = {};
-		window.searchApp.ProgressBar = ProgressBar;
 	}
+	window.searchApp.ProgressBar = ProgressBar;
 })();

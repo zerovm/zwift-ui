@@ -34,6 +34,9 @@
 		return preferenceValue[name];
 	}
 
+	if(!window.searchApp){
+		window.searchApp = {};
+	}
 	window.searchApp.preferences = {
 		clickHandler: clickHandler,
 		getPreference: getPreference

@@ -1,22 +1,16 @@
 document.addEventListener('DOMContentLoaded', function(){
-	var timeout, isIntervalStarted;
+	var timeout, isIntervalStarted, indexMemo, searchMemo;
 	ZLitestackDotCom.init();
 	if(!window.searchApp){
 		window.searchApp = {};
-	}else{
-		console.log("searchApp already exist");
 	}
 	window.searchApp.progressBar = new window.searchApp.ProgressBar(document.getElementsByClassName("progress-bar")[0]);
 	window.searchApp.grepApp = new GrepApp(document.getElementsByClassName("index-input")[0], document.getElementsByClassName("search-input")[0]);//TODO: rename grep
 
-	document.getElementsByClassName("search-results")[0].addEventListener("scroll", scrollHendler);
-	function index(){
-		window.searchApp.grepApp.index();
-	}
+	document.getElementsByClassName("search-results")[0].addEventListener("scroll", searchApp.scrollHendler);
 
-	function search(){
-		window.searchApp.grepApp.search();
-	}
+	indexMemo = new window.searchApp.MemoInputHandler();
+	searchMemo = new window.searchApp.MemoInputHandler();
 
 	document.addEventListener('keydown', function(e){
 		if(isSearchInput(e)){
@@ -26,13 +20,14 @@ document.addEventListener('DOMContentLoaded', function(){
 			}
 
 		}else if(isIndexInput(e)){
-			if(e.keyCode === 13){
+			if(e.keyCode === 13 && window.searchApp.preferences.getPreference("indexing")){
+				console.log("started")
 				if(e.target.value === ''){
 					e.target.classList.add('invalid-input');
 					return;
 				}
 				e.target.classList.remove('invalid-input');
-				index();
+				indexMemo.onInput(e, window.searchApp.grepApp.index);
 			}
 		}
 
@@ -49,23 +44,21 @@ document.addEventListener('DOMContentLoaded', function(){
 			var interval;
 
 			interval = setInterval(function(){
-				grepApp.disableSearch();
-				if(grepApp.isSearchEnded()){
-					clearInterval(interval);
-					setTimeout(function(){
-						console.log("started interval")
-						isIntervalStarted = false;
-					},300);
-					if(e.keyCode === 13){
-						if(e.target.value === ''){
-							e.target.classList.add('invalid-input');
-							return;
-						}
-						clearTimeout(timeout);
-						search();
-					}else{
-						timeout = setTimeout(search, 1000);
+				clearInterval(interval);
+				setTimeout(function(){
+					isIntervalStarted = false;
+				}, 300);
+				if(e.keyCode === 13){
+					if(e.target.value === ''){
+						e.target.classList.add('invalid-input');
+						return;
 					}
+					clearTimeout(timeout);
+					searchMemo(e, window.searchApp.grepApp.search);
+				}else{
+					timeout = setTimeout(function(){
+						searchMemo(e, window.searchApp.grepApp.search);
+					}, 1000);
 				}
 			}, 300);
 		}
@@ -74,11 +67,11 @@ document.addEventListener('DOMContentLoaded', function(){
 
 	document.addEventListener('click', function(e){
 		if(isIndexButton(e)){
-			index();
+			indexMemo.onInput(e, window.searchApp.grepApp.index);
 		}else if(isIndexResultCloseButton(e)){
 			indexResultCloseButtonClick(e);
 		}else if(isSearchButton(e)){
-			search();
+			searchMemo(e, window.searchApp.grepApp.search);
 		}else if(isPreferences(e)){
 			window.searchApp.preferences.clickHandler(e.target);
 		}
