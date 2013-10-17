@@ -11,6 +11,7 @@
 	<link rel="stylesheet" href="modules/progressBar/progress-bar-customization.css" type="text/css">
 	<script src="SwiftHelper.js" type="text/javascript"></script>
 	<script src="indexHandler.js" type="application/javascript"></script>
+	<script src="searchHandler.js" type="application/javascript"></script>
 	<script src="memoInputHandler.js" type="application/javascript"></script>
 	<script src="modules/preferences/preferences.js" type="application/javascript"></script>
 	<script src="modules/progressBar/progressbar.js" type="application/javascript"></script>
@@ -47,10 +48,12 @@
 	<span class="index-result" hidden></span>
 	<button class="index-result-close-button" hidden>Close</button>
 </div>
-<div class="search-container">
-	<input class="search-input" placeholder="search" autofocus>
-	<img src="img/search.png" class="search-button">
-	<div class="search-results" hidden>
+<div class="search-container-wrapper">
+	<div class="search-container">
+		<input class="search-input" placeholder="search" autofocus>
+		<img src="img/search.png" class="search-button">
+		<div class="search-results" hidden>
+		</div>
 	</div>
 </div>
 </body>
