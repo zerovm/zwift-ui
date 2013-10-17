@@ -6,20 +6,10 @@
 		DIRECTORY_TYPE = "application/directory",
 		HIDDEN_ATTRIBUTE = "hidden",
 		DELIMITER = "/",
-		SHOWN_FILES_LIMIT = 2,
 		INDEX_CHUNK_SIZE = 20,
-		indexInput,
-		searchInput,
 		indexResultEl,
 		pathFiles,
-		chunkCallsCounter,
-		that;
-
-	function GrepApp(indexInputEl, searchInputEl){
-		that = this;
-		indexInput = indexInputEl;
-		searchInput = searchInputEl;
-	}
+		chunkCallsCounter;
 
 	function parsePath(value, callback, callbackParams){
 		var splittedPath,containerName,path;
@@ -52,16 +42,11 @@
 	function chunkCalls(paramObj){
 		paramObj.updateCallback && paramObj.updateCallback();
 
-		//TODO: convert getMaxSearchItems to value
-		if(chunkCallsCounter >= paramObj.getMaxSearchItems()){//exit statement
+		//TODO: convert getChunksNum to value
+		if(chunkCallsCounter >= paramObj.getChunksNum()){//exit statement
 			chunkCallsCounter = 0;
 			paramObj.finalCallback && paramObj.finalCallback();
-			if(pathFiles && chunkCallsCounter >= pathFiles.length){//if statement is here for debug, should be removed later
-				console.log("searched through all files")
-			}
-			console.log("search ended")
 		}else{
-			console.log("searched again")
 			if(!paramObj.callbackInit){
 				paramObj.callbackInit = chunkCalls;
 			}
@@ -84,26 +69,7 @@
 		}
 	}
 
-	function feedFilesToIndexer(){
-		chunkCalls({
-			updateCallback: function(){
-			},
-			finalCallback: function(){
-			},
-			getMaxSearchItems: function(){
-				return SEARCH_LIMIT;
-			}
-		});
-	}
-
-	GrepApp.prototype.search = function(){
-		chunkCallsCounter = 0;
-		/*this.enableSearch();
-		 parsePath(indexInput, feedFilesToIndexer);*/
-
-	};
-
-	GrepApp.prototype.index = function(value){
+	function index(value){
 		chunkCallsCounter = 0;
 		parsePath(value, chunkCalls, {
 			mainWorkFunction: SearchApp.index,
@@ -118,31 +84,18 @@
 				window.searchApp.progressBar.hide();
 				window.searchApp.progressBar.reset();
 			},
-			getMaxSearchItems: function(){
+			getChunksNum: function(){
 				return Math.ceil(pathFiles.length / INDEX_CHUNK_SIZE);
 			}
 		});
-		//SearchApp.index(value);
-	};
+	}
 
 	document.addEventListener("DOMContentLoaded", function(){
 		indexResultEl = document.getElementsByClassName("index-result")[0];
 	});
 
-	window.GrepApp = GrepApp;
-})();
-
-(function(){
-	function scrollHendler(e){
-		if(e.target.scrollTop === e.target.scrollHeight - e.target.clientHeight){
-			//chunkCalls
-			console.log("scrolled to end")
-		}
-	}
-
-
 	if(!window.searchApp){
 		window.searchApp = {};
 	}
-	window.searchApp.scrollHendler = scrollHendler;
+	window.searchApp.index = index;
 })();

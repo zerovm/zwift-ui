@@ -5,7 +5,7 @@
 
 	function MemoInputHandler(){
 		this.onInput = function(e, callback){
-			var curValue = e.target.value;
+			var curValue = e.value;
 			if(curValue && prevValue !== curValue){
 				prevValue = curValue;
 				callback(curValue);

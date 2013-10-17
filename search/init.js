@@ -1,33 +1,40 @@
 document.addEventListener('DOMContentLoaded', function(){
-	var timeout, isIntervalStarted, indexMemo, searchMemo;
+	var timeout, indexMemo, searchMemo;
 	ZLitestackDotCom.init();
 	if(!window.searchApp){
 		window.searchApp = {};
 	}
+	window.searchApp.indexInput = document.getElementsByClassName("index-input")[0];
+	window.searchApp.searchInput = document.getElementsByClassName("search-input")[0];
 	window.searchApp.progressBar = new window.searchApp.ProgressBar(document.getElementsByClassName("progress-bar")[0]);
-	window.searchApp.grepApp = new GrepApp(document.getElementsByClassName("index-input")[0], document.getElementsByClassName("search-input")[0]);//TODO: rename grep
-
-	document.getElementsByClassName("search-results")[0].addEventListener("scroll", searchApp.scrollHendler);
-
 	indexMemo = new window.searchApp.MemoInputHandler();
 	searchMemo = new window.searchApp.MemoInputHandler();
 
 	document.addEventListener('keydown', function(e){
 		if(isSearchInput(e)){
-			if(!isIntervalStarted){
-				isIntervalStarted = true;
-				searchInputKeydown(e);
+			e.target.classList.remove('invalid-input');
+			if(e.keyCode === 13){
+				clearTimeout(timeout);
+				if(e.target.value === ''){
+					e.target.classList.add('invalid-input');
+					return;
+				}
+				searchMemo.onInput(e, window.searchApp.search);
+			}else{
+				if(window.searchApp.preferences.getPreference("suggest")){
+					timeout = setTimeout(function(){
+						searchMemo.onInput(window.searchApp.searchInput, window.searchApp.search);
+					}, 1000);
+				}
 			}
-
 		}else if(isIndexInput(e)){
 			if(e.keyCode === 13 && window.searchApp.preferences.getPreference("indexing")){
-				console.log("started")
 				if(e.target.value === ''){
 					e.target.classList.add('invalid-input');
 					return;
 				}
 				e.target.classList.remove('invalid-input');
-				indexMemo.onInput(e, window.searchApp.grepApp.index);
+				indexMemo.onInput(window.searchApp.indexInput, window.searchApp.index);
 			}
 		}
 
@@ -39,39 +46,16 @@ document.addEventListener('DOMContentLoaded', function(){
 			return e.target.classList.contains('index-input');
 		}
 
-		function searchInputKeydown(e){
-			e.target.classList.remove('invalid-input');
-			var interval;
-
-			interval = setInterval(function(){
-				clearInterval(interval);
-				setTimeout(function(){
-					isIntervalStarted = false;
-				}, 300);
-				if(e.keyCode === 13){
-					if(e.target.value === ''){
-						e.target.classList.add('invalid-input');
-						return;
-					}
-					clearTimeout(timeout);
-					searchMemo(e, window.searchApp.grepApp.search);
-				}else{
-					timeout = setTimeout(function(){
-						searchMemo(e, window.searchApp.grepApp.search);
-					}, 1000);
-				}
-			}, 300);
-		}
-
 	});
 
 	document.addEventListener('click', function(e){
 		if(isIndexButton(e)){
-			indexMemo.onInput(e, window.searchApp.grepApp.index);
+			indexMemo.onInput(window.searchApp.searchInput, window.searchApp.index);
 		}else if(isIndexResultCloseButton(e)){
 			indexResultCloseButtonClick(e);
 		}else if(isSearchButton(e)){
-			searchMemo(e, window.searchApp.grepApp.search);
+			clearTimeout(timeout);
+			searchMemo.onInput(window.searchApp.indexInput, window.searchApp.search);
 		}else if(isPreferences(e)){
 			window.searchApp.preferences.clickHandler(e.target);
 		}
