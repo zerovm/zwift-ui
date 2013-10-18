@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', function(){
-	var timeout, indexMemo, searchMemo;
+	var timeout, indexMemo, searchMemo, i,
+		preferenceObj = {},
+		preferencesElements = document.querySelectorAll(".preferences-list-wrapper input");
 	ZLitestackDotCom.init();
 	if(!window.searchApp){
 		window.searchApp = {};
@@ -7,6 +9,12 @@ document.addEventListener('DOMContentLoaded', function(){
 	window.searchApp.indexInput = document.getElementsByClassName("index-input")[0];
 	window.searchApp.searchInput = document.getElementsByClassName("search-input")[0];
 	window.searchApp.progressBar = new window.searchApp.ProgressBar(document.getElementsByClassName("progress-bar")[0]);
+	for(i = 0; i < preferencesElements.length; i++){
+		preferenceObj[preferencesElements[i].dataset.preference] = {
+			el: preferencesElements[i]
+		}
+	}
+	window.searchApp.preferences = new window.searchApp.Preferences(preferenceObj);
 	indexMemo = new window.searchApp.MemoInputHandler();
 	searchMemo = new window.searchApp.MemoInputHandler();
 

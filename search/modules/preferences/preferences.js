@@ -1,44 +1,37 @@
+/*requires popup.js for alert popups*/
 (function(){
-	"use strict"
+	"use strict";
 
-	var preferenceValue = {
-			suggest: true,
-			indexing: true,
-			shorttext: true
-		},
-		showPreferencesClass = "visible";
+	var showPreferencesClass = "visible", togglerAttribute = "toggler", popupTextAttribute = "popupText";
 
 	function toggle(el){
 		el.parentNode.classList.toggle(showPreferencesClass);
 	}
 
-	function setPreference(name, value){
-		preferenceValue[name] = value;
-	}
+	function Preferences(options){
+		var preferencesValues = {},
+			popup = new window.searchApp.Popup();
 
-	function clickHandler(el){
-		var role = el.getAttribute("role");
-		switch(role){
-			case "toggle":
+		Object.keys(options).forEach(function(property){
+			preferencesValues[property] = options[property].el;
+		});
+
+		this.clickHandler = function(el){
+			var role = el.getAttribute("role");
+			if(role === togglerAttribute){
 				toggle(el);
-				break;
-			case "indexing":
-			case "shorttext":
-			case "suggest":
-				setPreference(role, el.checked);
-				break;
-		}
-	}
+			}else if(!el.checked && el.dataset[popupTextAttribute]){
+				popup.show(el.dataset[popupTextAttribute]);
+			}
+		};
 
-	function getPreference(name){
-		return preferenceValue[name];
+		this.getPreference = function(name){
+			return preferencesValues[name].checked;
+		};
 	}
 
 	if(!window.searchApp){
 		window.searchApp = {};
 	}
-	window.searchApp.preferences = {
-		clickHandler: clickHandler,
-		getPreference: getPreference
-	};
+	window.searchApp.Preferences = Preferences;
 })();

@@ -9,29 +9,31 @@
 	<link rel="stylesheet" href="modules/preferences/preferences.css" type="text/css">
 	<link rel="stylesheet" href="modules/progressBar/jquery-ui-1.10.3.custom.css" type="text/css">
 	<link rel="stylesheet" href="modules/progressBar/progress-bar-customization.css" type="text/css">
+	<link rel="stylesheet" href="modules/popup/popup.css" type="text/css">
 	<script src="SwiftHelper.js" type="text/javascript"></script>
 	<script src="indexHandler.js" type="application/javascript"></script>
 	<script src="searchHandler.js" type="application/javascript"></script>
 	<script src="memoInputHandler.js" type="application/javascript"></script>
 	<script src="modules/preferences/preferences.js" type="application/javascript"></script>
 	<script src="modules/progressBar/progressbar.js" type="application/javascript"></script>
+	<script src="modules/popup/popup.js" type="application/javascript"></script>
 	<script src="init.js" type="text/javascript"></script>
 </head>
 <body>
 <div class="preferences">
-	<button role="toggle" class="show-preferences preferences-element"></button>
+	<button role="toggler" class="show-preferences preferences-element"></button>
 	<div class="preferences-list-wrapper">
 		<ul class="preferences-list">
 			<li>
-				<input role="suggest" class="preferences-element" type="checkbox" checked="true"/><span>autosuggest</span>
+				<input data-preference="suggest" class="preferences-element" type="checkbox" checked="true"/><span>autosuggest</span>
 				<div class="input-slider-wrapper"><div class="input-slider"></div></div>
 			</li>
 			<li>
-				<input role="indexing" class="preferences-element" type="checkbox" checked="true"/><span>indexing</span>
+				<input data-preference="indexing" class="preferences-element" type="checkbox" checked="true" data-popup-text="Indexing has been swithced off."/><span>indexing</span>
 				<div class="input-slider-wrapper"><div class="input-slider"></div></div>
 			</li>
 			<li>
-				<input role="shorttext" class="preferences-element" type="checkbox" checked="true"/><span>full text</span>
+				<input data-preference="shorttext" class="preferences-element" type="checkbox" checked="true"/><span>full text</span>
 				<div class="input-slider-wrapper"><div class="input-slider"></div></div>
 			</li>
 		</ul>
