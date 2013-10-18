@@ -25,16 +25,16 @@
 	-moz-transform: translate3d(0, -150%, 0);
 	-webkit-transform: translate3d(0, -150%, 0);
 	transition: 155ms transform 0 ease-out;
-	-moz-transition: 155ms -moz-transform 0 ease-out;
-	-webkit-transition: 155ms -webkit-transform 0 ease-out;
+	-moz-transition: -moz-transform 155ms ease-in-out 0ms;
+	-webkit-transition: 155ms -webkit-transform 0ms ease-out;
 }
 .preferences.visible .preferences-list{
 	transform: translate3d(0, 0, 0);
 	-moz-transform: translate3d(0, 0, 0);
 	-webkit-transform: translate3d(0, 0, 0);
 	transition-duration: 333ms;
-	-moz-transition: 333ms;
-	-webkit-transition: 333ms;
+	-moz-transition-duration: 333ms;
+	-webkit-transition-duration: 333ms;
 }
 .preferences .preferences-list li{
 	font-size: 14px;
@@ -59,6 +59,7 @@
 	transform: translateZ(10px);
 	-moz-transform: translateZ(10px);
 	-webkit-transform: translateZ(10px);
+	opacity: 0;
 }
 .preferences .input-slider-wrapper{
 	width: 40px;
@@ -69,8 +70,8 @@
 	-moz-box-shadow: inset 0 1px 0 2px rgba(0, 0, 0, 0.2);
 	-webkit-box-shadow: inset 0 1px 0 2px rgba(0, 0, 0, 0.2);
 	transition: 150ms background 0 ease-in-out;
-	-moz-transition: 150ms background 0 ease-in-out;
-	-webkit-transition: 150ms background 0 ease-in-out;
+	-moz-transition: background 150ms ease-in-out 0ms;
+	-webkit-transition: 150ms background 0ms ease-in-out;
 	position: absolute;
 	left: 0;
 	top: 0;
@@ -86,8 +87,8 @@
 .preferences .input-slider,
 .preferences li span{
 	transition: 150ms transform 0 ease-in-out;
-	-moz-transition: 150ms -moz-transform 0 ease-in-out;
-	-webkit-transition: 150ms -webkit-transform 0 ease-in-out;
+	-moz-transition: -moz-transform 150ms ease-in-out 0ms;
+	-webkit-transition: 150ms -webkit-transform 0ms ease-in-out;
 }
 .preferences li span{
 	color: #d3d3d3;

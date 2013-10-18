@@ -101,6 +101,7 @@
 							}
 							link = document.createElement(linkString);
 							link.href = ZLitestackDotCom.getStorageUrl() + locations[i];
+							link.target = "_blank";
 							link.innerHTML = locations[i].replace(delimiter, wordBraker);
 							wrapper = document.createElement(divString);
 							wrapper.appendChild(icon);
