@@ -83,7 +83,7 @@
 
 					if(!locations.length){
 						fragment = document.createElement(divString);
-						fragment.innerText = 'No results.';
+						fragment.innerHTML = 'No results.';
 					}else{
 						for(var i = 0; i < locations.length; i++){
 							icon = document.createElement(imgString);

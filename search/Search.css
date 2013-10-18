@@ -7,13 +7,19 @@ template {
 .index-container {
 	float: right;
 }
+.index-container > div{
+	display: block;
+	height: 50px;
+	position: relative;
+}
 
 .index-button {
 	position: absolute;
-	top: 3px;
+	top: 2px;
 	right: 1px;
 	font-size: large;
 	vertical-align: middle;
+	margin: 0;
 }
 .index-button img {
 	vertical-align: middle;
@@ -21,6 +27,7 @@ template {
 }
 .index-input {
 	width: 420px;
+	height: 100%;
 	padding: 13px;
 	font-size: large;
 	box-sizing: border-box;
