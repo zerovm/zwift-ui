@@ -1,15 +1,9 @@
 (function(){
 	"use strict";
 
-	var SearchApp = {},
-		iconMap = {
-			extensions: ['.txt','.pdf','.doc','.docx','.h','.c','.lua'],
-			images: ['img/file32_txt.png', 'img/file32_pdf.png', 'img/file32_doc.png', 'img/file32_doc.png', 'img/file32_c.png', 'img/file32_c.png', 'img/file32_lua.png']
-		},
-		extensionRegexp = /\.\w*$/,
-		delimiter = /\//g;
+	var SearchApp = {};
 
-	SearchApp.search = function(text, callback){
+	SearchApp.search = function(text, callback, outputEl){
 		var input, i;
 		input = parse(text);
 		function parse(str){
@@ -27,10 +21,9 @@
 			return arr.join(' ');
 		}
 
-		var searchResultsEl = document.querySelector('.search-results');//TODO: get it from global namespace
-		searchResultsEl.textContent = 'Loading...';
-		searchResultsEl.classList.remove('error');
-		searchResultsEl.removeAttribute('hidden');
+		outputEl.textContent = 'Loading...';
+		outputEl.classList.remove('error');
+		outputEl.removeAttribute('hidden');
 
 		var data = JSON.stringify(createConfiguration());
 		execute(data);
@@ -42,7 +35,7 @@
 					'name': 'search',
 					'exec': {
 						'path': 'swift://' + account + '/search/sys/search.nexe',
-						'args': '-c index/zsphinx.conf -i mainindex -w -m ' + input
+						'args': '-c index/zsphinx.conf -i mainindex -m ' + input
 					},
 					'file_list': [
 						{
@@ -66,62 +59,11 @@
 				data: data,
 				contentType: 'application/json',
 				success: function(result, report){
-					var locations, icon, matchIndex, link, wrapper,
-						wordBraker = "/<wbr/>",
-						iconPathTemplate = "img/file32.png",
-						imgString = "img",
-						linkString = "a",
-						divString = "div",
-						fragment = document.createDocumentFragment(),
-						ext;
-					locations = result.split(/\d. document=/).map(function(str){
-						return str && str.split(",")[2];
-					}).filter(function(str){
-							return str;
-						});
-
-
-					if(!locations.length){
-						fragment = document.createElement(divString);
-						fragment.innerHTML = 'No results.';
-					}else{
-						for(var i = 0; i < locations.length; i++){
-							icon = document.createElement(imgString);
-							ext = locations[i].match(extensionRegexp);
-							locations[i] = locations[i].replace(" filename=/","");
-							if(ext){
-								matchIndex = iconMap.extensions.indexOf(ext[0]);
-							}else{
-								matchIndex = -1;
-							}
-							if(matchIndex !== -1){
-								icon.src = iconMap.images[matchIndex];
-							}else{
-								icon.src = iconPathTemplate;
-							}
-							link = document.createElement(linkString);
-							link.href = ZLitestackDotCom.getStorageUrl() + locations[i];
-							link.target = "_blank";
-							link.innerHTML = locations[i].replace(delimiter, wordBraker);
-							wrapper = document.createElement(divString);
-							wrapper.appendChild(icon);
-							wrapper.appendChild(link);
-							fragment.appendChild(wrapper);
-						}
-					}
-
-					callback && callback();
-
-					while (searchResultsEl.firstChild) {
-						searchResultsEl.removeChild(searchResultsEl.firstChild);
-					}
-					searchResultsEl.appendChild(fragment);
-					console.log(result)
-					console.log(report)
+					callback(result);
 				},
 				error: function(status, statusText, response){
-					searchResultsEl.textContent = 'Http Error: ' + status + ' ' + statusText + '. Execute response: ' + response;
-					searchResultsEl.classList.add('error');
+					outputEl.textContent = 'Http Error: ' + status + ' ' + statusText + '. Execute response: ' + response;
+					outputEl.classList.add('error');
 				}
 			});
 		}
@@ -298,5 +240,145 @@
 		}
 	};
 
+	SearchApp.getPreview = function(callback, options){
+
+		var data = JSON.stringify(createConfiguration());
+		execute(data);
+
+		function createConfiguration(){
+			var account = ZLitestackDotCom.getAccount(), fileList,
+				resultJSON = [
+					{
+						"name": options.ext,
+						"exec": {
+							"path": "swift://" + account + "/search/sys/doc.nexe",
+							"args": "--search " + options.startOffset + " " + options.endOffset
+						},
+						"replicate": 0
+					}
+				];
+			switch(options.ext){
+				case "txt":
+					resultJSON["file_list"] = [
+						{"device": "input", "path": options.location},
+						{"device": "stdout", "path": "swift://g_103319991787805482239/search/outputfiles/txt_stdout.txt"}
+					];
+					break;
+				case "doc":
+					resultJSON["file_list"] = [
+						{"device": "input", "path": options.location},
+						{"device": "image", "path": "swift://g_103319991787805482239/search/sys/antiword.tar"},
+						{"device": "stderr", "path": "swift://g_103319991787805482239/search/outputfiles/doc_stderr.txt"}
+					];
+					resultJSON["exec"]["args"] = "temp.doc --search " + options.startOffset + " " + options.endOffset;
+					break;
+				case "pdf":
+					resultJSON["file_list"] = [
+						{"device": "input", "path": options.location},
+						{"device": "image", "path": "swift://g_103319991787805482239/search/sys/confpdf.tar"},
+						{"device": "stderr", "path": "swift://g_103319991787805482239/search/outputfiles/pdf_stderr.txt"}
+					];
+					break;
+				default:
+					resultJSON["file_list"] = [
+						{"device": "input", "path": options.location},
+						{"device": "stdout", "path": "swift://g_103319991787805482239/search/outputfiles/other_stdout.txt"}
+					];
+					resultJSON["name"] = "other";
+					break;
+			}
+			return resultJSON;
+		}
+
+		function execute(data){
+
+			ZeroVmOnSwift.execute({
+				data: data,
+				contentType: 'application/json',
+				success: function(result, report){
+					callback(options, result);
+				},
+				error: function(status, statusText, response){
+					callback(options, 'Http Error: ' + status + ' ' + statusText + '. Execute response: ' + response, true);
+				}
+			});
+		}
+	};
+
 	window.SearchApp = SearchApp;
 })();
+
+/*
+
+
+
+ var a =[
+ {
+ "name" : "txt",
+ "exec" : {
+ "args" : "--search 209 220"  <<<<<------------- 209 - start из резуьтата, 220 - end
+ "path" : "swift://g_103319991787805482239/search/sys/txt.nexe"
+ },
+ "file_list" :
+ [
+ {"device" : "input", "path" : "swift://g_103319991787805482239/search/doc/channels_.doc"},  <<<<<------------- filename из результата
+ {"device" : "stdout",   "path" : "swift://g_103319991787805482239/search/outputfiles/txt_stdout.txt"}
+ ],
+ "replicate" : 0
+ }
+ ]
+
+
+ для *.doc-файлов:
+ [
+ {
+ "name" : "doc",
+ "exec" :
+ {
+ "path" : "swift://g_103319991787805482239/search/sys/doc.nexe",
+ "args" : "temp.doc --search 209 220"  <<<<<------------- 209 - start из резуьтата, 220 - end
+ },
+ "file_list" :
+ [
+ {"device" : "input", "path" : "swift://g_103319991787805482239/search/doc/channels_.doc"},  <<<<<------------- filename из результата
+ {"device" : "image", "path" :  "swift://g_103319991787805482239/search/sys/antiword.tar"},
+ {"device" : "stderr",   "path" : "swift://g_103319991787805482239/search/outputfiles/doc_stderr.txt"}
+ ],
+ "replicate" : 0
+ }
+ ]
+
+ для *.pdf-файлов:
+ [
+ {
+ "name" : "pdf",
+ "exec" : {
+ "path" : "swift://g_103319991787805482239/search/sys/pdf.nexe"
+ "args" : "--search 209 220"  <<<<<------------- 209 - start из резуьтата, 220 - end
+ },
+ "file_list" :
+ [
+ {"device" : "input", "path" : "swift://g_103319991787805482239/search/doc/channels_.doc"},  <<<<<------------- filename из результата
+ {"device" : "image",  "path" : "swift://g_103319991787805482239/search/sys/confpdf.tar"},
+ {"device" : "stderr",   "path" : "swift://g_103319991787805482239/search/outputfiles/pdf_stderr.txt"}
+ ],
+ "replicate" : 0
+ }
+ ]
+
+ для всех остальных файлов:
+ [
+ {
+ "name" : "other",
+ "exec" : {
+ "path" : "swift://g_103319991787805482239/search/sys/other.nexe"
+ "args" : "--search 209 220"  <<<<<------------- 209 - start из резуьтата, 220 - end
+ },
+ "file_list" :
+ [
+ {"device" : "input", "path" : "swift://g_103319991787805482239/search/doc/channels_.doc"},  <<<<<------------- filename из результата
+ {"device" : "stdout",   "path" : "swift://g_103319991787805482239/search/outputfiles/other_stdout.txt"}
+ ],
+ "replicate" : 0
+ }
+ ]*/
