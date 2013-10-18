@@ -9,6 +9,7 @@ var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
 var ZeroAppsOnSwift = {};
 var ZLitestackDotCom = {};
 var ClusterAuth = {};
+var Auth = {};
 
 (function () {
 	'use strict';
@@ -125,7 +126,11 @@ var ClusterAuth = {};
 			if (e.target.status == 401) {
 				unauthorized();
 			} else if (e.target.status >= 200 && e.target.status <= 299) {
-				args.success(e.target.responseText);
+				if (args.hasOwnProperty('format') && args.format == 'json') {
+					args.success(JSON.parse(e.target.responseText));
+				} else {
+					args.success(e.target.responseText);
+				}
 			} else {
 				args.error(e.target.status, e.target.statusText);
 			}
@@ -235,7 +240,11 @@ var ClusterAuth = {};
 			} else if (e.target.status == 404) {
 				args.notExist();
 			} else if (e.target.status >= 200 && e.target.status <= 299) {
-				args.success(e.target.responseText);
+				if (args.hasOwnProperty('format') && args.format == 'json') {
+					args.success(JSON.parse(e.target.responseText));
+				} else {
+					args.success(e.target.responseText);
+				}
 			} else {
 				args.error(e.target.status, e.target.statusText);
 			}
@@ -778,7 +787,9 @@ var ClusterAuth = {};
 				notExist: args.notExist
 			});
 		} else {
+			var accountId = args.hasOwnProperty('account') ? args.account : account;
 			SwiftV1.deleteFile({
+				account: accountId,
 				path: args.path,
 				deleted: args.deleted,
 				error: args.error,
@@ -788,6 +799,7 @@ var ClusterAuth = {};
 	};
 
 	SwiftAdvancedFunctionality.deleteAll = function (args) {
+		var accountId = args.hasOwnProperty('account') ? args.account : account;
 		var levels = [];
 		var files;
 		var deleteCount = 0;
@@ -819,6 +831,7 @@ var ClusterAuth = {};
 		function deleteLevel(level) {
 			if (level == 0) {
 				SwiftAdvancedFunctionality.delete({
+					account: accountId,
 					path: args.path,
 					deleted: function () {
 						args.progress(files.length, deleteCount, 'deleted');
@@ -844,6 +857,7 @@ var ClusterAuth = {};
 
 			for (var  i = 0; i < levels[level].length; i++) {
 				SwiftAdvancedFunctionality.delete({
+					account: accountId,
 					path: levels[level][i],
 					deleted: function () {
 						levelAmountLast--;
@@ -1210,6 +1224,30 @@ var ClusterAuth = {};
 		document.querySelector('.cluster-auth .account').value = '';
 		document.querySelector('.cluster-auth .storage-url').value = '';
 		document.querySelector('.cluster-auth').parentNode.removeAttribute('hidden');
+	};
+
+	Auth.useZLitestackDotCom = function () {
+		Auth.init = ZLitestackDotCom.init;
+		Auth.getAccount = ZLitestackDotCom.getAccount;
+		Auth.getStorageUrl = ZLitestackDotCom.getStorageUrl;
+		Auth.signOut = ZLitestackDotCom.signOut;
+		Auth.getEmail = function (callback) {
+			ZLitestackDotCom.getEmail({
+				success: function (email) {
+					callback(email);
+				},
+				error: function (status, statusText) {
+					callback(ZLitestackDotCom.getAccount());
+				}
+			});
+		};
+	};
+
+	Auth.useClusterAuth = function () {
+		Auth.init = ClusterAuth.init;
+		Auth.getAccount = ClusterAuth.getAccount;
+		Auth.getStorageUrl = ClusterAuth.getStorageUrl;
+		Auth.signOut = ZLitestackDotCom.signOut;
 	};
 
 })();

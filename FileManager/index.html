@@ -27,7 +27,7 @@
 	<div class="fixed-top center">
 		<div id="header" class="center">
 			<span class="left">
-				<button class="back-button icon-button" disabled></button>
+				<button class="up-button icon-button" title="Up" disabled></button>
 				<label class="current-dir-label"></label>
 			</span>
 			<span class="right">
@@ -193,7 +193,6 @@
 			<span class="right">
 				<label class="size">{{size}}</label>
 				<label class="modified">{{modified}}</label>
-				<span class="item-execute" hidden><img src="img/execute.png" title="execute"></span>
 				<label class="delete">X</label>
 			</span>
 	</div>
@@ -330,6 +329,9 @@
 				</tr>
 				<tr class="copy-loading" hidden="">
 					<td colspan="3">Loading...</td>
+				</tr>
+				<tr class="copy-ok" hidden>
+					<td colspan="3">File is copied successfully.</td>
 				</tr>
 				<tr class="copy-error-ajax" hidden>
 					<td colspan="3">Error: <span class="status"></span> <span class="status-text"></span>.</td>

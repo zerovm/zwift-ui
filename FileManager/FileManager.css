@@ -115,7 +115,7 @@ input[type=file] {
 #header .icon-button:focus {
 	outline: 0;
 }
-.back-button {
+.up-button {
 	background: url('img/back.png') no-repeat 6px 8px;
 }
 .current-dir-label {
@@ -147,11 +147,11 @@ input[type=file] {
 	border-width: 1px !important;
 }
 
-.disabled .back-button,
+.disabled .up-button,
 .disabled .edit-button,
-.disabled .back-button:hover,
+.disabled .up-button:hover,
 .disabled .edit-button:hover,
-.disabled .back-button:active,
+.disabled .up-button:active,
 .disabled .edit-button:active {
 	opacity: 0.5 !important;
 	border: none !important;
