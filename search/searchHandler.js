@@ -10,10 +10,14 @@
 		extensionRegexp = /\.\w*$/,
 		fileNameInPathRegexp = /\/([\w\.]*)$/,
 		insideBrecketRegexp = /<(.*)>/,
+		higherFolderInPathRegexp = /^[\w]*\//,
+		metaDataSeparator = " ; ",
+		dataSplitter = " ",
 		lineSplitter = "\n",
 		delimiter = /\//g,
 		wordBraker = "/<wbr/>",
-		metaDataPredefinedText = "Found in metadata: ",
+		valueText = "\nvalue: ",
+		metaDataPredefinedText = "Found in metadata:\nkey: ",
 		metaDataPathPredefinedText = "Found in path: ",
 		noResultText = "No results.",
 		iconPathTemplate = "img/file32.png",
@@ -103,9 +107,7 @@
 	}
 
 	function processRequest(options, request, isError){
-		var preview,
-			juce,
-			requestLines;
+		var preview, juce, requestLines, i, splitedMeta, splitData;
 		requestLines = request.split(lineSplitter).filter(function(str){
 			return str;
 		});
@@ -114,8 +116,16 @@
 		}else{
 			if(requestLines.length > 2){//third line should be a flag marked metadata
 				if(options.location.indexOf(options.input) !== -1){
-					juce = metaDataPathPredefinedText + options.location;
-					juce = juce.replace(delimiter, wordBraker);
+					juce = metaDataPathPredefinedText + options.location.replace(higherFolderInPathRegexp, "");
+				}else{
+					splitedMeta = requestLines[1].match(insideBrecketRegexp)[1].split(metaDataSeparator);
+					juce = metaDataPredefinedText;
+					for(i = 0; i < splitedMeta.length; i++){
+						if(splitedMeta[i].indexOf(options.input) !== -1){
+							splitData = splitedMeta.split(dataSplitter);
+							juce += splitData[0] + valueText + splitData[1];
+						}
+					}
 				}
 			}else{
 				juce = requestLines[1].match(insideBrecketRegexp)[1];
@@ -123,7 +133,7 @@
 		}
 		preview = document.createElement(divString);
 		preview.innerText ? preview.innerText = juce : preview.textContent = juce;
-		preview.innerHTML = preview.innerHTML.replace(new RegExp(options.input), "<strong>" + options.input + "</strong>");
+		preview.innerHTML = preview.innerHTML.replace(delimiter, wordBraker).replace(new RegExp(options.input,"g"), "<strong>" + options.input + "</strong>");
 		options.el.appendChild(preview);
 		options.gatherArray[options.index] = options.el;
 
