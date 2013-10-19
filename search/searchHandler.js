@@ -14,8 +14,6 @@
 		metaDataPrefix = "CONTENT_LENGTH 4 CONTENT_TYPE",
 		metaDataPredefinedText = "Found in metadata",
 		noResultText = "No results.",
-		delimiter = /\//g,
-		wordBraker = "/<wbr/>",
 		iconPathTemplate = "img/file32.png",
 		imgString = "img",
 		linkString = "a",
@@ -26,6 +24,13 @@
 //TODO: replace static json for indexer and rest (indexing.json, merge.json and so on)
 	function search(value){
 		window.SearchApp.search(value, splitResult, searchResultEl);
+	}
+
+	function imgPreload(imgArr){
+		imgArr.forEach(function(src){
+			var img = new Image();
+			img.src = src;
+		});
 	}
 
 	function splitResult(result){
@@ -131,6 +136,8 @@
 		searchResultEl = document.getElementsByClassName("search-results")[0];
 	});
 
+
+	imgPreload(iconMap.images);
 	if(!window.searchApp){
 		window.searchApp = {};
 	}
