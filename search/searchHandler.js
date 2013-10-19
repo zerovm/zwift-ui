@@ -8,6 +8,11 @@
 			images: ['img/file32_txt.png', 'img/file32_pdf.png', 'img/file32_doc.png', 'img/file32_doc.png', 'img/file32_c.png', 'img/file32_c.png', 'img/file32_lua.png']
 		},
 		extensionRegexp = /\.\w*$/,
+		fileNameInPathRegexp = /\/([\w\.]*)$/,
+		insideBrecketRegexp = /<(.*)>/,
+		lineSplitter = "\n",
+		metaDataPrefix = "CONTENT_LENGTH 4 CONTENT_TYPE",
+		metaDataPredefinedText = "Found in metadata",
 		noResultText = "No results.",
 		delimiter = /\//g,
 		wordBraker = "/<wbr/>",
@@ -15,21 +20,16 @@
 		imgString = "img",
 		linkString = "a",
 		divString = "div",
-		fragmentArray,
 		callbackCounter,
 		callbackCounterMax;
 
 //TODO: replace static json for indexer and rest (indexing.json, merge.json and so on)
 	function search(value){
-		console.log("started search")
 		window.SearchApp.search(value, splitResult, searchResultEl);
 	}
 
 	function splitResult(result){
-		var splittedResult,
-			startOffsets = [],
-			locations = [],
-			endsOffsets = [];
+		var splittedResult;
 		splittedResult = result.split(/\d. document=/).filter(function(str){
 			return str;
 		}).map(function(str){
@@ -52,15 +52,17 @@
 
 	function processMultipleRequests(splittedResult){
 		var icon, matchIndex, link, wrapper, ext,
-			locations = [];
-
-		fragmentArray = new Array(splittedResult.length);
+			fragmentArray = new Array(splittedResult.length);
 		callbackCounter = 0;
 		callbackCounterMax = splittedResult.length;
 		splittedResult.forEach(function(splitString, index){
-			var splitSubString = splitString[4].split(";");
+			var splitSubString = splitString[5].split(";"),
+				location = splitString[2].replace(" filename=/",""),
+				filename, fullPathEl, fullPath;
+			fullPathEl = document.createElement(divString);
+			fullPathEl.className = "file-name";
 			icon = document.createElement(imgString);
-			ext = locations[i].match(extensionRegexp);
+			ext = location.match(extensionRegexp);
 			if(ext){
 				matchIndex = iconMap.extensions.indexOf(ext[0]);
 			}else{
@@ -72,41 +74,54 @@
 				icon.src = iconPathTemplate;
 			}
 			link = document.createElement(linkString);
-			link.href = ZLitestackDotCom.getStorageUrl() + locations[i];
+			fullPath = ZLitestackDotCom.getStorageUrl() + location;
+			link.href = fullPath;
 			link.target = "_blank";
-			link.innerHTML = locations[i].replace(delimiter, wordBraker);
+			filename = location.match(fileNameInPathRegexp);
+			filename = filename ? filename[1] : location;
+			link.innerHTML = filename;
+			fullPathEl.innerHTML = fullPath;
 			wrapper = document.createElement(divString);
 			wrapper.appendChild(icon);
-			wrapper.appendChild(link);
+			wrapper.appendChild(link);//TODO: reduce ext checks number
+			wrapper.appendChild(fullPathEl);
 			SearchApp.getPreview(processRequest, {
-				location: splitString[2].replace(" filename=/",""),
+				location: location,
 				startOffset: splitSubString[1].replace(" start=", ""),
 				endOffset: splitSubString[2].replace(" end=", ""),
 				index: index,
 				el: wrapper,
-				ext: ext.replace(".","")
+				ext: ext ? ext[0].replace(".","") : "other",
+				gatherArray: fragmentArray
 			});
 		});
 	}
 
 	function processRequest(options, request, isError){
-		var preview;
+		var preview,
+			juce;
 		if(isError){
 			console.log("error")
 		}else{
+			juce = request.split(lineSplitter).filter(function(str){return str})[1].match(insideBrecketRegexp)[1];
+			if(juce.indexOf(metaDataPrefix) !== -1){
+				juce = metaDataPredefinedText;
+			}
 			preview = document.createElement(divString);
-			preview.innerText ? preview.innerText = request : preview.textContent = request;
+			preview.innerText ? preview.innerText = juce : preview.textContent = juce;
+			options.el.appendChild(preview);
+			options.gatherArray[options.index] = options.el;
 		}
 		callbackCounter++;
 		if(callbackCounter === callbackCounterMax){
-			displayData();
+			displayData(options.gatherArray);
 		}
 
 	}
 
-	function displayData(){
+	function displayData(gatherArray){
 		var fragment = document.createDocumentFragment();
-		fragmentArray.forEach(function(piece){
+		gatherArray.forEach(function(piece){
 			fragment.appendChild(piece);
 		});
 		searchResultEl.appendChild(fragment);

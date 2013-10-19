@@ -82,6 +82,21 @@ template {
 	padding-bottom: 10px;
 	position: relative;
 }
+.search-results a{
+	text-decoration: underline;
+	font-size: 16px;
+}
+.search-results .file-name,
+.search-results a{
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
+.search-results .file-name{
+	color: #00802a;
+	font-size: 14px;
+	margin-bottom: -5px;
+}
 .search-results > div:nth-child(even){
 	background: #d3d3d3;
 }

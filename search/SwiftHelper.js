@@ -246,12 +246,14 @@
 		execute(data);
 
 		function createConfiguration(){
-			var account = ZLitestackDotCom.getAccount(), fileList,
+			var account = ZLitestackDotCom.getAccount(),
 				resultJSON = [
 					{
 						"name": options.ext,
+						"file_list": [
+							{"device": "input", "path": "swift://" + options.location}
+						],
 						"exec": {
-							"path": "swift://" + account + "/search/sys/doc.nexe",
 							"args": "--search " + options.startOffset + " " + options.endOffset
 						},
 						"replicate": 0
@@ -259,34 +261,40 @@
 				];
 			switch(options.ext){
 				case "txt":
-					resultJSON["file_list"] = [
-						{"device": "input", "path": options.location},
-						{"device": "stdout", "path": "swift://g_103319991787805482239/search/outputfiles/txt_stdout.txt"}
-					];
+					resultJSON[0]["file_list"].push(
+						{"device": "stdout"}
+					);
+					resultJSON[0]["exec"]["path"] = "swift://" + account + "/search/sys/txt.nexe";
 					break;
 				case "doc":
-					resultJSON["file_list"] = [
-						{"device": "input", "path": options.location},
-						{"device": "image", "path": "swift://g_103319991787805482239/search/sys/antiword.tar"},
-						{"device": "stderr", "path": "swift://g_103319991787805482239/search/outputfiles/doc_stderr.txt"}
-					];
-					resultJSON["exec"]["args"] = "temp.doc --search " + options.startOffset + " " + options.endOffset;
+					resultJSON[0]["file_list"].push(
+						{"device": "image", "path": "swift://" + account + "/search/sys/antiword.tar"}
+					);
+					resultJSON[0]["file_list"].push(
+						{"device": "stderr", "path": "swift://" + account + "/search/outputfiles/doc_stderr.txt"}
+					);
+
+					resultJSON[0]["exec"]["args"] = "temp.doc --search " + options.startOffset + " " + options.endOffset;
+					resultJSON[0]["exec"]["path"] = "swift://" + account + "/search/sys/doc.nexe";
 					break;
 				case "pdf":
-					resultJSON["file_list"] = [
-						{"device": "input", "path": options.location},
-						{"device": "image", "path": "swift://g_103319991787805482239/search/sys/confpdf.tar"},
-						{"device": "stderr", "path": "swift://g_103319991787805482239/search/outputfiles/pdf_stderr.txt"}
-					];
+					resultJSON[0]["file_list"].push(
+						{"device": "image", "path": "swift://" + account + "/search/sys/confpdf.tar"}
+					);
+					resultJSON[0]["file_list"].push(
+						{"device": "stderr", "path": "swift://" + account + "/search/outputfiles/pdf_stderr.txt"}
+					);
+					resultJSON[0]["exec"]["path"] = "swift://" + account + "/search/sys/pdf.nexe";
 					break;
 				default:
-					resultJSON["file_list"] = [
-						{"device": "input", "path": options.location},
-						{"device": "stdout", "path": "swift://g_103319991787805482239/search/outputfiles/other_stdout.txt"}
-					];
-					resultJSON["name"] = "other";
+					resultJSON[0]["file_list"].push(
+						{"device": "stdout"}
+					);
+					resultJSON[0]["exec"]["path"] = "swift://" + account + "/search/sys/other.nexe";
+					resultJSON[0]["name"] = "other";
 					break;
 			}
+			console.log(resultJSON)
 			return resultJSON;
 		}
 
@@ -296,6 +304,9 @@
 				data: data,
 				contentType: 'application/json',
 				success: function(result, report){
+					console.log("--------------------------------------------result-of-preview------------------------------------------")
+					console.log(result)
+					console.log("--------------------------------------------result-ends-------------------------------------------")
 					callback(options, result);
 				},
 				error: function(status, statusText, response){
@@ -317,12 +328,12 @@
  "name" : "txt",
  "exec" : {
  "args" : "--search 209 220"  <<<<<------------- 209 - start из резуьтата, 220 - end
- "path" : "swift://g_103319991787805482239/search/sys/txt.nexe"
+ "path" : "swift://g_111470454273605712703/search/sys/txt.nexe"
  },
  "file_list" :
  [
- {"device" : "input", "path" : "swift://g_103319991787805482239/search/doc/channels_.doc"},  <<<<<------------- filename из результата
- {"device" : "stdout",   "path" : "swift://g_103319991787805482239/search/outputfiles/txt_stdout.txt"}
+ {"device" : "input", "path" : "swift://g_111470454273605712703/search/doc/channels_.doc"},  <<<<<------------- filename из результата
+ {"device" : "stdout",   "path" : "swift://g_111470454273605712703/search/outputfiles/txt_stdout.txt"}
  ],
  "replicate" : 0
  }
@@ -335,14 +346,14 @@
  "name" : "doc",
  "exec" :
  {
- "path" : "swift://g_103319991787805482239/search/sys/doc.nexe",
+ "path" : "swift://g_111470454273605712703/search/sys/doc.nexe",
  "args" : "temp.doc --search 209 220"  <<<<<------------- 209 - start из резуьтата, 220 - end
  },
  "file_list" :
  [
- {"device" : "input", "path" : "swift://g_103319991787805482239/search/doc/channels_.doc"},  <<<<<------------- filename из результата
- {"device" : "image", "path" :  "swift://g_103319991787805482239/search/sys/antiword.tar"},
- {"device" : "stderr",   "path" : "swift://g_103319991787805482239/search/outputfiles/doc_stderr.txt"}
+ {"device" : "input", "path" : "swift://g_111470454273605712703/search/doc/channels_.doc"},  <<<<<------------- filename из результата
+ {"device" : "image", "path" :  "swift://g_111470454273605712703/search/sys/antiword.tar"},
+ {"device" : "stderr",   "path" : "swift://g_111470454273605712703/search/outputfiles/doc_stderr.txt"}
  ],
  "replicate" : 0
  }
@@ -353,14 +364,14 @@
  {
  "name" : "pdf",
  "exec" : {
- "path" : "swift://g_103319991787805482239/search/sys/pdf.nexe"
+ "path" : "swift://g_111470454273605712703/search/sys/pdf.nexe"
  "args" : "--search 209 220"  <<<<<------------- 209 - start из резуьтата, 220 - end
  },
  "file_list" :
  [
- {"device" : "input", "path" : "swift://g_103319991787805482239/search/doc/channels_.doc"},  <<<<<------------- filename из результата
- {"device" : "image",  "path" : "swift://g_103319991787805482239/search/sys/confpdf.tar"},
- {"device" : "stderr",   "path" : "swift://g_103319991787805482239/search/outputfiles/pdf_stderr.txt"}
+ {"device" : "input", "path" : "swift://g_111470454273605712703/search/doc/channels_.doc"},  <<<<<------------- filename из результата
+ {"device" : "image",  "path" : "swift://g_111470454273605712703/search/sys/confpdf.tar"},
+ {"device" : "stderr",   "path" : "swift://g_111470454273605712703/search/outputfiles/pdf_stderr.txt"}
  ],
  "replicate" : 0
  }
@@ -371,13 +382,13 @@
  {
  "name" : "other",
  "exec" : {
- "path" : "swift://g_103319991787805482239/search/sys/other.nexe"
+ "path" : "swift://g_111470454273605712703/search/sys/other.nexe"
  "args" : "--search 209 220"  <<<<<------------- 209 - start из резуьтата, 220 - end
  },
  "file_list" :
  [
- {"device" : "input", "path" : "swift://g_103319991787805482239/search/doc/channels_.doc"},  <<<<<------------- filename из результата
- {"device" : "stdout",   "path" : "swift://g_103319991787805482239/search/outputfiles/other_stdout.txt"}
+ {"device" : "input", "path" : "swift://g_111470454273605712703/search/doc/channels_.doc"},  <<<<<------------- filename из результата
+ {"device" : "stdout",   "path" : "swift://g_111470454273605712703/search/outputfiles/other_stdout.txt"}
  ],
  "replicate" : 0
  }
