@@ -4,15 +4,17 @@
 
 	var searchResultEl,
 		iconMap = {
-			extensions: ['.txt','.pdf','.doc','.docx','.h','.c','.lua'],
+			extensions: ['.txt', '.pdf', '.doc', '.docx', '.h', '.c', '.lua'],
 			images: ['img/file32_txt.png', 'img/file32_pdf.png', 'img/file32_doc.png', 'img/file32_doc.png', 'img/file32_c.png', 'img/file32_c.png', 'img/file32_lua.png']
 		},
 		extensionRegexp = /\.\w*$/,
 		fileNameInPathRegexp = /\/([\w\.]*)$/,
 		insideBrecketRegexp = /<(.*)>/,
 		lineSplitter = "\n",
-		metaDataPrefix = "CONTENT_LENGTH 4 CONTENT_TYPE",
-		metaDataPredefinedText = "Found in metadata",
+		delimiter = /\//g,
+		wordBraker = "/<wbr/>",
+		metaDataPredefinedText = "Found in metadata: ",
+		metaDataPathPredefinedText = "Found in path: ",
 		noResultText = "No results.",
 		iconPathTemplate = "img/file32.png",
 		imgString = "img",
@@ -33,33 +35,33 @@
 		});
 	}
 
-	function splitResult(result){
+	function splitResult(result, input){
 		var splittedResult;
 		splittedResult = result.split(/\d. document=/).filter(function(str){
 			return str;
 		}).map(function(str){
-			return str && str.split(",");
-		});
+				return str && str.split(",");
+			});
 
-		while (searchResultEl.firstChild) {
+		while(searchResultEl.firstChild){
 			searchResultEl.removeChild(searchResultEl.firstChild);
 		}
 
 		if(!splittedResult.length || !parseInt(result.split(/(\d*) hits/)[1])){
 			searchResultEl.innerHTML = noResultText;
 		}else{
-			processMultipleRequests(splittedResult);
+			processMultipleRequests(splittedResult, input);
 		}
 	}
 
-	function processMultipleRequests(splittedResult){
+	function processMultipleRequests(splittedResult, input){
 		var icon, matchIndex, link, wrapper, ext,
 			fragmentArray = new Array(splittedResult.length);
 		callbackCounter = 0;
 		callbackCounterMax = splittedResult.length;
 		splittedResult.forEach(function(splitString, index){
 			var splitSubString = splitString[5].split(";"),
-				location = splitString[2].replace(" filename=/",""),
+				location = splitString[2].replace(" filename=/", ""),
 				filename, fullPathEl, fullPath;
 			fullPathEl = document.createElement(divString);
 			fullPathEl.className = "file-name";
@@ -93,25 +95,35 @@
 				endOffset: splitSubString[2].replace(" end=", ""),
 				index: index,
 				el: wrapper,
-				ext: ext ? ext[0].replace(".","") : "other",
-				gatherArray: fragmentArray
+				ext: ext ? ext[0].replace(".", "") : "other",
+				gatherArray: fragmentArray,
+				input: input
 			});
 		});
 	}
 
 	function processRequest(options, request, isError){
 		var preview,
-			juce;
+			juce,
+			requestLines;
+		requestLines = request.split(lineSplitter).filter(function(str){
+			return str;
+		});
 		if(isError){
 			juce = "An error occured";
 		}else{
-			juce = request.split(lineSplitter).filter(function(str){return str})[1].match(insideBrecketRegexp)[1];
-			if(juce.indexOf(metaDataPrefix) !== -1){
-				juce = metaDataPredefinedText;
+			if(requestLines.length > 2){//third line should be a flag marked metadata
+				if(options.location.indexOf(options.input) !== -1){
+					juce = metaDataPathPredefinedText + options.location;
+					juce = juce.replace(delimiter, wordBraker);
+				}
+			}else{
+				juce = requestLines[1].match(insideBrecketRegexp)[1];
 			}
 		}
 		preview = document.createElement(divString);
 		preview.innerText ? preview.innerText = juce : preview.textContent = juce;
+		preview.innerHTML = preview.innerHTML.replace(new RegExp(options.input), "<strong>" + options.input + "</strong>");
 		options.el.appendChild(preview);
 		options.gatherArray[options.index] = options.el;
 
@@ -133,7 +145,6 @@
 	document.addEventListener("DOMContentLoaded", function(){
 		searchResultEl = document.getElementsByClassName("search-results")[0];
 	});
-
 
 	imgPreload(iconMap.images);
 	if(!window.searchApp){

@@ -72,14 +72,14 @@ template {
 	font-size: large;
 	line-height: 25px;
 	font-family: arial, serif;
+	color: #555;
 	padding: 3px;
-	height: 100%;
-	overflow-y: auto;
-	max-height: 150px;
+	overflow-y: scroll;
+	max-height: 350px;
 	border: 1px solid gainsboro;
 }
 .search-results > div{
-	padding-bottom: 10px;
+	padding: 10px 0;
 	position: relative;
 }
 .search-results a{
@@ -98,7 +98,7 @@ template {
 	margin-bottom: -5px;
 }
 .search-results > div:nth-child(even){
-	background: #d3d3d3;
+	background: #f4f4f4;
 }
 .search-results > div:not(:first-child)::before{
 	content: "";
@@ -109,26 +109,24 @@ template {
 	height: 1px;
 	background: rgba(0,0,0,0.3);
 }
-
 .search-results img,
 .search-results a {
 	vertical-align: middle;
 }
-
 .search-results a {
 	color: #1B2781;
 	text-decoration: none;
 }
-
 .search-results a:visited {
 	color: #511977;
 }
-
+.search-results strong{
+	color: black;
+	font-weight: bold;
+}
 .hide{
 	opacity: 0 !important;
 }
-
-
 button:focus{
 	border: none;
 	outline: none;

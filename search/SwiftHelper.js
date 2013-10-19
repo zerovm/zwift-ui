@@ -6,7 +6,7 @@
 	SearchApp.search = function(text, callback, outputEl){
 		var input, i;
 		input = parse(text);
-		function parse(str){
+		function parse(str){//TODO: wtf is it?
 			var arr = str.split('"');
 			for(i = 1; i < arr.length; i += 2){
 				arr[i] = arr[i].replace(':', ' ');
@@ -59,7 +59,7 @@
 				data: data,
 				contentType: 'application/json',
 				success: function(result, report){
-					callback(result);
+					callback(result, input);
 				},
 				error: function(status, statusText, response){
 					outputEl.textContent = 'Http Error: ' + status + ' ' + statusText + '. Execute response: ' + response;
