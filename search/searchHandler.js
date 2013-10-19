@@ -50,9 +50,6 @@
 		}else{
 			processMultipleRequests(splittedResult);
 		}
-
-
-
 	}
 
 	function processMultipleRequests(splittedResult){
@@ -106,17 +103,18 @@
 		var preview,
 			juce;
 		if(isError){
-			console.log("error")
+			juce = "An error occured";
 		}else{
 			juce = request.split(lineSplitter).filter(function(str){return str})[1].match(insideBrecketRegexp)[1];
 			if(juce.indexOf(metaDataPrefix) !== -1){
 				juce = metaDataPredefinedText;
 			}
-			preview = document.createElement(divString);
-			preview.innerText ? preview.innerText = juce : preview.textContent = juce;
-			options.el.appendChild(preview);
-			options.gatherArray[options.index] = options.el;
 		}
+		preview = document.createElement(divString);
+		preview.innerText ? preview.innerText = juce : preview.textContent = juce;
+		options.el.appendChild(preview);
+		options.gatherArray[options.index] = options.el;
+
 		callbackCounter++;
 		if(callbackCounter === callbackCounterMax){
 			displayData(options.gatherArray);

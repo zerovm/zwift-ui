@@ -2,8 +2,7 @@
 
 	"use strict"
 
-	var SEARCH_LIMIT = 1,
-		DIRECTORY_TYPE = "application/directory",
+	var DIRECTORY_TYPE = "application/directory",
 		HIDDEN_ATTRIBUTE = "hidden",
 		DELIMITER = "/",
 		INDEX_CHUNK_SIZE = 20,

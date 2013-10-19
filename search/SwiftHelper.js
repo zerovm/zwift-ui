@@ -294,7 +294,6 @@
 					resultJSON[0]["name"] = "other";
 					break;
 			}
-			console.log(resultJSON)
 			return resultJSON;
 		}
 
@@ -304,9 +303,6 @@
 				data: data,
 				contentType: 'application/json',
 				success: function(result, report){
-					console.log("--------------------------------------------result-of-preview------------------------------------------")
-					console.log(result)
-					console.log("--------------------------------------------result-ends-------------------------------------------")
 					callback(options, result);
 				},
 				error: function(status, statusText, response){
@@ -318,78 +314,3 @@
 
 	window.SearchApp = SearchApp;
 })();
-
-/*
-
-
-
- var a =[
- {
- "name" : "txt",
- "exec" : {
- "args" : "--search 209 220"  <<<<<------------- 209 - start из резуьтата, 220 - end
- "path" : "swift://g_111470454273605712703/search/sys/txt.nexe"
- },
- "file_list" :
- [
- {"device" : "input", "path" : "swift://g_111470454273605712703/search/doc/channels_.doc"},  <<<<<------------- filename из результата
- {"device" : "stdout",   "path" : "swift://g_111470454273605712703/search/outputfiles/txt_stdout.txt"}
- ],
- "replicate" : 0
- }
- ]
-
-
- для *.doc-файлов:
- [
- {
- "name" : "doc",
- "exec" :
- {
- "path" : "swift://g_111470454273605712703/search/sys/doc.nexe",
- "args" : "temp.doc --search 209 220"  <<<<<------------- 209 - start из резуьтата, 220 - end
- },
- "file_list" :
- [
- {"device" : "input", "path" : "swift://g_111470454273605712703/search/doc/channels_.doc"},  <<<<<------------- filename из результата
- {"device" : "image", "path" :  "swift://g_111470454273605712703/search/sys/antiword.tar"},
- {"device" : "stderr",   "path" : "swift://g_111470454273605712703/search/outputfiles/doc_stderr.txt"}
- ],
- "replicate" : 0
- }
- ]
-
- для *.pdf-файлов:
- [
- {
- "name" : "pdf",
- "exec" : {
- "path" : "swift://g_111470454273605712703/search/sys/pdf.nexe"
- "args" : "--search 209 220"  <<<<<------------- 209 - start из резуьтата, 220 - end
- },
- "file_list" :
- [
- {"device" : "input", "path" : "swift://g_111470454273605712703/search/doc/channels_.doc"},  <<<<<------------- filename из результата
- {"device" : "image",  "path" : "swift://g_111470454273605712703/search/sys/confpdf.tar"},
- {"device" : "stderr",   "path" : "swift://g_111470454273605712703/search/outputfiles/pdf_stderr.txt"}
- ],
- "replicate" : 0
- }
- ]
-
- для всех остальных файлов:
- [
- {
- "name" : "other",
- "exec" : {
- "path" : "swift://g_111470454273605712703/search/sys/other.nexe"
- "args" : "--search 209 220"  <<<<<------------- 209 - start из резуьтата, 220 - end
- },
- "file_list" :
- [
- {"device" : "input", "path" : "swift://g_111470454273605712703/search/doc/channels_.doc"},  <<<<<------------- filename из результата
- {"device" : "stdout",   "path" : "swift://g_111470454273605712703/search/outputfiles/other_stdout.txt"}
- ],
- "replicate" : 0
- }
- ]*/
