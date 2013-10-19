@@ -34,13 +34,13 @@
 				{
 					'name': 'search',
 					'exec': {
-						'path': 'swift://' + account + '/search/sys/search.nexe',
+						'path': 'swift://' + account + '/.gui/LiteStack/Search/0.1/execute/sys/search.nexe',
 						'args': '-c index/zsphinx.conf -i mainindex -m ' + input
 					},
 					'file_list': [
 						{
 							'device': 'input',
-							'path': 'swift://' + account + '/search/sys/rwindex'
+							'path': 'swift://' + account + '/.gui/LiteStack/Search/0.1/execute/sys/rwindex'
 						},
 						{
 							'device': 'stdout'
@@ -85,9 +85,9 @@
 				request = [
 					{
 						"name": "pdf",
-						"exec": {"path": "swift://" + account + "/search/sys/pdf.nexe"},
+						"exec": {"path": "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/pdf.nexe"},
 						"file_list": [
-							{"device": "image", "path": "swift://" + account + "/search/sys/confpdf.tar"},
+							{"device": "image", "path": "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/confpdf.tar"},
 							{"device": "stderr", "path": "swift://" + account + "/search/outputfiles/pdf_stderr.txt"}
 						],
 						"connect": ["xmlpipecreator"],
@@ -95,7 +95,7 @@
 					},
 					{
 						"name": "other",
-						"exec": {"path": "swift://" + account + "/search/sys/other.nexe"},
+						"exec": {"path": "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/other.nexe"},
 						"file_list": [
 							{"device": "stdout", "path": "swift://" + account + "/search/outputfiles/other_stdout.txt"}
 						],
@@ -104,7 +104,7 @@
 					},
 					{
 						"name": "txt",
-						"exec": {"path": "swift://" + account + "/search/sys/txt.nexe"},
+						"exec": {"path": "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/txt.nexe"},
 						"file_list": [
 							{"device": "stderr", "path": "swift://" + account + "/search/outputfiles/txt_stderr.txt"}
 						],
@@ -114,11 +114,11 @@
 					{
 						"name": "doc",
 						"exec": {
-							"path": "swift://" + account + "/search/sys/doc.nexe",
+							"path": "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/doc.nexe",
 							"args": "temp.doc"
 						},
 						"file_list": [
-							{"device": "image", "path": "swift://" + account + "/search/sys/antiword.tar"},
+							{"device": "image", "path": "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/antiword.tar"},
 							{"device": "stderr", "path": "swift://" + account + "/search/outputfiles/doc_stderr.txt"}
 						],
 						"connect": ["xmlpipecreator"],
@@ -127,7 +127,7 @@
 					{
 						"name": "xmlpipecreator",
 						"exec": {
-							"path": "swift://" + account + "/search/sys/xmlpipecreator.nexe",
+							"path": "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/xmlpipecreator.nexe",
 							"args": "--duplicate"
 						},
 						"file_list": [
@@ -139,13 +139,13 @@
 					{
 						"name": "indexer",
 						"exec": {
-							"path": "swift://" + account + "/search/sys/indexer.nexe",
+							"path": "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/indexer.nexe",
 							"args": "--config index/zsphinx.conf deltaindex"
 						},
 						"file_list": [
 							{"device": "stdout", "path": "swift://" + account + "/search/outputfiles/indexer_stdout.txt"},
-							{"device": "input", "path": "swift://" + account + "/search/sys/rwindex"},
-							{"device": "output", "path": "swift://" + account + "/search/sys/rwindex"},
+							{"device": "input", "path": "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/rwindex"},
+							{"device": "output", "path": "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/rwindex"},
 							{"device": "stderr"}
 						],
 						"replicate": 0
@@ -155,7 +155,7 @@
 				request.push({
 					"name": "filesender" + index,
 					"exec": {
-						"path": "swift://" + account + "/search/sys/filesender.nexe"
+						"path": "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/filesender.nexe"
 					},
 					"file_list": [
 						{"device": "input", "path": "swift://" + account + "/" + paramsObj.containerName + "/" + pathObj.name},
@@ -225,13 +225,13 @@
 				{
 					"name": "indexer",
 					"exec": {
-						"path": "swift://" + account + "/search/sys/indexer.nexe",
+						"path": "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/indexer.nexe",
 						"args": "--config index/zsphinx.conf --merge mainindex deltaindex"
 					},
 					"file_list": [
 						{"device": "stdout", "path": "swift://" + account + "/search/outputfiles/indexer_stdout.txt"},
-						{"device": "input", "path": "swift://" + account + "/search/sys/rwindex"},
-						{"device": "output", "path": "swift://" + account + "/search/sys/rwindex"},
+						{"device": "input", "path": "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/rwindex"},
+						{"device": "output", "path": "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/rwindex"},
 						{"device": "stderr"}
 					],
 					"replicate": 0
@@ -264,33 +264,33 @@
 					resultJSON[0]["file_list"].push(
 						{"device": "stdout"}
 					);
-					resultJSON[0]["exec"]["path"] = "swift://" + account + "/search/sys/txt.nexe";
+					resultJSON[0]["exec"]["path"] = "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/txt.nexe";
 					break;
 				case "doc":
 					resultJSON[0]["file_list"].push(
-						{"device": "image", "path": "swift://" + account + "/search/sys/antiword.tar"}
+						{"device": "image", "path": "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/antiword.tar"}
 					);
 					resultJSON[0]["file_list"].push(
 						{"device": "stderr", "path": "swift://" + account + "/search/outputfiles/doc_stderr.txt"}
 					);
 
 					resultJSON[0]["exec"]["args"] = "temp.doc --search " + options.startOffset + " " + options.endOffset;
-					resultJSON[0]["exec"]["path"] = "swift://" + account + "/search/sys/doc.nexe";
+					resultJSON[0]["exec"]["path"] = "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/doc.nexe";
 					break;
 				case "pdf":
 					resultJSON[0]["file_list"].push(
-						{"device": "image", "path": "swift://" + account + "/search/sys/confpdf.tar"}
+						{"device": "image", "path": "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/confpdf.tar"}
 					);
 					resultJSON[0]["file_list"].push(
 						{"device": "stderr", "path": "swift://" + account + "/search/outputfiles/pdf_stderr.txt"}
 					);
-					resultJSON[0]["exec"]["path"] = "swift://" + account + "/search/sys/pdf.nexe";
+					resultJSON[0]["exec"]["path"] = "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/pdf.nexe";
 					break;
 				default:
 					resultJSON[0]["file_list"].push(
 						{"device": "stdout"}
 					);
-					resultJSON[0]["exec"]["path"] = "swift://" + account + "/search/sys/other.nexe";
+					resultJSON[0]["exec"]["path"] = "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/other.nexe";
 					resultJSON[0]["name"] = "other";
 					break;
 			}

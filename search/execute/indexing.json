@@ -3,7 +3,7 @@
 		"name" : "filesender",
 		"exec" : 
 		{
-			"path": "swift://g_111470454273605712703/search/sys/filesender.nexe"
+			"path": "swift://g_111470454273605712703/.gui/LiteStack/Search/0.1/execute/sys/filesender.nexe"
 		},
 		"file_list" : 
 		[
@@ -15,10 +15,10 @@
 	},
 	{
 		"name" : "pdf",
-		"exec" : {"path" : "swift://g_111470454273605712703/search/sys/pdf.nexe"},
+		"exec" : {"path" : "swift://g_111470454273605712703/.gui/LiteStack/Search/0.1/execute/sys/pdf.nexe"},
 		"file_list" : 
 		[
-			{"device" : "image", 	"path" : "swift://g_111470454273605712703/search/sys/confpdf.tar"},
+			{"device" : "image", 	"path" : "swift://g_111470454273605712703/.gui/LiteStack/Search/0.1/execute/sys/confpdf.tar"},
 			{"device" : "stderr",  	"path" : "swift://g_111470454273605712703/search/outputfiles/pdf_stderr.txt"}
 		],
 		"connect" : ["xmlpipecreator"],
@@ -26,7 +26,7 @@
 	},
 	{
 		"name" : "txt",
-		"exec" : {"path" : "swift://g_111470454273605712703/search/sys/txt.nexe"},
+		"exec" : {"path" : "swift://g_111470454273605712703/.gui/LiteStack/Search/0.1/execute/sys/txt.nexe"},
 		"file_list" : 
 		[
 			{"device" : "stderr",  	"path" : "swift://g_111470454273605712703/search/outputfiles/pdf_stderr.txt"}
@@ -38,12 +38,12 @@
 		"name" : "doc",
 		"exec" : 
 		{
-			"path" : "swift://g_111470454273605712703/search/sys/doc.nexe",
+			"path" : "swift://g_111470454273605712703/.gui/LiteStack/Search/0.1/execute/sys/doc.nexe",
 			"args" : "temp.doc"
 		},
 		"file_list" : 
 		[
-			{"device" : "image", "path" :  "swift://g_111470454273605712703/search/sys/antiword.tar"},
+			{"device" : "image", "path" :  "swift://g_111470454273605712703/.gui/LiteStack/Search/0.1/execute/sys/antiword.tar"},
 			{"device" : "stderr",  	"path" : "swift://g_111470454273605712703/search/outputfiles/doc_stderr.txt"}
 		],
 		"connect" : ["xmlpipecreator"],
@@ -53,14 +53,14 @@
 		"name" : "xmlpipecreator",
 		"exec" : 
 		{
-			"path" : "swift://g_111470454273605712703/search/sys/xmlpipecreator.nexe",
+			"path" : "swift://g_111470454273605712703/.gui/LiteStack/Search/0.1/execute/sys/xmlpipecreator.nexe",
 			"args" : "--duplicate"
 		},
 		"file_list" : 
 		[
 			{"device" : "stdout", "path" :  "swift://g_111470454273605712703/search/outputfiles/xmlpipecreator_stdout.txt"},
-			{"device" : "input",   "path" : "swift://g_111470454273605712703/search/sys/xml_maxindex.data"},
-			{"device" : "output",  "path" : "swift://g_111470454273605712703/search/sys/xml_maxindex.data"},
+			{"device" : "input",   "path" : "swift://g_111470454273605712703/.gui/LiteStack/Search/0.1/execute/sys/xml_maxindex.data"},
+			{"device" : "output",  "path" : "swift://g_111470454273605712703/.gui/LiteStack/Search/0.1/execute/sys/xml_maxindex.data"},
 			{"device" : "stderr"}
 		],
         "connect" : ["indexer"],
@@ -70,14 +70,14 @@
 		"name" : "indexer",
 		"exec" : 
 		{
-			"path" : "swift://g_111470454273605712703/search/sys/indexer.nexe",
+			"path" : "swift://g_111470454273605712703/.gui/LiteStack/Search/0.1/execute/sys/indexer.nexe",
 			"args" : "--config index/zsphinx.conf deltaindex"
 		},
 		"file_list" : 
 		[
 			{"device" : "stdout",  "path" : "swift://g_111470454273605712703/search/outputfiles/indexer_stdout.txt"},
-			{"device" : "input",   "path" : "swift://g_111470454273605712703/search/sys/rwindex"},
-			{"device" : "output",  "path" : "swift://g_111470454273605712703/search/sys/rwindex"},
+			{"device" : "input",   "path" : "swift://g_111470454273605712703/.gui/LiteStack/Search/0.1/execute/sys/rwindex"},
+			{"device" : "output",  "path" : "swift://g_111470454273605712703/.gui/LiteStack/Search/0.1/execute/sys/rwindex"},
 			{"device" : "stderr"}
 		],
         "replicate" : 0

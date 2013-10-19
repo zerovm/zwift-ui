@@ -74,7 +74,7 @@ template {
 	font-family: arial, serif;
 	color: #555;
 	padding: 3px;
-	overflow-y: scroll;
+	overflow-y: auto;
 	max-height: 350px;
 	border: 1px solid gainsboro;
 }
