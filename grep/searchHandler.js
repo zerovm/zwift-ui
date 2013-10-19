@@ -6,7 +6,7 @@
 
 	function search(value){
 		console.log("started search")
-		window.grepApp.search(value, function(){console.log("search ends")});
+		window.grepAppHelper.search(value, function(){console.log("search ends")});
 	}
 
 	document.addEventListener("DOMContentLoaded", function(){

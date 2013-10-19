@@ -2,8 +2,7 @@
 
 	"use strict"
 
-	var SEARCH_LIMIT = 1,
-		DIRECTORY_TYPE = "application/directory",
+	var DIRECTORY_TYPE = "application/directory",
 		HIDDEN_ATTRIBUTE = "hidden",
 		DELIMITER = "/",
 		INDEX_CHUNK_SIZE = 20,
@@ -69,21 +68,11 @@
 		}
 	}
 
-	function index(value){
+	function getFiles(value){
 		chunkCallsCounter = 0;
 		parsePath(value, chunkCalls, {
 			mainWorkFunction: grepApp.grep,
 			pathFiles: pathFiles,
-			updateCallback: function(){
-				window.searchApp.progressBar.show();
-				window.searchApp.progressBar.setOptions({len: pathFiles.length, chunkSize: INDEX_CHUNK_SIZE});
-				this.updateCallback = window.searchApp.progressBar.updateChunk;
-				this.updateCallback();
-			},
-			finalCallback: function(){
-				window.searchApp.progressBar.hide();
-				window.searchApp.progressBar.reset();
-			},
 			getChunksNum: function(){
 				return Math.ceil(pathFiles.length / INDEX_CHUNK_SIZE);
 			}
@@ -97,5 +86,5 @@
 	if(!window.searchApp){
 		window.searchApp = {};
 	}
-	window.searchApp.index = index;
+	window.searchApp.getFiles = getFiles;
 })();

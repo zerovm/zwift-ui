@@ -1,7 +1,7 @@
 (function(){
 	"use strict";
 
-	var grepApp = {},
+	var grepAppHelper = {},
 		iconMap = {
 			extensions: ['.txt','.pdf','.doc','.docx','.h','.c','.lua'],
 			images: ['img/file32_txt.png', 'img/file32_pdf.png', 'img/file32_doc.png', 'img/file32_doc.png', 'img/file32_c.png', 'img/file32_c.png', 'img/file32_lua.png']
@@ -9,7 +9,7 @@
 		extensionRegexp = /\.\w*$/,
 		delimiter = /\//g;
 
-	grepApp.search = function(text, callback){
+	grepAppHelper.grep = function(text, callback){
 		var input, i;
 		input = parse(text);
 		function parse(str){
@@ -36,24 +36,22 @@
 		execute(data);
 
 		function createConfiguration(){
-			var account = ZLitestackDotCom.getAccount();//TODO: find out description for params (num of outputed files etc)
+			var account = ZLitestackDotCom.getAccount();//fileList - path to file
 			return [
 				{
-					'name': 'search',
+					'name': 'grep',
 					'exec': {
-						'path': 'swift://' + account + '/search/sys/search.nexe',
+						'path': 'swift://' + account + '/search/sys/grep.nexe',
 						'args': '-c index/zsphinx.conf -i mainindex -w -m ' + input
 					},
 					'file_list': [
 						{
-							'device': 'input',
+							'device': 'stdin',
 							'path': 'swift://' + account + '/search/sys/rwindex'
 						},
 						{
-							'device': 'stdout'
-						},
-						{
-							'device': 'stderr'
+							'device': 'stdout',
+							"content_type": "text/plain"
 						}
 					]
 				}
@@ -127,176 +125,5 @@
 		}
 	};
 
-	grepApp.index = function(paramsObj){
-
-		var pathesObjs = paramsObj.pathes,//TODO: rename both
-			callback = paramsObj.callbackInit,
-			indexResultEl = document.querySelector('.index-result');
-		indexResultEl.classList.remove('error');
-		indexResultEl.textContent = '';
-		indexResultEl.removeAttribute('hidden');
-
-		index(JSON.stringify(createConfiguration()));
-
-		function createConfiguration(){
-			var account = ZLitestackDotCom.getAccount(),
-				request = [
-					{
-						"name": "pdf",
-						"exec": {"path": "swift://" + account + "/search/sys/pdf.nexe"},
-						"file_list": [
-							{"device": "image", "path": "swift://" + account + "/search/sys/confpdf.tar"},
-							{"device": "stderr", "path": "swift://" + account + "/search/outputfiles/pdf_stderr.txt"}
-						],
-						"connect": ["xmlpipecreator"],
-						"replicate": 0
-					},
-					{
-						"name": "other",
-						"exec": {"path": "swift://" + account + "/search/sys/other.nexe"},
-						"file_list": [
-							{"device": "stdout", "path": "swift://" + account + "/search/outputfiles/other_stdout.txt"}
-						],
-						"connect": ["xmlpipecreator"],
-						"replicate": 0
-					},
-					{
-						"name": "txt",
-						"exec": {"path": "swift://" + account + "/search/sys/txt.nexe"},
-						"file_list": [
-							{"device": "stderr", "path": "swift://" + account + "/search/outputfiles/txt_stderr.txt"}
-						],
-						"connect": ["xmlpipecreator"],
-						"replicate": 0
-					},
-					{
-						"name": "doc",
-						"exec": {
-							"path": "swift://" + account + "/search/sys/doc.nexe",
-							"args": "temp.doc"
-						},
-						"file_list": [
-							{"device": "image", "path": "swift://" + account + "/search/sys/antiword.tar"},
-							{"device": "stderr", "path": "swift://" + account + "/search/outputfiles/doc_stderr.txt"}
-						],
-						"connect": ["xmlpipecreator"],
-						"replicate": 0
-					},
-					{
-						"name": "xmlpipecreator",
-						"exec": {
-							"path": "swift://" + account + "/search/sys/xmlpipecreator.nexe",
-							"args": "--duplicate"
-						},
-						"file_list": [
-							{"device": "stdout", "path": "swift://" + account + "/search/outputfiles/xmlpipecreator_stdout.txt"}
-						],
-						"connect": ["indexer"],
-						"replicate": 0
-					},
-					{
-						"name": "indexer",
-						"exec": {
-							"path": "swift://" + account + "/search/sys/indexer.nexe",
-							"args": "--config index/zsphinx.conf deltaindex"
-						},
-						"file_list": [
-							{"device": "stdout", "path": "swift://" + account + "/search/outputfiles/indexer_stdout.txt"},
-							{"device": "input", "path": "swift://" + account + "/search/sys/rwindex"},
-							{"device": "output", "path": "swift://" + account + "/search/sys/rwindex"},
-							{"device": "stderr"}
-						],
-						"replicate": 0
-					}
-				];
-			pathesObjs.forEach(function(pathObj, index){
-				request.push({
-					"name": "filesender" + index,
-					"exec": {
-						"path": "swift://" + account + "/search/sys/filesender.nexe"
-					},
-					"file_list": [
-						{"device": "input", "path": "swift://" + account + "/" + paramsObj.containerName + "/" + pathObj.name},
-						{"device": "stderr"}
-					],
-					"connect": ["pdf", "txt", "doc", "other"],
-					"replicate": 0
-				});
-			});
-			return request;
-		}
-
-		function index(data){
-			indexResultEl.textContent = 'Indexing...';
-			ZeroVmOnSwift.execute({
-				data: data,
-				contentType: 'application/json',
-				success: function(result, report){
-					merge(JSON.stringify(createMergeConfiguration()));
-					callback && callback(paramsObj);
-				},
-				error: function(status, statusText, response){
-					indexResultEl.textContent = 'Http Error: ' + status + ' ' + statusText + '. Execute response: ' + response;
-					indexResultEl.classList.add('error');
-				}
-			});
-		}
-
-		function read(blob){
-			indexResultEl.textContent = 'Reading result...';
-			var reader = new FileReader();
-			reader.addEventListener('load', function(e){
-				indexResultEl.textContent = e.target.result;
-				document.querySelector('.index-result-close-button').removeAttribute('hidden');
-			});
-			reader.addEventListener('error', function(message){
-				indexResultEl.textContent = message;
-				indexResultEl.classList.add('error');
-			});
-			reader.readAsText(blob);
-		}
-
-		function merge(data){
-			indexResultEl.textContent = 'Merging...';
-			ZeroVmOnSwift.execute({
-				data: data,
-				contentType: 'application/json',
-				success: function(result, report){
-					indexResultEl.textContent = 'Merge completed. ' + result;
-					document.querySelector('.index-result-close-button').removeAttribute('hidden');
-				},
-				error: function(status, statusText, response){
-					var errorMessage = '';
-					if(status != -1){
-						errorMessage += 'Http Error: ' + status + ' ' + statusText + '. ';
-					}
-					errorMessage += 'Execute response: ' + response;
-					indexResultEl.textContent = errorMessage;
-					indexResultEl.classList.add('error');
-				}
-			});
-		}
-
-		function createMergeConfiguration(){
-			var account = ZLitestackDotCom.getAccount();
-			return [
-				{
-					"name": "indexer",
-					"exec": {
-						"path": "swift://" + account + "/search/sys/indexer.nexe",
-						"args": "--config index/zsphinx.conf --merge mainindex deltaindex"
-					},
-					"file_list": [
-						{"device": "stdout", "path": "swift://" + account + "/search/outputfiles/indexer_stdout.txt"},
-						{"device": "input", "path": "swift://" + account + "/search/sys/rwindex"},
-						{"device": "output", "path": "swift://" + account + "/search/sys/rwindex"},
-						{"device": "stderr"}
-					],
-					"replicate": 0
-				}
-			];
-		}
-	};
-
-	window.grepApp = grepApp;
+	window.grepAppHelper = grepAppHelper;
 })();
