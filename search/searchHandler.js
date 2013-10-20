@@ -1,6 +1,6 @@
 (function(){
 
-	"use strict"
+	"use strict";
 
 	var searchResultEl,
 		iconMap = {
@@ -13,7 +13,7 @@
 		higherFolderInPathRegexp = /^[\w]*\//,
 		metaDataSeparator = " ; ",
 		dataSplitter = " ",
-		lineSplitter = "\n",
+		lineSplitterRegex = new RegExp("\n", "g"),
 		delimiter = /\//g,
 		wordBraker = "/<wbr/>",
 		valueText = "\nvalue: ",
@@ -107,23 +107,25 @@
 	}
 
 	function processRequest(options, request, isError){
-		var preview, juce, requestLines, i, splitedMeta, splitData;
-		requestLines = request.split(lineSplitter).filter(function(str){
+		var preview, juce, requestLines, i, splitedMeta, splitData, onlyWordRegexp;
+		requestLines = request.split(lineSplitterRegex).filter(function(str){
 			return str;
 		});
 		if(isError){
 			juce = "An error occured";
 		}else{
 			if(requestLines.length > 2){//third line should be a flag marked metadata
-				if(options.location.indexOf(options.input) !== -1){
+				onlyWordRegexp = new RegExp("(^|\\s|\\/)" + options.input + "(\\s|\\/|$)");
+				if(options.location.match(onlyWordRegexp)){
 					juce = metaDataPathPredefinedText + options.location.replace(higherFolderInPathRegexp, "");
 				}else{
 					splitedMeta = requestLines[1].match(insideBrecketRegexp)[1].split(metaDataSeparator);
 					juce = metaDataPredefinedText;
-					for(i = 0; i < splitedMeta.length; i++){
-						if(splitedMeta[i].indexOf(options.input) !== -1){
-							splitData = splitedMeta.split(dataSplitter);
+					for(i = 0; i < splitedMeta.length; i++){//TODO: check out new response format for lowercase meta key
+						if(splitedMeta[i].match(onlyWordRegexp)){
+							splitData = splitedMeta[i].split(dataSplitter);
 							juce += splitData[0] + valueText + splitData[1];
+							break;
 						}
 					}
 				}
@@ -133,7 +135,9 @@
 		}
 		preview = document.createElement(divString);
 		preview.innerText ? preview.innerText = juce : preview.textContent = juce;
-		preview.innerHTML = preview.innerHTML.replace(delimiter, wordBraker).replace(new RegExp(options.input,"g"), "<strong>" + options.input + "</strong>");
+		preview.innerHTML = preview.innerHTML.replace(delimiter, wordBraker)
+			.replace(new RegExp(options.input, "g"), "<strong>" + options.input + "</strong>")
+			.replace(lineSplitterRegex, "<br>");
 		options.el.appendChild(preview);
 		options.gatherArray[options.index] = options.el;
 
