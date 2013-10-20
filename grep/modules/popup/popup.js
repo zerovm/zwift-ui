@@ -9,7 +9,10 @@
 			popup = document.createElement("div"),
 			outputTextEl = document.createElement("p"),
 			closeButton = document.createElement("button"),
-			options = {};
+			options = {
+				isModule: true,
+				isDialog: false
+			};
 
 		function hide(){
 			wrapper.classList.remove(showClass);
@@ -45,8 +48,8 @@
 		this.hide = hide;
 	}
 
-	if(!window.searchApp){
-		window.searchApp = {};
+	if(!window.grepApp){
+		window.grepApp = {};
 	}
-	window.searchApp.Popup = Popup;
+	window.grepApp.Popup = Popup;
 })();

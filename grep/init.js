@@ -1,11 +1,10 @@
 document.addEventListener('DOMContentLoaded', function(){
 	var timeout, searchMemo;
-	ZLitestackDotCom.init();
+	//ZLitestackDotCom.init();
 	if(!window.grepApp){
 		window.grepApp = {};
 	}
 	window.grepApp.searchInput = document.getElementsByClassName("search-input")[0];
-	window.grepApp.progressBar = new window.grepApp.ProgressBar(document.getElementsByClassName("progress-bar")[0]);
 	searchMemo = new window.grepApp.MemoInputHandler();
 
 	document.addEventListener('keydown', function(e){

@@ -10,7 +10,7 @@
 
 	function Preferences(options){
 		var preferencesValues = {},
-			popup = new window.searchApp.Popup();
+			popup = new window.grepApp.Popup();
 
 		Object.keys(options).forEach(function(property){
 			preferencesValues[property] = options[property].el;
@@ -30,8 +30,8 @@
 		};
 	}
 
-	if(!window.searchApp){
-		window.searchApp = {};
+	if(!window.grepApp){
+		window.grepApp = {};
 	}
-	window.searchApp.Preferences = Preferences;
+	window.grepApp.Preferences = Preferences;
 })();

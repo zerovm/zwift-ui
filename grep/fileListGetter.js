@@ -83,8 +83,8 @@
 		indexResultEl = document.getElementsByClassName("index-result")[0];
 	});
 
-	if(!window.searchApp){
-		window.searchApp = {};
+	if(!window.grepApp){
+		window.grepApp = {};
 	}
-	window.searchApp.getFiles = getFiles;
+	window.grepApp.getFiles = getFiles;
 })();
