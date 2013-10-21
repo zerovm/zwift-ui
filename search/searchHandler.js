@@ -48,6 +48,11 @@
 		}
 	}
 
+	function displayNoResult(){
+		removeChildren(searchResultEl);
+		searchResultEl.innerHTML = noResultText;
+	}
+
 	function imgPreload(imgArr){
 		imgArr.forEach(function(src){
 			var img = new Image();
@@ -67,7 +72,7 @@
 			processMultipleRequests(splittedResult, input);
 			return;
 		}
-		searchResultEl.innerHTML = noResultText;
+		displayNoResult();
 	}
 
 	function processMultipleRequests(splittedResult, input){
@@ -123,6 +128,11 @@
 		requestLines = request.split(lineSplitterRegex).filter(function(str){
 			return str;
 		});
+		if(!request){
+			displayNoResult();
+			console.log("empty request");
+			return;
+		}
 		if(isError){
 			preview.innerHTML = "An error occured";
 		}else{

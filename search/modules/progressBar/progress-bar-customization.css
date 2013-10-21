@@ -1,3 +1,6 @@
+.progress-bar-wrapper{
+	height: auto;
+}
 .progress-bar{
 	width: auto;
 	height: 15px;
