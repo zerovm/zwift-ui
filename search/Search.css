@@ -134,7 +134,7 @@ button:focus{
 button::-moz-focus-inner{
 	border: 0;
 }
-button, p, div, li{
+button, p, li{
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;

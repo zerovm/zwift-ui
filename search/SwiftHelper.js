@@ -35,7 +35,7 @@
 					'name': 'search',
 					'exec': {
 						'path': 'swift://' + account + '/.gui/LiteStack/Search/0.1/execute/sys/search.nexe',
-						'args': '-c index/zsphinx.conf -i mainindex -m ' + input
+						'args': '-c index/zsphinx.conf -i mainindex -m -ws ' + input
 					},
 					'file_list': [
 						{

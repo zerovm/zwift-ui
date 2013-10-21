@@ -5,7 +5,8 @@
 	var searchResultEl,
 		iconMap = {
 			extensions: ['.txt', '.pdf', '.doc', '.docx', '.h', '.c', '.lua'],
-			images: ['img/file32_txt.png', 'img/file32_pdf.png', 'img/file32_doc.png', 'img/file32_doc.png', 'img/file32_c.png', 'img/file32_c.png', 'img/file32_lua.png']
+			images: ['img/file32_txt.png', 'img/file32_pdf.png', 'img/file32_doc.png', 'img/file32_doc.png', 'img/file32_c.png', 'img/file32_c.png', 'img/file32_lua.png'],
+			iconPathTemplate:  "img/file32.png"
 		},
 		extensionRegexp = /\.\w*$/,
 		fileNameInPathRegexp = /\/([\w\.]*)$/,
@@ -13,23 +14,38 @@
 		higherFolderInPathRegexp = /^[\w]*\//,
 		metaDataSeparator = " ; ",
 		dataSplitter = " ",
-		lineSplitterRegex = new RegExp("\n", "g"),
-		delimiter = /\//g,
+		lineSplitterRegex = /\n/g,
+		tagLineSplitter = " <br>",
+		GTRegex = />/g,
+		GTStr = "&gt;",
+		LTRegex = /</g,
+		LTStr = "&lt;",
+		delimiter = "/",
+		strStartAndSpace = "(^|\\s|\\/)",
+		strFinishAndSpace = "(\\s|\\/|$)",
 		wordBraker = "/<wbr/>",
-		valueText = "\nvalue: ",
-		metaDataPredefinedText = "Found in metadata:\nkey: ",
+		valueText = "<br>value: ",
+		metaDataPredefinedText = "Found in metadata:<br>key: ",
 		metaDataPathPredefinedText = "Found in path: ",
 		noResultText = "No results.",
-		iconPathTemplate = "img/file32.png",
 		imgString = "img",
 		linkString = "a",
 		divString = "div",
+		tagStrongStart = "<strong>",
+		tagStrongFinish = "</strong>",
 		callbackCounter,
 		callbackCounterMax;
 
 //TODO: replace static json for indexer and rest (indexing.json, merge.json and so on)
 	function search(value){
+		removeChildren(searchResultEl);
 		window.SearchApp.search(value, splitResult, searchResultEl);
+	}
+
+	function removeChildren(el){
+		while(el.firstChild){
+			el.removeChild(el.firstChild);
+		}
 	}
 
 	function imgPreload(imgArr){
@@ -41,31 +57,28 @@
 
 	function splitResult(result, input){
 		var splittedResult;
-		splittedResult = result.split(/\d. document=/).filter(function(str){
+		splittedResult = result.split(lineSplitterRegex).filter(function(str){
 			return str;
-		}).map(function(str){
-				return str && str.split(",");
-			});
+		});
 
-		while(searchResultEl.firstChild){
-			searchResultEl.removeChild(searchResultEl.firstChild);
-		}
+		removeChildren(searchResultEl);
 
-		if(!splittedResult.length || !parseInt(result.split(/(\d*) hits/)[1])){
-			searchResultEl.innerHTML = noResultText;
-		}else{
+		if(splittedResult.length){
 			processMultipleRequests(splittedResult, input);
+			return;
 		}
+		searchResultEl.innerHTML = noResultText;
 	}
 
 	function processMultipleRequests(splittedResult, input){
-		var icon, matchIndex, link, wrapper, ext,
+		var icon, link, wrapper, ext,
+			matchIndex = -1,
 			fragmentArray = new Array(splittedResult.length);
 		callbackCounter = 0;
 		callbackCounterMax = splittedResult.length;
 		splittedResult.forEach(function(splitString, index){
-			var splitSubString = splitString[5].split(";"),
-				location = splitString[2].replace(" filename=/", ""),
+			var splitSubString = splitString.split(";"),
+				location = splitSubString[0].replace(delimiter, ""),
 				filename, fullPathEl, fullPath;
 			fullPathEl = document.createElement(divString);
 			fullPathEl.className = "file-name";
@@ -73,13 +86,11 @@
 			ext = location.match(extensionRegexp);
 			if(ext){
 				matchIndex = iconMap.extensions.indexOf(ext[0]);
-			}else{
-				matchIndex = -1;
 			}
 			if(matchIndex !== -1){
 				icon.src = iconMap.images[matchIndex];
 			}else{
-				icon.src = iconPathTemplate;
+				icon.src = iconMap.iconPathTemplate;
 			}
 			link = document.createElement(linkString);
 			fullPath = ZLitestackDotCom.getStorageUrl() + location;
@@ -91,7 +102,7 @@
 			fullPathEl.innerHTML = fullPath;
 			wrapper = document.createElement(divString);
 			wrapper.appendChild(icon);
-			wrapper.appendChild(link);//TODO: reduce ext checks number
+			wrapper.appendChild(link);
 			wrapper.appendChild(fullPathEl);
 			SearchApp.getPreview(processRequest, {
 				location: location,
@@ -107,37 +118,38 @@
 	}
 
 	function processRequest(options, request, isError){
-		var preview, juce, requestLines, i, splitedMeta, splitData, onlyWordRegexp;
+		var preview, juce, requestLines, i, splitedMeta, splitData, onlyWordRegexp, innerHTML;
+		preview = document.createElement(divString);
 		requestLines = request.split(lineSplitterRegex).filter(function(str){
 			return str;
 		});
 		if(isError){
-			juce = "An error occured";
+			preview.innerHTML = "An error occured";
 		}else{
 			if(requestLines.length > 2){//third line should be a flag marked metadata
-				onlyWordRegexp = new RegExp("(^|\\s|\\/)" + options.input + "(\\s|\\/|$)");
+				onlyWordRegexp = getWordRegex(options.input);
 				if(options.location.match(onlyWordRegexp)){
-					juce = metaDataPathPredefinedText + options.location.replace(higherFolderInPathRegexp, "");
+					juce = options.location.replace(higherFolderInPathRegexp, "");
+					juce = highlightFounded(juce, options.input, delimiter, wordBraker);
+					innerHTML = metaDataPathPredefinedText + juce;
 				}else{
 					splitedMeta = requestLines[1].match(insideBrecketRegexp)[1].split(metaDataSeparator);
-					juce = metaDataPredefinedText;
-					for(i = 0; i < splitedMeta.length; i++){//TODO: check out new response format for lowercase meta key
+					for(i = 0; i < splitedMeta.length; i++){
 						if(splitedMeta[i].match(onlyWordRegexp)){
 							splitData = splitedMeta[i].split(dataSplitter);
-							juce += splitData[0] + valueText + splitData[1];
+							innerHTML = highlightFounded(splitData[0], options.input, dataSplitter);
+							innerHTML += valueText + highlightFounded(splitData[1], options.input, dataSplitter);
 							break;
 						}
 					}
+					innerHTML = metaDataPredefinedText + innerHTML;
 				}
 			}else{
 				juce = requestLines[1].match(insideBrecketRegexp)[1];
+				innerHTML = highlightFounded(juce, options.input, dataSplitter);
 			}
+			preview.innerHTML = innerHTML;
 		}
-		preview = document.createElement(divString);
-		preview.innerText ? preview.innerText = juce : preview.textContent = juce;
-		preview.innerHTML = preview.innerHTML.replace(delimiter, wordBraker)
-			.replace(new RegExp(options.input, "g"), "<strong>" + options.input + "</strong>")
-			.replace(lineSplitterRegex, "<br>");
 		options.el.appendChild(preview);
 		options.gatherArray[options.index] = options.el;
 
@@ -153,7 +165,33 @@
 		gatherArray.forEach(function(piece){
 			fragment.appendChild(piece);
 		});
+		removeChildren(searchResultEl);
 		searchResultEl.appendChild(fragment);
+	}
+
+	function highlightFounded(str, searchText, splitter, joiner){
+		var regexArray, innerHTML;
+
+		str = str.replace(GTRegex, GTStr).replace(LTRegex, LTStr);
+		innerHTML = str.replace(lineSplitterRegex, tagLineSplitter);
+		regexArray = searchText.split(dataSplitter)
+			.filter(function(str){return str;})
+			.map(function(word){return getWordRegex(word)});
+		return innerHTML.split(splitter).map(function(word){
+			var i;
+			for(i = regexArray.length - 1; i >= 0; i--){
+				if(word.match(regexArray[i])){
+					return tagStrongStart + word + tagStrongFinish;
+				}
+			}
+			return word;
+		}).join(joiner ? joiner : splitter);
+	}
+
+	function getWordRegex(word, param){
+		var regex;
+		param ? regex = new RegExp(strStartAndSpace + word + strFinishAndSpace, param) : regex = new RegExp(strStartAndSpace + word + strFinishAndSpace);
+		return regex;
 	}
 
 	document.addEventListener("DOMContentLoaded", function(){
