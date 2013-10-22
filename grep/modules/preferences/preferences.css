@@ -18,8 +18,8 @@
 	top: 0;
 }
 .preferences .preferences-list{
-	width: 120px;
-	padding: 0;
+	width: 140px;
+	padding: 9px 0 0;
 	margin: 0;
 	transform: translate3d(0, -150%, 0);
 	-moz-transform: translate3d(0, -150%, 0);

@@ -7,14 +7,27 @@
 	<script src="Swift.js"></script>
 	<link rel="stylesheet" href="Search.css" type="text/css">
 	<link rel="stylesheet" href="modules/popup/popup.css" type="text/css">
+	<link rel="stylesheet" href="modules/preferences/preferences.css" type="text/css">
 	<script src="SwiftHelper.js" type="text/javascript"></script>
 	<script src="fileListGetter.js" type="application/javascript"></script>
 	<script src="searchHandler.js" type="application/javascript"></script>
 	<script src="memoInputHandler.js" type="application/javascript"></script>
 	<script src="modules/preferences/preferences.js" type="application/javascript"></script>
+	<script src="modules/popup/popup.js" type="application/javascript"></script>
 	<script src="init.js" type="text/javascript"></script>
 </head>
 <body>
+<div class="preferences">
+	<button role="toggler" class="show-preferences preferences-element"></button>
+	<div class="preferences-list-wrapper">
+		<ul class="preferences-list">
+			<li>
+				<input data-preference="forwardsearch" class="preferences-element" type="checkbox" checked="true"/><span>forward search</span>
+				<div class="input-slider-wrapper"><div class="input-slider"></div></div>
+			</li>
+		</ul>
+	</div>
+</div>
 <div class="search-container-wrapper">
 	<div class="search-container">
 		<input class="search-input" placeholder="search" autofocus>
