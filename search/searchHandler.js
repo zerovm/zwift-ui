@@ -9,7 +9,7 @@
 			iconPathTemplate:  "img/file32.png"
 		},
 		extensionRegexp = /\.\w*$/,
-		fileNameInPathRegexp = /\/([\w\.]*)$/,
+		fileNameInPathRegexp = /\/([\w \.]*)$/,
 		insideBrecketRegexp = /<(.*)>/,
 		higherFolderInPathRegexp = /^[\w]*\//,
 		metaDataSeparator = " ; ",
