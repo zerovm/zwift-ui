@@ -26,7 +26,7 @@
 			DELIMITER: DELIMITER,
 			containerName: containerName,
 			success: function(response){
-				response = JSON.parse(response);
+				response = response instanceof Array ? response : JSON.parse(response);
 				if(response.length){
 					indexResultEl.setAttribute(HIDDEN_ATTRIBUTE, HIDDEN_ATTRIBUTE);
 					createIndexedFilesArray(response, callback, callbackParams);
