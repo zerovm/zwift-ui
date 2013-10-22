@@ -3,6 +3,7 @@
 
 	var grepAppHelper = {},
 		searchResultsEl,
+		searchSignElement,
 		dataSplitter = " ",
 		iconMap = {
 			extensions: ['.txt', '.pdf', '.doc', '.docx', '.h', '.c', '.lua'],
@@ -22,7 +23,8 @@
 		noResultText = "No results.",
 		imgString = "img",
 		tagStrongStart = "<strong>",
-		tagStrongFinish = "</strong>";
+		tagStrongFinish = "</strong>",
+		divString = "div";
 
 	grepAppHelper.grep = function(params){
 		var input, i, text, fullPath,
@@ -45,10 +47,8 @@
 			return arr.join(' ');
 		}
 
-		searchResultsEl = document.querySelector('.search-results');//TODO: get it from global namespace
-		searchResultsEl.textContent = 'Loading...';
-		searchResultsEl.classList.remove('error');
-		searchResultsEl.removeAttribute('hidden');
+		searchSignElement.classList.remove('error');
+		searchSignElement.removeAttribute('hidden');
 
 		var data = JSON.stringify(createConfiguration());
 		execute(data);
@@ -83,8 +83,7 @@
 				success: function(request, report){
 					var fullPathEl, filename, link, wrapper,
 					preview, icon, ext, matchIndex,
-					linkString = "a",
-					divString = "div";
+					linkString = "a";
 					if(!request){
 						displayNoResult();
 						console.log("empty request");
@@ -118,11 +117,17 @@
 					preview.innerHTML = highlightFounded(request, text, dataSplitter);
 					wrapper.appendChild(preview);
 					searchResultsEl.appendChild(wrapper);
-
+					searchResultsEl.removeAttribute('hidden');
+					params.callbackInit(params);
+					searchSignElement.setAttribute('hidden', 'hidden');
 				},
 				error: function(status, statusText, response){
-					searchResultsEl.textContent = 'Http Error: ' + status + ' ' + statusText + '. Execute response: ' + response;
-					searchResultsEl.classList.add('error');
+					var wrapper = document.createElement(divString);
+					wrapper.innerHTML = 'Http Error: ' + status + ' ' + statusText + '. Execute response: ' + response;
+					wrapper.classList.add('error');
+					searchResultsEl.appendChild(wrapper);
+					params.callbackInit(params);
+					searchSignElement.setAttribute('hidden', 'hidden');
 				}
 			});
 		}
@@ -167,6 +172,12 @@
 		removeChildren(searchResultsEl);
 		searchResultsEl.innerHTML = noResultText;
 	}
+
+	document.addEventListener("DOMContentLoaded", function(){
+		searchResultsEl = document.getElementsByClassName('search-results')[0];
+		searchSignElement = document.getElementsByClassName("loading-sign")[0];
+		window.grepAppHelper.searchResultEl = searchResultsEl;
+	});
 
 	window.grepAppHelper = grepAppHelper;
 })();

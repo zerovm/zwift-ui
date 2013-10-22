@@ -5,12 +5,14 @@
 	var DIRECTORY_TYPE = "application/directory",
 		HIDDEN_ATTRIBUTE = "hidden",
 		DELIMITER = "/",
-		INDEX_CHUNK_SIZE = 20,
+		INDEX_CHUNK_SIZE = 1,
 		indexResultEl,
 		pathFiles,
-		chunkCallsCounter;
+		chunkCallsCounter,
+		isStopped,
+		isFinished;
 
-	function parsePath(value, callback, callbackParams){
+	/*function parsePath(value, callback, callbackParams){//remove !!!!!!!!!!!!!!!!!!!!!!!!!
 		var splittedPath,containerName,path;
 		pathFiles = null;
 		splittedPath = value.split(/(\/.*)/);
@@ -36,26 +38,49 @@
 			}
 		});
 
-	}
+	}*/
 
 	function chunkCalls(paramObj){
 		paramObj.updateCallback && paramObj.updateCallback();
 
 		//TODO: convert getChunksNum to value
-		if(chunkCallsCounter >= paramObj.getChunksNum()){//exit statement
+		if(!paramObj.files.length || isStopped){//exit statement
+			isFinished = true;
 			chunkCallsCounter = 0;
 			paramObj.finalCallback && paramObj.finalCallback();
 		}else{
 			if(!paramObj.callbackInit){
 				paramObj.callbackInit = chunkCalls;
 			}
-			paramObj.pathes = pathFiles.slice(chunkCallsCounter * INDEX_CHUNK_SIZE, (chunkCallsCounter + 1) * INDEX_CHUNK_SIZE);
-			chunkCallsCounter++;
+			paramObj.file = paramObj.files[0];
+			paramObj.files = paramObj.files.slice(INDEX_CHUNK_SIZE, paramObj.files.length);
+			//chunkCallsCounter++;
 			paramObj.mainWorkFunction(paramObj);
 		}
 	}
 
-	function createIndexedFilesArray(response, callback, callbackParams){
+	function startChunkSearch(params){
+		chunkCallsCounter = 0;
+		isFinished = false;
+		isStopped = false;
+		removeChildren(window.grepAppHelper.searchResultEl);
+		chunkCalls(params);
+	}
+
+	function isFinished(){
+		return isFinished;
+	}
+	function stopGrep(){
+		isStopped = true;
+	}
+
+	function removeChildren(el){
+		while(el.firstChild){
+			el.removeChild(el.firstChild);
+		}
+	}
+
+	/*function createIndexedFilesArray(response, callback, callbackParams){
 		var i;
 		if(response){
 			pathFiles = [];
@@ -66,9 +91,9 @@
 			}
 			callback(callbackParams);//chunkCalls
 		}
-	}
+	}*/
 
-	function getFiles(value){
+	/*function getFiles(value){
 		chunkCallsCounter = 0;
 		parsePath(value, chunkCalls, {
 			mainWorkFunction: grepApp.grep,
@@ -77,7 +102,7 @@
 				return Math.ceil(pathFiles.length / INDEX_CHUNK_SIZE);
 			}
 		});
-	}
+	}*/
 
 	document.addEventListener("DOMContentLoaded", function(){
 		indexResultEl = document.getElementsByClassName("index-result")[0];
@@ -86,5 +111,7 @@
 	if(!window.grepApp){
 		window.grepApp = {};
 	}
-	window.grepApp.getFiles = getFiles;
+	window.grepApp.isFinished = isFinished;
+	window.grepApp.stopGrep = stopGrep;
+	window.grepApp.getGrepps = startChunkSearch;
 })();

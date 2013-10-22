@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function(){
-	var searchMemo, i,
+	var searchMemo, i, interval,
 		preferenceObj = {},
 		preferencesElements = document.querySelectorAll(".preferences-list-wrapper input");
 	ZLitestackDotCom.init();
@@ -23,12 +23,11 @@ document.addEventListener('DOMContentLoaded', function(){
 					e.target.classList.add('invalid-input');
 					return;
 				}
-				searchMemo.onInput({
+				tryStartGrep({
 					input: window.grepApp.searchInput.value,
-					callback: function(){
-					},
-					file: "/search/doc/foo/cat.txt"
-				}, window.grepApp.search);
+					mainWorkFunction: window.grepAppHelper.grep,
+					files: ["/search/doc/foo/cat.txt", "/search/doc/foo/catcher in the rye.txt"]
+				}, window.grepApp.getGrepps);
 			}
 		}
 
@@ -38,14 +37,25 @@ document.addEventListener('DOMContentLoaded', function(){
 
 	});
 
+	function tryStartGrep(obj, callback){
+		clearInterval(interval);
+		window.grepApp.stopGrep();
+		interval = setInterval(function(){
+			console.log("interval is running")
+			if(window.grepApp.isFinished){
+				clearInterval(interval);
+				searchMemo.onInput(obj, callback);
+			}
+		}, 300);
+	}
+
 	document.addEventListener('click', function(e){
 		if(isSearchButton(e)){
-			searchMemo.onInput({
-					input: window.grepApp.searchInput.value,
-					callback: function(){
-					},
-					file: "/search/doc/foo/cat.txt"
-				}, window.grepApp.search);
+			tryStartGrep({
+				input: window.grepApp.searchInput.value,
+				mainWorkFunction: window.grepAppHelper.grep,
+				files: ["/search/doc/foo/cat.txt", "/search/doc/foo/catcher in the rye.txt"]
+			}, window.grepApp.getGrepps);
 		}else if(isPreferences(e)){
 			window.grepApp.preferences.clickHandler(e.target);
 		}

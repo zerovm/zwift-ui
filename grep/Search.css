@@ -138,3 +138,7 @@ button, p, li{
 	-ms-user-select: none;
 	user-select: none;
 }
+.loading-sign{
+	position: relative;
+
+}
