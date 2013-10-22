@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', function(){
-	var timeout, searchMemo, i,
+	var searchMemo, i,
 		preferenceObj = {},
 		preferencesElements = document.querySelectorAll(".preferences-list-wrapper input");
-	//ZLitestackDotCom.init();
+	ZLitestackDotCom.init();
 	if(!window.grepApp){
 		window.grepApp = {};
 	}
@@ -19,12 +19,16 @@ document.addEventListener('DOMContentLoaded', function(){
 		if(isSearchInput(e)){
 			e.target.classList.remove('invalid-input');
 			if(e.keyCode === 13){
-				clearTimeout(timeout);
 				if(e.target.value === ''){
 					e.target.classList.add('invalid-input');
 					return;
 				}
-				searchMemo.onInput(window.grepApp.searchInput, window.grepApp.search);
+				searchMemo.onInput({
+					input: window.grepApp.searchInput.value,
+					callback: function(){
+					},
+					file: "/search/doc/foo/cat.txt"
+				}, window.grepApp.search);
 			}
 		}
 
@@ -36,8 +40,12 @@ document.addEventListener('DOMContentLoaded', function(){
 
 	document.addEventListener('click', function(e){
 		if(isSearchButton(e)){
-			clearTimeout(timeout);
-			searchMemo.onInput(window.grepApp.searchInput, window.grepApp.search);
+			searchMemo.onInput({
+					input: window.grepApp.searchInput.value,
+					callback: function(){
+					},
+					file: "/search/doc/foo/cat.txt"
+				}, window.grepApp.search);
 		}else if(isPreferences(e)){
 			window.grepApp.preferences.clickHandler(e.target);
 		}

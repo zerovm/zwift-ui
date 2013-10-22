@@ -2,15 +2,33 @@
 	"use strict";
 
 	var grepAppHelper = {},
+		searchResultsEl,
+		dataSplitter = " ",
 		iconMap = {
-			extensions: ['.txt','.pdf','.doc','.docx','.h','.c','.lua'],
-			images: ['img/file32_txt.png', 'img/file32_pdf.png', 'img/file32_doc.png', 'img/file32_doc.png', 'img/file32_c.png', 'img/file32_c.png', 'img/file32_lua.png']
+			extensions: ['.txt', '.pdf', '.doc', '.docx', '.h', '.c', '.lua'],
+			images: ['img/file32_txt.png', 'img/file32_pdf.png', 'img/file32_doc.png', 'img/file32_doc.png', 'img/file32_c.png', 'img/file32_c.png', 'img/file32_lua.png'],
+			iconPathTemplate:  "img/file32.png"
 		},
 		extensionRegexp = /\.\w*$/,
-		delimiter = /\//g;
+		fileNameInPathRegexp = /\/([\w \.]*)$/,
+		lineSplitterRegex = /\n/g,
+		tagLineSplitter = " <br>",
+		GTRegex = />/g,
+		GTStr = "&gt;",
+		LTRegex = /</g,
+		LTStr = "&lt;",
+		strStartAndSpace = "(^|\\s|\\.|\\-|\\:|\"|\'|\\/)",
+		strFinishAndSpace = "(\\s|\\/|\\.|\\:|\\;|\\-|\"|\'|\\,|$)",
+		noResultText = "No results.",
+		imgString = "img",
+		tagStrongStart = "<strong>",
+		tagStrongFinish = "</strong>";
 
-	grepAppHelper.grep = function(text, callback){
-		var input, i;
+	grepAppHelper.grep = function(params){
+		var input, i, text, fullPath,
+			account = ZLitestackDotCom.getAccount();
+		fullPath = account + params.file;
+		text = params.input;
 		input = parse(text);
 		function parse(str){
 			var arr = str.split('"');
@@ -27,7 +45,7 @@
 			return arr.join(' ');
 		}
 
-		var searchResultsEl = document.querySelector('.search-results');//TODO: get it from global namespace
+		searchResultsEl = document.querySelector('.search-results');//TODO: get it from global namespace
 		searchResultsEl.textContent = 'Loading...';
 		searchResultsEl.classList.remove('error');
 		searchResultsEl.removeAttribute('hidden');
@@ -36,18 +54,17 @@
 		execute(data);
 
 		function createConfiguration(){
-			var account = ZLitestackDotCom.getAccount();//fileList - path to file
 			return [
 				{
 					'name': 'grep',
 					'exec': {
 						'path': 'swift://' + account + '/search/sys/grep.nexe',
-						'args': '-c index/zsphinx.conf -i mainindex -w -m ' + input
+						'args': input
 					},
 					'file_list': [
 						{
 							'device': 'stdin',
-							'path': 'swift://' + account + '/search/sys/rwindex'
+							'path':  'swift://' + fullPath
 						},
 						{
 							'device': 'stdout',
@@ -63,59 +80,45 @@
 			ZeroVmOnSwift.execute({
 				data: data,
 				contentType: 'application/json',
-				success: function(result, report){
-					var locations, icon, matchIndex, link, wrapper,
-						wordBraker = "/<wbr/>",
-						iconPathTemplate = "img/file32.png",
-						imgString = "img",
-						linkString = "a",
-						divString = "div",
-						fragment = document.createDocumentFragment(),
-						ext;
-					locations = result.split(/\d. document=/).map(function(str){
-						return str && str.split(",")[2];
-					}).filter(function(str){
-							return str;
-						});
-
-
-					if(!locations.length){
-						fragment = document.createElement(divString);
-						fragment.innerHTML = 'No results.';
+				success: function(request, report){
+					var fullPathEl, filename, link, wrapper,
+					preview, icon, ext, matchIndex,
+					linkString = "a",
+					divString = "div";
+					if(!request){
+						displayNoResult();
+						console.log("empty request");
+						return;
+					}
+					icon = document.createElement(imgString);
+					ext = fullPath.match(extensionRegexp);
+					if(ext){
+						matchIndex = iconMap.extensions.indexOf(ext[0]);
+					}
+					if(matchIndex !== -1){
+						icon.src = iconMap.images[matchIndex];
 					}else{
-						for(var i = 0; i < locations.length; i++){
-							icon = document.createElement(imgString);
-							ext = locations[i].match(extensionRegexp);
-							locations[i] = locations[i].replace(" filename=/","");
-							if(ext){
-								matchIndex = iconMap.extensions.indexOf(ext[0]);
-							}else{
-								matchIndex = -1;
-							}
-							if(matchIndex !== -1){
-								icon.src = iconMap.images[matchIndex];
-							}else{
-								icon.src = iconPathTemplate;
-							}
-							link = document.createElement(linkString);
-							link.href = ZLitestackDotCom.getStorageUrl() + locations[i];
-							link.target = "_blank";
-							link.innerHTML = locations[i].replace(delimiter, wordBraker);
-							wrapper = document.createElement(divString);
-							wrapper.appendChild(icon);
-							wrapper.appendChild(link);
-							fragment.appendChild(wrapper);
-						}
+						icon.src = iconMap.iconPathTemplate;
 					}
+					fullPathEl = document.createElement(divString);
+					fullPathEl.className = "file-name";
+					link = document.createElement(linkString);
+					link.href = ZLitestackDotCom.getStorageUrl() + fullPath;
+					link.target = "_blank";
+					filename = fullPath.match(fileNameInPathRegexp);
+					filename = filename ? filename[1] : fullPath;
+					link.innerHTML = filename;
+					fullPathEl.innerHTML = fullPath;
+					wrapper = document.createElement(divString);
+					wrapper.appendChild(icon);
+					wrapper.appendChild(link);
+					wrapper.appendChild(fullPathEl);
 
-					callback && callback();
+					preview = document.createElement(divString);
+					preview.innerHTML = highlightFounded(request, text, dataSplitter);
+					wrapper.appendChild(preview);
+					searchResultsEl.appendChild(wrapper);
 
-					while (searchResultsEl.firstChild) {
-						searchResultsEl.removeChild(searchResultsEl.firstChild);
-					}
-					searchResultsEl.appendChild(fragment);
-					console.log(result)
-					console.log(report)
 				},
 				error: function(status, statusText, response){
 					searchResultsEl.textContent = 'Http Error: ' + status + ' ' + statusText + '. Execute response: ' + response;
@@ -124,6 +127,46 @@
 			});
 		}
 	};
+
+	function highlightFounded(str, searchText, splitter, joiner){
+		var regexArray, innerHTML;
+
+		str = str.replace(GTRegex, GTStr).replace(LTRegex, LTStr);
+		innerHTML = str.replace(lineSplitterRegex, tagLineSplitter);
+		regexArray = searchText.split(dataSplitter)
+			.filter(function(str){
+				return str;
+			})
+			.map(function(word){
+				return getWordRegex(word)
+			});
+		return innerHTML.split(splitter).map(function(word){
+			var i;
+			for(i = regexArray.length - 1; i >= 0; i--){
+				if(word.match(regexArray[i])){
+					return word.replace(searchText ,tagStrongStart + searchText + tagStrongFinish);
+				}
+			}
+			return word;
+		}).join(joiner ? joiner : splitter);
+	}
+
+	function getWordRegex(word, param){
+		var regex;
+		param ? regex = new RegExp(strStartAndSpace + word + strFinishAndSpace, param) : regex = new RegExp(strStartAndSpace + word + strFinishAndSpace);
+		return regex;
+	}
+
+	function removeChildren(el){
+		while(el.firstChild){
+			el.removeChild(el.firstChild);
+		}
+	}
+
+	function displayNoResult(){
+		removeChildren(searchResultsEl);
+		searchResultsEl.innerHTML = noResultText;
+	}
 
 	window.grepAppHelper = grepAppHelper;
 })();

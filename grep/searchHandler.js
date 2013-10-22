@@ -4,9 +4,9 @@
 
 	var searchResultEl;
 
-	function search(value){
+	function search(params){
 		console.log("started search")
-		window.grepAppHelper.search(value, function(){console.log("search ends")});
+		window.grepAppHelper.grep(params);
 	}
 
 	document.addEventListener("DOMContentLoaded", function(){

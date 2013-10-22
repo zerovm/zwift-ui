@@ -4,11 +4,10 @@
 	var prevValue;
 
 	function MemoInputHandler(){
-		this.onInput = function(e, callback){
-			var curValue = e.value;
-			if(curValue && prevValue !== curValue){
-				prevValue = curValue;
-				callback(curValue);
+		this.onInput = function(params, callback){
+			if(params.input && prevValue !== params.input){
+				prevValue = params.input;
+				callback(params);
 			}
 		};
 	}
