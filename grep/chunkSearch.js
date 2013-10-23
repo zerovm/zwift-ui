@@ -1,11 +1,11 @@
 (function(){
 
-	"use strict"
+	"use strict";
 
 	var DIRECTORY_TYPE = "application/directory",
 		HIDDEN_ATTRIBUTE = "hidden",
 		DELIMITER = "/",
-		INDEX_CHUNK_SIZE = 1,
+		GREPPED_FILES_NUM = 1,
 		indexResultEl,
 		pathFiles,
 		chunkCallsCounter,
@@ -53,7 +53,7 @@
 				paramObj.callbackInit = chunkCalls;
 			}
 			paramObj.file = paramObj.files[0];
-			paramObj.files = paramObj.files.slice(INDEX_CHUNK_SIZE, paramObj.files.length);
+			paramObj.files = paramObj.files.slice(GREPPED_FILES_NUM, paramObj.files.length);
 			//chunkCallsCounter++;
 			paramObj.mainWorkFunction(paramObj);
 		}
@@ -67,7 +67,7 @@
 		chunkCalls(params);
 	}
 
-	function isFinished(){
+	function isSearchFinished(){
 		return isFinished;
 	}
 	function stopGrep(){
@@ -99,7 +99,7 @@
 			mainWorkFunction: grepApp.grep,
 			pathFiles: pathFiles,
 			getChunksNum: function(){
-				return Math.ceil(pathFiles.length / INDEX_CHUNK_SIZE);
+				return Math.ceil(pathFiles.length / GREPPED_FILES_NUM);
 			}
 		});
 	}*/
@@ -111,7 +111,7 @@
 	if(!window.grepApp){
 		window.grepApp = {};
 	}
-	window.grepApp.isFinished = isFinished;
+	window.grepApp.isFinished = isSearchFinished;
 	window.grepApp.stopGrep = stopGrep;
 	window.grepApp.getGrepps = startChunkSearch;
 })();
