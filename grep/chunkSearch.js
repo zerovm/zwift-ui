@@ -2,43 +2,12 @@
 
 	"use strict";
 
-	var DIRECTORY_TYPE = "application/directory",
-		HIDDEN_ATTRIBUTE = "hidden",
-		DELIMITER = "/",
+	var HIDDEN_ATTRIBUTE = "hidden",
 		GREPPED_FILES_NUM = 1,
 		indexResultEl,
-		pathFiles,
-		chunkCallsCounter,
 		isStopped,
-		isFinished;
-
-	/*function parsePath(value, callback, callbackParams){//remove !!!!!!!!!!!!!!!!!!!!!!!!!
-		var splittedPath,containerName,path;
-		pathFiles = null;
-		splittedPath = value.split(/(\/.*)/);
-		path = splittedPath[1];
-		callbackParams.containerName = containerName = splittedPath[0];
-		path = path.substr(1, splittedPath[1].length);//substr... -removing extra slash
-		path = path.replace("*", "");
-		indexResultEl.removeAttribute(HIDDEN_ATTRIBUTE);
-		indexResultEl.innerHTML = 'Getting files...';
-		SwiftV1.Container.get({
-			format: "json",
-			prefix: path,
-			DELIMITER: DELIMITER,
-			containerName: containerName,
-			success: function(response){
-				response = JSON.parse(response);
-				if(response.length){
-					indexResultEl.setAttribute(HIDDEN_ATTRIBUTE, HIDDEN_ATTRIBUTE);
-					createIndexedFilesArray(response, callback, callbackParams);
-				}else{
-					indexResultEl.innerHTML = 'There is no such directory.';
-				}
-			}
-		});
-
-	}*/
+		isFinished = true,
+		paramsHandler;
 
 	function chunkCalls(paramObj){
 		paramObj.updateCallback && paramObj.updateCallback();
@@ -46,7 +15,6 @@
 		//TODO: convert getChunksNum to value
 		if(!paramObj.files.length || isStopped){//exit statement
 			isFinished = true;
-			chunkCallsCounter = 0;
 			paramObj.finalCallback && paramObj.finalCallback();
 		}else{
 			if(!paramObj.callbackInit){
@@ -54,24 +22,25 @@
 			}
 			paramObj.file = paramObj.files[0];
 			paramObj.files = paramObj.files.slice(GREPPED_FILES_NUM, paramObj.files.length);
-			//chunkCallsCounter++;
 			paramObj.mainWorkFunction(paramObj);
 		}
 	}
 
 	function startChunkSearch(params){
-		chunkCallsCounter = 0;
-		isFinished = false;
-		isStopped = false;
-		removeChildren(window.grepAppHelper.searchResultEl);
-		chunkCalls(params);
+			removeChildren(window.grepAppHelper.searchResultEl);
+			paramsHandler.startSearch(params, true);
 	}
 
 	function isSearchFinished(){
 		return isFinished;
 	}
+
 	function stopGrep(){
 		isStopped = true;
+	}
+
+	function isSearchStopped(){
+		return isStopped;
 	}
 
 	function removeChildren(el){
@@ -80,30 +49,43 @@
 		}
 	}
 
-	/*function createIndexedFilesArray(response, callback, callbackParams){
-		var i;
-		if(response){
-			pathFiles = [];
-			for(i = 0; i < response.length; i++){
-				if(response[i].content_type !== DIRECTORY_TYPE){
-					pathFiles.push(response[i]);
-				}
-			}
-			callback(callbackParams);//chunkCalls
+	function ParamsHandler(){
+		var FIRST_TIME_OUTPUT_NUM = 5,
+			SCROLL_OUTPUT_NUM = 2,
+			savedParams,
+			chunkNum;
+
+		function newSearch(parameters){
+			savedParams = parameters.createCopy();
+			chunkNum = -1;
 		}
-	}*/
 
-	/*function getFiles(value){
-		chunkCallsCounter = 0;
-		parsePath(value, chunkCalls, {
-			mainWorkFunction: grepApp.grep,
-			pathFiles: pathFiles,
-			getChunksNum: function(){
-				return Math.ceil(pathFiles.length / GREPPED_FILES_NUM);
+		function getFiles(){
+			var margin;
+			chunkNum++;
+			margin = FIRST_TIME_OUTPUT_NUM + chunkNum * SCROLL_OUTPUT_NUM;
+			if(chunkNum){
+				return savedParams.files.slice(margin - SCROLL_OUTPUT_NUM, margin);
 			}
-		});
-	}*/
+			return savedParams.files.slice(0, FIRST_TIME_OUTPUT_NUM);
+		}
 
+		this.startSearch = function(params){
+			var transferredParams;
+			if(isFinished){
+				isFinished = false;
+				isStopped = false;
+				if(params){
+					newSearch(params);
+				}
+				transferredParams = savedParams.createCopy();
+				transferredParams.files = getFiles();
+				chunkCalls(transferredParams);
+			}
+		};
+	}
+
+	paramsHandler = new ParamsHandler();
 	document.addEventListener("DOMContentLoaded", function(){
 		indexResultEl = document.getElementsByClassName("index-result")[0];
 	});
@@ -112,6 +94,8 @@
 		window.grepApp = {};
 	}
 	window.grepApp.isFinished = isSearchFinished;
+	window.grepApp.isStopped = isSearchStopped;
 	window.grepApp.stopGrep = stopGrep;
 	window.grepApp.getGrepps = startChunkSearch;
+	window.grepApp.onResultScrollEnd = paramsHandler.startSearch
 })();

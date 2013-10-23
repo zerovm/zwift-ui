@@ -84,9 +84,12 @@
 					var fullPathEl, filename, link, wrapper,
 					preview, icon, ext, matchIndex,
 					linkString = "a";
-					if(!request){
+					if(!request || window.grepApp.isStopped()){
 						displayNoResult();
 						console.log("empty request");
+						searchResultsEl.removeAttribute('hidden');
+						searchSignElement.setAttribute('hidden', 'hidden');
+						params.callbackInit(params);
 						return;
 					}
 					icon = document.createElement(imgString);
@@ -112,14 +115,14 @@
 					wrapper.appendChild(icon);
 					wrapper.appendChild(link);
 					wrapper.appendChild(fullPathEl);
-
 					preview = document.createElement(divString);
 					preview.innerHTML = highlightFounded(request, text, dataSplitter);
 					wrapper.appendChild(preview);
 					searchResultsEl.appendChild(wrapper);
+
 					searchResultsEl.removeAttribute('hidden');
-					params.callbackInit(params);
 					searchSignElement.setAttribute('hidden', 'hidden');
+					params.callbackInit(params);
 				},
 				error: function(status, statusText, response){
 					var wrapper = document.createElement(divString);
@@ -171,6 +174,7 @@
 	function displayNoResult(){
 		removeChildren(searchResultsEl);
 		searchResultsEl.innerHTML = noResultText;
+		searchSignElement.setAttribute('hidden', 'hidden');
 	}
 
 	document.addEventListener("DOMContentLoaded", function(){

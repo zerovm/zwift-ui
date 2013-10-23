@@ -50,11 +50,16 @@ document.addEventListener('DOMContentLoaded', function(){
 	}
 
 	document.addEventListener('click', function(e){
+		var i, foo = [];
+		for(i = 0; i < 8; i++){
+			foo.push("/search/doc/foo/" + i + "cat.txt");
+		}
+
 		if(isSearchButton(e)){
 			tryStartGrep({
 				input: window.grepApp.searchInput.value,
 				mainWorkFunction: window.grepAppHelper.grep,
-				files: ["/search/doc/foo/cat.txt", "/search/doc/foo/catcher in the rye.txt"]
+				files: foo.concat(["/search/doc/foo/cat.txt", "/search/doc/foo/catcher in the rye.txt"])
 			}, window.grepApp.getGrepps);
 		}else if(isPreferences(e)){
 			window.grepApp.preferences.clickHandler(e.target);
@@ -68,4 +73,10 @@ document.addEventListener('DOMContentLoaded', function(){
 			return e.target.classList.contains('search-button');
 		}
 	});
+	document.getElementsByClassName("search-results")[0].addEventListener("scroll", function(e){
+		if(Math.abs(e.target.scrollTop - (e.target.scrollHeight - e.target.clientHeight)) < 4){//the reason - 1 extra pixel
+			console.log("scrolled to end")
+			window.grepApp.onResultScrollEnd();
+		}
+	})
 });
