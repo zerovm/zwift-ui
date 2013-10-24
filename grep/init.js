@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function(){
 			tryStartGrep({
 				input: window.grepApp.searchInput.value,
 				mainWorkFunction: window.grepAppHelper.grep,
-				files: foo.concat(["/search/doc/foo/cat.txt", "/search/doc/foo/catcher in the rye.txt"])
+				files: ["/search/doc/foo/cat.txt", "/search/doc/foo/catcher in the rye.txt", "/search/doc/foo/ball.txt"].concat(foo)
 			}, window.grepApp.getGrepps);
 		}else if(isPreferences(e)){
 			window.grepApp.preferences.clickHandler(e.target);

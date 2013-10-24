@@ -85,10 +85,10 @@
 					preview, icon, ext, matchIndex,
 					linkString = "a";
 					if(!request || window.grepApp.isStopped()){
-						displayNoResult();
-						console.log("empty request");
-						searchResultsEl.removeAttribute('hidden');
-						searchSignElement.setAttribute('hidden', 'hidden');
+						//displayNoResult();
+						console.log("empty request or stopped");
+						/*searchResultsEl.removeAttribute('hidden');
+						searchSignElement.setAttribute('hidden', 'hidden');*/
 						params.callbackInit(params);
 						return;
 					}
