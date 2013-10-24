@@ -19,7 +19,7 @@ var ZipLib = {};
 		var fileName = entries[entryIndex].filename;
 		var fileData;
 
-		var writer = fileName=='manifest.json' ? new zip.TextWriter() : new zip.BlobWriter(extToMIME(fileName));
+		var writer = fileName=='manifest.json' ? new zip.TextWriter("utf-8") : new zip.BlobWriter(extToMIME(fileName));
 
 		entries[entryIndex].getData(writer, function (data) {
 			fileData = data;
