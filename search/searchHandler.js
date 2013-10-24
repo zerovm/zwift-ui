@@ -48,9 +48,9 @@
 		}
 	}
 
-	function displayNoResult(){
+	function displayNoResult(text){
 		removeChildren(searchResultEl);
-		searchResultEl.innerHTML = noResultText;
+		searchResultEl.innerHTML = text || noResultText;
 	}
 
 	function imgPreload(imgArr){
@@ -68,6 +68,10 @@
 
 		removeChildren(searchResultEl);
 
+		if(splittedResult[0].match("FATAL:")){
+			displayNoResult(splittedResult);
+			return;
+		}
 		if(splittedResult.length){
 			processMultipleRequests(splittedResult, input);
 			return;

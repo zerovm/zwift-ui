@@ -3,6 +3,18 @@ document.addEventListener('DOMContentLoaded', function(){
 		preferenceObj = {},
 		preferencesElements = document.querySelectorAll(".preferences-list-wrapper input");
 	ZLitestackDotCom.init();
+
+	function checkParentClassName(el, className){
+		var topParentTag = "BODY";
+		while(el.tagName !== topParentTag){
+			if(el.classList.contains(className)){
+				return el;
+			}
+			el = el.parentNode;
+		}
+		return null;
+	}
+
 	if(!window.searchApp){
 		window.searchApp = {};
 	}
@@ -56,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
 	});
 
-	document.addEventListener('click', function(e){
+	document.addEventListener('click', function(e){//TODO: change it!!!!!!
 		if(isIndexButton(e)){
 			indexMemo.onInput(window.searchApp.indexInput, window.searchApp.index);
 		}else if(isIndexResultCloseButton(e)){
@@ -69,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function(){
 		}
 
 		function isIndexButton(e){
-			return e.target.classList.contains('index-button');
+			return checkParentClassName(e.target, "index-button");
 		}
 
 		function isIndexResultCloseButton(e){
