@@ -1,7 +1,9 @@
 document.addEventListener('DOMContentLoaded', function(){
 	var searchMemo, i, interval,
 		preferenceObj = {},
-		preferencesElements = document.querySelectorAll(".preferences-list-wrapper input");
+		preferencesElements = document.querySelectorAll(".preferences-list-wrapper input"),
+		directoryContentType = "application/directory",
+		grepFiles;
 	ZLitestackDotCom.init();
 	if(!window.grepApp){
 		window.grepApp = {};
@@ -23,16 +25,31 @@ document.addEventListener('DOMContentLoaded', function(){
 					e.target.classList.add('invalid-input');
 					return;
 				}
-				tryStartGrep({
+				grepFiles && tryStartGrep({
 					input: window.grepApp.searchInput.value,
 					mainWorkFunction: window.grepAppHelper.grep,
-					files: ["/search/doc/foo/cat.txt", "/search/doc/foo/catcher in the rye.txt"]
+					files: grepFiles
 				}, window.grepApp.getGrepps);
 			}
+		}else if(isGetFiles(e)){
+			window.getFilelist(window.grepAppHelper.fileListElement.value, function(responseArray, containerName){
+				console.log("grepped some files:\n");
+				console.log(responseArray);
+				grepFiles = responseArray.filter(function(pathObj){
+					return !pathObj.content_type.match(directoryContentType);
+				}).map(function(pathObj){
+						console.log(containerName + pathObj.name)
+						return containerName + pathObj.name;
+					});
+			})
 		}
 
 		function isSearchInput(e){
 			return e.target.classList.contains('search-input');
+		}
+
+		function isGetFiles(e){
+			return e.target.classList.contains('file-list-input');
 		}
 
 	});
@@ -55,15 +72,20 @@ document.addEventListener('DOMContentLoaded', function(){
 		}
 
 		if(isSearchButton(e)){
-			tryStartGrep({
+			grepFiles && tryStartGrep({
 				input: window.grepApp.searchInput.value,
 				mainWorkFunction: window.grepAppHelper.grep,
-				files: ["/search/doc/foo/cat.txt", "/search/doc/foo/catcher in the rye.txt", "/search/doc/foo/ball.txt"].concat(foo).concat(["/search/doc/foo/ball.txt"]).concat(foo)
+				files: grepFiles
 			}, window.grepApp.getGrepps);
 		}else if(isPreferences(e)){
 			window.grepApp.preferences.clickHandler(e.target);
+		}else if(isGetFiles(e)){
+			//show popup
 		}
 
+		function isGetFiles(e){
+			return e.target.classList.contains('file-list-button');
+		}
 		function isPreferences(e){
 			return e.target.classList.contains('preferences-element');
 		}
@@ -73,6 +95,7 @@ document.addEventListener('DOMContentLoaded', function(){
 		}
 	});
 	window.grepAppHelper.searchResultEl = document.getElementsByClassName("search-results")[0];
+	window.grepAppHelper.fileListElement = document.getElementsByClassName("file-list-input")[0];
 	window.grepAppHelper.searchResultEl.addEventListener("scroll", function(e){
 		if(Math.abs(e.target.scrollTop - (e.target.scrollHeight - e.target.clientHeight)) < 4){//the reason - 1 extra pixel
 			window.grepApp.onResultScrollEnd();

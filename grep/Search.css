@@ -10,16 +10,16 @@ body{
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
-.index-container {
+.file-list-container {
 	float: right;
 }
-.index-container > div{
+.file-list-container > div{
 	display: block;
 	height: 50px;
 	position: relative;
 }
 
-.index-button {
+.file-list-button {
 	position: absolute;
 	top: 2px;
 	right: 1px;
@@ -27,11 +27,11 @@ body{
 	vertical-align: middle;
 	margin: 0;
 }
-.index-button img {
+.file-list-button img {
 	vertical-align: middle;
 	margin-right: 10px;
 }
-.index-input {
+.file-list-input {
 	width: 420px;
 	height: 100%;
 	padding: 13px;
