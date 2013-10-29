@@ -1,5 +1,15 @@
-/* index */
-
+body, html{
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+body{
+	padding-top: 8px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
 .index-container {
 	float: right;
 }
@@ -77,8 +87,9 @@
 	border: 1px solid gainsboro;
 }
 .search-results > div{
-	padding: 10px 0;
 	position: relative;
+	left: -5px;
+	padding: 10px 0 10px 5px;
 }
 .search-results a{
 	text-decoration: underline;
@@ -97,7 +108,7 @@
 }
 .search-results > div:nth-child(even){
 	background: #f4f4f4;
-	background: linear-gradient(to right, #e9e9e9, transparent);
+	background: linear-gradient(to right, #e9e9e9, rgba(255, 255, 255, 0));
 }
 .search-results > div:not(:first-child)::before{
 	content: "";
@@ -106,7 +117,7 @@
 	top: 0;
 	width: 100%;
 	height: 1px;
-	background: linear-gradient(to right, #aaa, transparent);
+	background: linear-gradient(to right, #aaa, rgba(255, 255, 255, 0));
 }
 .search-results img,
 .search-results a {
@@ -141,7 +152,8 @@ button, p, li{
 	-ms-user-select: none;
 	user-select: none;
 }
-.loading-sign{
-	position: relative;
-
+body.progress-cursor,
+body.progress-cursor .preferences input,
+body.progress-cursor .preferences button{
+	cursor: progress !important;
 }

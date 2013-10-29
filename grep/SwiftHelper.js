@@ -2,8 +2,6 @@
 	"use strict";
 
 	var grepAppHelper = {},
-		searchResultsEl,
-		searchSignElement,
 		dataSplitter = " ",
 		iconMap = {
 			extensions: ['.txt', '.pdf', '.doc', '.docx', '.h', '.c', '.lua'],
@@ -47,8 +45,9 @@
 			return arr.join(' ');
 		}
 
-		searchSignElement.classList.remove('error');
-		searchSignElement.removeAttribute('hidden');
+		window.grepAppHelper.searchResultEl.classList.remove('error');
+		window.grepAppHelper.searchResultEl.removeAttribute('hidden');
+
 
 		var data = JSON.stringify(createConfiguration());
 		execute(data);
@@ -85,10 +84,9 @@
 					preview, icon, ext, matchIndex,
 					linkString = "a";
 					if(!request || window.grepApp.isStopped()){
-						//displayNoResult();
-						console.log("empty request or stopped");
-						/*searchResultsEl.removeAttribute('hidden');
-						searchSignElement.setAttribute('hidden', 'hidden');*/
+						if(!window.grepAppHelper.searchResultEl.children.length){
+							displayNoResult(window.grepAppHelper.searchResultEl);
+						}
 						params.callbackInit(params);
 						return;
 					}
@@ -118,19 +116,17 @@
 					preview = document.createElement(divString);
 					preview.innerHTML = highlightFounded(request, text, dataSplitter);
 					wrapper.appendChild(preview);
-					searchResultsEl.appendChild(wrapper);
+					window.grepAppHelper.searchResultEl.appendChild(wrapper);
 
-					searchResultsEl.removeAttribute('hidden');
-					searchSignElement.setAttribute('hidden', 'hidden');
+					window.grepAppHelper.searchResultEl.removeAttribute('hidden');
 					params.callbackInit(params);
 				},
 				error: function(status, statusText, response){
 					var wrapper = document.createElement(divString);
 					wrapper.innerHTML = 'Http Error: ' + status + ' ' + statusText + '. Execute response: ' + response;
 					wrapper.classList.add('error');
-					searchResultsEl.appendChild(wrapper);
+					window.grepAppHelper.searchResultEl.appendChild(wrapper);
 					params.callbackInit(params);
-					searchSignElement.setAttribute('hidden', 'hidden');
 				}
 			});
 		}
@@ -171,17 +167,10 @@
 		}
 	}
 
-	function displayNoResult(){
-		removeChildren(searchResultsEl);
-		searchResultsEl.innerHTML = noResultText;
-		searchSignElement.setAttribute('hidden', 'hidden');
+	function displayNoResult(el){
+		removeChildren(el);
+		el.innerHTML = noResultText;
 	}
-
-	document.addEventListener("DOMContentLoaded", function(){
-		searchResultsEl = document.getElementsByClassName('search-results')[0];
-		searchSignElement = document.getElementsByClassName("loading-sign")[0];
-		window.grepAppHelper.searchResultEl = searchResultsEl;
-	});
 
 	window.grepAppHelper = grepAppHelper;
 })();

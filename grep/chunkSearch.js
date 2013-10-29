@@ -1,25 +1,21 @@
-var finishChunksEvent = new CustomEvent("finishChunksLoad");
-function checkAllUploaded(e){
-	window.grepApp.onResultScrollEnd(null, e.target.children.length);
-}
 (function(){
 
 	"use strict";
 
 	var GREPPED_FILES_NUM = 1,
-		searchResulEl,
 		isStopped,
 		isFinished = true,
-		paramsHandler;
+		paramsProcessor,
+		progressClass = "progress-cursor";
 
 	function chunkCalls(paramObj){
 		paramObj.updateCallback && paramObj.updateCallback();
 
-		//TODO: convert getChunksNum to value
 		if(!paramObj.files.length || isStopped){//exit statement
 			isFinished = true;
 			paramObj.finalCallback && paramObj.finalCallback();
-			searchResulEl.dispatchEvent(finishChunksEvent);
+			document.body.classList.remove(progressClass);
+			paramsProcessor.startSearch(null, true);
 		}else{
 			if(!paramObj.callbackInit){
 				paramObj.callbackInit = chunkCalls;
@@ -32,7 +28,7 @@ function checkAllUploaded(e){
 
 	function startChunkSearch(params){
 		removeChildren(window.grepAppHelper.searchResultEl);
-		paramsHandler.startSearch(params);
+		paramsProcessor.startSearch(params);
 	}
 
 	function isSearchFinished(){
@@ -53,60 +49,71 @@ function checkAllUploaded(e){
 		}
 	}
 
-	function ParamsHandler(){
-		var FIRST_TIME_OUTPUT_NUM = 5,
-			SCROLL_OUTPUT_NUM = 2,
+	function ParamsProcessor(){
+		var FIRST_TIME_OUTPUT_NUM = 10,
+			SCROLL_ADD_NUM = 5,
 			savedParams,
-			chunkNum,
+			margin,
 			offset;
 
 		function newSearch(parameters){
 			savedParams = parameters.createCopy();
-			chunkNum = -1;
+			margin = FIRST_TIME_OUTPUT_NUM;
 			offset = 0;
 		}
 
-		function getFiles(offSetCheckSum){
-			var margin, offsetDif;
-			if(!offSetCheckSum){
-				chunkNum++;
+		function getOffsets(checkLoadedNum){
+			var offsetDif, filesArrayOffsets = {};
+
+			offsetDif = margin - window.grepAppHelper.searchResultEl.children.length - offset;
+			if(checkLoadedNum){
+				if(offsetDif){
+					filesArrayOffsets.start = margin;
+					margin += offsetDif;
+					filesArrayOffsets.end = margin;
+					offset += offsetDif;
+				}else{
+					filesArrayOffsets = null;
+				}
+			}else{
+				if(!offsetDif){
+					filesArrayOffsets.start = margin;
+					margin += SCROLL_ADD_NUM;
+					filesArrayOffsets.end = margin;
+				}else{
+					filesArrayOffsets = null;
+				}
 			}
-			margin = FIRST_TIME_OUTPUT_NUM + chunkNum * SCROLL_OUTPUT_NUM + offset;
-			offsetDif = offSetCheckSum - margin;
-			if(offsetDif){
-				offset += offsetDif;
-				return savedParams.files.slice(margin, margin + offsetDif);
-			}
-			if(chunkNum){
-				return savedParams.files.slice(margin - SCROLL_OUTPUT_NUM, margin);
-			}
-			return savedParams.files.slice(0, FIRST_TIME_OUTPUT_NUM);
+			return filesArrayOffsets;
 		}
 
-		this.startSearch = function(params, offsetCheckSum){
-			var transferredParams;
+		this.startSearch = function(params, checkLoadedNum){
+			var transferredParams, filesOffsets;
 			if(isFinished){
-				isFinished = false;
-				isStopped = false;
 				if(params){
 					newSearch(params);
+					filesOffsets = {
+						start: 0,
+						end: margin
+					};
+				}else{
+					filesOffsets = getOffsets(checkLoadedNum);
 				}
-				transferredParams = savedParams.createCopy();
-				transferredParams.files = getFiles(offsetCheckSum);
-				chunkCalls(transferredParams);
+				if(filesOffsets){
+					transferredParams = savedParams.createCopy();
+					transferredParams.files = savedParams.files.slice(filesOffsets.start, filesOffsets.end);
+					if(transferredParams.files.length){
+						document.body.classList.add(progressClass);
+						isFinished = false;
+						isStopped = false;
+						chunkCalls(transferredParams);
+					}
+				}
 			}
 		};
 	}
 
-
-
-	paramsHandler = new ParamsHandler();
-	document.addEventListener("DOMContentLoaded", function(){
-		searchResulEl = document.getElementsByClassName("search-results")[0];
-		searchResulEl.addEventListener("finishChunksLoad", function(e){
-			checkAllUploaded(e);
-		});
-	});
+	paramsProcessor = new ParamsProcessor();
 
 	if(!window.grepApp){
 		window.grepApp = {};
@@ -115,5 +122,5 @@ function checkAllUploaded(e){
 	window.grepApp.isStopped = isSearchStopped;
 	window.grepApp.stopGrep = stopGrep;
 	window.grepApp.getGrepps = startChunkSearch;
-	window.grepApp.onResultScrollEnd = paramsHandler.startSearch
+	window.grepApp.onResultScrollEnd = paramsProcessor.startSearch;
 })();
