@@ -952,7 +952,7 @@ var ClusterAuth = {};
 			+ '<br>'
 			+ '<input autocomplete="off" class="account">'
 			+ '<br>'
-			+ '<button class="login">Login</button>'
+			+ '<button autocomplete="off" class="login">Login</button>'
 			+ '</div></div>';
 		document.body.insertAdjacentHTML('beforeend', html);
 

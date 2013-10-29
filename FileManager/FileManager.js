@@ -1195,7 +1195,7 @@ FileManager.File.edit = function (el) {
 			FileManager.UpButton.enable();
 		},
 		progress: function (loaded) {
-			el.innerHTML = loaded + ' bytes loaded... <button onclick="FileManager.File.getFileXhr.abort();">Cancel</button>';
+			el.innerHTML = loaded + ' bytes loaded... <button autocomplete="off" onclick="FileManager.File.getFileXhr.abort();">Cancel</button>';
 			if (loaded > 2097152) {
 				FileManager.File.getFileXhr.abort();
 				el.innerHTML = 'File is too large (2MB+).';
