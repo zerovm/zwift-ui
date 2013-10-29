@@ -38,9 +38,9 @@
                                 <button id="save-button" class="size32px header-enabled-button" title="Save" hidden></button><!--
                                 --><div id="add-files-menu" class="add-menu" hidden><!--
                                     --><div id="create-directory-button"><img src="img/folder.png">Create Directory</div><!--
-                                    --><div style="position: relative;"><span><input class="upload-button" type="file" name="files[]" multiple style="opacity: 0;position: absolute;width: 100%;"></span><img src="img/upload.png">Upload Files</div><!--
-                                    --><div style="position: relative;" id="upload-as-button"><span><input class="upload-as-button" type="file" name="files[]" multiple style="opacity: 0;position: absolute;width: 100%;"></span><img src="img/upload-as.png">Upload As...</div><!--
-                                    --><div style="position: relative;"><span><input id="execute-button" type="file" name="files[]" style="opacity: 0;position: absolute;width: 100%;"></span><img src="img/execute.png">Upload & Execute</div><!--
+                                    --><div style="position: relative;"><span><input autocomplete="off" class="upload-button" type="file" name="files[]" multiple style="opacity: 0;position: absolute;width: 100%;"></span><img src="img/upload.png">Upload Files</div><!--
+                                    --><div style="position: relative;" id="upload-as-button"><span><input autocomplete="off" class="upload-as-button" type="file" name="files[]" multiple style="opacity: 0;position: absolute;width: 100%;"></span><img src="img/upload-as.png">Upload As...</div><!--
+                                    --><div style="position: relative;"><span><input autocomplete="off" id="execute-button" type="file" name="files[]" style="opacity: 0;position: absolute;width: 100%;"></span><img src="img/execute.png">Upload & Execute</div><!--
                                     --><div id="create-text-file-button"><img src="img/file_txt.png">Create Text File</div><!--
                                 --></div><!--
                                 --><div id="add-containers-menu" class="add-menu" hidden><!--
@@ -69,7 +69,7 @@
                         <table>
                             <tr>
                                 <td style="background-color: white;border-radius: 2px;height: 28px;">
-                                    <input id="macro-command" placeholder="Macro Command" style="margin: 0 1%;width: 98%;border: 0;">
+                                    <input autocomplete="off" id="macro-command" placeholder="Macro Command" style="margin: 0 1%;width: 98%;border: 0;">
                                 </td>
                                 <td style="width: 80px;">
                                     <button id="macro-ok-button">OK</button>
@@ -82,7 +82,7 @@
                     </div>
 
                     <div id="create-container-dialog" class="dialog-bar" hidden>
-                        <table><tr><td style="background-color: white;border-radius: 2px;height: 28px;"><input id="container-name" placeholder="Container Name" style="margin: 0 1%;width: 98%;border: 0;"></td><td style="width: 80px;"><button id="create-ok-button">OK</button></td><td style="width: 80px;"><button id="create-cancel-button">Cancel</button></td></tr>
+                        <table><tr><td style="background-color: white;border-radius: 2px;height: 28px;"><input autocomplete="off" id="container-name" placeholder="Container Name" style="margin: 0 1%;width: 98%;border: 0;"></td><td style="width: 80px;"><button id="create-ok-button">OK</button></td><td style="width: 80px;"><button id="create-cancel-button">Cancel</button></td></tr>
                             <tr hidden id="container-exists"><td colspan="3" style="color: rgb(255, 197, 197);">Container is already exists.</td></tr>
                             <tr hidden id="container-max-length"><td colspan="3" style="color: rgb(255, 197, 197);">Container name must be until 256 characters.</td></tr>
                             <tr hidden id="container-slash"><td colspan="3" style="color: rgb(255, 197, 197);">Container name cannot have a slash (/) character.</td></tr>
@@ -91,15 +91,15 @@
                     <div id="shared-container-dialog" class="dialog-bar" hidden>
                         <table>
                             <tr>
-                                <td style="background-color: white;border-radius: 2px;height: 28px;"><input id="shared-account-name" placeholder="Account Name" style="margin: 0 1%;width: 98%;border: 0;"></td>
-                                <td style="background-color: white;border-radius: 2px;height: 28px;"><input id="shared-container-name" placeholder="Container Name" style="margin: 0 1%;width: 98%;border: 0;"></td>
+                                <td style="background-color: white;border-radius: 2px;height: 28px;"><input autocomplete="off" id="shared-account-name" placeholder="Account Name" style="margin: 0 1%;width: 98%;border: 0;"></td>
+                                <td style="background-color: white;border-radius: 2px;height: 28px;"><input autocomplete="off" id="shared-container-name" placeholder="Container Name" style="margin: 0 1%;width: 98%;border: 0;"></td>
                                 <td style="width: 80px;"><button id="shared-ok-button">OK</button></td>
                                 <td style="width: 80px;"><button id="shared-cancel-button">Cancel</button></td></tr>
                             <tr hidden id="shared-container-error"><td colspan="3" style="color: rgb(255, 197, 197);">Cannot add specified container.</td></tr>
                         </table>
                     </div>
                     <div id="create-directory-dialog" class="dialog-bar" hidden>
-                        <table><tr><td style="background-color: white;border-radius: 2px;height: 28px;"><input id="directory-name" placeholder="Directory Name" style="margin: 0 1%;width: 98%;border: 0;"></td><td style="width: 80px;"><button id="directory-ok-button">OK</button></td><td style="width: 80px;"><button id="directory-cancel-button">Cancel</button></td></tr>
+                        <table><tr><td style="background-color: white;border-radius: 2px;height: 28px;"><input autocomplete="off" id="directory-name" placeholder="Directory Name" style="margin: 0 1%;width: 98%;border: 0;"></td><td style="width: 80px;"><button id="directory-ok-button">OK</button></td><td style="width: 80px;"><button id="directory-cancel-button">Cancel</button></td></tr>
                             <tr hidden id="directory-exists"><td colspan="3" style="color: rgb(255, 197, 197);">Directory is already exists.</td></tr>
                             <tr hidden id="directory-slash"><td colspan="3" style="color: rgb(255, 197, 197);">Directory name cannot have a slash (/) character.</td></tr>
                         </table>
@@ -108,7 +108,7 @@
 
 
                     <div id="create-text-file-dialog" class="dialog-bar" hidden>
-                        <table><tr><td style="background-color: white;border-radius: 2px;height: 28px;"><input id="create-text-file-name" placeholder="Text File Name" style="margin: 0 1%;width: 98%;border: 0;"></td><td style="width: 80px;"><button id="create-text-file-ok-button">Create</button></td><td style="width: 80px;"><button id="create-text-file-cancel-button">Cancel</button></td></tr>
+                        <table><tr><td style="background-color: white;border-radius: 2px;height: 28px;"><input autocomplete="off" id="create-text-file-name" placeholder="Text File Name" style="margin: 0 1%;width: 98%;border: 0;"></td><td style="width: 80px;"><button id="create-text-file-ok-button">Create</button></td><td style="width: 80px;"><button id="create-text-file-cancel-button">Cancel</button></td></tr>
                             <tr hidden id="create-text-file-exists"><td colspan="3" style="color: rgb(255, 197, 197);">File is already exists.</td></tr>
                             <tr hidden id="create-text-file-max-length"><td colspan="3" style="color: rgb(255, 197, 197);">File name must be until 256 characters.</td></tr>
                             <tr hidden id="create-text-file-slash"><td colspan="3" style="color: rgb(255, 197, 197);">File name cannot have a slash (/) character.</td></tr>
@@ -116,7 +116,7 @@
                     </div>
 
                     <div id="save-as-dialog" class="dialog-bar" hidden>
-                        <table><tr><td style="background-color: white;border-radius: 2px;height: 28px;"><input id="save-as-path" placeholder="Path" style="margin: 0 1%;width: 98%;border: 0;"></td><td style="width: 80px;"><button id="save-as-ok-button">OK</button></td><td style="width: 80px;"><button id="save-as-cancel-button">Cancel</button></td></tr>
+                        <table><tr><td style="background-color: white;border-radius: 2px;height: 28px;"><input autocomplete="off" id="save-as-path" placeholder="Path" style="margin: 0 1%;width: 98%;border: 0;"></td><td style="width: 80px;"><button id="save-as-ok-button">OK</button></td><td style="width: 80px;"><button id="save-as-cancel-button">Cancel</button></td></tr>
                         </table>
                     </div>
 
@@ -138,7 +138,7 @@
                     </div>
 
                     <div id="copy-name-dialog" class="dialog-bar" hidden>
-                        <table><tr><td style="background-color: white;border-radius: 2px;height: 28px;"><input id="copy-name" placeholder="File Name" style="margin: 0 1%;width: 98%;border: 0;"></td><td style="width: 80px;"><button id="copy-name-ok-button">OK</button></td><td style="width: 80px;"><button id="copy-name-cancel-button">Cancel</button></td></tr>
+                        <table><tr><td style="background-color: white;border-radius: 2px;height: 28px;"><input autocomplete="off" id="copy-name" placeholder="File Name" style="margin: 0 1%;width: 98%;border: 0;"></td><td style="width: 80px;"><button id="copy-name-ok-button">OK</button></td><td style="width: 80px;"><button id="copy-name-cancel-button">Cancel</button></td></tr>
                         </table>
                     </div>
                     <div id="delete-dialog" class="dialog-bar" hidden>
@@ -151,16 +151,16 @@
                         <table>
                             <tbody>
                             <tr>
-                                <td style="background-color: white;border-radius: 2px;height: 28px;"><div><input placeholder="Key" /></div></td>
-                                <td style="background-color: white;border-radius: 2px;height: 28px;"><div><input placeholder="Value" /></div></td>
+                                <td style="background-color: white;border-radius: 2px;height: 28px;"><div><input autocomplete="off" placeholder="Key" /></div></td>
+                                <td style="background-color: white;border-radius: 2px;height: 28px;"><div><input autocomplete="off" placeholder="Value" /></div></td>
                             </tr>
                             <tr>
-                                <td style="background-color: white;border-radius: 2px;height: 28px;"><div><input placeholder="Key" /></div></td>
-                                <td style="background-color: white;border-radius: 2px;height: 28px;"><div><input placeholder="Value" /></div></td>
+                                <td style="background-color: white;border-radius: 2px;height: 28px;"><div><input autocomplete="off" placeholder="Key" /></div></td>
+                                <td style="background-color: white;border-radius: 2px;height: 28px;"><div><input autocomplete="off" placeholder="Value" /></div></td>
                             </tr>
                             <tr>
-                                <td style="background-color: white;border-radius: 2px;height: 28px;"><div><input placeholder="Key" /></div></td>
-                                <td style="background-color: white;border-radius: 2px;height: 28px;"><div><input placeholder="Value" /></div></td>
+                                <td style="background-color: white;border-radius: 2px;height: 28px;"><div><input autocomplete="off" placeholder="Key" /></div></td>
+                                <td style="background-color: white;border-radius: 2px;height: 28px;"><div><input autocomplete="off" placeholder="Value" /></div></td>
                             </tr>
                             </tbody>
                             <tfoot>
@@ -176,19 +176,19 @@
                         <table>
                             <tr>
                                 <td style="width: 1px;font-size: small;vertical-align: middle;font-weight: bolder;">Read</td>
-                                <td style="background: white;border-radius: 1px;"><input id="read-rights" /></td>
+                                <td style="background: white;border-radius: 1px;"><input autocomplete="off" id="read-rights" /></td>
                                 <td rowspan="2" style="width:1px;"><button id="rights-save-button" class="rights-button">Save</button></td>
                                 <td rowspan="2" style="width:1px;"><button id="rights-cancel-button" class="rights-button">Cancel</button></td>
                             </tr>
                             <tr>
                                 <td style="width: 1px;font-size: small;vertical-align: middle;font-weight: bolder;">Write</td>
-                                <td style="background: white;border-radius: 1px;"><input id="write-rights" /></td>
+                                <td style="background: white;border-radius: 1px;"><input autocomplete="off" id="write-rights" /></td>
                             </tr>
                         </table>
                     </div>
 !-->
                     <div id="file-type-dialog" class="dialog-bar" hidden>
-                        <table><tr><td style="background-color: white;border-radius: 2px;height: 28px;"><input id="file-type" placeholder="File type" style="margin: 0 1%;width: 98%;border: 0;"></td><td style="width: 80px;"><button id="type-ok-button">OK</button></td><td style="width: 80px;"><button id="type-cancel-button">Cancel</button></td></tr>
+                        <table><tr><td style="background-color: white;border-radius: 2px;height: 28px;"><input autocomplete="off" id="file-type" placeholder="File type" style="margin: 0 1%;width: 98%;border: 0;"></td><td style="width: 80px;"><button id="type-ok-button">OK</button></td><td style="width: 80px;"><button id="type-cancel-button">Cancel</button></td></tr>
                         </table>
                     </div>
 
@@ -360,7 +360,7 @@
                         }
                     </style>
                     <div id="search-div" hidden>
-                        <input placeholder="Search" style="border: ridge 1px gainsboro;padding: 2px 1%;width: 93%;margin: 5px 2%;border-radius: 8px;background-color: #ffffff">
+                        <input autocomplete="off" placeholder="Search" style="border: ridge 1px gainsboro;padding: 2px 1%;width: 93%;margin: 5px 2%;border-radius: 8px;background-color: #ffffff">
                         <button id="clear-search" hidden>X</button>
                     </div>
                 </td>
@@ -404,7 +404,7 @@
                                     <td class="item-icon">
                                             <img src="img/file32.png">
                                     </td>
-                                    <td colspan="2"><input class="upload-as-file-name" value="{file-name}" style="width: 48%;font-size: 14px;" /><input class="upload-as-file-type" value="{file-type}" style="width: 48%;font-size: 14px;" /></td>
+                                    <td colspan="2"><input autocomplete="off" class="upload-as-file-name" value="{file-name}" style="width: 48%;font-size: 14px;" /><input autocomplete="off" class="upload-as-file-type" value="{file-type}" style="width: 48%;font-size: 14px;" /></td>
                                     <td style="width: 80px;">
                                         <button class="start-upload-button" style="height: 40px;">Upload</button>
                                     </td>
@@ -438,7 +438,7 @@
                             </div>
                             <div id="no-files" hidden>
                                 There is no files.
-                                <span class="upload"><span><input class="upload-button" type="file" name="files[]" multiple style="opacity: 0;position: absolute;"></span>Upload file.</span>
+                                <span class="upload"><span><input autocomplete="off" class="upload-button" type="file" name="files[]" multiple style="opacity: 0;position: absolute;"></span>Upload file.</span>
                             </div>
                             <div id="no-files-found" hidden>
                                 Files not found.
@@ -456,8 +456,8 @@
 
     <div id="metadata-row-template"><!--
         <tr {attr}>
-            <td style="background-color: #FDFDFD;height: 28px;"><div><input class="metadata-key" placeholder="Key" value="{key}" /><label hidden class="metadata-error metadata-exist">This metadata key is already exist.</label></div></td>
-            <td style="background-color: white;height: 28px;"><div><input class="metadata-val" placeholder="Value" value="{value}" /></div></td>
+            <td style="background-color: #FDFDFD;height: 28px;"><div><input autocomplete="off" class="metadata-key" placeholder="Key" value="{key}" /><label hidden class="metadata-error metadata-exist">This metadata key is already exist.</label></div></td>
+            <td style="background-color: white;height: 28px;"><div><input autocomplete="off" class="metadata-val" placeholder="Value" value="{value}" /></div></td>
             <td class="delete-metadata">X</td>
         </tr>
     --></div>

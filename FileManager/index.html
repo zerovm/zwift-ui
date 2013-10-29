@@ -46,7 +46,7 @@
 			<table class="input-group-table create-container">
 				<tr>
 					<td><img src="img/box.png"></td>
-					<td><input class="create-container-input" placeholder="Container Name"></td>
+					<td><input autocomplete="off" class="create-container-input" placeholder="Container Name"></td>
 					<td class="create-container-button">+</td>
 				</tr>
 				<tr class="err-msg create-container-error-ajax" hidden>
@@ -73,8 +73,8 @@
 			<table class="input-group-table add-shared">
 				<tr>
 					<td><img src="img/shared-box.png"></td>
-					<td><input class="add-shared-input-account" placeholder="Account Name"></td>
-					<td><input class="add-shared-input-container" placeholder="Container Name"></td>
+					<td><input autocomplete="off" class="add-shared-input-account" placeholder="Account Name"></td>
+					<td><input autocomplete="off" class="add-shared-input-container" placeholder="Container Name"></td>
 					<td class="add-shared-button">+</td>
 				</tr>
 				<tr class="err-msg add-shared-error-ajax" hidden>
@@ -93,7 +93,7 @@
 			<table class="input-group-table create-directory">
 				<tr>
 					<td><img src="img/folder.png"></td>
-					<td><input class="create-directory-input" placeholder="Directory Name"></td>
+					<td><input autocomplete="off" class="create-directory-input" placeholder="Directory Name"></td>
 					<td class="create-directory-button">+</td>
 				</tr>
 				<tr class="err-msg create-directory-error-ajax" hidden>
@@ -115,8 +115,8 @@
 			<table class="input-group-table">
 				<tr>
 					<td><img src="img/file_txt.png"></td>
-					<td><input class="create-file-input-name" placeholder="File Name"></td>
-					<td><input class="create-file-input-type" placeholder="Content Type" value="text/plain"></td>
+					<td><input autocomplete="off" class="create-file-input-name" placeholder="File Name"></td>
+					<td><input autocomplete="off" class="create-file-input-type" placeholder="Content Type" value="text/plain"></td>
 					<td class="create-file-button">+</td>
 				</tr>
 				<tr class="err-msg create-file-error-ajax" hidden>
@@ -126,9 +126,9 @@
 				</tr>
 			</table>
 
-			<div class="div-button upload-files" style="width: 33%;"><input type="file" multiple><img src="img/upload.png"><span>Upload Files</span></div>
-			<div class="div-button upload-as" style="width: 32%;"><input type="file" multiple><img src="img/upload-as.png"><span>Upload As</span></div>
-			<div class="div-button upload-execute" style="width: 33%;"><input type="file"><img src="img/execute.png"><span>Upload & Execute</span></div>
+			<div class="div-button upload-files" style="width: 33%;"><input autocomplete="off" type="file" multiple><img src="img/upload.png"><span>Upload Files</span></div>
+			<div class="div-button upload-as" style="width: 32%;"><input autocomplete="off" type="file" multiple><img src="img/upload-as.png"><span>Upload As</span></div>
+			<div class="div-button upload-execute" style="width: 33%;"><input autocomplete="off" type="file"><img src="img/execute.png"><span>Upload & Execute</span></div>
 		</div>
 		<div class="menu-file dialog" hidden>
 			<button class="undo txt-btn" disabled></button><button class="redo txt-btn" disabled></button><button class="save txt-btn" disabled></button><button class="save-as">Save As...</button>
@@ -137,8 +137,8 @@
 			<table class="input-group-table save-as-dialog" hidden>
 				<tr>
 					<td><img src="img/file_txt.png"></td>
-					<td><input class="save-as-input-path" placeholder="File Path"></td>
-					<td><input class="save-as-input-type" placeholder="Content Type"></td>
+					<td><input autocomplete="off" class="save-as-input-path" placeholder="File Path"></td>
+					<td><input autocomplete="off" class="save-as-input-type" placeholder="Content Type"></td>
 					<td class="save-as-button">+</td>
 				</tr>
 				<tr class="save-as-error-ajax" hidden>
@@ -263,11 +263,11 @@
 			<tbody hidden>
 			<tr>
 				<td style="width: 1px;">Read</td>
-				<td><input class="read-rights-input" placeholder="Read Rights"></td>
+				<td><input autocomplete="off" class="read-rights-input" placeholder="Read Rights"></td>
 			</tr>
 			<tr style="width: 1px;">
 				<td>Write</td>
-				<td><input class="write-rights-input" placeholder="Write Rights"></td>
+				<td><input autocomplete="off" class="write-rights-input" placeholder="Write Rights"></td>
 			</tr>
 			</tbody>
 			<tfoot hidden>
@@ -292,7 +292,7 @@
 			<tbody class="input-group-table" style="background: transparent;" hidden>
 			<tr>
 				<td><img src="img/file_type.png"></td>
-				<td><input class="content-type-input" placeholder="Content Type"></td>
+				<td><input autocomplete="off" class="content-type-input" placeholder="Content Type"></td>
 				<td class="content-type-button">></td>
 			</tr>
 			</tbody>
@@ -340,7 +340,7 @@
 			<tbody class="input-group-table" style="background: transparent;">
 			<tr>
 				<td><img src="img/copy.png"></td>
-				<td><input class="copy-input" placeholder="Copy to..."></td>
+				<td><input autocomplete="off" class="copy-input" placeholder="Copy to..."></td>
 				<td class="copy-button">+</td>
 			</tr>
 			</tbody>
@@ -350,8 +350,8 @@
 
 <template id="metadataRowTemplate">
 	<tr>
-		<td><input class="metadata-key" placeholder="Key" value="{{key}}"></td>
-		<td><input class="metadata-value" placeholder="Value" value="{{value}}"></td>
+		<td><input autocomplete="off" class="metadata-key" placeholder="Key" value="{{key}}"></td>
+		<td><input autocomplete="off" class="metadata-value" placeholder="Value" value="{{value}}"></td>
 		<td class="remove-metadata">x</td>
 	</tr>
 </template>
@@ -385,8 +385,8 @@
 	<table class="input-group-table">
 		<tr id="upload-as-{{index}}">
 			<td><img src="img/file.png"></td>
-			<td><input data-index="{{index}}" class="upload-as-input-name" placeholder="File Name" value="{{upload-input-name}}"></td>
-			<td><input data-index="{{index}}" class="upload-as-input-type" placeholder="Content Type" value="{{upload-input-type}}"></td>
+			<td><input autocomplete="off" data-index="{{index}}" class="upload-as-input-name" placeholder="File Name" value="{{upload-input-name}}"></td>
+			<td><input autocomplete="off" data-index="{{index}}" class="upload-as-input-type" placeholder="Content Type" value="{{upload-input-type}}"></td>
 			<td data-index="{{index}}" class="upload-as-button">+</td>
 		</tr>
 	</table>

@@ -46,7 +46,7 @@
 			<table class="input-group-table create-container">
 				<tr>
 					<td><img src="img/box.png"></td>
-					<td><input class="create-container-input" placeholder="Container Name"></td>
+					<td><input autocomplete="off" class="create-container-input" placeholder="Container Name"></td>
 					<td class="create-container-button">+</td>
 				</tr>
 				<tr class="err-msg create-container-error-max-length" hidden>
@@ -68,8 +68,8 @@
 			<table class="input-group-table add-shared">
 				<tr>
 					<td><img src="img/shared-box.png"></td>
-					<td><input class="add-shared-input-account" placeholder="Account Name"></td>
-					<td><input class="add-shared-input-container" placeholder="Container Name"></td>
+					<td><input autocomplete="off" class="add-shared-input-account" placeholder="Account Name"></td>
+					<td><input autocomplete="off" class="add-shared-input-container" placeholder="Container Name"></td>
 					<td class="add-shared-button">+</td>
 				</tr>
 				<tr class="err-msg add-shared-error" hidden>
@@ -83,7 +83,7 @@
 			<table class="input-group-table create-directory">
 				<tr>
 					<td><img src="img/folder.png"></td>
-					<td><input class="create-directory-input" placeholder="Directory Name"></td>
+					<td><input autocomplete="off" class="create-directory-input" placeholder="Directory Name"></td>
 					<td class="create-directory-button">+</td>
 				</tr>
 				<tr class="err-msg create-directory-error-invalid-character" hidden>
@@ -100,23 +100,23 @@
 			<table class="input-group-table">
 				<tr>
 					<td><img src="img/file_txt.png"></td>
-					<td><input class="create-file-input-name" placeholder="File Name"></td>
-					<td><input class="create-file-input-type" placeholder="Content Type"></td>
+					<td><input autocomplete="off" class="create-file-input-name" placeholder="File Name"></td>
+					<td><input autocomplete="off" class="create-file-input-type" placeholder="Content Type"></td>
 					<td class="create-file-button">+</td>
 				</tr>
 			</table>
 
-			<div class="div-button upload-files" style="width: 99%;"><input type="file" multiple><img src="img/upload.png"><span>Upload Files</span></div>
-			<!--				<div class="div-button upload-as" style="width: 32%;"><input type="file" multiple><img src="img/upload-as.png"><span>Upload As</span></div>
-							<div class="div-button upload-execute" style="width: 33%;"><input type="file"><img src="img/execute.png"><span>Upload & Execute</span></div>-->
+			<div class="div-button upload-files" style="width: 99%;"><input autocomplete="off" type="file" multiple><img src="img/upload.png"><span>Upload Files</span></div>
+			<!--				<div class="div-button upload-as" style="width: 32%;"><input autocomplete="off" type="file" multiple><img src="img/upload-as.png"><span>Upload As</span></div>
+							<div class="div-button upload-execute" style="width: 33%;"><input autocomplete="off" type="file"><img src="img/execute.png"><span>Upload & Execute</span></div>-->
 		</div>
 		<div class="menu-file dialog" hidden>
 			<button class="undo" disabled></button><button class="redo" disabled></button><button class="save" disabled></button><button class="save-as">Save As...</button>
 			<table class="input-group-table save-as-dialog" hidden>
 				<tr>
 					<td><img src="img/file_txt.png"></td>
-					<td><input class="save-as-input-path" placeholder="File Path"></td>
-					<td><input class="save-as-input-type" placeholder="Content Type"></td>
+					<td><input autocomplete="off" class="save-as-input-path" placeholder="File Path"></td>
+					<td><input autocomplete="off" class="save-as-input-type" placeholder="Content Type"></td>
 					<td class="save-as-button">+</td>
 				</tr>
 			</table>
@@ -244,7 +244,7 @@
 			<tbody class="input-group-table" hidden>
 			<tr>
 				<td><img src="img/file_type.png"></td>
-				<td><input class="content-type-input" placeholder="Content Type"></td>
+				<td><input autocomplete="off" class="content-type-input" placeholder="Content Type"></td>
 				<td class="content-type-button">></td>
 			</tr>
 			</tbody>
@@ -272,8 +272,8 @@
 
 <template id="metadataRowTemplate">
 	<tr>
-		<td><input class="metadata-key" placeholder="Key" value="{{key}}"></td>
-		<td><input class="metadata-value" placeholder="Value" value="{{value}}"></td>
+		<td><input autocomplete="off" class="metadata-key" placeholder="Key" value="{{key}}"></td>
+		<td><input autocomplete="off" class="metadata-value" placeholder="Value" value="{{value}}"></td>
 		<td class="remove-metadata">X</td>
 	</tr>
 </template>
@@ -300,8 +300,8 @@
 	<table class="input-group-table">
 		<tr>
 			<td><img src="img/file.png"></td>
-			<td><input class="upload-as-input-name" placeholder="File Name" value="{{upload-input-name}}"></td>
-			<td><input class="upload-as-input-type" placeholder="Content Type" value="{{upload-input-type}}"></td>
+			<td><input autocomplete="off" class="upload-as-input-name" placeholder="File Name" value="{{upload-input-name}}"></td>
+			<td><input autocomplete="off" class="upload-as-input-type" placeholder="Content Type" value="{{upload-input-type}}"></td>
 			<td class="upload-as-button">+</td>
 		</tr>
 	</table>
