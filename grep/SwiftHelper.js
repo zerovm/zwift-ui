@@ -57,7 +57,7 @@
 				{
 					'name': 'grep',
 					'exec': {
-						'path': 'swift://' + account + '/search/sys/grep.nexe',
+						'path': 'swift://' + account + '/.gui/LiteStack/Grep Search/0.1/execute/sys/grep.nexe',
 						'args': input
 					},
 					'file_list': [
