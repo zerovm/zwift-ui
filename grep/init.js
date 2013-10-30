@@ -31,7 +31,11 @@ document.addEventListener('DOMContentLoaded', function(){
 					files: grepFiles
 				}, window.grepApp.getGrepps);
 			}
-		}else if(isGetFiles(e)){
+		}else if(isGetFiles(e) && e.keyCode === 13){
+			if(e.target.value === ''){
+				e.target.classList.add('invalid-input');
+				return;
+			}
 			window.getFilelist(window.grepAppHelper.fileListElement.value, function(responseArray, containerName){
 				console.log("grepped some files:\n");
 				console.log(responseArray);

@@ -3,7 +3,7 @@
 
 	var prevValue;
 
-	function MemoInputHandler(){
+	function MemoInputHandler(){//TODO:deblock if there were no search
 		this.onInput = function(params, callback){
 			if(params.input && prevValue !== params.input){
 				prevValue = params.input;

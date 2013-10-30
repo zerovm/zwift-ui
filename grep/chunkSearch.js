@@ -3,6 +3,8 @@
 	"use strict";
 
 	var GREPPED_FILES_NUM = 1,
+		FIRST_TIME_OUTPUT_NUM = 10,
+		SCROLL_ADD_NUM = 5,
 		isStopped,
 		isFinished = true,
 		paramsProcessor,
@@ -50,9 +52,7 @@
 	}
 
 	function ParamsProcessor(){
-		var FIRST_TIME_OUTPUT_NUM = 10,
-			SCROLL_ADD_NUM = 5,
-			savedParams,
+		var savedParams,
 			margin,
 			offset;
 
