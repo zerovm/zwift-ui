@@ -2,6 +2,7 @@
 	"use strict";
 
 	var grepAppHelper = {},
+		MAX_OUTPUT_NUM = 25,
 		dataSplitter = " ",
 		iconMap = {
 			extensions: ['.txt', '.pdf', '.doc', '.docx', '.h', '.c', '.lua'],
@@ -11,6 +12,7 @@
 		extensionRegexp = /\.\w*$/,
 		fileNameInPathRegexp = /\/([\w \.]*)$/,
 		lineSplitterRegex = /\n/g,
+		lineSplitter = "\n",
 		tagLineSplitter = " <br>",
 		GTRegex = />/g,
 		GTStr = "&gt;",
@@ -26,6 +28,7 @@
 	function updateDOM(request, report, text, fullPath){
 		var fullPathEl, filename, link, wrapper,
 			preview, icon, ext, matchIndex,
+			splitLines,
 			linkString = "a";
 		icon = document.createElement(imgString);
 		ext = fullPath.match(extensionRegexp);
@@ -51,9 +54,12 @@
 		wrapper.appendChild(link);
 		wrapper.appendChild(fullPathEl);
 		preview = document.createElement(divString);
+		splitLines = request.split(lineSplitter);
+		request = splitLines.slice(0, MAX_OUTPUT_NUM).join(lineSplitter);
 		preview.innerHTML = highlightFounded(request, text, dataSplitter);
 		wrapper.appendChild(preview);
 		window.grepAppHelper.searchResultEl.appendChild(wrapper);
+		return splitLines.length > MAX_OUTPUT_NUM;
 	}
 
 	grepAppHelper.grep = function(params){
@@ -85,6 +91,7 @@
 		execute(data);
 
 		function createConfiguration(){
+			console.log(fullPath)
 			return [
 				{
 					'name': 'grep',
@@ -112,12 +119,13 @@
 				data: data,
 				contentType: 'application/json',
 				success: function(request, report){
-
+					var isRequestTooBig;
 					if(!request || window.grepApp.isStopped()){
 						params.callbackInit(params);
 						return;
 					}
-					updateDOM(request, report, text, fullPath);
+					isRequestTooBig = updateDOM(request, report, text, fullPath);
+					params.isRequestTooBig = isRequestTooBig;
 
 
 					window.grepAppHelper.searchResultEl.removeAttribute('hidden');

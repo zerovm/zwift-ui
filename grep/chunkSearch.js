@@ -7,7 +7,6 @@
 		SCROLL_ADD_NUM = 5,
 		isStopped,
 		isFinished = true,
-		isFinilized = true,
 		paramsProcessor,
 		noResultText = "No results.",
 		progressClass = "progress-cursor";
@@ -15,11 +14,15 @@
 	function chunkCalls(paramObj){
 		paramObj.updateCallback && paramObj.updateCallback();
 
-		if(!paramObj.files.length || isStopped){//exit statement
+		if(!paramObj.files.length || isStopped || paramObj.isRequestTooBig){//exit statement
 			isFinished = true;
 			paramObj.finalCallback && paramObj.finalCallback();
 			document.body.classList.remove(progressClass);
-			paramsProcessor.startSearch(null, true);
+			if(paramObj.isRequestTooBig){
+				paramsProcessor.equateMarginToOutput();
+			}else{
+				paramsProcessor.startSearch(null, true);
+			}
 		}else{
 			if(!paramObj.callbackInit){
 				paramObj.callbackInit = chunkCalls;
@@ -125,6 +128,10 @@
 				}
 			}
 		};
+
+		this.equateMarginToOutput = function(){
+			margin = window.grepAppHelper.searchResultEl.children.length + offset;
+		}
 	}
 
 	paramsProcessor = new ParamsProcessor();

@@ -61,6 +61,7 @@ document.addEventListener('DOMContentLoaded', function(){
 			grepFiles = responseArray.filter(function(pathObj){
 				return !pathObj.content_type.match(directoryContentType);
 			}).map(function(pathObj){
+					console.log(containerName + pathObj.name);
 					return containerName + pathObj.name;
 				});
 			if(callback){
