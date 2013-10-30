@@ -59,6 +59,7 @@ document.addEventListener('DOMContentLoaded', function(){
 	});
 
 	function getFilelist(callback, callbackParam){
+		searchMemo.reset();
 		window.grepApp.getFilelist(window.grepAppHelper.fileListElement.value, function(responseArray, containerName){
 			grepFiles = responseArray.filter(function(pathObj){
 				return !pathObj.content_type.match(directoryContentType);
@@ -123,8 +124,8 @@ document.addEventListener('DOMContentLoaded', function(){
 	});
 	window.grepAppHelper.searchResultEl = document.getElementsByClassName("search-results")[0];
 	window.grepAppHelper.fileListElement = document.getElementsByClassName("file-list-input")[0];
-	window.grepAppHelper.fileListElement.addEventListener("blur", function(){
-		fileListMemo.onInput({input: event.target.value}, function(){
+	window.grepAppHelper.fileListElement.addEventListener("blur", function(e){
+		fileListMemo.onInput({input: e.target.value}, function(){
 			getFilelist();
 		});
 	});

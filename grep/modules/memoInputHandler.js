@@ -10,6 +10,9 @@
 				callback(params);
 			}
 		};
+		this.reset = function(){
+			prevValue = null;
+		}
 	}
 
 	if(!window.grepApp){

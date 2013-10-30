@@ -42,6 +42,7 @@
 
 	function startChunkSearch(params){
 		removeChildren(window.grepAppHelper.searchResultEl);
+		isStopped = false;
 		paramsProcessor.startSearch(params);
 	}
 
@@ -117,7 +118,6 @@
 					if(transferredParams.files.length){
 						window.grepApp.progress.start();
 						isFinished = false;
-						isStopped = false;
 						chunkCalls(transferredParams);
 					}else{
 						if(!window.grepAppHelper.searchResultEl.children.length){
