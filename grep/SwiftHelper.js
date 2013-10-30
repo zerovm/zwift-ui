@@ -18,11 +18,43 @@
 		LTStr = "&lt;",
 		strStartAndSpace = "(^|\\s|\\.|\\-|\\:|\"|\'|\\/)",
 		strFinishAndSpace = "(\\s|\\/|\\.|\\:|\\;|\\-|\"|\'|\\,|$)",
-		noResultText = "No results.",
 		imgString = "img",
 		tagStrongStart = "<strong>",
 		tagStrongFinish = "</strong>",
 		divString = "div";
+
+	function updateDOM(request, report, text, fullPath){
+		var fullPathEl, filename, link, wrapper,
+			preview, icon, ext, matchIndex,
+			linkString = "a";
+		icon = document.createElement(imgString);
+		ext = fullPath.match(extensionRegexp);
+		if(ext){
+			matchIndex = iconMap.extensions.indexOf(ext[0]);
+		}
+		if(matchIndex !== -1){
+			icon.src = iconMap.images[matchIndex];
+		}else{
+			icon.src = iconMap.iconPathTemplate;
+		}
+		fullPathEl = document.createElement(divString);
+		fullPathEl.className = "file-name";
+		link = document.createElement(linkString);
+		link.href = ZLitestackDotCom.getStorageUrl() + fullPath;
+		link.target = "_blank";
+		filename = fullPath.match(fileNameInPathRegexp);
+		filename = filename ? filename[1] : fullPath;
+		link.innerHTML = filename;
+		fullPathEl.innerHTML = fullPath;
+		wrapper = document.createElement(divString);
+		wrapper.appendChild(icon);
+		wrapper.appendChild(link);
+		wrapper.appendChild(fullPathEl);
+		preview = document.createElement(divString);
+		preview.innerHTML = highlightFounded(request, text, dataSplitter);
+		wrapper.appendChild(preview);
+		window.grepAppHelper.searchResultEl.appendChild(wrapper);
+	}
 
 	grepAppHelper.grep = function(params){
 		var input, i, text, fullPath,
@@ -80,43 +112,13 @@
 				data: data,
 				contentType: 'application/json',
 				success: function(request, report){
-					var fullPathEl, filename, link, wrapper,
-					preview, icon, ext, matchIndex,
-					linkString = "a";
+
 					if(!request || window.grepApp.isStopped()){
-						if(!window.grepAppHelper.searchResultEl.children.length){
-							displayNoResult(window.grepAppHelper.searchResultEl);
-						}
 						params.callbackInit(params);
 						return;
 					}
-					icon = document.createElement(imgString);
-					ext = fullPath.match(extensionRegexp);
-					if(ext){
-						matchIndex = iconMap.extensions.indexOf(ext[0]);
-					}
-					if(matchIndex !== -1){
-						icon.src = iconMap.images[matchIndex];
-					}else{
-						icon.src = iconMap.iconPathTemplate;
-					}
-					fullPathEl = document.createElement(divString);
-					fullPathEl.className = "file-name";
-					link = document.createElement(linkString);
-					link.href = ZLitestackDotCom.getStorageUrl() + fullPath;
-					link.target = "_blank";
-					filename = fullPath.match(fileNameInPathRegexp);
-					filename = filename ? filename[1] : fullPath;
-					link.innerHTML = filename;
-					fullPathEl.innerHTML = fullPath;
-					wrapper = document.createElement(divString);
-					wrapper.appendChild(icon);
-					wrapper.appendChild(link);
-					wrapper.appendChild(fullPathEl);
-					preview = document.createElement(divString);
-					preview.innerHTML = highlightFounded(request, text, dataSplitter);
-					wrapper.appendChild(preview);
-					window.grepAppHelper.searchResultEl.appendChild(wrapper);
+					updateDOM(request, report, text, fullPath);
+
 
 					window.grepAppHelper.searchResultEl.removeAttribute('hidden');
 					params.callbackInit(params);
@@ -165,11 +167,6 @@
 		while(el.firstChild){
 			el.removeChild(el.firstChild);
 		}
-	}
-
-	function displayNoResult(el){
-		removeChildren(el);
-		el.innerHTML = noResultText;
 	}
 
 	window.grepAppHelper = grepAppHelper;

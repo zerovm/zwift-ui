@@ -7,7 +7,9 @@
 		SCROLL_ADD_NUM = 5,
 		isStopped,
 		isFinished = true,
+		isFinilized = true,
 		paramsProcessor,
+		noResultText = "No results.",
 		progressClass = "progress-cursor";
 
 	function chunkCalls(paramObj){
@@ -26,6 +28,14 @@
 			paramObj.files = paramObj.files.slice(GREPPED_FILES_NUM, paramObj.files.length);
 			paramObj.mainWorkFunction(paramObj);
 		}
+	}
+
+	function displayNoResult(el){
+		var div = document.createElement("div");
+		//removeChildren(el);
+		div.className = "no-result";
+		div.innerHTML = noResultText;
+		el.appendChild(div);
 	}
 
 	function startChunkSearch(params){
@@ -107,6 +117,10 @@
 						isFinished = false;
 						isStopped = false;
 						chunkCalls(transferredParams);
+					}else{
+						if(!window.grepAppHelper.searchResultEl.children.length){
+							displayNoResult(window.grepAppHelper.searchResultEl);
+						}
 					}
 				}
 			}
