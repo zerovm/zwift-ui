@@ -8,8 +8,7 @@
 		isStopped,
 		isFinished = true,
 		paramsProcessor,
-		noResultText = "No results.",
-		progressClass = "progress-cursor";
+		noResultText = "No results.";
 
 	function chunkCalls(paramObj){
 		paramObj.updateCallback && paramObj.updateCallback();
@@ -17,7 +16,7 @@
 		if(!paramObj.files.length || isStopped || paramObj.isRequestTooBig){//exit statement
 			isFinished = true;
 			paramObj.finalCallback && paramObj.finalCallback();
-			document.body.classList.remove(progressClass);
+			window.grepApp.progress.end();
 			if(paramObj.isRequestTooBig){
 				paramsProcessor.equateMarginToOutput();
 			}else{
@@ -116,7 +115,7 @@
 					transferredParams = savedParams.createCopy();
 					transferredParams.files = savedParams.files.slice(filesOffsets.start, filesOffsets.end);
 					if(transferredParams.files.length){
-						document.body.classList.add(progressClass);
+						window.grepApp.progress.start();
 						isFinished = false;
 						isStopped = false;
 						chunkCalls(transferredParams);

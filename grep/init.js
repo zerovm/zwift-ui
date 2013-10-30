@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function(){
 	});
 
 	function getFilelist(callback, callbackParam){
-		window.getFilelist(window.grepAppHelper.fileListElement.value, function(responseArray, containerName){
+		window.grepApp.getFilelist(window.grepAppHelper.fileListElement.value, function(responseArray, containerName){
 			grepFiles = responseArray.filter(function(pathObj){
 				return !pathObj.content_type.match(directoryContentType);
 			}).map(function(pathObj){

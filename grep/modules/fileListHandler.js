@@ -5,6 +5,7 @@
 
 	function parsePath(value, callback, callbackErr){
 		var splittedPath,containerName,path;
+		window.grepApp.progress.start();
 		splittedPath = value.split(/(\/.*)/);
 		path = splittedPath[1];
 		containerName = splittedPath[0];
@@ -19,6 +20,7 @@
 			containerName: containerName,
 			success: function(response){
 				response = JSON.parse(response);
+				window.grepApp.progress.end();
 				if(response.length){
 					callback(response, DELIMITER + containerName + DELIMITER);
 				}else{
@@ -28,5 +30,8 @@
 		});
 	}
 
-	window.getFilelist = parsePath;
+	if(!window.grepApp){
+		window.grepApp = {};
+	}
+	window.grepApp.getFilelist = parsePath;
 })();
