@@ -3,7 +3,6 @@
 
 	var grepAppHelper = {},
 		MAX_OUTPUT_NUM = 25,
-		dataSplitter = " ",
 		iconMap = {
 			extensions: ['.txt', '.pdf', '.doc', '.docx', '.h', '.c', '.lua'],
 			images: ['img/file32_txt.png', 'img/file32_pdf.png', 'img/file32_doc.png', 'img/file32_doc.png', 'img/file32_c.png', 'img/file32_c.png', 'img/file32_lua.png'],
@@ -18,9 +17,8 @@
 		GTStr = "&gt;",
 		LTRegex = /</g,
 		LTStr = "&lt;",
-		strStartAndSpace = "(^|\\s|\\.|\\-|\\:|\"|\'|\\/)",
-		strFinishAndSpace = "(\\s|\\/|\\.|\\:|\\;|\\-|\"|\'|\\,|$)",
 		imgString = "img",
+		boundRegexStr = "\\b",
 		tagStrongStart = "<strong>",
 		tagStrongFinish = "</strong>",
 		divString = "div";
@@ -56,7 +54,7 @@
 		preview = document.createElement(divString);
 		splitLines = request.split(lineSplitter);
 		request = splitLines.slice(0, MAX_OUTPUT_NUM).join(lineSplitter);
-		preview.innerHTML = highlightFounded(request, text, dataSplitter);
+		preview.innerHTML = highlightFounded(request, text);
 		wrapper.appendChild(preview);
 		window.grepAppHelper.searchResultEl.appendChild(wrapper);
 		return splitLines.length > MAX_OUTPUT_NUM;
@@ -91,7 +89,6 @@
 		execute(data);
 
 		function createConfiguration(){
-			console.log(fullPath)
 			return [
 				{
 					'name': 'grep',
@@ -142,39 +139,12 @@
 		}
 	};
 
-	function highlightFounded(str, searchText, splitter, joiner){
-		var regexArray, innerHTML;
+	function highlightFounded(str, searchText){
+		var innerHTML;
 
 		str = str.replace(GTRegex, GTStr).replace(LTRegex, LTStr);
 		innerHTML = str.replace(lineSplitterRegex, tagLineSplitter);
-		regexArray = searchText.split(dataSplitter)
-			.filter(function(str){
-				return str;
-			})
-			.map(function(word){
-				return getWordRegex(word)
-			});
-		return innerHTML.split(splitter).map(function(word){
-			var i;
-			for(i = regexArray.length - 1; i >= 0; i--){
-				if(word.match(regexArray[i])){
-					return word.replace(searchText ,tagStrongStart + searchText + tagStrongFinish);
-				}
-			}
-			return word;
-		}).join(joiner ? joiner : splitter);
-	}
-
-	function getWordRegex(word, param){
-		var regex;
-		param ? regex = new RegExp(strStartAndSpace + word + strFinishAndSpace, param) : regex = new RegExp(strStartAndSpace + word + strFinishAndSpace);
-		return regex;
-	}
-
-	function removeChildren(el){
-		while(el.firstChild){
-			el.removeChild(el.firstChild);
-		}
+		return innerHTML.replace(new RegExp(boundRegexStr + searchText + boundRegexStr, "g"), tagStrongStart + searchText + tagStrongFinish);
 	}
 
 	window.grepAppHelper = grepAppHelper;
