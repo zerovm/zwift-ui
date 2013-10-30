@@ -1,15 +1,17 @@
 document.addEventListener('DOMContentLoaded', function(){
-	var searchMemo, i, interval,
+	var i, interval,
 		preferenceObj = {},
+		searchMemo = new window.grepApp.MemoInputHandler(),
+		fileListMemo = new window.grepApp.MemoInputHandler(),
 		preferencesElements = document.querySelectorAll(".preferences-list-wrapper input"),
 		directoryContentType = "application/directory",
-		grepFiles;
+		grepFiles,
+		messagePopup = new window.grepApp.Popup("No files were chosen.");
 	ZLitestackDotCom.init();
 	if(!window.grepApp){
 		window.grepApp = {};
 	}
 	window.grepApp.searchInput = document.getElementsByClassName("search-input")[0];
-	searchMemo = new window.grepApp.MemoInputHandler();
 	for(i = 0; i < preferencesElements.length; i++){
 		preferenceObj[preferencesElements[i].dataset.preference] = {
 			el: preferencesElements[i]
@@ -68,6 +70,10 @@ document.addEventListener('DOMContentLoaded', function(){
 				callbackParam.files = grepFiles;
 				callback(callbackParam);
 			}
+		},
+		function(){
+			grepFiles = null;
+			messagePopup.show();
 		});
 	}
 
@@ -117,6 +123,11 @@ document.addEventListener('DOMContentLoaded', function(){
 	});
 	window.grepAppHelper.searchResultEl = document.getElementsByClassName("search-results")[0];
 	window.grepAppHelper.fileListElement = document.getElementsByClassName("file-list-input")[0];
+	window.grepAppHelper.fileListElement.addEventListener("blur", function(){
+		fileListMemo.onInput({input: event.target.value}, function(){
+			getFilelist();
+		});
+	});
 	window.grepAppHelper.searchResultEl.addEventListener("scroll", function(e){
 		if(Math.abs(e.target.scrollTop - (e.target.scrollHeight - e.target.clientHeight)) < 4){//the reason - 1 extra pixel
 			window.grepApp.onResultScrollEnd();

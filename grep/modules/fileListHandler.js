@@ -3,7 +3,7 @@
 
 	var DELIMITER = "/";
 
-	function parsePath(value, callback){
+	function parsePath(value, callback, callbackErr){
 		var splittedPath,containerName,path;
 		splittedPath = value.split(/(\/.*)/);
 		path = splittedPath[1];
@@ -21,6 +21,8 @@
 				response = JSON.parse(response);
 				if(response.length){
 					callback(response, DELIMITER + containerName + DELIMITER);
+				}else{
+					callbackErr(response);
 				}
 			}
 		});

@@ -3,7 +3,7 @@
 
 	var showClass = "shown";
 
-	function Popup(){
+	function Popup(text){
 		var wrapper = document.createElement("div"),
 			positioningWrapper = document.createElement("div"),
 			popup = document.createElement("div"),
@@ -17,8 +17,12 @@
 		function hide(){
 			wrapper.classList.remove(showClass);
 		}
+		function setText(text){
+			outputTextEl.innerHTML = text;
+		}
 
 		wrapper.className = "popup-wrapper";
+
 		["click", "mousedown", "mouseup", "keydown"].forEach(function(eventName){
 			wrapper.addEventListener(eventName, function(e){
 				e.stopPropagation();
@@ -29,6 +33,7 @@
 		closeButton.className = "close-button";
 		closeButton.innerHTML = "OK";
 		closeButton.addEventListener("click", hide);
+		setText(text);
 
 		popup.appendChild(outputTextEl);
 		popup.appendChild(closeButton);
@@ -36,12 +41,9 @@
 		wrapper.appendChild(positioningWrapper);
 		document.body.appendChild(wrapper);
 
-		this.setText = function(text){
-			outputTextEl.innerHTML = text;
-		};
 		this.show = function(text){
 			if(text){
-				this.setText(text);
+				setText(text);
 			}
 			wrapper.classList.add(showClass);
 		};
