@@ -82,17 +82,20 @@ document.addEventListener('DOMContentLoaded', function(){
 	}
 
 	document.addEventListener('click', function(e){
-		var i, foo = [];
-		for(i = 0; i < 4; i++){
-			foo.push("/search/doc/foo/" + i + "cat.txt");
-		}
+		var paramObj;
 
 		if(isSearchButton(e)){
-			grepFiles && tryStartGrep({
+			paramObj = {
 				input: window.grepApp.searchInput.value,
 				mainWorkFunction: window.grepAppHelper.grep,
-				files: grepFiles
-			}, window.grepApp.getGrepps);
+				callback: window.grepApp.getGrepps
+			};
+			if(grepFiles){
+				paramObj.files = grepFiles;
+				tryStartGrep(paramObj);
+			}else{
+				getFilelist(tryStartGrep, paramObj);
+			}
 		}else if(isPreferences(e)){
 			window.grepApp.preferences.clickHandler(e.target);
 		}else if(isGetFiles(e)){
