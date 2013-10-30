@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function(){
 	window.grepApp.preferences = new window.grepApp.Preferences(preferenceObj);
 
 	document.addEventListener('keydown', function(e){
+		var paramObj;
 		if(isSearchInput(e)){
 			e.target.classList.remove('invalid-input');
 			if(e.keyCode === 13){
@@ -25,27 +26,24 @@ document.addEventListener('DOMContentLoaded', function(){
 					e.target.classList.add('invalid-input');
 					return;
 				}
-				grepFiles && tryStartGrep({
+				paramObj = {
 					input: window.grepApp.searchInput.value,
 					mainWorkFunction: window.grepAppHelper.grep,
-					files: grepFiles
-				}, window.grepApp.getGrepps);
+					callback: window.grepApp.getGrepps
+				};
+				if(grepFiles){
+					paramObj.files = grepFiles;
+					tryStartGrep(paramObj);
+				}else{
+					getFilelist(tryStartGrep, paramObj);
+				}
 			}
 		}else if(isGetFiles(e) && e.keyCode === 13){
 			if(e.target.value === ''){
 				e.target.classList.add('invalid-input');
 				return;
 			}
-			window.getFilelist(window.grepAppHelper.fileListElement.value, function(responseArray, containerName){
-				console.log("grepped some files:\n");
-				console.log(responseArray);
-				grepFiles = responseArray.filter(function(pathObj){
-					return !pathObj.content_type.match(directoryContentType);
-				}).map(function(pathObj){
-						console.log(containerName + pathObj.name)
-						return containerName + pathObj.name;
-					});
-			})
+			getFilelist();
 		}
 
 		function isSearchInput(e){
@@ -58,13 +56,27 @@ document.addEventListener('DOMContentLoaded', function(){
 
 	});
 
-	function tryStartGrep(obj, callback){
+	function getFilelist(callback, callbackParam){
+		window.getFilelist(window.grepAppHelper.fileListElement.value, function(responseArray, containerName){
+			grepFiles = responseArray.filter(function(pathObj){
+				return !pathObj.content_type.match(directoryContentType);
+			}).map(function(pathObj){
+					return containerName + pathObj.name;
+				});
+			if(callback){
+				callbackParam.files = grepFiles;
+				callback(callbackParam);
+			}
+		});
+	}
+
+	function tryStartGrep(obj){
 		clearInterval(interval);
 		window.grepApp.stopGrep();
 		interval = setInterval(function(){
-			if(window.grepApp.isFinished){
+			if(window.grepApp.isFinished()){
 				clearInterval(interval);
-				searchMemo.onInput(obj, callback);
+				searchMemo.onInput(obj, obj.callback);
 			}
 		}, 300);
 	}
@@ -90,6 +102,7 @@ document.addEventListener('DOMContentLoaded', function(){
 		function isGetFiles(e){
 			return e.target.classList.contains('file-list-button');
 		}
+
 		function isPreferences(e){
 			return e.target.classList.contains('preferences-element');
 		}
