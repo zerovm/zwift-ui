@@ -63,22 +63,26 @@ document.addEventListener('DOMContentLoaded', function(){
 				callback(callbackParam);
 			}
 		}else{
-			window.grepApp.getFilelist(window.grepAppHelper.fileListElement.value, function(responseArray, containerName){
-					grepFiles = responseArray.filter(function(pathObj){
-						return !pathObj.content_type.match(directoryContentType);
-					}).map(function(pathObj){
-							console.log(containerName + pathObj.name);
-							return containerName + pathObj.name;
-						});
-					if(callback){
-						callbackParam.files = grepFiles;
-						callback(callbackParam);
-					}
-				},
-				function(){
-					grepFiles = null;
-					messagePopup.show();
-				});
+			if(!window.grepAppHelper.fileListElement.value){
+				messagePopup.show();
+			}else{
+				window.grepApp.getFilelist(window.grepAppHelper.fileListElement.value, function(responseArray, containerName){
+						grepFiles = responseArray.filter(function(pathObj){
+							return !pathObj.content_type.match(directoryContentType);
+						}).map(function(pathObj){
+								console.log(containerName + pathObj.name);
+								return containerName + pathObj.name;
+							});
+						if(callback){
+							callbackParam.files = grepFiles;
+							callback(callbackParam);
+						}
+					},
+					function(){
+						grepFiles = null;
+						messagePopup.show();
+					});
+			}
 		}
 	}
 

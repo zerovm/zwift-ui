@@ -47,7 +47,7 @@
 		confirmButton.innerHTML = "OK";
 		confirmButton.addEventListener("click", function(){
 			hide();
-			params.confirm();
+			params.confirm && params.confirm();
 		});
 		buttonWrapper.appendChild(confirmButton);
 		if(params.isDialog){
@@ -56,7 +56,7 @@
 			declineButton.innerHTML = "Cancel";
 			declineButton.addEventListener("click", function(){
 				hide();
-				params.decline();
+				params.decline && params.decline();
 			});
 			buttonWrapper.appendChild(declineButton);
 		}
