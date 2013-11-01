@@ -117,6 +117,11 @@
 			tr.dataset.path = obj.fullPath || obj.name;
 			tr.className = trClassName;
 			td = document.createElement(tdString);
+			td.className = "item-icon radio";
+			td.appendChild(document.createElement("span"));
+			tr.appendChild(td);
+
+			td = document.createElement(tdString);
 			img = document.createElement(imgString);
 			img.src = getImgSrc(obj.content_type);
 			td.appendChild(img);
@@ -164,11 +169,12 @@
 		function createHTML(path){
 			var shownObject, topperLevel, currentDirectory,
 				topWrapper = document.createElement("div"),
+				tableWrapper = document.createElement("div"),
 				pathHeaderEl;
 			topWrapper.className = "top-wrapper";
+			tableWrapper.className = "table-wrapper";
 			pathHeaderEl = document.createElement("h2");
 			table = document.createElement("table");
-			table.id = "items";
 			fragment = document.createDocumentFragment();
 			if(path){
 				topperLevel = path.split(allSlashRegex).filter(function(str){return str});
@@ -188,7 +194,8 @@
 
 			topWrapper.appendChild(pathHeaderEl);
 			fragment.appendChild(topWrapper);
-			fragment.appendChild(table);
+			tableWrapper.appendChild(table);
+			fragment.appendChild(tableWrapper);
 			return fragment;
 		}
 
@@ -288,7 +295,7 @@
 
 		if(!isImagesLoaded){
 			isImagesLoaded = true;
-			window.grepApp.imgPreload(iconMap.getArrayOfProperties());
+			window.grepApp.imgPreload(iconMap.getArrayOfProperties().concat(["img/up-brown.png"]));
 		}
 		popup = new window.grepApp.Popup({
 			wrapperClassName: popupClassName,
