@@ -29,14 +29,13 @@
 			splitLines,
 			linkString = "a";
 		icon = document.createElement(imgString);
+		icon.src = iconMap.iconPathTemplate;
 		ext = fullPath.match(extensionRegexp);
 		if(ext){
 			matchIndex = iconMap.extensions.indexOf(ext[0]);
 		}
 		if(matchIndex !== -1){
 			icon.src = iconMap.images[matchIndex];
-		}else{
-			icon.src = iconMap.iconPathTemplate;
 		}
 		fullPathEl = document.createElement(divString);
 		fullPathEl.className = "file-name";

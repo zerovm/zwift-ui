@@ -153,8 +153,8 @@ button, p, li{
 	user-select: none;
 }
 body.progress-cursor,
-body.progress-cursor .preferences input,
-body.progress-cursor .preferences button{
+body.progress-cursor input,
+body.progress-cursor button{
 	cursor: progress !important;
 }
 input{
