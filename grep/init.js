@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function(){
 		directoryContentType = "application/directory",
 		fileSelector,
 		grepFiles,
+		searchWayPrefernce,
 		messagePopup = new window.grepApp.Popup({child: "No files were chosen."});
 	ZLitestackDotCom.init();
 	if(!window.grepApp){
@@ -18,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function(){
 			el: preferencesElements[i]
 		};
 	}
+	searchWayPrefernce = preferencesElements[0].dataset.preference;
 	window.grepApp.preferences = new window.grepApp.Preferences(preferenceObj);
 
 	document.addEventListener('keydown', function(e){//TODO: unificate click and keydown
@@ -32,8 +34,9 @@ document.addEventListener('DOMContentLoaded', function(){
 				paramObj = {
 					input: window.grepApp.searchInput.value,
 					mainWorkFunction: window.grepAppHelper.grep,
-					callback: window.grepApp.getGrepps
-				};
+					callback: window.grepApp.getGrepps,
+					isStraight: window.grepApp.preferences.getPreference(searchWayPrefernce)
+			};
 				getFilelist(tryStartGrep, paramObj);
 			}
 		}else if(isGetFiles(e) && e.keyCode === 13){
@@ -104,7 +107,8 @@ document.addEventListener('DOMContentLoaded', function(){
 			paramObj = {
 				input: window.grepApp.searchInput.value,
 				mainWorkFunction: window.grepAppHelper.grep,
-				callback: window.grepApp.getGrepps
+				callback: window.grepApp.getGrepps,
+				isStraight: window.grepApp.preferences.getPreference(searchWayPrefernce)
 			};
 			getFilelist(tryStartGrep, paramObj);
 		}else if(isPreferences(e)){

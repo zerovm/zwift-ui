@@ -6,7 +6,7 @@
 		iconMap = {
 			extensions: ['.txt', '.pdf', '.doc', '.docx', '.h', '.c', '.lua'],
 			images: ['img/file32_txt.png', 'img/file32_pdf.png', 'img/file32_doc.png', 'img/file32_doc.png', 'img/file32_c.png', 'img/file32_c.png', 'img/file32_lua.png'],
-			iconPathTemplate:  "img/file32.png"
+			iconPathTemplate: "img/file32.png"
 		},
 		extensionRegexp = /\.\w*$/,
 		fileNameInPathRegexp = /\/([\w \.]*)$/,
@@ -83,30 +83,51 @@
 		window.grepAppHelper.searchResultEl.classList.remove('error');
 		window.grepAppHelper.searchResultEl.removeAttribute('hidden');
 
-
 		var data = JSON.stringify(createConfiguration());
 		execute(data);
 
 		function createConfiguration(){
-			return [
-				{
-					'name': 'grep',
-					'exec': {
-						'path': 'swift://' + account + '/.gui/LiteStack/Grep Search/0.1/execute/sys/grep.nexe',
-						'args': input
-					},
-					'file_list': [
-						{
-							'device': 'stdin',
-							'path':  'swift://' + fullPath
+			if(params.isStraight){
+				return [
+					{
+						'name': 'grep',
+						'exec': {
+							'path': 'swift://' + account + '/.gui/LiteStack/Grep Search/0.1/execute/sys/grep.nexe',
+							'args': input
 						},
-						{
-							'device': 'stdout',
-							"content_type": "text/plain"
-						}
-					]
-				}
-			];
+						'file_list': [
+							{
+								'device': 'stdin',
+								'path': 'swift://' + fullPath
+							},
+							{
+								'device': 'stdout',
+								"content_type": "text/plain"
+							}
+						]
+					}
+				];
+			}else{
+				return [
+					{
+						'name': 'grep',
+						'exec': {
+							'path': 'swift://' + account + '/.gui/LiteStack/Grep Search/0.1/execute/sys/igrep.nexe',
+							'args': input + " /dev/input"
+						},
+						'file_list': [
+							{
+								'device': 'input',
+								'path': 'swift://' + fullPath
+							},
+							{
+								'device': 'stdout',
+								"content_type": "text/plain"
+							}
+						]
+					}
+				];
+			}
 		}
 
 		function execute(data){
@@ -122,7 +143,6 @@
 					}
 					isRequestTooBig = updateDOM(request, report, text, fullPath);
 					params.isRequestTooBig = isRequestTooBig;
-
 
 					window.grepAppHelper.searchResultEl.removeAttribute('hidden');
 					params.callbackInit(params);
