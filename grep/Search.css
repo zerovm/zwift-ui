@@ -10,31 +10,39 @@ body{
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
-.file-list-container {
+.file-list-container{
 	float: right;
 }
 .file-list-container > div{
 	display: block;
 	height: 50px;
 	position: relative;
+	border: 1px solid #d3d3d3;
+	width: 420px;
+}
+.file-list-container input{
+
 }
 
-.file-list-button {
+.file-list-button{
 	position: absolute;
 	top: 2px;
 	right: 1px;
 	font-size: large;
 	vertical-align: middle;
 	margin: 0;
-	height: 46px;
+	height: 47px;
 }
-.file-list-button img {
+.file-list-button img{
 	vertical-align: middle;
 	margin-right: 10px;
 }
-.file-list-input {
-	width: 420px;
-	height: 100%;
+.file-list-input{
+	position: absolute;
+	left: 2px;
+	top: 3px;
+	width: 280px;
+	height: 45px;
 	padding: 13px;
 	font-size: large;
 	box-sizing: border-box;
@@ -57,7 +65,7 @@ body{
 	position: relative;
 }
 
-.search-input {
+.search-input{
 	width: 100%;
 	padding: 10px;
 	font-size: large;
@@ -65,19 +73,19 @@ body{
 	-moz-box-sizing: border-box;
 }
 
-.invalid-input {
+.invalid-input{
 	background-color: #ffffe0 !important;
 	border-bottom: 2px #fa8072 dotted !important;
 }
 
-.search-button {
+.search-button{
 	height: 30px;
 	position: absolute;
 	top: 10px;
 	right: 9px;
 }
 
-.search-results {
+.search-results{
 	font-size: large;
 	line-height: 25px;
 	font-family: arial, serif;
@@ -121,14 +129,14 @@ body{
 	background: linear-gradient(to right, #aaa, rgba(255, 255, 255, 0));
 }
 .search-results img,
-.search-results a {
+.search-results a{
 	vertical-align: middle;
 }
-.search-results a {
+.search-results a{
 	color: #1B2781;
 	text-decoration: none;
 }
-.search-results a:visited {
+.search-results a:visited{
 	color: #511977;
 }
 .search-results strong{
@@ -157,7 +165,7 @@ body.progress-cursor *{
 	cursor: progress !important;
 }
 input{
-	transform: translate3d(0,0,0) rotateZ(360deg);
-	-moz-transform: translate3d(0,0,0) rotateZ(360deg);
-	-webkit-transform: translate3d(0,0,0) rotateZ(360deg);
+	transform: translate3d(0, 0, 0) rotateZ(360deg);
+	-moz-transform: translate3d(0, 0, 0) rotateZ(360deg);
+	-webkit-transform: translate3d(0, 0, 0) rotateZ(360deg);
 }
