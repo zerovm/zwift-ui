@@ -112,7 +112,7 @@
 
 		function createNodes(obj, containerName){
 			var tr = document.createElement(trString), td, img,
-				innerText = tr.innerText ? "innerText" : "textContent";
+				innerText = tr.innerText ? "innerText" : "textContent";//TODO: extend htmlelement
 			tr.dataset.path = obj.fullPath || obj.name;
 			tr.className = trClassName;
 			td = document.createElement(tdString);
@@ -150,19 +150,43 @@
 			return resultNodes;
 		}
 
+		function createBackbutton(path){
+			var button = document.createElement("button");
+			button.className = "back-button";
+			button.addEventListener("click", function(e){
+				e.stopPropagation();
+				that.show(path);
+			});
+			return button;
+		}
+
 		function createHTML(path){
-			var shownObject;
+			var shownObject, topperLevel, currentDirectory,
+				topWrapper = document.createElement("div"),
+				pathHeaderEl;
+			topWrapper.className = "top-wrapper";
+			pathHeaderEl = document.createElement("h2");
 			table = document.createElement("table");
 			table.id = "items";
 			fragment = document.createDocumentFragment();
 			if(path){
+				topperLevel = path.split(allSlashRegex).filter(function(str){return str});
+				currentDirectory = topperLevel.pop();
+				topperLevel = topperLevel.join(slashStr);
+				topWrapper.appendChild(createBackbutton(topperLevel));
+				pathHeaderEl.innerText ? pathHeaderEl["innerText"] = topperLevel + currentDirectory + slashStr : pathHeaderEl["textContent"] = topperLevel + currentDirectory + slashStr;
 				shownObject = getNode(path).childNodes;
+
 			}else{
+				pathHeaderEl.innerText ? pathHeaderEl["innerText"] = "Root" : pathHeaderEl["textContent"] = "Root";
 				shownObject = pathObj.childNodes;
 			}
 			Object.keys(shownObject).forEach(function(containerName){
 				table.appendChild(createNodes(shownObject[containerName], containerName));
 			});
+
+			topWrapper.appendChild(pathHeaderEl);
+			fragment.appendChild(topWrapper);
 			fragment.appendChild(table);
 			return fragment;
 		}

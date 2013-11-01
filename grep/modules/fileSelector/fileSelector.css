@@ -48,6 +48,20 @@
 	border-spacing: 0;
 	border-collapse: collapse;
 }
+.file-selector .top-wrapper{
+	height: 50px;
+}
+.file-selector .back-button{
+	width: 50px;
+	height: 50px;
+	background: url(up-brown.png) center center no-repeat;
+	background-size: 34px auto;
+	border: 0;
+	outline: 0;
+}
+.file-selector h2{
+	display: inline-block;
+}
 
 
 
