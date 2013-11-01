@@ -1184,11 +1184,11 @@ var ClusterAuth = {};
 			+ '<div class="cluster-url">'
 			+ '<label>Storage URL:</label>'
 			+ '<br>'
-			+ '<input class="x-storage-url">'
+			+ '<input autocomplete="off" class="x-storage-url">'
 			+ '<br>'
 			+ '<label>Account:</label>'
 			+ '<br>'
-			+ '<input class="account">'
+			+ '<input autocomplete="off" class="account">'
 			+ '<br>'
 			+ '<button class="login">Login</button>'
 			+ '</div></div>';
