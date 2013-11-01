@@ -8,4 +8,8 @@
 		});
 		return copyObj;
 	};
+	Object.prototype.getArrayOfProperties = function(){
+		var that = this;
+		return Object.keys(that).map(function(key){return that[key];});
+	};
 })();

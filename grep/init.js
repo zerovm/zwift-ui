@@ -5,8 +5,9 @@ document.addEventListener('DOMContentLoaded', function(){
 		fileListMemo = new window.grepApp.MemoInputHandler(),
 		preferencesElements = document.querySelectorAll(".preferences-list-wrapper input"),
 		directoryContentType = "application/directory",
+		fileSelector,
 		grepFiles,
-		messagePopup = new window.grepApp.Popup("No files were chosen.");
+		messagePopup = new window.grepApp.Popup({child: "No files were chosen."});
 	ZLitestackDotCom.init();
 	if(!window.grepApp){
 		window.grepApp = {};
@@ -15,11 +16,11 @@ document.addEventListener('DOMContentLoaded', function(){
 	for(i = 0; i < preferencesElements.length; i++){
 		preferenceObj[preferencesElements[i].dataset.preference] = {
 			el: preferencesElements[i]
-		}
+		};
 	}
 	window.grepApp.preferences = new window.grepApp.Preferences(preferenceObj);
 
-	document.addEventListener('keydown', function(e){
+	document.addEventListener('keydown', function(e){//TODO: unificate click and keydown
 		var paramObj;
 		if(isSearchInput(e)){
 			e.target.classList.remove('invalid-input');
@@ -33,12 +34,7 @@ document.addEventListener('DOMContentLoaded', function(){
 					mainWorkFunction: window.grepAppHelper.grep,
 					callback: window.grepApp.getGrepps
 				};
-				if(grepFiles){
-					paramObj.files = grepFiles;
-					tryStartGrep(paramObj);
-				}else{
-					getFilelist(tryStartGrep, paramObj);
-				}
+				getFilelist(tryStartGrep, paramObj);
 			}
 		}else if(isGetFiles(e) && e.keyCode === 13){
 			if(e.target.value === ''){
@@ -60,22 +56,30 @@ document.addEventListener('DOMContentLoaded', function(){
 
 	function getFilelist(callback, callbackParam){
 		searchMemo.reset();
-		window.grepApp.getFilelist(window.grepAppHelper.fileListElement.value, function(responseArray, containerName){
-			grepFiles = responseArray.filter(function(pathObj){
-				return !pathObj.content_type.match(directoryContentType);
-			}).map(function(pathObj){
-					console.log(containerName + pathObj.name);
-					return containerName + pathObj.name;
-				});
+		if(fileSelector && fileSelector.getChosenFilesArray()){
+			grepFiles = fileSelector.getChosenFilesArray();
 			if(callback){
 				callbackParam.files = grepFiles;
 				callback(callbackParam);
 			}
-		},
-		function(){
-			grepFiles = null;
-			messagePopup.show();
-		});
+		}else{
+			window.grepApp.getFilelist(window.grepAppHelper.fileListElement.value, function(responseArray, containerName){
+					grepFiles = responseArray.filter(function(pathObj){
+						return !pathObj.content_type.match(directoryContentType);
+					}).map(function(pathObj){
+							console.log(containerName + pathObj.name);
+							return containerName + pathObj.name;
+						});
+					if(callback){
+						callbackParam.files = grepFiles;
+						callback(callbackParam);
+					}
+				},
+				function(){
+					grepFiles = null;
+					messagePopup.show();
+				});
+		}
 	}
 
 	function tryStartGrep(obj){
@@ -98,20 +102,29 @@ document.addEventListener('DOMContentLoaded', function(){
 				mainWorkFunction: window.grepAppHelper.grep,
 				callback: window.grepApp.getGrepps
 			};
-			if(grepFiles){
-				paramObj.files = grepFiles;
-				tryStartGrep(paramObj);
-			}else{
-				getFilelist(tryStartGrep, paramObj);
-			}
+			getFilelist(tryStartGrep, paramObj);
 		}else if(isPreferences(e)){
 			window.grepApp.preferences.clickHandler(e.target);
 		}else if(isGetFiles(e)){
-			//show popup
+			if(!fileSelector){
+				fileSelector = new window.grepApp.FileSelector({
+					oncreate: function(){
+						fileSelector.show();
+					},
+					onconfirm: function(){
+						grepFiles = fileSelector.getChosenFilesArray();
+					},
+					ondecline: function(){
+						grepFiles = null;
+					}
+				});
+			}else{
+				fileSelector.show();
+			}
 		}
 
 		function isGetFiles(e){
-			return e.target.classList.contains('file-list-button');
+			return e.target.classList.contains('file-list-button') || e.target.parentNode.classList.contains("file-list-button");//TODO: replace
 		}
 
 		function isPreferences(e){
@@ -130,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function(){
 		});
 	});
 	window.grepAppHelper.searchResultEl.addEventListener("scroll", function(e){
-		if(Math.abs(e.target.scrollTop - (e.target.scrollHeight - e.target.clientHeight)) < 4){//the reason - 1 extra pixel
+		if(Math.abs(e.target.scrollTop - (e.target.scrollHeight - e.target.clientHeight)) < 4){//the reason - one extra pixel
 			window.grepApp.onResultScrollEnd();
 		}
 	})

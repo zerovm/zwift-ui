@@ -4,25 +4,27 @@
 	var DELIMITER = "/";
 
 	function parsePath(value, callback, callbackErr){
-		var splittedPath,containerName,path;
+		var splittedPath, containerName, path, wideContainerName;
 		window.grepApp.progress.start();
-		splittedPath = value.split(/(\/.*)/);
-		path = splittedPath[1];
-		containerName = splittedPath[0];
-		//callbackParams.containerName = containerName = splittedPath[0];
-		path = path.substr(1, splittedPath[1].length);//substr... -removing extra slash
-		/*indexResultEl.removeAttribute(HIDDEN_ATTRIBUTE);
-		indexResultEl.innerHTML = 'Getting files...';*/
+		if(value){
+			splittedPath = value.split(/\/(.*)/);
+			path = splittedPath[1] || "";
+			containerName = splittedPath[0];
+			//callbackParams.containerName = containerName = splittedPath[0];
+			/*indexResultEl.removeAttribute(HIDDEN_ATTRIBUTE);
+			 indexResultEl.innerHTML = 'Getting files...';*/
+			wideContainerName = DELIMITER + containerName + DELIMITER;
+		}
 		SwiftV1.Container.get({
 			format: "json",
-			prefix: path,
+			prefix: value ? path : "",
 			DELIMITER: DELIMITER,
-			containerName: containerName,
+			containerName: value ? containerName : "",
 			success: function(response){
 				response = JSON.parse(response);
 				window.grepApp.progress.end();
 				if(response.length){
-					callback(response, DELIMITER + containerName + DELIMITER);
+					callback(response, wideContainerName);
 				}else{
 					callbackErr(response);
 				}

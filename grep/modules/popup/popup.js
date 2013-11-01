@@ -1,27 +1,39 @@
 (function(){
 	"use strict";
 
-	var showClass = "shown";
+	var showClass = "shown",
+		stringType = "string",
+		popupWrapperClassName = "popup-wrapper";
 
-	function Popup(text){
+	function removeChildren(el){
+		while(el.firstChild){
+			el.removeChild(el.firstChild);
+		}
+	}
+
+	function Popup(params){
 		var wrapper = document.createElement("div"),
 			positioningWrapper = document.createElement("div"),
 			popup = document.createElement("div"),
-			outputTextEl = document.createElement("p"),
-			closeButton = document.createElement("button"),
-			options = {
-				isModule: true,
-				isDialog: false
-			};
+			outputEl,
+			confirmButton = document.createElement("button"),
+			buttonWrapper = document.createElement("div"),
+			declineButton;
 
 		function hide(){
 			wrapper.classList.remove(showClass);
 		}
-		function setText(text){
-			outputTextEl.innerHTML = text;
+
+		function setOutputContents(child){
+			removeChildren(outputEl);
+			typeof child === stringType ? outputEl.innerHTML = child : outputEl.appendChild(child);
 		}
 
-		wrapper.className = "popup-wrapper";
+		if(!params){
+			params = {};
+		}
+		outputEl = params.isNotTextContent ? document.createElement("div") : document.createElement("p");
+		wrapper.className = params.wrapperClassName ? popupWrapperClassName + " " + params.wrapperClassName : popupWrapperClassName;
 
 		["click", "mousedown", "mouseup", "keydown"].forEach(function(eventName){
 			wrapper.addEventListener(eventName, function(e){
@@ -30,24 +42,38 @@
 		});
 		positioningWrapper.className = "popup-box-wrapper";
 		popup.className = "popup";
-		closeButton.className = "close-button";
-		closeButton.innerHTML = "OK";
-		closeButton.addEventListener("click", hide);
-		setText(text);
+		buttonWrapper.className = "button-wrapper";
+		confirmButton.className = "close-button";
+		confirmButton.innerHTML = "OK";
+		confirmButton.addEventListener("click", function(){
+			hide();
+			params.confirm();
+		});
+		buttonWrapper.appendChild(confirmButton);
+		if(params.isDialog){
+			declineButton = document.createElement("button");
+			declineButton.className = "close-button";
+			declineButton.innerHTML = "Cancel";
+			declineButton.addEventListener("click", function(){
+				hide();
+				params.decline();
+			});
+			buttonWrapper.appendChild(declineButton);
+		}
+		params.child && setOutputContents(params.child);
 
-		popup.appendChild(outputTextEl);
-		popup.appendChild(closeButton);
+		popup.appendChild(outputEl);
+		popup.appendChild(buttonWrapper);
 		positioningWrapper.appendChild(popup);
 		wrapper.appendChild(positioningWrapper);
 		document.body.appendChild(wrapper);
 
-		this.show = function(text){
-			if(text){
-				setText(text);
-			}
+		this.show = function(child){
+			child && setOutputContents(child);
 			wrapper.classList.add(showClass);
 		};
 		this.hide = hide;
+		this.popupEl = popup;
 	}
 
 	if(!window.grepApp){
