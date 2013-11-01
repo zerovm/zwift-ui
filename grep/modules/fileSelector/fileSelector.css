@@ -1,5 +1,6 @@
-.file-selector *{
-	cursor: pointer;
+.file-selector input,
+.file-selector button{
+	cursor: default;
 }
 .file-selector #items{
 	width: 100%;

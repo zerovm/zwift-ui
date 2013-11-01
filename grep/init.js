@@ -108,6 +108,9 @@ document.addEventListener('DOMContentLoaded', function(){
 		}else if(isGetFiles(e)){
 			if(!fileSelector){
 				fileSelector = new window.grepApp.FileSelector({
+					onbeforeCreate: function(){
+						this.show("", true);
+					},
 					oncreate: function(){
 						fileSelector.show();
 					},

@@ -218,7 +218,7 @@
 					});
 					if(containerCounter === containerNum){
 						//createHTML();
-						params.oncreate();
+						params && params.oncreate && params.oncreate();
 						window.grepApp.progress.end();
 					}
 				}
@@ -264,11 +264,16 @@
 
 		function getFileList(){
 			window.grepApp.progress.start();
+			params && params.onbeforeCreate && params.onbeforeCreate.apply(that);
 			window.grepApp.getFilelist(emptyString, createPathObj, onBroke);
 		}
 
-		this.show = function(path){
+		this.show = function(path, isEmpty){
 			var isDirectory;
+			if(isEmpty){
+				popup.show();
+				return;
+			}
 			if(path){
 				isDirectory = getNode(path).childNodes;
 				isDirectory && popup.show(createHTML(path));
