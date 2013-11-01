@@ -741,7 +741,7 @@ var Auth = {};
 	};
 
 	SharedContainersOnSwift.getFromXhr = function (xhr) {
-		var allContainers = [];
+		var allContainers = {};
 
 		var i = 0;
 		var headerKey = 'X-Account-Meta-Shared' + i;
@@ -749,8 +749,9 @@ var Auth = {};
 
 		while (headerVal) {
 			var obj = JSON.parse(headerVal);
-			var c = Object.keys(obj);
-			allContainers = allContainers.concat(c);
+			for (var attrname in obj) {
+				allContainers[attrname] = obj[attrname];
+			}
 
 			i++;
 			headerKey = 'X-Account-Meta-Shared' + i;
