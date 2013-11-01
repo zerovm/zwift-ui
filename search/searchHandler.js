@@ -53,13 +53,6 @@
 		searchResultEl.innerHTML = text || noResultText;
 	}
 
-	function imgPreload(imgArr){
-		imgArr.forEach(function(src){
-			var img = new Image();
-			img.src = src;
-		});
-	}
-
 	function splitResult(result, input){
 		var splittedResult;
 		splittedResult = result.split(lineSplitterRegex).filter(function(str){
@@ -212,7 +205,7 @@
 		searchResultEl = document.getElementsByClassName("search-results")[0];
 	});
 
-	imgPreload(iconMap.images);
+	window.searchApp.imgPreload(iconMap.images);
 	if(!window.searchApp){
 		window.searchApp = {};
 	}
