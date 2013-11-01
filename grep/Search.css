@@ -157,3 +157,8 @@ body.progress-cursor .preferences input,
 body.progress-cursor .preferences button{
 	cursor: progress !important;
 }
+input{
+	transform: translate3d(0,0,0) rotateZ(360deg);
+	-moz-transform: translate3d(0,0,0) rotateZ(360deg);
+	-webkit-transform: translate3d(0,0,0) rotateZ(360deg);
+}
