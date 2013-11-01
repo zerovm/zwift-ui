@@ -26,6 +26,7 @@ body{
 	font-size: large;
 	vertical-align: middle;
 	margin: 0;
+	height: 46px;
 }
 .file-list-button img {
 	vertical-align: middle;
@@ -152,9 +153,7 @@ button, p, li{
 	-ms-user-select: none;
 	user-select: none;
 }
-body.progress-cursor,
-body.progress-cursor input,
-body.progress-cursor button{
+body.progress-cursor *{
 	cursor: progress !important;
 }
 input{

@@ -3,7 +3,7 @@
  * Date: 30.10.13
  * Time: 17:56
  *
- * requires popup, fileListHandler, progress
+ * requires popup, fileListHandler, progress, imgPreload
  */
 (function(){
 	"use strict";
@@ -30,7 +30,8 @@
 		},
 		gradeMap = ["B", "KB", "MB", "GB"],
 		trClassName = "item",
-		trSelectedClassName = "selected";
+		trSelectedClassName = "selected",
+		isImagesLoaded;
 
 	function checkParentClassName(el, className){//TODO: append to htmlnodeelement
 		var topParentTag = "BODY";
@@ -285,6 +286,10 @@
 			return chosenFileListArray;
 		};
 
+		if(!isImagesLoaded){
+			isImagesLoaded = true;
+			window.grepApp.imgPreload(iconMap.getArrayOfProperties());
+		}
 		popup = new window.grepApp.Popup({
 			wrapperClassName: popupClassName,
 			isDialog: true,
