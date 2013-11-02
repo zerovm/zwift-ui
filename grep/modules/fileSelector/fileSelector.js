@@ -297,7 +297,16 @@
 				popup.show(createHTML());
 			}
 		};
-		this.getChosenFilesArray = function(){
+		this.getChosenFilesArray = function(isSorted){
+			if(isSorted){
+				chosenFileListArray = chosenFileListArray.map(function(path){
+					return getNode(path);
+				}).sort(function(a,b){
+						return Date.parse(a.last_modified) - Date.parse(b.last_modified);
+					}).map(function(pathObj){
+						return pathObj.fullPath;
+					});
+			}
 			return chosenFileListArray;
 		};
 		this.reset = function(){

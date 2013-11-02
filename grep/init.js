@@ -59,9 +59,10 @@ document.addEventListener('DOMContentLoaded', function(){
 	});
 
 	function getFilelist(callback, callbackParam){
+		var filSelectorList = fileSelector && fileSelector.getChosenFilesArray(!window.grepApp.preferences.getPreference(searchWayPrefernce));
 		searchMemo.reset();
-		if(fileSelector && fileSelector.getChosenFilesArray()){
-			grepFiles = fileSelector.getChosenFilesArray();
+		if(filSelectorList){
+			grepFiles = filSelectorList;
 			if(callback){
 				callbackParam.files = grepFiles;
 				callback(callbackParam);
@@ -128,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function(){
 						fileSelector.show();
 					},
 					onconfirm: function(){
-						grepFiles = fileSelector.getChosenFilesArray();
+						grepFiles = fileSelector.getChosenFilesArray(!window.grepApp.preferences.getPreference(searchWayPrefernce));
 					},
 					ondecline: function(){
 						grepFiles = null;
