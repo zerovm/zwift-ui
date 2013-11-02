@@ -12,6 +12,7 @@ body{
 }
 .file-list-container{
 	float: right;
+	position: relative;
 }
 .file-list-container > div{
 	display: block;
@@ -37,6 +38,7 @@ body{
 	vertical-align: middle;
 	margin-right: 10px;
 }
+.file-list-container > .overlay,
 .file-list-input{
 	position: absolute;
 	left: 2px;
@@ -174,4 +176,11 @@ input{
 	position: absolute;
 	left: 25px;
 	top: 15%;
+}
+.file-list-container > .overlay{
+	background: rgba(0,0,0,0.35);
+	border-color: rgba(0,0,0,0.35);
+}
+.file-list-container > .overlay.hide{
+	display: none;
 }

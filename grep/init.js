@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', function(){
 		fileSelector,
 		grepFiles,
 		searchWayPrefernce,
+		overlay,
+		hideClass = "hide",
 		messagePopup = new window.grepApp.Popup({child: "No files were chosen."});
 	ZLitestackDotCom.init();
 	if(!window.grepApp){
@@ -129,6 +131,7 @@ document.addEventListener('DOMContentLoaded', function(){
 						fileSelector.show();
 					},
 					onconfirm: function(){
+						overlay.classList.remove(hideClass);
 						grepFiles = fileSelector.getChosenFilesArray(!window.grepApp.preferences.getPreference(searchWayPrefernce));
 					},
 					ondecline: function(){
@@ -151,6 +154,11 @@ document.addEventListener('DOMContentLoaded', function(){
 		function isSearchButton(e){
 			return e.target.classList.contains('search-button');
 		}
+	});
+	overlay = document.getElementsByClassName("overlay")[0];
+	overlay.addEventListener("click", function(){
+		this.classList.add(hideClass);
+		window.grepAppHelper.fileListElement.focus();
 	});
 	window.grepAppHelper.searchResultEl = document.getElementsByClassName("search-results")[0];
 	window.grepAppHelper.fileListElement = document.getElementsByClassName("file-list-input")[0];
