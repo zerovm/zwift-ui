@@ -8,7 +8,11 @@
 		isStopped,
 		isFinished = true,
 		paramsProcessor,
-		noResultText = "No results.";
+		noResultText = "No results.",
+		messagePopup,
+		messagePopupStrTemplate = "Currently grep is guided onto:<br/>",
+		allSlashRegex = /\//g,
+		slashWbrStr = "/<wbr/>";
 
 	function chunkCalls(paramObj){
 		paramObj.updateCallback && paramObj.updateCallback();
@@ -22,11 +26,13 @@
 			}else{
 				paramsProcessor.startSearch(null, true);
 			}
+			messagePopup.hide();
 		}else{
 			if(!paramObj.callbackInit){
 				paramObj.callbackInit = chunkCalls;
 			}
 			paramObj.file = paramObj.files[0];
+			messagePopup.show(messagePopupStrTemplate + paramObj.file.replace(allSlashRegex, slashWbrStr));
 			paramObj.files = paramObj.files.slice(GREPPED_FILES_NUM, paramObj.files.length);
 			paramObj.mainWorkFunction(paramObj);
 		}
@@ -70,6 +76,10 @@
 			offset;
 
 		function newSearch(parameters){
+			if(!messagePopup){
+				messagePopup = new window.grepApp.Popup({isNoButtons: true, wrapperClassName:"searching-files"});
+				window.my = messagePopup
+			}
 			savedParams = parameters.createCopy();
 			margin = FIRST_TIME_OUTPUT_NUM;
 			offset = 0;

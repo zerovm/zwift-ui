@@ -161,6 +161,7 @@ button, p, li{
 	-ms-user-select: none;
 	user-select: none;
 }
+body.progress-cursor,
 body.progress-cursor *{
 	cursor: progress !important;
 }
@@ -168,4 +169,9 @@ input{
 	transform: translate3d(0, 0, 0) rotateZ(360deg);
 	-moz-transform: translate3d(0, 0, 0) rotateZ(360deg);
 	-webkit-transform: translate3d(0, 0, 0) rotateZ(360deg);
+}
+.popup-wrapper.message-popup.searching-files{
+	position: absolute;
+	left: 25px;
+	top: 15%;
 }

@@ -43,22 +43,26 @@
 		positioningWrapper.className = "popup-box-wrapper";
 		popup.className = "popup";
 		buttonWrapper.className = "button-wrapper";
-		confirmButton.className = "close-button";
-		confirmButton.innerHTML = "OK";
-		confirmButton.addEventListener("click", function(){
-			hide();
-			params.confirm && params.confirm();
-		});
-		buttonWrapper.appendChild(confirmButton);
-		if(params.isDialog){
-			declineButton = document.createElement("button");
-			declineButton.className = "close-button";
-			declineButton.innerHTML = "Cancel";
-			declineButton.addEventListener("click", function(){
+		if(params && !params.isNoButtons){
+			confirmButton.className = "close-button";
+			confirmButton.innerHTML = "OK";
+			confirmButton.addEventListener("click", function(){
 				hide();
-				params.decline && params.decline();
+				params.confirm && params.confirm();
 			});
-			buttonWrapper.appendChild(declineButton);
+			buttonWrapper.appendChild(confirmButton);
+			if(params.isDialog){
+				declineButton = document.createElement("button");
+				declineButton.className = "close-button";
+				declineButton.innerHTML = "Cancel";
+				declineButton.addEventListener("click", function(){
+					hide();
+					params.decline && params.decline();
+				});
+				buttonWrapper.appendChild(declineButton);
+			}
+		}else{
+			wrapper.classList.add("message-popup");
 		}
 		params.child && setOutputContents(params.child);
 
