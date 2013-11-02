@@ -494,7 +494,8 @@ var Auth = {};
 
 	SwiftV1.File.copy = function (args) {
 		var xhr = new XMLHttpRequest();
-		var url = xStorageUrl + account + '/' + args.path;
+		var accountId = args.hasOwnProperty('account') ? args.account : account;
+		var url = xStorageUrl + accountId + '/' + args.path;
 		xhr.open('PUT', url);
 		if (xAuthToken !== null) {
 			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
@@ -677,6 +678,7 @@ var Auth = {};
 		}
 	};
 
+
 	SharedContainersOnSwift.updateRights = function (args) {
 		var xhr = new XMLHttpRequest();
 		var url = xStorageUrl + account + '/' + args.containerName;
@@ -704,7 +706,7 @@ var Auth = {};
 
 	SharedContainersOnSwift.addSharedContainer = function (args) {
 		var xhr = new XMLHttpRequest();
-		var sharedUrlPrefix = xStorageUrl.split('/').slice(0, -2).join('/') + '/';
+		var sharedUrlPrefix = xStorageUrl.split('/').slice(0, -2).join('/');
 		var url = sharedUrlPrefix + '/load-share/' + args.account + '/' + args.container;
 		xhr.open('GET', url);
 		xhr.addEventListener('load', function (e) {
@@ -723,7 +725,7 @@ var Auth = {};
 
 	SharedContainersOnSwift.removeSharedContainer = function (args) {
 		var xhr = new XMLHttpRequest();
-		var sharedUrlPrefix = xStorageUrl.split('/').slice(0, -2).join('/') + '/';
+		var sharedUrlPrefix = xStorageUrl.split('/').slice(0, -2).join('/');
 		var url = sharedUrlPrefix + '/drop-share/' + args.account + '/' + args.container;
 		xhr.open('GET', url);
 		xhr.addEventListener('load', function (e) {
@@ -741,7 +743,7 @@ var Auth = {};
 	};
 
 	SharedContainersOnSwift.getFromXhr = function (xhr) {
-		var allContainers = [];
+		var allContainers = {};
 
 		var i = 0;
 		var headerKey = 'X-Account-Meta-Shared' + i;
@@ -749,8 +751,9 @@ var Auth = {};
 
 		while (headerVal) {
 			var obj = JSON.parse(headerVal);
-			var c = Object.keys(obj);
-			allContainers = allContainers.concat(c);
+			for (var attrname in obj) {
+				allContainers[attrname] = obj[attrname];
+			}
 
 			i++;
 			headerKey = 'X-Account-Meta-Shared' + i;
@@ -771,6 +774,27 @@ var Auth = {};
 				var bytes = xhr.getResponseHeader('X-Container-Bytes-Used');
 				var count = xhr.getResponseHeader('X-Container-Object-Count');
 				args.success(bytes, count);
+			} else {
+				args.error(e.target.status, e.target.statusText);
+			}
+		});
+		xhr.send();
+	};
+
+	SharedContainersOnSwift.copy = function (args) {
+		var xhr = new XMLHttpRequest();
+		var accountId = args.hasOwnProperty('account') ? args.account : account;
+		var url = xStorageUrl + accountId + '/' + args.path;
+		xhr.open('PUT', url);
+		if (xAuthToken !== null) {
+			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
+		}
+		xhr.setRequestHeader('X-Copy-From-Account', args.copyFrom);
+		xhr.addEventListener('load', function (e) {
+			if (e.target.status == 401) {
+				unauthorized();
+			} else if (e.target.status == 201) {
+				args.copied();
 			} else {
 				args.error(e.target.status, e.target.statusText);
 			}
@@ -815,8 +839,8 @@ var Auth = {};
 		}
 		SwiftV1.listFiles(newArgs);
 
-		function success(responseText) {
-			files = JSON.parse(responseText);
+		function success(response) {
+			files = response;
 			for (var i = 0; i < files.length; i++) {
 				var level = files[i].name.split('/').length;
 				if (typeof levels[level] === "undefined") {
@@ -917,6 +941,7 @@ var Auth = {};
 	};
 
 	SwiftAdvancedFunctionality.rename = SwiftAdvancedFunctionality.move;
+
 
 	ZeroAppsOnSwift.createAppLocations = function () {
 
