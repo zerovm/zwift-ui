@@ -287,6 +287,7 @@
 		this.show = function(path, isEmpty){
 			var isDirectory;
 			chosenFileList = {};
+			params && params.onshow && params.onshow();
 			if(isEmpty){
 				popup.show();
 				return;

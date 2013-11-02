@@ -136,8 +136,9 @@ document.addEventListener('DOMContentLoaded', function(){
 					},
 					ondecline: function(){
 						grepFiles = null;
-					}
-				});
+					},
+					onshow: window.grepApp.stopGrep
+			});
 			}else{
 				fileSelector.show();
 			}
