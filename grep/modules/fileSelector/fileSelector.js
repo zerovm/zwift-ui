@@ -84,7 +84,7 @@
 	function FileSelector(params){
 		var popup, pathObj, fragment,
 			that = this,
-			chosenFileList = {},
+			chosenFileList,
 			chosenFileListArray,
 			isEverythingOk = true,
 			table;
@@ -270,7 +270,7 @@
 
 		function onDecline(){
 			chosenFileList = {};
-			chosenFileListArray = null;
+			chosenFileListArray;
 			params && params.ondecline() && params.ondecline();
 		}
 
@@ -286,6 +286,7 @@
 
 		this.show = function(path, isEmpty){
 			var isDirectory;
+			chosenFileList = {};
 			if(isEmpty){
 				popup.show();
 				return;
