@@ -3,30 +3,32 @@
 
 	var DELIMITER = "/";
 
-	function parsePath(value, callback, callbackErr){
+	function parsePath(params){
 		var splittedPath, containerName, path, wideContainerName;
 		window.grepApp.progress.start();
-		if(value){
-			splittedPath = value.split(/\/(.*)/);
+		if(params.input){
+			splittedPath = params.input.split(/\/(.*)/);
 			path = splittedPath[1] || "";
 			containerName = splittedPath[0];
-			//callbackParams.containerName = containerName = splittedPath[0];
-			/*indexResultEl.removeAttribute(HIDDEN_ATTRIBUTE);
-			 indexResultEl.innerHTML = 'Getting files...';*/
 			wideContainerName = DELIMITER + containerName + DELIMITER;
 		}
 		SwiftV1.Container.get({
 			format: "json",
-			prefix: value ? path : "",
+			prefix: params.input ? path : "",
 			DELIMITER: DELIMITER,
-			containerName: value ? containerName : "",
+			containerName: params.input ? containerName : "",
 			success: function(response){
 				response = JSON.parse(response);
 				window.grepApp.progress.end();
 				if(response.length){
-					callback(response, wideContainerName);
+					if(params.isSorted){
+						response.sort(function(a,b){
+							return Date.parse(a.last_modified) - Date.parse(b.last_modified);
+						})
+					}
+					params.onsuccess(response, wideContainerName);
 				}else{
-					callbackErr(response);
+					params.onerror(response);
 				}
 			}
 		});

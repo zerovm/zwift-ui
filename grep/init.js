@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function(){
 					mainWorkFunction: window.grepAppHelper.grep,
 					callback: window.grepApp.getGrepps,
 					isStraight: window.grepApp.preferences.getPreference(searchWayPrefernce)
-			};
+				};
 				getFilelist(tryStartGrep, paramObj);
 			}
 		}else if(isGetFiles(e) && e.keyCode === 13){
@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', function(){
 				e.target.classList.add('invalid-input');
 				return;
 			}
+			fileSelector && fileSelector.reset();
 			getFilelist();
 		}
 
@@ -69,7 +70,9 @@ document.addEventListener('DOMContentLoaded', function(){
 			if(!window.grepAppHelper.fileListElement.value){
 				messagePopup.show();
 			}else{
-				window.grepApp.getFilelist(window.grepAppHelper.fileListElement.value, function(responseArray, containerName){
+				window.grepApp.getFilelist({
+					input: window.grepAppHelper.fileListElement.value,
+					onsuccess: function(responseArray, containerName){
 						grepFiles = responseArray.filter(function(pathObj){
 							return !pathObj.content_type.match(directoryContentType);
 						}).map(function(pathObj){
@@ -81,10 +84,12 @@ document.addEventListener('DOMContentLoaded', function(){
 							callback(callbackParam);
 						}
 					},
-					function(){
+					onerror: function(){
 						grepFiles = null;
 						messagePopup.show();
-					});
+					},
+					isSorted: !window.grepApp.preferences.getPreference(searchWayPrefernce)
+				});
 			}
 		}
 	}
@@ -150,6 +155,7 @@ document.addEventListener('DOMContentLoaded', function(){
 	window.grepAppHelper.fileListElement = document.getElementsByClassName("file-list-input")[0];
 	window.grepAppHelper.fileListElement.addEventListener("blur", function(e){
 		fileListMemo.onInput({input: e.target.value}, function(){
+			fileSelector && fileSelector.reset();
 			getFilelist();
 		});
 	});

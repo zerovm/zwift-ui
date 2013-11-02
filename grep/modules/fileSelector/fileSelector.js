@@ -238,7 +238,11 @@
 					if(!container.name.match(dotStartRegex)){
 						containerNum++;
 						pathObj.childNodes[container.name] = container.createCopy();
-						window.grepApp.getFilelist(container.name, createContainerBranch, onBroke);
+						window.grepApp.getFilelist({
+							input:container.name,
+							onsuccess:createContainerBranch,
+							onerror:onBroke
+						});
 					}
 				});
 			}
@@ -273,7 +277,11 @@
 		function getFileList(){
 			window.grepApp.progress.start();
 			params && params.onbeforeCreate && params.onbeforeCreate.apply(that);
-			window.grepApp.getFilelist(emptyString, createPathObj, onBroke);
+			window.grepApp.getFilelist({
+				input: emptyString,
+				onsuccess:createPathObj,
+				onerror:onBroke
+			});
 		}
 
 		this.show = function(path, isEmpty){
@@ -291,6 +299,10 @@
 		};
 		this.getChosenFilesArray = function(){
 			return chosenFileListArray;
+		};
+		this.reset = function(){
+			chosenFileList = null;
+			chosenFileListArray = null;
 		};
 
 		if(!isImagesLoaded){
