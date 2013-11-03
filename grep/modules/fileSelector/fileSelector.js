@@ -318,7 +318,7 @@
 
 		if(!isImagesLoaded){
 			isImagesLoaded = true;
-			window.grepApp.imgPreload(iconMap.getArrayOfProperties().concat(["img/up-brown.png"]));
+			window.grepApp.imgPreload(iconMap.getArrayOfProperties().concat(["modules/fileSelector/up-brown.png"]));
 		}
 		popup = new window.grepApp.Popup({
 			wrapperClassName: popupClassName,
