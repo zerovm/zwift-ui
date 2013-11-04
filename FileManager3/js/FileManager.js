@@ -102,43 +102,6 @@ FileManager.CurrentDirLabel.showLoading = function () {
 };
 
 
-FileManager.CreateContainerButton = {};
-
-FileManager.CreateContainerButton.click = function () {
-	if (document.getElementById('CreateContainerButton').classList.contains('selected')) {
-		FileManager.CreateContainerDialog.cancel();
-	} else {
-		FileManager.CreateContainerDialog.clear();
-		document.getElementById('CreateContainerDialog').classList.remove('hidden');
-		document.getElementById('input_CreateContainerDialog').focus();
-		FileManager.Layout.adjust();
-		document.getElementById('CreateContainerButton').classList.add('selected');
-	}
-};
-
-
-FileManager.CreateDirectoryButton = {};
-
-FileManager.CreateDirectoryButton.click = function () {
-	if (document.getElementById('CreateDirectoryButton').classList.contains('selected')) {
-		FileManager.CreateDirectoryDialog.cancel();
-	} else {
-		FileManager.CreateDirectoryDialog.clear();
-		document.getElementById('CreateDirectoryDialog').classList.remove('hidden');
-		document.getElementById('input_CreateDirectoryDialog').focus();
-		FileManager.Layout.adjust();
-		document.getElementById('CreateDirectoryButton').classList.add('selected');
-	}
-};
-
-
-FileManager.CreateFileButton = {};
-
-FileManager.CreateFileButton.click = function () {
-
-};
-
-
 FileManager.WideButton = {};
 
 FileManager.WideButton.click = function () {
@@ -304,7 +267,7 @@ FileManager.ExecuteReport.create = function (report) {
 
 	executionReport();
 	billingReport();
-	
+
 	function executionReport() {
 		if (report.execution.status) {
 			document.querySelector('#execute-status-val').textContent = report.execution.status;
@@ -425,12 +388,6 @@ FileManager.CreateContainerDialog.clearErrors = function (inputEl) {
 	}
 };
 
-FileManager.CreateContainerDialog.cancel = function () {
-	document.getElementById('CreateContainerButton').classList.remove('selected');
-	document.getElementById('CreateContainerDialog').classList.add('hidden');
-	FileManager.Layout.adjust();
-};
-
 FileManager.CreateContainerDialog.ok = function () {
 
 	var inputEl = document.getElementById('input_CreateContainerDialog');
@@ -474,61 +431,6 @@ FileManager.CreateContainerDialog.ok = function () {
 
 FileManager.CreateDirectoryDialog = {};
 
-FileManager.CreateDirectoryDialog.ok = function () {
-
-	var inputEl = document.getElementById('input_CreateDirectoryDialog');
-
-	if (!inputEl.value) {
-		inputEl.classList.add('invalid-input');
-		return;
-	}
-
-	if (inputEl.value.indexOf('/') !== -1) {
-		inputEl.classList.add('invalid-input');
-		document.getElementById('create-directory-error-invalid-character').removeAttribute('hidden');
-		return;
-	}
-
-	var dirName = inputEl.value + '/';
-	var dirPath = FileManager.CurrentPath().add(dirName);
-	var dirPathWithoutAccount = FileManager.Path(dirPath).withoutAccount();
-
-	var requestArgs = {};
-
-	requestArgs.path = dirPathWithoutAccount;
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		requestArgs.account = FileManager.CurrentPath().account();
-	}
-
-	requestArgs.success = function () {
-		inputEl.classList.add('invalid-input');
-		document.getElementById('create-directory-error-already-exist').removeAttribute('hidden');
-	};
-
-	requestArgs.notExist = function () {
-
-		SwiftV1.createDirectory({
-			path: dirPathWithoutAccount,
-			created: function () {
-				FileManager.ContentChange.animate();
-				FileManager.CreateDirectoryDialog.clear();
-			},
-			error: function (status, statusText) {
-				var el = document.getElementById('create-directory-error-ajax');
-				FileManager.AjaxError.show(el, status, statusText);
-			}
-		});
-
-	};
-
-	requestArgs.error = function (status, statusText) {
-		var el = document.getElementById('create-directory-error-ajax');
-		FileManager.AjaxError.show(el, status, statusText);
-	};
-
-	SwiftV1.checkDirectoryExist(requestArgs);
-};
 
 FileManager.CreateDirectoryDialog.clear = function () {
 	document.getElementById('input_CreateDirectoryDialog').value = '';
@@ -1872,23 +1774,12 @@ FileManager.ContentChange.animate = function () {
 		FileManager.File.hideMenu();
 		FileManager.ExecuteButton.hide();
 		FileManager.OpenButton.hide();
-		document.getElementById('CreateContainerButton').classList.remove('hidden');
-		document.getElementById('CreateDirectoryButton').classList.add('hidden');
-		document.getElementById('CreateFileButton').classList.add('hidden');
-		document.getElementById('UploadFilesButton').classList.add('hidden');
-		document.getElementById('UploadAsButton').classList.add('hidden');
 	} else if (FileManager.CurrentPath().isFilesList()) {
 		FileManager.Files.list(callback);
 
 		FileManager.File.hideMenu();
 		FileManager.ExecuteButton.hide();
 		FileManager.OpenButton.hide();
-		FileManager.CreateContainerDialog.cancel();
-		document.getElementById('CreateContainerButton').classList.add('hidden');
-		document.getElementById('CreateDirectoryButton').classList.remove('hidden');
-		document.getElementById('CreateFileButton').classList.remove('hidden');
-		document.getElementById('UploadFilesButton').classList.remove('hidden');
-		document.getElementById('UploadAsButton').classList.remove('hidden');
 	} else {
 		// load file
 		FileManager.File.open(el, callback);
@@ -2343,17 +2234,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 		document.getElementById('SignOutButton').addEventListener('click', FileManager.SignOutButton.click);
 		document.getElementById('UpButton').addEventListener('click', FileManager.UpButton.click);
-		document.getElementById('CreateContainerButton').addEventListener('click', FileManager.CreateContainerButton.click);
-		document.getElementById('CreateDirectoryButton').addEventListener('click', FileManager.CreateDirectoryButton.click);
-		document.getElementById('CreateFileButton').addEventListener('click', FileManager.CreateFileButton.click);
+
 		document.getElementById('WideButton').addEventListener('click', FileManager.WideButton.click);
 		document.getElementById('UnwideButton').addEventListener('click', FileManager.UnwideButton.click);
-		document.getElementById('OK_CreateContainerDialog').addEventListener('click', FileManager.CreateContainerDialog.ok);
-		document.getElementById('Cancel_CreateContainerDialog').addEventListener('click', FileManager.CreateContainerDialog.cancel);
-		document.getElementById('OK_CreateDirectoryDialog').addEventListener('click', FileManager.CreateDirectoryDialog.ok);
-		document.getElementById('Cancel_CreateDirectoryDialog').addEventListener('click', FileManager.CreateDirectoryDialog.cancel);
-		document.getElementById('OK_CreateFileDialog').addEventListener('click', FileManager.CreateFileDialog.ok);
-		document.getElementById('Cancel_CreateFileDialog').addEventListener('click', FileManager.CreateFileDialog.cancel);
 	});
 });
 

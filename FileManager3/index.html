@@ -14,11 +14,13 @@
 		<link rel="stylesheet" href="css/bootstrap-theme.min.css">
 		<link rel="stylesheet" href="css/main.css">
 
+		<script src="js/extendNative.js"></script>
 		<script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
 
 
 		<!--<link rel="stylesheet/less" type="text/css" href="css/styles.less" />-->
 		<script src="../Swift.js"></script>
+		<script src="js/dialogButtons.js"></script>
 		<script src="js/FileManager.js"></script>
 	</head>
 	<body>
@@ -61,9 +63,9 @@
 				<button class="open-button icon-button" title="Open" hidden></button>
 				<label class="execute-label" hidden></label>
 				<button class="execute-button icon-button" title="Execute" hidden></button>
-				<button id="CreateContainerButton" class="toolbar-button" title="Create Container"></button>
-				<button id="CreateDirectoryButton" class="toolbar-button" title="Create Directory"></button>
-				<button id="CreateFileButton" class="toolbar-button" title="Create File"></button>
+				<button id="CreateContainerButton" class="toolbar-button dialog-button" title="Create Container" data-action="container" data-placeholder="Create Container"></button>
+				<button id="CreateDirectoryButton" class="toolbar-button dialog-button" title="Create Directory" data-action="directory" data-placeholder="Create Directory"></button>
+				<button id="CreateFileButton" class="toolbar-button dialog-button" title="Create File" data-action="file" data-placeholder="Create File"></button>
 				<button id="UploadFilesButton" class="toolbar-button" title="Upload Files"></button>
 				<button id="UploadAsButton" class="toolbar-button" title="Upload As..."></button>
 				<button id="UploadAndExecuteButton" class="toolbar-button" title="Upload & Execute"></button>
@@ -72,42 +74,15 @@
 			</span>
 			</div>
 
-			<div id="CreateContainerDialog" class="hidden">
+			<div id="CreateDialog" class="hidden">
 				<div class="input-group">
-					<input id="input_CreateContainerDialog" type="text" class="form-control" placeholder="Container Name">
+					<input id="input_CreateContainerDialog" type="text" class="form-control">
 					<span class="input-group-btn">
-						<button id="OK_CreateContainerDialog" class="btn btn-primary">OK</button>
-						<button id="Cancel_CreateContainerDialog" class="btn btn-default">Cancel</button>
+						<button id="OKDialog" class="btn btn-primary">OK</button>
+						<button id="CancelDialog" class="btn btn-default">Cancel</button>
 					</span>
 				</div>
-				<label id="create-container-error-ajax" class="err-msg" hidden>Error: <span class="status"></span> <span class="status-text"></span>.</label>
-				<label id="create-container-error-max-length" class="err-msg" hidden>Container name must be until 256 characters.</label>
-				<label id="create-container-error-already-exist" class="err-msg" hidden>Container is already exists.</label>
-			</div>
-
-			<div id="CreateDirectoryDialog" class="hidden">
-				<div class="input-group">
-					<input id="input_CreateDirectoryDialog" type="text" class="form-control" placeholder="Directory Name">
-					<span class="input-group-btn">
-						<button id="OK_CreateDirectoryDialog" class="btn btn-primary">OK</button>
-						<button id="Cancel_CreateDirectoryDialog" class="btn btn-default">Cancel</button>
-					</span>
-				</div>
-				<label id="create-directory-error-ajax" class="err-msg" hidden>Error: <span class="status"></span> <span class="status-text"></span>.</label>
-				<label id="create-directory-error-invalid-character" class="err-msg" hidden>Directory name cannot have a slash (/) character.</label>
-				<label id="create-directory-error-already-exist" class="err-msg" hidden>Container is already exists.</label>
-			</div>
-
-			<div id="CreateFileDialog" class="hidden">
-				<div class="input-group">
-					<input id="inputName_CreateFileDialog" type="text" class="form-control" placeholder="File Name">
-					<input id="inputType_CreateFileDialog" type="text" class="form-control" placeholder="Content Type">
-					<span class="input-group-btn">
-						<button id="OK_CreateFileDialog" class="btn btn-primary">OK</button>
-						<button id="Cancel_CreateFileDialog" class="btn btn-default">Cancel</button>
-					</span>
-				</div>
-				<label id="create-file-error-ajax" class="err-msg" hidden>Error: <span class="status"></span> <span class="status-text"></span>.</label>
+				<label class="err-msg"></label>
 			</div>
 
 			<div class="menu-file dialog" hidden>
