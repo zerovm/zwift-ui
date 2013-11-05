@@ -9,13 +9,13 @@ document.addEventListener("DOMContentLoaded", function(){
 	var dialogContainer = document.getElementById("CreateDialog"),
 		input = dialogContainer.getElementsByTagName("input")[0],
 		errorsEl = dialogContainer.getElementsByClassName("err-msg")[0],
-		buttons = document.getElementsByClassName('dialog-button'),
+		buttons = document.getElementsByClassName("dialog-button"),
 		form = dialogContainer.getElementsByTagName("form")[0],
 		lastClickedButton = buttons[0],
 		forbiddenChars = /\//,
 		selectedClass = "selected",
 		hiddenClass = "hidden",
-		inputInvalidClass = 'invalid-input',
+		inputInvalidClass = "invalid-input",
 		innerText = dialogContainer.innerText ? "innerText" : "textContent",
 		errorMsgMap = {
 			ajax: "Error:",
@@ -44,54 +44,6 @@ document.addEventListener("DOMContentLoaded", function(){
 		errorsEl.classList.remove(hiddenClass);
 	}
 
-	function oncontainer(){}
-	function onfile(){}
-
-	function ondirectory(){
-		if(!input.value){
-			error(errorMsgMap.emptyInput);
-			return;
-		}
-
-		if(input.value.match(forbiddenChars)){
-			error(errorMsgMap.wrongDirName);
-			return;
-		}
-
-		var dirName = input.value + '/';
-		var dirPath = FileManager.CurrentPath().add(dirName);
-		var dirPathWithoutAccount = FileManager.Path(dirPath).withoutAccount();
-
-		var requestArgs = {};
-
-		requestArgs.path = dirPathWithoutAccount;
-
-		if(FileManager.ENABLE_SHARED_CONTAINERS){
-			requestArgs.account = FileManager.CurrentPath().account();
-		}
-
-		requestArgs.success = function(){
-			error(errorMsgMap.containerAlreadyExist);
-		};
-
-		requestArgs.notExist = function(){
-
-			SwiftV1.createDirectory({
-				path: dirPathWithoutAccount,
-				created: function(){
-					FileManager.ContentChange.animate();
-					cancel();
-				},
-				error: ajaxError
-			});
-
-		};
-
-		requestArgs.error = ajaxError;
-
-		SwiftV1.checkDirectoryExist(requestArgs);
-	}
-
 	function cancel(){
 		lastClickedButton.classList.remove(selectedClass);
 		dialogContainer.classList.add(hiddenClass);
@@ -118,26 +70,117 @@ document.addEventListener("DOMContentLoaded", function(){
 			case "container":
 				oncontainer();
 				break;
+			default:
+				console.log("unkown action: " + e.target.dataset.action);
+				break;
 		}
 		return false;
 	}
 
 	function showCreateButtonDialog(){
-		if(this.classList.contains('selected')){
+		if(this.classList.contains(selectedClass)){
 			cancel();
 		}else{
+			lastClickedButton.classList.remove(selectedClass);
 			lastClickedButton = this;
 			form.dataset.action = this.dataset.action;
-			input.dataset.placeholder = this.dataset.placeholder;
+			input.placeholder = this.dataset.placeholder;
 			dialogContainer.classList.remove(hiddenClass);
 			this.classList.add(selectedClass);
 			FileManager.Layout.adjust();
 			input.focus();
 		}
 	}
-	form.addEventListener('submit', confirm);
-	document.getElementById('CancelDialog').addEventListener('click', cancel);
+
+	form.addEventListener("submit", confirm);
+	document.getElementById("CancelDialog").addEventListener("click", cancel);
 	buttons.forEach(function(el){
-		el.addEventListener('click', showCreateButtonDialog);
+		el.addEventListener("click", showCreateButtonDialog);
 	});
+
+	function oncontainer(){
+		if(!input.value){
+			error(errorMsgMap.emptyInput);
+			return;
+		}
+
+		if(input.length > 256){
+			input.classList.add(inputInvalidClass);
+			error(errorMsgMap.nameTooLong);
+			//FileManager.Layout.adjust();
+			return;
+		}
+
+		if(input.value.match(forbiddenChars)){
+			// TODO: shared containers here.
+		}
+
+		SwiftV1.createContainer({
+			containerName: input.value,
+			created: function(){
+				FileManager.ContentChange.animate();
+				cancel();
+			},
+			alreadyExisted: function(){
+				error(errorMsgMap.containerAlreadyExist);
+			},
+			error: ajaxError
+		});
+	}
+
+	function onfile(){
+		var path;
+		if(!input.value){
+			error(errorMsgMap.emptyInput);
+			return;
+		}
+
+		path = FileManager.CurrentPath().withoutAccount() + input.value;
+
+		SwiftV1.createFile({
+			path: path,
+			contentType: 'text/plain',
+			created: function () {
+				//location.hash = FileManager.CurrentPath().get();
+				//editor.open(_path);//TODO: open file for editing
+				cancel();
+			},
+			error: ajaxError
+		});
+	}
+
+	function ondirectory(){
+		var dirName, dirPath, dirPathWithoutAccount, requestArgs;
+		if(!input.value){
+			error(errorMsgMap.emptyInput);
+			return;
+		}
+		if(input.value.match(forbiddenChars)){
+			error(errorMsgMap.wrongDirName);
+			return;
+		}
+		dirName = input.value + "/";
+		dirPath = FileManager.CurrentPath().add(dirName);
+		dirPathWithoutAccount = FileManager.Path(dirPath).withoutAccount();
+		requestArgs = {};
+		requestArgs.path = dirPathWithoutAccount;
+		if(FileManager.ENABLE_SHARED_CONTAINERS){
+			requestArgs.account = FileManager.CurrentPath().account();
+		}
+		requestArgs.success = function(){
+			error(errorMsgMap.containerAlreadyExist);
+		};
+		requestArgs.notExist = function(){
+			SwiftV1.createDirectory({
+				path: dirPathWithoutAccount,
+				created: function(){
+					FileManager.ContentChange.animate();
+					cancel();
+				},
+				error: ajaxError
+			});
+		};
+		requestArgs.error = ajaxError;
+		SwiftV1.checkDirectoryExist(requestArgs);
+	}
 });

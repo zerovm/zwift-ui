@@ -388,47 +388,6 @@ FileManager.CreateContainerDialog.clearErrors = function (inputEl) {
 	}
 };
 
-FileManager.CreateContainerDialog.ok = function () {
-
-	var inputEl = document.getElementById('input_CreateContainerDialog');
-	var input = inputEl.value;
-
-	if (!input) {
-		inputEl.classList.add('invalid-input');
-		return;
-	}
-
-	if (input.length > 256) {
-		inputEl.classList.add('invalid-input');
-		document.getElementById('create-container-error-max-length').removeAttribute('hidden');
-		FileManager.Layout.adjust();
-		return;
-	}
-
-	if (input.indexOf('/') != -1) {
-
-		// TODO: shared containers here.
-
-	}
-
-	SwiftV1.createContainer({
-		containerName: input,
-		created: function () {
-			FileManager.ContentChange.animate();
-			FileManager.CreateContainerDialog.clear();
-		},
-		alreadyExisted: function () {
-			inputEl.classList.add('invalid-input');
-			document.getElementById('create-container-error-already-exist').removeAttribute('hidden');
-		},
-		error: function (status, statusText) {
-			var el = document.getElementById('create-container-error-ajax');
-			FileManager.AjaxError.show(el, status, statusText);
-		}
-	});
-};
-
-
 FileManager.CreateDirectoryDialog = {};
 
 
