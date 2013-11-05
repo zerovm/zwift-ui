@@ -10,9 +10,9 @@ document.addEventListener("DOMContentLoaded", function(){
 		input = dialogContainer.getElementsByTagName("input")[0],
 		errorsEl = dialogContainer.getElementsByClassName("err-msg")[0],
 		buttons = document.getElementsByClassName('dialog-button'),
+		form = dialogContainer.getElementsByTagName("form")[0],
 		lastClickedButton = buttons[0],
 		forbiddenChars = /\//,
-		okButton = document.getElementById('OKDialog'),
 		selectedClass = "selected",
 		hiddenClass = "hidden",
 		inputInvalidClass = 'invalid-input',
@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		errorMsgMap = {
 			ajax: "Error:",
 			wrongDirName: "Directory name cannot have a slash (/) character.",
-			conatinerAlreadyExist: "Container is already exists.",
+			containerAlreadyExist: "Container is already exists.",
 			dirAlreadyExist: "Directory is already exists.",
 			nameTooLong: "Container name should be less then 256 characters.",
 			emptyInput: "The name should be bit longer."
@@ -71,8 +71,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		}
 
 		requestArgs.success = function(){
-			input.classList.add('invalid-input');
-			document.getElementById('create-directory-error-already-exist').removeAttribute('hidden');
+			error(errorMsgMap.containerAlreadyExist);
 		};
 
 		requestArgs.notExist = function(){
@@ -97,6 +96,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		lastClickedButton.classList.remove(selectedClass);
 		dialogContainer.classList.add(hiddenClass);
 		input.value = "";
+		input.classList.remove(inputInvalidClass);
 		FileManager.Layout.adjust();
 		hide(errorsEl);
 	}
@@ -106,6 +106,8 @@ document.addEventListener("DOMContentLoaded", function(){
 	}
 
 	function confirm(e){
+		e.stopPropagation();
+		e.preventDefault();
 		switch(e.target.dataset.action){
 			case "file":
 				onfile();
@@ -117,6 +119,7 @@ document.addEventListener("DOMContentLoaded", function(){
 				oncontainer();
 				break;
 		}
+		return false;
 	}
 
 	function showCreateButtonDialog(){
@@ -124,16 +127,15 @@ document.addEventListener("DOMContentLoaded", function(){
 			cancel();
 		}else{
 			lastClickedButton = this;
-			okButton.dataset.action = this.dataset.action;
-			input.setAttribute("placeholder", this.dataset.placeholder);
-			input.focus();
+			form.dataset.action = this.dataset.action;
+			input.dataset.placeholder = this.dataset.placeholder;
 			dialogContainer.classList.remove(hiddenClass);
 			this.classList.add(selectedClass);
 			FileManager.Layout.adjust();
+			input.focus();
 		}
 	}
-
-	okButton.addEventListener('click', confirm);
+	form.addEventListener('submit', confirm);
 	document.getElementById('CancelDialog').addEventListener('click', cancel);
 	buttons.forEach(function(el){
 		el.addEventListener('click', showCreateButtonDialog);

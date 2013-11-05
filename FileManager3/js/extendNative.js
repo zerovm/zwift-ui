@@ -14,9 +14,9 @@
 		});
 	}
 
-	attachMethods(NodeList, {
+	attachMethods(NodeList, [{
 		obj: Array,
 		methods: ["forEach"]
-	});
+	}]);
 
 })();
