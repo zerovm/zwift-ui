@@ -18,5 +18,9 @@
 		obj: Array,
 		methods: ["forEach"]
 	}]);
+	attachMethods(FileList, [{
+		obj: Array,
+		methods: ["forEach"]
+	}]);
 
 })();

@@ -21,6 +21,7 @@
 		<!--<link rel="stylesheet/less" type="text/css" href="css/styles.less" />-->
 		<script src="../Swift.js"></script>
 		<script src="js/dialogButtons.js"></script>
+		<script src="js/uploadButtons.js"></script>
 		<script src="js/FileManager.js"></script>
 	</head>
 	<body>
@@ -66,9 +67,9 @@
 				<button id="CreateContainerButton" class="toolbar-button dialog-button" title="Create Container" data-action="container" data-placeholder="Create Container"></button>
 				<button id="CreateDirectoryButton" class="toolbar-button dialog-button" title="Create Directory" data-action="directory" data-placeholder="Create Directory"></button>
 				<button id="CreateFileButton" class="toolbar-button dialog-button" title="Create File" data-action="file" data-placeholder="Create File"></button>
-				<button id="UploadFilesButton" class="toolbar-button" title="Upload Files"></button>
-				<button id="UploadAsButton" class="toolbar-button" title="Upload As..."></button>
-				<button id="UploadAndExecuteButton" class="toolbar-button" title="Upload & Execute"></button>
+				<span id="UploadFilesButton" class="toolbar-button input-wrapper" title="Upload Files"><input class="upload-input" type="file" multiple="multiple" data-action="file"/></span>
+				<span id="UploadAsButton" class="toolbar-button input-wrapper" title="Upload As..."><input class="upload-input" type="file" multiple="multiple" data-action="as"/></span>
+				<span id="UploadAndExecuteButton" class="toolbar-button input-wrapper" title="Upload & Execute"><input class="upload-input" type="file" data-action="exec"/></span>
 				<button id="WideButton" class="toolbar-button" title="Wide"></button>
 				<button id="UnwideButton" class="toolbar-button hidden" title="Unwide"></button>
 			</span>

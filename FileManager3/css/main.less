@@ -38,6 +38,7 @@ body {
 }
 
 .toolbar button,
+.toolbar .upload-input,
 .toolbar label {
   margin: 2px 0;
   vertical-align: middle;
@@ -48,14 +49,22 @@ pre {
   margin: 0;
 }
 
+.input-wrapper{
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: middle;
+  cursor: pointer;
+}
 input[type=file] {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  opacity: 0;
-  width: 100%;
+  border: none;
+  display: inline-block;
+  opacity: 0 !important;
+  cursor: pointer;
+  width: 200%;
+  height: 200%;
+  position: relative;
+  top: -50%;
+  left: -50%;
 }
 
 .progresslabel {
@@ -106,6 +115,7 @@ input[type=file] {
 .toolbar-button:disabled {
   opacity: 0.15;
 }
+.toolbar-button.input-wrapper:hover,
 .toolbar-button:enabled:hover {
   opacity: 1;
 }
