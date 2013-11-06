@@ -139,6 +139,10 @@ input[type=file] {
 
 #CreateContainerButton {
   background: url("../img/white-icon.png") -235px -2px no-repeat;
+  display: none;
+}
+.location-root #CreateContainerButton{
+  display: inline-block;
 }
 
 #CreateFileButton {
@@ -148,10 +152,12 @@ input[type=file] {
 #CreateDirectoryButton {
   background: url("../img/white-icon.png") -189px -2px no-repeat;
 }
+.location-root #CreateDirectoryButton{
+  display: none;
+}
 
 #CreateContainerButton.selected,
 #CreateFileButton.selected,
-#CreateDirectoryButton.selected,
 #CreateDirectoryButton.selected {
   background-color: rgba(255, 255, 255, 0.25);
 }
@@ -634,7 +640,7 @@ template {
 .hidden {
   display: none;
 }
-
+/*
 #CreateContainerDialog,
 #CreateDirectoryDialog,
 #CreateFileDialog{
@@ -649,7 +655,7 @@ template {
 #OK_CreateFileDialog,
 #Cancel_CreateFileDialog, {
   width: 100px;
-}
+}*/
 
 .file-type {
   width: 40px;
