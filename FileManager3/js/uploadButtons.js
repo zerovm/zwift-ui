@@ -11,39 +11,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		buttons = document.getElementsByClassName("upload-button"),
 		slashAtEndRegex = /\/$/,
 		extRegex = /\.\w*$/,
-		uploads,
-		extensionsMap = {
-			'txt': 'text/plain',
-			'json': 'application/json',
-			'html': 'text/html',
-			'htm': 'text/html',
-			'nexe': 'application/x-nexe',
-			'py': 'text/x-python',
-			'pdf': 'application/pdf',
-			'doc': 'application/msword',
-			'ppt': 'application/vnd.ms-powerpoint',
-			'xls': 'application/vnd.ms-excel',
-			'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-			'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-			'xml': 'application/xml',
-			'zip': 'application/zip',
-			'mp3': 'audio/mpeg',
-			'mp4': 'audio/mp4',
-			'gif': 'image/gif',
-			'jpg': 'image/jpeg',
-			'png': 'image/png',
-			'css': 'text/css',
-			'csv': 'text/csv',
-			'tar': 'application/x-tar',
-			'js': 'text/javascript',
-			'lua': 'text/x-lua',
-			'c': 'text/x-csrc',
-			'h': 'text/x-chdr',
-			'jar': 'application/java-archive',
-			'xul': 'application/vnd.mozilla.xul+xml',
-			'psd': 'image/vnd.adobe.photoshop',
-			'avi': 'video/x-msvideo'
-		};
+		uploads;
 
 	function getContentType(fileName){
 		var extension = fileName.match(extRegex);
@@ -81,9 +49,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			uploadRequest.open('PUT', url, true);
 			uploadRequest.onload = function(){
 				uploadingFiles--;
-				/*
 				 setProgress(this.upload['id'], 100, 'Upload completed.');
-				 $('#' + this.upload['id'] + ' .upload-cancel-button').text('Hide');*/
 
 				if(uploadingFiles == 0){
 					/*list.first20Files(title.getPath(), 'up');
