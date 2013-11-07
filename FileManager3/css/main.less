@@ -5,7 +5,9 @@
 @color5: #5D5D5D;
 @color6: #FFFFFF;
 @dialogColor: #e0e3e8;
-
+html{
+  overflow: hidden;
+}
 html, body{
   height: 100%;
 }
@@ -75,11 +77,13 @@ input[type=file] {
   font-family: Courier New, monospace;
   font-weight: bold;
 }
-
-.center {
-  position: relative;
+.scrolling-content,
+.center{
   width: 100%;
   max-width: 800px;
+}
+.center {
+  position: relative;
   margin: 0 auto;
 }
 .content-wrapper{
@@ -199,6 +203,8 @@ input[type=file] {
   -moz-box-flex: 1;
   -ms-flex: 1;
   box-flex: 1;
+  display: -moz-box;
+  -moz-box-orient: vertical;
   overflow-y: auto;
 }
 
