@@ -24,7 +24,7 @@
 		return null;
 	}
 
-	if(!FileManager){
+	if(!window.FileManager){
 		window.FileManager = {};
 	}
 	FileManager.toolbox = {

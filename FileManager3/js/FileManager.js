@@ -2,7 +2,10 @@
 
 Auth.useZLitestackDotCom();
 
-var FileManager = {};
+var FileManager;
+if(!window.FileManager){
+	FileManager = window.FileManager = {};
+}
 
 FileManager.ENABLE_SHARED_CONTAINERS = true;
 FileManager.ENABLE_ZEROVM = true;
@@ -189,7 +192,6 @@ FileManager.execute = function (data, contentType) {
 			mode: 'text/plain',
 			lineNumbers: false
 		});
-		FileManager.Layout.adjust();
 	}
 };
 
@@ -349,12 +351,10 @@ FileManager.ContainersMenu.show = function () {
 
 	FileManager.CreateContainerDialog.clear();
 	document.querySelector('.menu-containers').removeAttribute('hidden');
-	FileManager.Layout.adjust();
 };
 
 FileManager.ContainersMenu.hide = function () {
 	document.querySelector('.menu-containers').setAttribute('hidden', 'hidden');
-	FileManager.Layout.adjust();
 };
 
 
@@ -362,12 +362,10 @@ FileManager.FilesMenu = {};
 
 FileManager.FilesMenu.show = function () {
 	document.querySelector('.menu-files').removeAttribute('hidden');
-	FileManager.Layout.adjust();
 };
 
 FileManager.FilesMenu.hide = function () {
 	document.querySelector('.menu-files').setAttribute('hidden', 'hidden');
-	FileManager.Layout.adjust();
 };
 
 
@@ -407,7 +405,6 @@ FileManager.CreateDirectoryDialog.clearErrors = function () {
 FileManager.CreateDirectoryDialog.cancel = function () {
 	document.getElementById('CreateDirectoryButton').classList.remove('selected');
 	document.getElementById('CreateDirectoryDialog').classList.add('hidden');
-	FileManager.Layout.adjust();
 };
 
 
@@ -470,7 +467,6 @@ FileManager.UploadFiles.change = function (files) {
 		FileManager.UploadFiles.uploadFile(files[i], files[i].name, files[i].type);
 	}
 
-	FileManager.Layout.adjust();
 };
 
 FileManager.UploadFiles.uploadFile = function (file, name, contentType) {
@@ -486,7 +482,6 @@ FileManager.UploadFiles.uploadFile = function (file, name, contentType) {
 			var el = document.querySelector('#upload-' + index);
 			el.parentNode.removeChild(el);
 			FileManager.ContentChange.animate();
-			FileManager.Layout.adjust();
 		},
 		progress: function (percent, loaded, total) {
 			document.querySelector('#upload-' + index + ' progress').value = percent;
@@ -519,7 +514,6 @@ FileManager.UploadFiles.cancelClick  = function (el) {
 	var index = parseInt(el.parentNode.parentNode.parentNode.id.substr('upload-'.length));
 	FileManager.UploadFiles.uploadRequests[index].abort();
 	el.parentNode.parentNode.parentNode.parentNode.removeChild(el.parentNode.parentNode.parentNode);
-	FileManager.Layout.adjust();
 };
 
 
@@ -541,7 +535,6 @@ FileManager.UploadAs.change = function (files) {
 		document.querySelector('.menu-files').insertAdjacentHTML('beforeend', template);
 	}
 
-	FileManager.Layout.adjust();
 };
 
 FileManager.UploadAs.click = function (el) {
@@ -1123,7 +1116,6 @@ FileManager.File.edit = function (el) {
 		document.querySelector('.menu-file button.save-as').classList.remove('selected');
 		document.querySelector('.save-as-dialog').setAttribute('hidden', 'hidden');
 
-		FileManager.Layout.adjust();
 		document.getElementById('UpButton').removeAttribute('disabled');
 	}
 };
@@ -1135,18 +1127,15 @@ FileManager.File.notTextFile = function (el) {
 	el.innerHTML = document.querySelector('#notTextFileTemplate').innerHTML;
 	FileManager.File.hideTxtButton();
 	FileManager.File.showMenu();
-	FileManager.Layout.adjust();
 	document.getElementById('UpButton').removeAttribute('disabled');
 };
 
 FileManager.File.showMenu = function () {
 	document.querySelector('.menu-file').removeAttribute('hidden');
-	FileManager.Layout.adjust();
 };
 
 FileManager.File.hideMenu = function () {
 	document.querySelector('.menu-file').setAttribute('hidden', 'hidden');
-	FileManager.Layout.adjust();
 };
 
 FileManager.File.showTxtButton = function () {
@@ -1218,11 +1207,9 @@ FileManager.File.saveAs = function (el) {
 	if (el.classList.contains('selected')) {
 		el.classList.remove('selected');
 		document.querySelector('.save-as-dialog').setAttribute('hidden', 'hidden');
-		FileManager.Layout.adjust();
 	} else {
 		el.classList.add('selected');
 		document.querySelector('.save-as-dialog').removeAttribute('hidden');
-		FileManager.Layout.adjust();
 		document.querySelector('.save-as-input-path').value = FileManager.CurrentPath().get();
 		document.querySelector('.save-as-input-type').value = FileManager.File.contentType;
 	}
@@ -1524,9 +1511,6 @@ FileManager.Files.loadMore = function () {
 		el.textContent = 'Load more';
 		el.removeAttribute('disabled');
 
-		if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
-			FileManager.Files.loadMore();
-		}
 	};
 
 	filesArgs.error =  function (status, statusText) {
@@ -1743,7 +1727,6 @@ FileManager.ContentChange.animate = function () {
 		// load file
 		FileManager.File.open(el, callback);
 	}
-	FileManager.Layout.adjust();
 
 	var loadingEl = document.querySelector('.scrolling-content-loading');
 	loadingEl && loadingEl.parentNode.removeChild(loadingEl);
@@ -1751,7 +1734,6 @@ FileManager.ContentChange.animate = function () {
 };
 
 FileManager.ContentChange.transition = function (e) {
-	FileManager.Layout.adjust();
 	if (e.propertyName == 'padding-top') {
 		return;
 	}
@@ -1774,18 +1756,6 @@ FileManager.ContentChange.transition = function (e) {
 
 document.addEventListener('transitionend', FileManager.ContentChange.transition);
 document.addEventListener('webkitTransitionEnd', FileManager.ContentChange.transition);
-
-FileManager.Layout = {};
-
-FileManager.Layout.adjust = function () {
-	var paddingTop = getComputedStyle(document.querySelector('.fixed-top'), null).getPropertyValue("height");
-	document.querySelector('#content').style.paddingTop = paddingTop;
-
-	if (FileManager.File.codeMirror) {
-		var pageHeight = getComputedStyle(document.querySelector('.fixed-background'), null).getPropertyValue("height");
-		FileManager.File.codeMirror.setSize('auto', parseInt(pageHeight, 10) - parseInt(paddingTop, 10) + 'px');
-	}
-};
 
 FileManager.Utils = {};
 FileManager.Utils.htmlEscape = function (str) {
@@ -1854,7 +1824,6 @@ FileManager.AjaxError.show = function (el, status, statusText) {
 	el.querySelector('.status').textContent = status;
 	el.querySelector('.status-text').textContent = statusText;
 	el.removeAttribute('hidden');
-	FileManager.Layout.adjust();
 };
 
 FileManager.Path = function (path) {
@@ -1942,21 +1911,20 @@ window.addEventListener('hashchange', function (e) {
 	FileManager.ContentChange.animate();
 });
 
-window.addEventListener('scroll', function (e) {
-	var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-	var position = window.scrollY;
-
-	if (position == height) {
-		if (FileManager.CurrentPath().isContainersList()) {
-			FileManager.Containers.loadMore();
-		} else {
-			FileManager.Files.loadMore();
-		}
+document.addEventListener("DOMContentLoaded", function(){
+	var scrollWrapper = document.getElementById("content");
+	if (scrollWrapper.scrollHeight - scrollWrapper.clientHeight < 4) {
+		FileManager.Files.loadMore();
 	}
-});
-
-window.addEventListener('resize', function (e) {
-	FileManager.Layout.adjust();
+	scrollWrapper.addEventListener('scroll', function (e) {//TODO: move it into filelist
+		if(Math.abs(e.target.scrollTop - (e.target.scrollHeight - e.target.clientHeight)) < 4){//the reason - one extra pixel
+			if(FileManager.CurrentPath().isContainersList()){
+				FileManager.Containers.loadMore();
+			}else{
+				FileManager.Files.loadMore();
+			}
+		}
+	});
 });
 
 document.addEventListener('click', function (e) {
@@ -2096,7 +2064,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 		FileManager.AccountLabel.init();
 		FileManager.reAuth();
-		FileManager.Layout.adjust();
 
 		document.getElementById('SignOutButton').addEventListener('click', FileManager.SignOutButton.click);
 		document.getElementById('UpButton').addEventListener('click', FileManager.UpButton.click);
@@ -2104,11 +2071,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		document.getElementById('WideButton').addEventListener('click', FileManager.WideButton.click);
 		document.getElementById('UnwideButton').addEventListener('click', FileManager.UnwideButton.click);
 	});
-});
-
-document.addEventListener('load', function () {
-	FileManager.Layout.adjust();
-	setTimeout(FileManager.Layout.adjust, 1000);
 });
 
 //SHARED-CONTAINERS
@@ -2275,7 +2237,7 @@ FileManager.reAuth = function () {
 
 window.onload = function () {
 	messageForIE();
-	
+
 	function messageForIE() {
 		if (navigator.userAgent.indexOf('MSIE') != -1) {
 			document.body.innerHTML = '<h1 style="margin:5% auto; text-align: center;font-family: arial; color: #8b0000;">Internet Explorer is not supported. Please open in other browser.</h1>';

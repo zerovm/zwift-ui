@@ -6,7 +6,9 @@
 @color6: #FFFFFF;
 @dialogColor: #e0e3e8;
 
-
+html, body{
+  height: 100%;
+}
 body {
   background-color: #525252;
   /*
@@ -18,8 +20,6 @@ body {
   background-repeat: no-repeat;
   background-attachment: fixed;*/
   font-family: Arial, sans-serif;
-  overflow-x: hidden;
-  overflow-y: scroll;
 }
 
 .toolbar {
@@ -82,19 +82,19 @@ input[type=file] {
   max-width: 800px;
   margin: 0 auto;
 }
-
-
-.fixed-background {
-  position: fixed;
-  background: @color6;
-  width: 800px;
-  top: 0;
-  bottom: 0;
-  opacity: 0.1;
+.content-wrapper{
+  height: 100%;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: box;
+  -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
+  -ms-flex-direction: column;
+  box-orient: vertical;
 }
-
 .fixed-top {
-  position: fixed;
+  /*position: fixed;*/
   z-index: 99;
   /*opacity: 0.95;*/
 }
@@ -195,11 +195,14 @@ input[type=file] {
 
 
 #content {
-  padding-top: 40px;
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  -ms-flex: 1;
+  box-flex: 1;
+  overflow-y: auto;
 }
 
 .scrolling-content {
-  position: absolute;
   width: 100%;
   margin: 0;
   transition: all 0.4s;
@@ -235,6 +238,7 @@ input[type=file] {
   text-align: center;
   background-color: @color4;
   color: @color5;
+  position: relative;
 }
 
 .load-more-button {

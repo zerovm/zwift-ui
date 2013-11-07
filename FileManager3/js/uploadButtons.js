@@ -123,7 +123,6 @@ document.addEventListener("DOMContentLoaded", function(){
 
 	function cancel(){
 		//lastClickedButton.classList.remove(selectedClass);
-		FileManager.Layout.adjust();
 	}
 
 	function hide(el){

@@ -49,7 +49,6 @@ document.addEventListener("DOMContentLoaded", function(){
 		dialogContainer.classList.add(hiddenClass);
 		input.value = "";
 		input.classList.remove(inputInvalidClass);
-		FileManager.Layout.adjust();
 		hide(errorsEl);
 	}
 
@@ -87,7 +86,6 @@ document.addEventListener("DOMContentLoaded", function(){
 			input.placeholder = this.dataset.placeholder;
 			dialogContainer.classList.remove(hiddenClass);
 			this.classList.add(selectedClass);
-			FileManager.Layout.adjust();
 			input.focus();
 		}
 	}
@@ -107,7 +105,6 @@ document.addEventListener("DOMContentLoaded", function(){
 		if(input.length > 256){
 			input.classList.add(inputInvalidClass);
 			error(errorMsgMap.nameTooLong);
-			//FileManager.Layout.adjust();
 			return;
 		}
 
