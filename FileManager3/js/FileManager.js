@@ -1912,7 +1912,7 @@ window.addEventListener('hashchange', function (e) {
 });
 
 document.addEventListener("DOMContentLoaded", function(){
-	var scrollWrapper = document.getElementById("content");
+	var scrollWrapper = document.getElementsByClassName("content-wrapper")[0];
 	if (scrollWrapper.scrollHeight - scrollWrapper.clientHeight < 4) {
 		FileManager.Files.loadMore();
 	}

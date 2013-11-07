@@ -22,5 +22,9 @@
 		obj: Array,
 		methods: ["forEach"]
 	}]);
+	attachMethods(HTMLCollection, [{
+		obj: Array,
+		methods: ["forEach"]
+	}]);
 
 })();
