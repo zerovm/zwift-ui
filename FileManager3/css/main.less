@@ -13,7 +13,6 @@ html, body{
 }
 body{
   background-color: #525252;
-  font-size: 0; /*to fix weird margin*/
   text-align: center;
   font-family: Arial, sans-serif;
 }
@@ -84,9 +83,11 @@ input[type=file]{
 }
 .main-content-wrapper{
   height: 100%;
-  display: -webkit-inline-box;
-  display: -moz-inline-box;
-  display: inline-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  margin: 0 auto;
   -webkit-box-orient: vertical;
   -moz-box-orient: vertical;
   box-orient: vertical;
@@ -192,10 +193,8 @@ input[type=file]{
 }
 
 .content-wrapper{
-  -webkit-box-flex: 1;
-  -moz-box-flex: 1;
-  box-flex: 1;
-  display: -moz-box;
+  -webkit-flex: 1;
+  flex: 1;
   -moz-box-orient: vertical;
   overflow-y: auto;
 }
