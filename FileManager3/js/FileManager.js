@@ -45,8 +45,7 @@ FileManager.AccountLabel.init = function () {
 		return;
 	}
 
-	var account = Auth.getAccount();
-	document.getElementById('AccountLabel').textContent = account;
+	document.getElementById('AccountLabel').textContent = Auth.getAccount();
 
 };
 
@@ -163,7 +162,6 @@ FileManager.execute = function (data, contentType) {
 	FileManager.ExecuteButton.hide();
 	FileManager.ExecuteTimer.start();
 	FileManager.OpenButton.hide();
-	FileManager.DoneButton.hide();
 	FileManager.FilesMenu.hide();
 
 	ZeroVmOnSwift.execute({
@@ -264,8 +262,7 @@ FileManager.ExecuteReport.create = function (report) {
 	FileManager.ExecuteReport.report = report;
 
 	var scrollingContentEl = document.querySelector('.scrolling-content');
-	var reportTemplate = document.querySelector('#reportTemplate').innerHTML;
-	scrollingContentEl.innerHTML = reportTemplate;
+	scrollingContentEl.innerHTML = document.querySelector('#reportTemplate').innerHTML;
 
 	executionReport();
 	billingReport();
@@ -635,22 +632,22 @@ FileManager.Item.click = function (itemEl) {
 	location.hash = FileManager.Item.selectedPath;
 
 	function editMode() {
-
+		var args, itemMenuHtml, path;
 		FileManager.Item.unselect();
 
 		itemEl.classList.add('clicked');
 
-		var itemMenuHtml = document.querySelector('#itemMenuTemplate').innerHTML;
+		itemMenuHtml = document.querySelector('#itemMenuTemplate').innerHTML;
 		itemEl.insertAdjacentHTML('afterend', itemMenuHtml);
 
 		FileManager.Metadata.showLoading();
 
-		var path = FileManager.Item.selectedPath;
+		path = FileManager.Item.selectedPath;
 
 		if (FileManager.Path(path).isContainer()) {
 
 			var xhr;
-			var args = {
+			args = {
 				containerName: FileManager.Path(path).container(),
 				success: function (metadata, objectCount, bytesUsed) {
 					FileManager.Item.metadata = metadata;
@@ -688,7 +685,7 @@ FileManager.Item.click = function (itemEl) {
 			FileManager.ContentType.showLoading();
 			FileManager.Copy.show();
 
-			var args = {
+			args = {
 				path: FileManager.Path(path).withoutAccount(),
 				success: function (metadata, contentType, contentLength, lastModified) {
 					FileManager.Item.metadata = metadata;
@@ -850,8 +847,7 @@ FileManager.Metadata.save = function () {
 			document.querySelector('.clicked').click();
 		},
 		error: function (status, statusText) {
-			var html = '<tr><td colspan="3">Error: ' + status + ' ' + statusText + '</td></tr>';
-			document.querySelector('.metadata-table tbody').innerHTML = html;
+			document.querySelector('.metadata-table tbody').innerHTML = '<tr><td colspan="3">Error: ' + status + ' ' + statusText + '</td></tr>';
 		}
 	};
 	document.querySelector('.metadata-table tbody').innerHTML = '<tr><td colspan="3">Loading...</td></tr>';
@@ -1233,7 +1229,6 @@ FileManager.SaveAs.click = function () {
 		contentType: typeEl.value,
 		data: FileManager.File.codeMirror.getValue(),
 		created: function () {
-			FileManager.DoneButton.click();
 			location.hash = path;
 		},
 		error: function (status, statusText) {
@@ -1907,7 +1902,7 @@ FileManager.CurrentPath = function () {
 };
 
 
-window.addEventListener('hashchange', function (e) {
+window.addEventListener('hashchange', function () {
 	FileManager.ContentChange.animate();
 });
 
@@ -1934,91 +1929,58 @@ document.addEventListener('click', function (e) {
 		return;
 	}
 
-	if (el = is('execute-button')) {
+	if (FileManager.toolbox.getParentByClassName(e.target,'execute-button')) {
 		if (FileManager.ENABLE_ZEROVM) {
-			FileManager.ExecuteButton.click(el);
+			FileManager.ExecuteButton.click();
 		}
-	} else if (el = is('delete')) {
+	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'delete')) {
 		FileManager.Item.deleteclick(el);
-		return;
-	} else if (el = is('item')) {
+	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'item')) {
 		FileManager.Item.click(el);
-	} else if (el = is('load-more-button')) {
-		FileManager.LoadMoreButton.click(el);
-	} else if (el = is('create-container-button')) {
-		FileManager.CreateContainerDialog.click(el);
-	} else if (el = is('add-shared-button')) {
+	} else if (FileManager.toolbox.getParentByClassName(e.target,'load-more-button')) {
+		FileManager.LoadMoreButton.click();
+	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'add-shared-button')) {
 		//SHARED-CONTAINERS
-		FileManager.AddShared.click(el);
-	} else if (el = is('create-directory-button')) {
-		FileManager.CreateDirectoryDialog.click(el);
-	} else if (el = is('create-file-button')) {
-		FileManager.CreateFileDialog.click(el);
-	} else if (el = is('delete-button')) {
+		FileManager.AddShared.click();
+	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'delete-button')) {
 		FileManager.ConfirmDelete.click(el);
-	} else if (el = is('metadata-save')) {
-		FileManager.Metadata.save(el);
-	} else if (el = is('metadata-discard-changes')) {
-		FileManager.Metadata.discardChanges(el);
-	} else if (el = is('remove-metadata')) {
+	} else if (FileManager.toolbox.getParentByClassName(e.target,'metadata-save')) {
+		FileManager.Metadata.save();
+	} else if (FileManager.toolbox.getParentByClassName(e.target,'metadata-discard-changes')) {
+		FileManager.Metadata.discardChanges();
+	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'remove-metadata')) {
 		FileManager.Metadata.remove(el);
-	} else if (el = is('undo')) {
+	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'undo')) {
 		FileManager.File.undo();
-	} else if (el = is('redo')) {
+	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'redo')) {
 		FileManager.File.redo();
-	} else if (el = is('save')) {
+	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'save')) {
 		FileManager.File.save();
-	} else if (el = is('save-as')) {
+	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'save-as')) {
 		FileManager.File.saveAs(el);
-	} else if (el = is('save-as-button')) {
-		FileManager.SaveAs.click(el);
-	} else if (el = is('content-type-button')) {
-		FileManager.ContentType.click(el);
-	} else if (el = is('cancel-upload-button')) {
+	} else if (FileManager.toolbox.getParentByClassName(e.target,'save-as-button')) {
+		FileManager.SaveAs.click();
+	} else if (FileManager.toolbox.getParentByClassName(e.target,'content-type-button')) {
+		FileManager.ContentType.click();
+	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'cancel-upload-button')) {
 		FileManager.UploadFiles.cancelClick(el);
-	} else if (el = is('execute-close-button')) {
+	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'execute-close-button')) {
 		FileManager.ExecuteReport.remove();
-	} else if (el = is('execute-full-button')) {
+	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'execute-full-button')) {
 		FileManager.ExecuteReport.showFullReport(el);
-	} else if (el = is('copy-button')) {
-		FileManager.Copy.click(el);
-	} else if (el = is('upload-as-button')) {
+	} else if (FileManager.toolbox.getParentByClassName(e.target,'copy-button')) {
+		FileManager.Copy.click();
+	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'upload-as-button')) {
 		FileManager.UploadAs.click(el);
-	} else if (el = is('open-button')) {
-		FileManager.OpenButton.click(el);
+	} else if (FileManager.toolbox.getParentByClassName(e.target,'open-button')) {
+		FileManager.OpenButton.click();
 	}
 
 	else if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		if (el = is('rights-save')) {
+		if (FileManager.toolbox.getParentByClassName(e.target,'rights-save')) {
 			FileManager.Rights.save();
-		} else if (el = is('rights-discard-changes')) {
+		} else if (FileManager.toolbox.getParentByClassName(e.target,'rights-discard-changes')) {
 			FileManager.Rights.discardChanges();
-		}
-	}
-
-	function is(className) {
-		var node1 = e.target;
-		var node2 = node1.parentNode;
-		var node3 = node2.parentNode;
-
-		if (node1.classList.contains(className) && !node1.hasAttribute('disabled')) {
-			return node1;
-		}
-
-		if (!node2.classList) {
-			return;
-		}
-
-		if (node2.classList.contains(className) && !node2.hasAttribute('disabled')) {
-			return node2;
-		}
-
-		if (!node3.classList) {
-			return;
-		}
-
-		if (node3.classList.contains(className) && !node3.hasAttribute('disabled')) {
-			return node3;
 		}
 	}
 }, true);
@@ -2031,7 +1993,7 @@ document.addEventListener('keyup', function (e) {
 
 	if (FileManager.ENABLE_SHARED_CONTAINERS) {
 		if (e.target.classList.contains('read-rights-input') || e.target.classList.contains('write-rights-input')) {
-			FileManager.Rights.keyup(e.target);
+			FileManager.Rights.keyup();
 		}
 	}
 });
@@ -2049,7 +2011,6 @@ document.addEventListener('change', function (e) {
 
 	if (e.target.parentNode.classList.contains('upload-execute')) {
 		FileManager.UploadAndExecute.change(e.target.files[0]);
-		return;
 	}
 });
 
@@ -2102,13 +2063,12 @@ FileManager.Shared.listSharedContainers = function (sharedContainers, scrollingC
 			container: FileManager.Path(path).container(),
 			success: function (bytes, count) {
 				var size = FileManager.Utils.bytesToSize(bytes);
-				var files = count;
 
 				var selector = '.item[title="' + path + '"]';
 				var el = scrollingContentEl.querySelector(selector);
 
 				el.querySelector('.size').textContent = size;
-				el.querySelector('.files').textContent = files;
+				el.querySelector('.files').textContent = count;
 			},
 			error: function (status, statusText) {
 				var selector = '.item[title="' + path + '"]';
@@ -2198,8 +2158,7 @@ FileManager.Rights.load = function (rights) {
 };
 
 FileManager.Rights.sharedContainers = function () {
-	var html = '<tr><td colspan="3">Cannot show metadata for shared container.</td></tr>';
-	document.querySelector('.rights-table tbody').innerHTML = html;
+	document.querySelector('.rights-table tbody').innerHTML = '<tr><td colspan="3">Cannot show metadata for shared container.</td></tr>';
 	document.querySelector('.rights-table .loading').setAttribute('hidden', 'hidden');
 	document.querySelector('.rights-table tbody').removeAttribute('hidden');
 };

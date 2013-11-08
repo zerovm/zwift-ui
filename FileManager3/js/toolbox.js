@@ -23,12 +23,23 @@
 		}
 		return null;
 	}
+	function checkParentClassName(el, className){
+		var topParentTag = "BODY";
+		while(el.tagName !== topParentTag){
+			if(el.classList.contains(className)){
+				return el;
+			}
+			el = el.parentNode;
+		}
+		return null;
+	}
 
 	if(!window.FileManager){
 		window.FileManager = {};
 	}
 	FileManager.toolbox = {
 		getExt: getExt,
-		getMIMEType: getMIMEType
+		getMIMEType: getMIMEType,
+		getParentByClassName: checkParentClassName
 	};
 })();
