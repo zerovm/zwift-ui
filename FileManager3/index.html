@@ -14,8 +14,13 @@
 		<link rel="stylesheet" href="css/bootstrap-theme.min.css">
 		<link rel="stylesheet" href="css/main.css">
 
+		<script src="js/vendor/require.js"></script>
+
 		<script src="js/extendNative.js"></script>
 		<script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+
+		<script src="js/vendor/ace/ace.js"></script>
+		<script src="js/vendor/ace/mode-javascript.js"></script>
 
 
 		<!--<link rel="stylesheet/less" type="text/css" href="css/styles.less" />-->
@@ -94,11 +99,13 @@
 		<!-- content -->
 		<div class="content-wrapper">
 			<div id="content">
-				<div class="scrolling-content">
-				</div>
+				<div class="scrolling-content"></div>
 			</div>
 		</div>
 		</div>
+	<div class="code-editor-wrapper">
+		<div id="codeEditor"></div>
+	</div>
 
 		<!-- templates -->
 		<template id="containerTemplate">

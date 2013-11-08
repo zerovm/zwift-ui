@@ -644,7 +644,7 @@ FileManager.Item.selectedPath = null;
 
 FileManager.Item.click = function (itemEl) {
 
-	var name = itemEl.getAttribute('title');
+	var name = itemEl.getAttribute('title');//TODO: change to data-attribute
 	FileManager.Item.selectedPath = FileManager.CurrentPath().add(name);
 
 	FileManager.Loading.hide();
@@ -1103,19 +1103,19 @@ FileManager.File.edit = function (el) {
 	FileManager.File.getFileXhr = SwiftV1.getFile(args);
 
 	function handleResponse(data, contentType) {
-		el.innerHTML = '';
+		var fileName = FileManager.CurrentPath().name(),
+			filePath = FileManager.CurrentPath().get(),
+			editor = document.getElementById("codeEditor");
 
-		var fileName = FileManager.CurrentPath().name();
-		var filePath = FileManager.CurrentPath().get();
+		el.removeChildren();
 		FileManager.CurrentDirLabel.setContent(fileName);
 		FileManager.CurrentDirLabel.setTooltip(filePath);
 
 		FileManager.File.contentType = contentType;
-		FileManager.File.codeMirror = CodeMirror(el, {
-			value: data,
-			mode: contentType,
-			lineNumbers: true
-		});
+		document.body.classList.add("code-editor-is-shown");
+		editor.removeChildren();
+		editor.innerText ? editor.innerText = data : editor.textContent = data;
+		ace.edit("codeEditor");
 
 		FileManager.File.showTxtButton();
 		FileManager.File.showMenu();
@@ -1123,11 +1123,6 @@ FileManager.File.edit = function (el) {
 		document.querySelector('.menu-file button.save').setAttribute('disabled', 'disabled');
 		document.querySelector('.menu-file button.undo').setAttribute('disabled', 'disabled');
 		document.querySelector('.menu-file button.redo').setAttribute('disabled', 'disabled');
-
-		FileManager.File.codeMirror.on('change', function () {
-			document.querySelector('.menu-file button.undo').removeAttribute('disabled');
-			document.querySelector('.menu-file button.save').removeAttribute('disabled');
-		});
 
 		document.querySelector('.menu-file button.save-as').classList.remove('selected');
 		document.querySelector('.save-as-dialog').setAttribute('hidden', 'hidden');

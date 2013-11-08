@@ -13,7 +13,6 @@ html, body{
 }
 body{
   background-color: #525252;
-  text-align: center;
   font-family: Arial, sans-serif;
 }
 a{
@@ -72,6 +71,7 @@ input[type=file]{
   font-family: Courier New, monospace;
   font-weight: bold;
 }
+.code-editor-wrapper,
 .scrolling-content,
 .center{
   width: 100%;
@@ -680,84 +680,74 @@ template{
 .file-type{
   width: 40px;
   height: 40px;
-}
-
-.file-type-xsl{
-  background: url("../img/file-type-all-gray.png") -17px -6px no-repeat;
-}
-
-.file-type-xml{
-  background: url("../img/file-type-all-gray.png") -57px -6px no-repeat;
-}
-
-.file-type-doc{
-  background: url("../img/file-type-all-gray.png") -97px -6px no-repeat;
-}
-
-.file-type-rar{
-  background: url("../img/file-type-all-gray.png") -147px -6px no-repeat;
-}
-
-.file-type-txt{
-  background: url("../img/file-type-all-gray.png") -183px -6px no-repeat;
-}
-
-.file-type-picture{
-  background: url("../img/file-type-all-gray.png") -223px -6px no-repeat;
-}
-
-.file-type-pdf{
-  background: url("../img/file-type-all-gray.png") -263px -6px no-repeat;
-}
-
-.file-type-nexe{
-  background: url("../img/file-type-all-gray.png") -307px -6px no-repeat;
-}
-
-.file-type-ppt{
-  background: url("../img/file-type-all-gray.png") -17px -53px no-repeat;
-}
-
-.file-type-zip{
-  background: url("../img/file-type-all-gray.png") -57px -53px no-repeat;
-}
-
-.file-type-csv{
-  background: url("../img/file-type-all-gray.png") -107px -53px no-repeat;
-}
-
-.file-type-php{
-  background: url("../img/file-type-all-gray.png") -147px -53px no-repeat;
-}
-
-.file-type-py{
-  background: url("../img/file-type-all-gray.png") -183px -53px no-repeat;
-}
-
-.file-type-json{
-  background: url("../img/file-type-all-gray.png") -223px -53px no-repeat;
-}
-
-.file-type-lua{
-  background: url("../img/file-type-all-gray.png") -267px -53px no-repeat;
-}
-
-.file-type-video{
-  background: url("../img/file-type-all-gray.png") -305px -53px no-repeat;
-}
-
-.file-type-css{
-  background: url("../img/file-type-all-gray.png") -17px -104px no-repeat;
-}
-
-.file-type-music{
-  background: url("../img/file-type-all-gray.png") -57px -104px no-repeat;
-}
-
-.file-type-file{
   background: url("../img/file-type-all-gray.png") -97px -104px no-repeat;
 }
-
+.file-type-xsl{
+  background-position: -17px -6px;
+}
+.file-type-xml{
+  background-position: -57px -6px;
+}
+.file-type-doc{
+  background-position: -97px -6px;
+}
+.file-type-rar{
+  background-position: -147px -6px;
+}
+.file-type-txt{
+  background-position: -183px -6px;
+}
+.file-type-picture{
+  background-position: -223px -6px;
+}
+.file-type-pdf{
+  background-position: -263px -6px;
+}
+.file-type-nexe{
+  background-position: -307px -6px;
+}
+.file-type-ppt{
+  background-position: -17px -53px;
+}
+.file-type-zip{
+  background-position: -57px -53px;
+}
+.file-type-csv{
+  background-position: -107px -53px;
+}
+.file-type-php{
+  background-position: -147px -53px;
+}
+.file-type-py{
+  background-position: -183px -53px;
+}
+.file-type-json{
+  background-position: -223px -53px;
+}
+.file-type-lua{
+  background-position: -267px -53px;
+}
+.file-type-video{
+  background-position: -305px -53px;
+}
+.file-type-css{
+  background-position: -17px -104px;
+}
+.file-type-music{
+  background-position: -57px -104px;
+}
 .file-type-c{
-  background: url("../img/file-type-all-gray.png") -140px -104px no-repeat;
+  background-position: -140px -104px;
+}
+
+.code-editor-wrapper{
+  margin: 0 auto;
+  height: 500px;
+}
+.code-editor-is-shown .main-content-wrapper{
+  height: auto;
+}
+#codeEditor{
+  width: 100%;
+  height: 100%;
 }

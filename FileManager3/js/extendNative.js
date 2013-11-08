@@ -6,6 +6,12 @@
 (function(){
 	"use strict";
 
+	Element.prototype.removeChildren = function(){
+		while(this.firstChild){
+			this.removeChild(this.firstChild);
+		}
+	};
+
 	function attachMethods(receiveObj, objAndMethodsToAttach){
 		objAndMethodsToAttach.forEach(function(paramObj){
 			paramObj.methods.forEach(function(methodName){
