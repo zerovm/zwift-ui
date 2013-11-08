@@ -126,6 +126,7 @@ input[type=file]{
 
 #UpButton{
   background: url("../img/white-icon.png") -398px -2px no-repeat;
+  border: 1px solid transparent;
 }
 
 .disabled #UpButton,
@@ -184,6 +185,18 @@ input[type=file]{
 .current-dir-label{
   font-weight: bold;
   color: #ffffff;
+}
+.current-dir-label .path-separator{
+  display: inline-block;
+  width: 13px;
+  height: 30px;
+  vertical-align: middle;
+  position: relative;
+  top: -3px;
+  transform: rotateZ(360deg);
+  -moz-transform: rotateZ(360deg);
+  -webkit-transform: rotateZ(360deg);
+  margin: 0 2px;
 }
 .execute-button{
   background: url('../img/execute.png') no-repeat 7px 8px;

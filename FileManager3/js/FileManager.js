@@ -63,16 +63,36 @@ FileManager.UpButton.click = function () {
 
 FileManager.CurrentDirLabel = {};
 
-FileManager.CurrentDirLabel.MAX_LENGTH = 30;
+FileManager.CurrentDirLabel.MAX_LENGTH = 40;
 
-FileManager.CurrentDirLabel.setContent = function (content) {
-	var el = document.querySelector('.current-dir-label');
-	if (content.length > FileManager.CurrentDirLabel.MAX_LENGTH) {
-		el.textContent = content.substr(0, FileManager.CurrentDirLabel.MAX_LENGTH);
-		el.innerHTML += '&raquo;';
-	} else {
-		el.textContent = content;
+FileManager.CurrentDirLabel.setContent = function (content, isArrowsSeparated) {
+	var el = document.querySelector('.current-dir-label'),
+		splittedContent, i, prevValue,
+		isCarringHiddenClass;//for browsers img rendering issue
+	if(el.classList.contains("hidden")){
+		isCarringHiddenClass = true;
+	}else{
+		el.classList.add("hidden");
 	}
+	if(content.length > FileManager.CurrentDirLabel.MAX_LENGTH){
+		splittedContent = content.split("/");
+		content = "";
+		i = splittedContent.length - 1;
+		do{
+			prevValue = content;
+			content = "/" + splittedContent[i] + content;
+			i--;
+		}while(content.length < FileManager.CurrentDirLabel.MAX_LENGTH);
+		content = prevValue;
+		if(!content){
+			content = splittedContent[splittedContent.length];
+		}
+	}
+	el.textContent = content;
+	if(isArrowsSeparated){
+		el.innerHTML = el.innerHTML.replace(/\//g, "<img class='path-separator' src='img/go.png'/>");
+	}
+	!isCarringHiddenClass && el.classList.remove("hidden");
 };
 
 FileManager.CurrentDirLabel.setTooltip = function (content) {
@@ -1428,7 +1448,7 @@ FileManager.Files.list = function (callback) {
 		}
 
 		document.getElementById('UpButton').removeAttribute('disabled');
-		FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().name());
+		FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().withoutAccount(), true);
 		callback();
 
 		function checkFirstFile(files) {
