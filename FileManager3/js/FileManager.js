@@ -1105,17 +1105,16 @@ FileManager.File.edit = function (el) {
 	function handleResponse(data, contentType) {
 		var fileName = FileManager.CurrentPath().name(),
 			filePath = FileManager.CurrentPath().get(),
-			editor = document.getElementById("codeEditor");
+			editor;
 
 		el.removeChildren();
 		FileManager.CurrentDirLabel.setContent(fileName);
 		FileManager.CurrentDirLabel.setTooltip(filePath);
 
 		FileManager.File.contentType = contentType;
-		document.body.classList.add("code-editor-is-shown");
-		editor.removeChildren();
-		editor.innerText ? editor.innerText = data : editor.textContent = data;
-		ace.edit("codeEditor");
+		editor = window.FileManager.fileEditor.set(data);
+		window.FileManager.fileEditor.show();
+		console.log(editor);
 
 		FileManager.File.showTxtButton();
 		FileManager.File.showMenu();

@@ -30,6 +30,7 @@
 		<script src="js/hashDependentStates.js"></script>
 		<script src="js/toolbox.js"></script>
 		<script src="js/FileManager.js"></script>
+		<script src="js/fileEditor.js"></script>
 	</head>
 	<body><div class="center main-content-wrapper">
 
@@ -81,7 +82,10 @@
 			</div>
 
 			<div class="menu-file dialog" hidden>
-				<button class="undo txt-btn" disabled></button><button class="redo txt-btn" disabled></button><button class="save txt-btn" disabled></button><button class="save-as"></button>
+				<button class="undo txt-btn" title="undo" disabled></button>
+				<button class="redo txt-btn" title="redo" disabled></button>
+				<button class="save txt-btn" title="save" disabled></button>
+				<button class="save-as txt-btn" title="save as..."></button>
 				<a href="#" class="download-link" target="_blank">Download</a>
 				<div class="editor-toolbar-error" hidden>Error: <span class="status"></span> <span class="status-text"></span>.</div>
 				<table class="input-group-table save-as-dialog" hidden>

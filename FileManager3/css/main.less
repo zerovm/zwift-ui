@@ -21,6 +21,11 @@ a{
 .toolbar{
   height: 50px;
   background-color: @color3;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  font-size: 0;
 }
 
 .toolbar .left{
@@ -38,6 +43,7 @@ a{
 .toolbar label{
   margin: 2px 0;
   vertical-align: middle;
+  font-size: 14px;
 }
 
 pre{
@@ -99,10 +105,6 @@ input[type=file]{
 }
 
 .toolbar-button{
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
   border-radius: 0px !important;
   padding: 0;
   border: 0 solid @color1;
@@ -463,7 +465,12 @@ input[type=file]{
 .menu-file button.save{
   background-image: url('../img/save.png');
 }
-
+.menu-file .txt-btn{
+  background: #ffff00;
+}
+.menu-file .txt-btn[disabled]{
+  opacity: 0;
+}
 .menu-file button.save-as{
   background-image: url('../img/save.png');
 }
@@ -739,7 +746,6 @@ template{
 .file-type-c{
   background-position: -140px -104px;
 }
-
 .code-editor-wrapper{
   margin: 0 auto;
   height: 500px;

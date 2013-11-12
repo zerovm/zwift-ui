@@ -138,8 +138,8 @@ document.addEventListener("DOMContentLoaded", function(){
 			path: path,
 			contentType: 'text/plain',
 			created: function () {
-				//location.hash = FileManager.CurrentPath().get();
-				//editor.open(_path);//TODO: open file for editing
+				console.log(FileManager.fileEditor.set());
+				FileManager.fileEditor.show();
 				cancel();
 			},
 			error: ajaxError
