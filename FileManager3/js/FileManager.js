@@ -1020,7 +1020,7 @@ FileManager.File.open = function (el, callback) {
 		}
 
 		document.querySelector('.download-link').setAttribute('href', href);
-		document.querySelector('.download-link').setAttribute('download', filename);
+		//document.querySelector('.download-link').setAttribute('download', filename);
 
 		callback();
 
@@ -1097,6 +1097,7 @@ FileManager.File.edit = function (el) {
 			}
 		}
 	};
+	document.getElementById('UpButton').setAttribute('disabled', 'disabled');
 	if (FileManager.ENABLE_SHARED_CONTAINERS) {
 		args.account = FileManager.CurrentPath().account();
 	}
@@ -1118,10 +1119,6 @@ FileManager.File.edit = function (el) {
 
 		FileManager.File.showTxtButton();
 		FileManager.File.showMenu();
-		document.getElementById('UpButton').setAttribute('disabled', 'disabled');
-		document.querySelector('.menu-file button.save').setAttribute('disabled', 'disabled');
-		document.querySelector('.menu-file button.undo').setAttribute('disabled', 'disabled');
-		document.querySelector('.menu-file button.redo').setAttribute('disabled', 'disabled');
 
 		document.querySelector('.menu-file button.save-as').classList.remove('selected');
 		document.querySelector('.save-as-dialog').setAttribute('hidden', 'hidden');
@@ -1161,23 +1158,6 @@ FileManager.File.hideTxtButton = function () {
 		txtBtnArr[i].setAttribute('hidden', 'hidden');
 	}
 };
-
-FileManager.File.undo = function () {
-	FileManager.File.codeMirror.undo();
-	document.querySelector('.menu-file button.redo').removeAttribute('disabled');
-	if (FileManager.File.codeMirror.historySize().undo == 0) {
-		document.querySelector('.menu-file button.undo').setAttribute('disabled', 'disabled');
-	}
-};
-
-FileManager.File.redo = function () {
-	FileManager.File.codeMirror.redo();
-	document.querySelector('.menu-file button.undo').removeAttribute('disabled');
-	if (FileManager.File.codeMirror.historySize().redo == 0) {
-		document.querySelector('.menu-file button.redo').setAttribute('disabled', 'disabled');
-	}
-};
-
 FileManager.File.save = function () {
 	document.querySelector('.menu-file button.save').setAttribute('disabled', 'disabled');
 	document.querySelector('.menu-file button.undo').setAttribute('disabled', 'disabled');
@@ -1964,12 +1944,6 @@ document.addEventListener('click', function (e) {
 		FileManager.Metadata.discardChanges();
 	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'remove-metadata')) {
 		FileManager.Metadata.remove(el);
-	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'undo')) {
-		FileManager.File.undo();
-	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'redo')) {
-		FileManager.File.redo();
-	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'save')) {
-		FileManager.File.save();
 	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'save-as')) {
 		FileManager.File.saveAs(el);
 	} else if (FileManager.toolbox.getParentByClassName(e.target,'save-as-button')) {

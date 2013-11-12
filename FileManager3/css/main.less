@@ -21,10 +21,6 @@ a{
 .toolbar{
   height: 50px;
   background-color: @color3;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
   font-size: 0;
 }
 
@@ -467,9 +463,15 @@ input[type=file]{
 }
 .menu-file .txt-btn{
   background: #ffff00;
-}
-.menu-file .txt-btn[disabled]{
+  pointer-events: none;
   opacity: 0;
+}
+.menu-file .txt-btn.save-as,
+.menu-file.redo .txt-btn.redo,
+.menu-file.undo .txt-btn.undo,
+.menu-file.save .txt-btn.save{
+  opacity: 1;
+  pointer-events: auto
 }
 .menu-file button.save-as{
   background-image: url('../img/save.png');
@@ -753,7 +755,17 @@ template{
 .code-editor-is-shown .main-content-wrapper{
   height: auto;
 }
+.code-editor-is-shown .toolbar .dialog-button,
+.code-editor-is-shown .toolbar .input-wrapper{
+  pointer-events: none;
+}
 #codeEditor{
   width: 100%;
   height: 100%;
+}
+.no-select{
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }

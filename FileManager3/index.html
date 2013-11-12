@@ -50,7 +50,7 @@
 					</li>
 				</ul>
 			</div>
-			<div class="toolbar navbar-inverse center">
+			<div class="toolbar navbar-inverse center no-select">
 			<span class="left">
 				<button id="UpButton" class="toolbar-button" title="Up" disabled></button>
 				<label class="current-dir-label"></label>
@@ -81,11 +81,11 @@
 				<label class="err-msg"></label>
 			</div>
 
-			<div class="menu-file dialog" hidden>
-				<button class="undo txt-btn" title="undo" disabled></button>
-				<button class="redo txt-btn" title="redo" disabled></button>
-				<button class="save txt-btn" title="save" disabled></button>
-				<button class="save-as txt-btn" title="save as..."></button>
+			<div class="menu-file dialog no-select" hidden>
+				<button class="undo txt-btn" title="Undo"></button>
+				<button class="redo txt-btn" title="Redo"></button>
+				<button class="save txt-btn" title="Save"></button>
+				<button class="save-as txt-btn" title="Save As..."></button>
 				<a href="#" class="download-link" target="_blank">Download</a>
 				<div class="editor-toolbar-error" hidden>Error: <span class="status"></span> <span class="status-text"></span>.</div>
 				<table class="input-group-table save-as-dialog" hidden>
