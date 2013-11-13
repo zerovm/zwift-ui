@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", function(){
 
 	var dialogContainer = document.getElementById("CreateDialog"),
 		input = dialogContainer.getElementsByTagName("input")[0],
-		errorsEl = dialogContainer.getElementsByClassName("err-msg")[0],
 		buttons = document.getElementsByClassName("dialog-button"),
 		form = dialogContainer.getElementsByTagName("form")[0],
 		lastClickedButton = buttons[0],
@@ -16,10 +15,9 @@ document.addEventListener("DOMContentLoaded", function(){
 		selectedClass = "selected",
 		hiddenClass = "hidden",
 		inputInvalidClass = "invalid-input",
-		innerText = dialogContainer.innerText ? "innerText" : "textContent",
 		errorMsgMap = {
 			ajax: "Error:",
-			wrongDirName: "Directory name cannot have a slash (/) character.",
+			wrongName: "Name cannot contain a slash (/) character.",
 			containerAlreadyExist: "Container is already exists.",
 			dirAlreadyExist: "Directory is already exists.",
 			nameTooLong: "Container name should be less then 256 characters.",
@@ -27,21 +25,16 @@ document.addEventListener("DOMContentLoaded", function(){
 		};
 
 	function ajaxError(status, statusText){
-		var span = document.createElement("span");
-		input.classList.add(inputInvalidClass);
-		errorsEl[innerText] = errorMsgMap.ajax;
-		span[innerText] = status;
-		errorsEl.appendChild(span);
-		span = document.createElement("span");
-		span[innerText] = statusText;
-		errorsEl.appendChild(span);
-		errorsEl.classList.remove(hiddenClass);
+		window.FileManager.errorMsgHandler.show({
+			header: errorMsgMap.emptyInput,
+			status: status,
+			statusText: statusText,
+			callback: errorCallback
+		});
 	}
 
-	function error(msg){
+	function errorCallback(){
 		input.classList.add(inputInvalidClass);
-		errorsEl[innerText] = msg;
-		errorsEl.classList.remove(hiddenClass);
 	}
 
 	function cancel(){
@@ -49,11 +42,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		dialogContainer.classList.add(hiddenClass);
 		input.value = "";
 		input.classList.remove(inputInvalidClass);
-		hide(errorsEl);
-	}
-
-	function hide(el){
-		el.classList.add(hiddenClass);
+		window.FileManager.errorMsgHandler.hide();
 	}
 
 	function confirm(e){
@@ -98,13 +87,19 @@ document.addEventListener("DOMContentLoaded", function(){
 
 	function oncontainer(){
 		if(!input.value){
-			error(errorMsgMap.emptyInput);
+			window.FileManager.errorMsgHandler.show({
+				header: errorMsgMap.emptyInput,
+				callback: errorCallback
+			});
 			return;
 		}
 
 		if(input.length > 256){
 			input.classList.add(inputInvalidClass);
-			error(errorMsgMap.nameTooLong);
+			window.FileManager.errorMsgHandler.show({
+				header: errorMsgMap.nameTooLong,
+				callback: errorCallback
+			});
 			return;
 		}
 
@@ -119,7 +114,10 @@ document.addEventListener("DOMContentLoaded", function(){
 				cancel();
 			},
 			alreadyExisted: function(){
-				error(errorMsgMap.containerAlreadyExist);
+				window.FileManager.errorMsgHandler.show({
+					header: errorMsgMap.containerAlreadyExist,
+					callback: errorCallback
+				});
 			},
 			error: ajaxError
 		});
@@ -128,7 +126,10 @@ document.addEventListener("DOMContentLoaded", function(){
 	function onfile(){
 		var path;
 		if(!input.value){
-			error(errorMsgMap.emptyInput);
+			window.FileManager.errorMsgHandler.show({
+				header: errorMsgMap.emptyInput,
+				callback: errorCallback
+			});
 			return;
 		}
 
@@ -137,7 +138,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		SwiftV1.createFile({
 			path: path,
 			contentType: 'text/plain',
-			created: function () {
+			created: function(){
 				console.log(FileManager.fileEditor.set());
 				FileManager.fileEditor.show();
 				cancel();
@@ -149,11 +150,17 @@ document.addEventListener("DOMContentLoaded", function(){
 	function ondirectory(){
 		var dirName, dirPath, dirPathWithoutAccount, requestArgs;
 		if(!input.value){
-			error(errorMsgMap.emptyInput);
+			window.FileManager.errorMsgHandler.show({
+				header: errorMsgMap.emptyInput,
+				callback: errorCallback
+			});
 			return;
 		}
 		if(input.value.match(forbiddenChars)){
-			error(errorMsgMap.wrongDirName);
+			window.FileManager.errorMsgHandler.show({
+				header: errorMsgMap.wrongName,
+				callback: errorCallback
+			});
 			return;
 		}
 		dirName = input.value + "/";
@@ -165,7 +172,10 @@ document.addEventListener("DOMContentLoaded", function(){
 			requestArgs.account = FileManager.CurrentPath().account();
 		}
 		requestArgs.success = function(){
-			error(errorMsgMap.containerAlreadyExist);
+			window.FileManager.errorMsgHandler.show({
+				header: errorMsgMap.containerAlreadyExist,
+				callback: errorCallback
+			});
 		};
 		requestArgs.notExist = function(){
 			SwiftV1.createDirectory({
