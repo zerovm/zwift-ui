@@ -15,7 +15,7 @@
 		});
 	}
 
-	if(window.searchApp){
+	if(!window.searchApp){
 		window.searchApp = {};
 	}
 	window.searchApp.imgPreload = imgPreload;
