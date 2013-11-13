@@ -1,7 +1,8 @@
 (function(){
 	"use strict";
 
-	var SearchApp = {};
+	var SearchApp = {},
+		lastRWIndex = 0;
 
 	SearchApp.search = function(text, callback, outputEl){
 		var input, i;
@@ -40,7 +41,7 @@
 					'file_list': [
 						{
 							'device': 'input',
-							'path': 'swift://' + account + '/.gui/LiteStack/Search/0.1/execute/sys/rwindex'
+							'path': 'swift://' + account + '/.gui/LiteStack/Search/0.1/execute/sys/rwindex' + lastRWIndex
 						},
 						{
 							'device': 'stdout'
@@ -144,8 +145,8 @@
 						},
 						"file_list": [
 							{"device": "stdout", "path": "swift://" + account + "/search/outputfiles/indexer_stdout.txt"},
-							{"device": "input", "path": "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/rwindex"},
-							{"device": "output", "path": "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/rwindex"},
+							{"device": "input", "path": "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/rwindex" + (lastRWIndex ? lastRWIndex : "")},
+							{"device": "output", "path": "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/rwindex" + ++lastRWIndex},
 							{"device": "stderr"}
 						],
 						"replicate": 0
@@ -165,6 +166,9 @@
 					"replicate": 0
 				});
 			});
+			console.log("index")
+			console.log(lastRWIndex);
+			console.log(request[5].file_list)
 			return request;
 		}
 
@@ -220,8 +224,9 @@
 		}
 
 		function createMergeConfiguration(){
-			var account = ZLitestackDotCom.getAccount();
-			return [
+			var account = ZLitestackDotCom.getAccount(),
+				result;
+			result = [
 				{
 					"name": "indexer",
 					"exec": {
@@ -230,13 +235,17 @@
 					},
 					"file_list": [
 						{"device": "stdout", "path": "swift://" + account + "/search/outputfiles/indexer_stdout.txt"},
-						{"device": "input", "path": "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/rwindex"},
-						{"device": "output", "path": "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/rwindex"},
+						{"device": "input", "path": "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/rwindex" + lastRWIndex},
+						{"device": "output", "path": "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/rwindex" + ++lastRWIndex},
 						{"device": "stderr"}
 					],
 					"replicate": 0
 				}
 			];
+			console.log("merge")
+			console.log(lastRWIndex);
+			console.log(result[0].file_list)
+			return result;
 		}
 	};
 
@@ -311,6 +320,40 @@
 			});
 		}
 	};
+
+
+	//hack-hack
+
+	document.addEventListener("DOMContentLoaded", function(){
+		setTimeout(function(){
+			console.log("started")
+			SwiftV1.Container.get({
+				format: "json",
+				prefix: "LiteStack/Search/0.1/execute/sys/",
+				DELIMITER: "/",
+				containerName: ".gui",
+				success: function(response){
+					var maxRWIndexNum = "";
+					response = JSON.parse(response);
+					response.forEach(function(fileObj){
+						var rw = fileObj.name.match(/rwindex\d*$/),
+							rwIndex;
+						if(rw){
+							rwIndex = parseInt(rw[0].replace("rwindex", ""));
+							if(!isNaN(rwIndex)){
+								lastRWIndex = rwIndex;
+							}
+						}
+					});
+					console.log(lastRWIndex);
+				},
+				notExist: function(response){}
+			});
+		}, 1000)
+	});
+
+	//hack-hack ends here
+
 
 	window.SearchApp = SearchApp;
 })();
