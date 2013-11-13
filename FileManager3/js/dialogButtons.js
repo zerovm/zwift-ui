@@ -117,8 +117,9 @@ document.addEventListener("DOMContentLoaded", function(){
 			path: path,
 			contentType: 'text/plain',
 			created: function(){
-				console.log(FileManager.fileEditor.set());
 				FileManager.fileEditor.show();
+				location.hash = location.hash + input.value;
+				FileManager.File.showMenu();
 				cancel();
 			},
 			error: ajaxError

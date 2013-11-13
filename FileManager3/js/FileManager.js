@@ -1105,20 +1105,16 @@ FileManager.File.edit = function (el) {
 
 	function handleResponse(data, contentType) {
 		var fileName = FileManager.CurrentPath().name(),
-			filePath = FileManager.CurrentPath().get(),
-			editor;
+			filePath = FileManager.CurrentPath().get();
 
 		el.removeChildren();
 		FileManager.CurrentDirLabel.setContent(fileName);
 		FileManager.CurrentDirLabel.setTooltip(filePath);
 
 		FileManager.File.contentType = contentType;
-		editor = window.FileManager.fileEditor.set(data);
-		window.FileManager.fileEditor.show();
-		console.log(editor);
+		window.FileManager.fileEditor.show(data);
 
 		FileManager.File.showTxtButton();
-		FileManager.File.showMenu();
 
 		document.querySelector('.menu-file button.save-as').classList.remove('selected');
 		document.querySelector('.save-as-dialog').setAttribute('hidden', 'hidden');

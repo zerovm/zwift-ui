@@ -98,7 +98,8 @@ document.addEventListener("DOMContentLoaded", function(){
 			window.removeEventListener("hashchange", that.hide);
 			document.body.classList.remove(showClass);
 		};
-		this.show = function(){
+		this.show = function(data){
+			this.set(data);
 			window.addEventListener("hashchange", that.hide);
 			document.body.classList.add(showClass);
 		};
