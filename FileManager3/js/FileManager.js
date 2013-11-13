@@ -1158,40 +1158,6 @@ FileManager.File.hideTxtButton = function () {
 		txtBtnArr[i].setAttribute('hidden', 'hidden');
 	}
 };
-FileManager.File.save = function () {
-	document.querySelector('.menu-file button.save').setAttribute('disabled', 'disabled');
-	document.querySelector('.menu-file button.undo').setAttribute('disabled', 'disabled');
-	document.querySelector('.menu-file button.redo').setAttribute('disabled', 'disabled');
-
-	var requestArgs = {};
-
-	requestArgs.path = FileManager.CurrentPath().withoutAccount();
-	requestArgs.contentType = FileManager.File.contentType;
-	requestArgs.data = FileManager.File.codeMirror.getValue();
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		requestArgs.account = FileManager.CurrentPath().account();
-	}
-
-	requestArgs.created = function () {
-		FileManager.File.codeMirror.clearHistory();
-	};
-
-	requestArgs.error = function (status, statusText) {
-		var el = document.querySelector('.editor-toolbar-error');
-		FileManager.AjaxError.show(el, status, statusText);
-
-		document.querySelector('.menu-file button.save').removeAttribute('disabled');
-		if (FileManager.File.codeMirror.historySize().undo > 0) {
-			document.querySelector('.menu-file button.undo').removeAttribute('disabled');
-		}
-		if (FileManager.File.codeMirror.historySize().redo > 0) {
-			document.querySelector('.menu-file button.redo').removeAttribute('disabled');
-		}
-	};
-
-	SwiftV1.createFile(requestArgs);
-};
 
 FileManager.File.saveAs = function (el) {
 	if (el.classList.contains('selected')) {
