@@ -3,7 +3,7 @@
  * Date: 13.11.13
  * Time: 10:38
  */
-(function(){
+document.addEventListener("DOMContentLoaded", function(){
 	"use strict";
 
 	var hiddenClass = "hidden",
@@ -32,4 +32,4 @@
 		hide: hideError,
 		show: showError
 	};
-})();
+});

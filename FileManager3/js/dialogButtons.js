@@ -6,15 +6,10 @@
 document.addEventListener("DOMContentLoaded", function(){
 	"use strict";
 
-	var dialogContainer = document.getElementById("CreateDialog"),
-		input = dialogContainer.getElementsByTagName("input")[0],
-		buttons = document.getElementsByClassName("dialog-button"),
-		form = dialogContainer.getElementsByTagName("form")[0],
+	var buttons = document.getElementsByClassName("dialog-button"),
 		lastClickedButton = buttons[0],
 		forbiddenChars = /\//,
 		selectedClass = "selected",
-		hiddenClass = "hidden",
-		inputInvalidClass = "invalid-input",
 		errorMsgMap = {
 			ajax: "Error:",
 			wrongName: "Name cannot contain a slash (/) character.",
@@ -29,76 +24,59 @@ document.addEventListener("DOMContentLoaded", function(){
 			header: errorMsgMap.emptyInput,
 			status: status,
 			statusText: statusText,
-			callback: errorCallback
+			callback: window.FileManager.dialogForm.onerror
 		});
-	}
-
-	function errorCallback(){
-		input.classList.add(inputInvalidClass);
 	}
 
 	function cancel(){
 		lastClickedButton.classList.remove(selectedClass);
-		dialogContainer.classList.add(hiddenClass);
-		input.value = "";
-		input.classList.remove(inputInvalidClass);
-		window.FileManager.errorMsgHandler.hide();
-	}
-
-	function confirm(e){
-		e.stopPropagation();
-		e.preventDefault();
-		switch(e.target.dataset.action){
-			case "file":
-				onfile();
-				break;
-			case "directory":
-				ondirectory();
-				break;
-			case "container":
-				oncontainer();
-				break;
-			default:
-				console.log("unkown action: " + e.target.dataset.action);
-				break;
-		}
-		return false;
 	}
 
 	function showCreateButtonDialog(){
+		var callback, action;
 		if(this.classList.contains(selectedClass)){
 			cancel();
 		}else{
 			lastClickedButton.classList.remove(selectedClass);
 			lastClickedButton = this;
-			form.dataset.action = this.dataset.action;
-			input.placeholder = this.dataset.placeholder;
-			dialogContainer.classList.remove(hiddenClass);
+			action = this.dataset.action;
+			switch(action){
+				case "file":
+					callback = onfile;
+					break;
+				case "directory":
+					callback = ondirectory;
+					break;
+				case "container":
+					callback = oncontainer;
+					break;
+				default:
+					console.log("unkown action: " + action);
+					return;
+					break;
+			}
+			window.FileManager.dialogForm.show(this.dataset.placeholder, callback, cancel);
 			this.classList.add(selectedClass);
-			input.focus();
 		}
 	}
 
-	form.addEventListener("submit", confirm);
-	document.getElementById("CancelDialog").addEventListener("click", cancel);
 	buttons.forEach(function(el){
 		el.addEventListener("click", showCreateButtonDialog);
 	});
 
-	function oncontainer(){
+	function oncontainer(input){
 		if(!input.value){
 			window.FileManager.errorMsgHandler.show({
 				header: errorMsgMap.emptyInput,
-				callback: errorCallback
+				callback: window.FileManager.dialogForm.onerror
 			});
 			return;
 		}
 
 		if(input.length > 256){
-			input.classList.add(inputInvalidClass);
 			window.FileManager.errorMsgHandler.show({
 				header: errorMsgMap.nameTooLong,
-				callback: errorCallback
+				callback: window.FileManager.dialogForm.onerror
 			});
 			return;
 		}
@@ -116,19 +94,19 @@ document.addEventListener("DOMContentLoaded", function(){
 			alreadyExisted: function(){
 				window.FileManager.errorMsgHandler.show({
 					header: errorMsgMap.containerAlreadyExist,
-					callback: errorCallback
+					callback: window.FileManager.dialogForm.onerror
 				});
 			},
 			error: ajaxError
 		});
 	}
 
-	function onfile(){
+	function onfile(input){
 		var path;
 		if(!input.value){
 			window.FileManager.errorMsgHandler.show({
 				header: errorMsgMap.emptyInput,
-				callback: errorCallback
+				callback: window.FileManager.dialogForm.onerror
 			});
 			return;
 		}
@@ -147,19 +125,19 @@ document.addEventListener("DOMContentLoaded", function(){
 		});
 	}
 
-	function ondirectory(){
+	function ondirectory(input){
 		var dirName, dirPath, dirPathWithoutAccount, requestArgs;
 		if(!input.value){
 			window.FileManager.errorMsgHandler.show({
 				header: errorMsgMap.emptyInput,
-				callback: errorCallback
+				callback: window.FileManager.dialogForm.onerror
 			});
 			return;
 		}
 		if(input.value.match(forbiddenChars)){
 			window.FileManager.errorMsgHandler.show({
 				header: errorMsgMap.wrongName,
-				callback: errorCallback
+				callback: window.FileManager.dialogForm.onerror
 			});
 			return;
 		}
@@ -174,7 +152,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		requestArgs.success = function(){
 			window.FileManager.errorMsgHandler.show({
 				header: errorMsgMap.containerAlreadyExist,
-				callback: errorCallback
+				callback: window.FileManager.dialogForm.onerror
 			});
 		};
 		requestArgs.notExist = function(){
