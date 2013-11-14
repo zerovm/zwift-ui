@@ -53,10 +53,11 @@ FileManager.AccountLabel.init = function () {
 FileManager.UpButton = {};
 
 FileManager.UpButton.click = function () {
-	if (!FileManager.Loading.visible) {
+	var upperLevel = FileManager.CurrentPath().up();
+	if (!FileManager.Loading.visible && upperLevel) {
 		FileManager.Loading.hide();
 		FileManager.CurrentDirLabel.showLoading();
-		location.hash = FileManager.CurrentPath().up();
+		location.hash = upperLevel;
 	}
 };
 
@@ -1113,7 +1114,7 @@ FileManager.File.edit = function (el) {
 
 		FileManager.File.contentType = contentType;
 		window.FileManager.fileEditor.show(data);
-
+		FileManager.File.showMenu();
 		FileManager.File.showTxtButton();
 
 		document.querySelector('.menu-file button.save-as').classList.remove('selected');
@@ -1129,7 +1130,6 @@ FileManager.File.notTextFile = function (el) {
 	FileManager.CurrentDirLabel.setContent(fileName);
 	el.innerHTML = document.querySelector('#notTextFileTemplate').innerHTML;
 	FileManager.File.hideTxtButton();
-	FileManager.File.showMenu();
 	document.getElementById('UpButton').removeAttribute('disabled');
 };
 
@@ -1817,6 +1817,8 @@ FileManager.Path = function (path) {
 	};
 	this.up = function () {
 		var newPathParts = path.split('/');
+
+		if(path === newPathParts[0]){return null;}
 
 		if (newPathParts[newPathParts.length - 1] == '') {
 			newPathParts.splice(-2);
