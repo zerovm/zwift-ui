@@ -149,6 +149,7 @@
 							{"device": "output", "path": "swift://" + account + "/.gui/LiteStack/Search/0.1/execute/sys/rwindex" + ++lastRWIndex},
 							{"device": "stderr"}
 						],
+						"connect": ["xmlpipecreator"],
 						"replicate": 0
 					}
 				];
