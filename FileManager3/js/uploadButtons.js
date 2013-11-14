@@ -10,12 +10,12 @@ document.addEventListener("DOMContentLoaded", function(){
 		hiddenClass = "hidden",
 		buttons = document.getElementsByClassName("upload-button"),
 		slashAtEndRegex = /\/$/,
-		extRegex = /\.\w*$/,
+		extRegex = /\.(\w*)$/,
 		uploads;
 
 	function getContentType(fileName){
 		var extension = fileName.match(extRegex);
-		return extensionsMap[extension] || null;
+		return (extension && window.FileManager.toolbox.getMIMEType(extension[1])) || null;
 	}
 
 	uploads = new function(){
@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			var _type, _name, id, url, uploadRequest;
 			_name = file.newName || file.name;
 			//_type = file.newType || getContentType(_name) || file.type;
-			_type = file.newType || getContentType(_name) || file.type;
+			_type = file.newType || file.type || getContentType(_name);
 
 			id = 'upload-' + index;
 			/*itemUploadHtml = itemUploadTemplate;
@@ -52,8 +52,7 @@ document.addEventListener("DOMContentLoaded", function(){
 				 setProgress(this.upload['id'], 100, 'Upload completed.');
 
 				if(uploadingFiles == 0){
-					/*list.first20Files(title.getPath(), 'up');
-					 enableAll();*/
+					FileManager.ContentChange.animate();
 				}
 
 				/*$('.upload-button').each(function(){
@@ -102,6 +101,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			//itemUploadTemplate = $('#item-upload-template').html();
 			urlPrefix = "https://z.litestack.com/v1/" + path;//TODO: replace hardcode with smth
 			!urlPrefix.match(slashAtEndRegex) && (urlPrefix += "/");
+			uploadingFiles = e.target.files.length;
 			e.target.files.forEach(uploadFile);
 			e.target.value = [];//TODO: check for a normal way of uploading same file
 

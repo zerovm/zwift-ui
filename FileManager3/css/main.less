@@ -695,69 +695,80 @@ template{
   height: 40px;
   background: url("../img/file-type-all-gray.png") -97px -104px no-repeat;
 }
-.file-type-xsl{
-  background-position: -17px -6px;
-}
-.file-type-xml{
-  background-position: -57px -6px;
-}
-.file-type-doc{
-  background-position: -97px -6px;
-}
-.file-type-rar{
-  background-position: -147px -6px;
-}
-.file-type-txt{
+.file-type[class*=text],
+.file-type[class*=text-plain]{
   background-position: -183px -6px;
 }
-.file-type-picture{
+.file-type[class*=spreadsheetml],
+.file-type[class*=excel]{
+  background-position: -17px -6px;
+}
+.file-type[class*=htm],
+.file-type[class*=xml]{
+  background-position: -57px -6px;
+}
+.file-type[class*=msword],
+.file-type[class*=wordprocessingml]{
+  background-position: -97px -6px;
+}
+.file-type[class*=rar]{
+  background-position: -147px -6px;
+}
+.file-type[class*=image]{
   background-position: -223px -6px;
 }
-.file-type-pdf{
+.file-type[class*=pdf]{
   background-position: -263px -6px;
 }
-.file-type-nexe{
+.file-type[class*=nexe]{
   background-position: -307px -6px;
 }
-.file-type-ppt{
+.file-type[class*=presentationml],
+.file-type[class*=powerpoint]{
   background-position: -17px -53px;
 }
-.file-type-zip{
+.file-type[class*=x-tar],
+.file-type[class*=x-rar],
+.file-type[class*=zip]{
   background-position: -57px -53px;
 }
-.file-type-csv{
+.file-type[class*=csv]{
   background-position: -107px -53px;
 }
-.file-type-php{
+.file-type[class*=php]{
   background-position: -147px -53px;
 }
-.file-type-py{
+.file-type[class*=python]{
   background-position: -183px -53px;
 }
-.file-type-json{
+.file-type[class*=json]{
   background-position: -223px -53px;
 }
-.file-type-lua{
+.file-type[class*=lua]{
   background-position: -267px -53px;
 }
-.file-type-video{
+.file-type[class*=video]{
   background-position: -305px -53px;
 }
-.file-type-css{
+.file-type[class*=css]{
   background-position: -17px -104px;
 }
-.file-type-music{
+.file-type[class*=audio]{
   background-position: -57px -104px;
 }
-.file-type-c{
+.file-type[class*=x-csrc]{
   background-position: -140px -104px;
 }
 .code-editor-wrapper{
   margin: 0 auto;
   height: 500px;
+  display: none;
 }
 .code-editor-is-shown .main-content-wrapper{
   height: auto;
+}
+.code-editor-is-shown .code-editor-wrapper{
+  display: block;
 }
 .code-editor-is-shown .toolbar .dialog-button,
 .code-editor-is-shown .toolbar .input-wrapper{

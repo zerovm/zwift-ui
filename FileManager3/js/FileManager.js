@@ -1401,7 +1401,7 @@ FileManager.Files.loadMore = function () {
 		var el = document.querySelector('.load-more-button');
 
 		if (files.length == 0) {
-			el.parentNode.removeChild(el);
+			el && el.parentNode.removeChild(el);
 			return;
 		}
 
@@ -1470,7 +1470,7 @@ FileManager.Files.listHtml = function (files) {
 
 	function createFile(file) {
 		var _name = FileManager.Path(file.name).name();
-		var icon = typeToIcon(file.content_type);
+		var icon = (file.content_type && file.content_type.replace("/", "-").replace(".", "-")) || "file-type";
 		var name = makeShortFileName(_name);
 		var title = _name;
 		var size = FileManager.Utils.bytesToSize(file.bytes);
@@ -1485,65 +1485,6 @@ FileManager.Files.listHtml = function (files) {
 		html = html.replace('{{modified}}', FileManager.Utils.htmlEscape(modified));
 
 		return html;
-	}
-	function typeToIcon(type) {
-
-		type = type.split(';')[0];
-		var icon;
-
-		if (type.indexOf('audio') == 0) {
-			icon = 'file-type-music';
-
-		} else if (type == 'application/pdf') {
-			icon = 'file-type-pdf';
-
-		} else if (type.indexOf('image') == 0) {
-			icon = 'file-type-picture';
-
-		} else if (type.indexOf('video') == 0) {
-			icon = 'file-type-video';
-
-		} else if (type == 'application/msword' || type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-			icon = 'file-type-doc';
-
-		} else if (type == 'application/vnd.ms-excel' || type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-			icon = 'file-type-xsl';
-
-		} else if (type == 'application/vnd.ms-powerpoint' || type == 'application/vnd.openxmlformats-officedocument.presentationml.presentation') {
-			icon = 'file-type-ppt';
-
-		} else if (type == 'text/html' || type.toLowerCase().indexOf('xml') != -1) {
-			icon = 'file-type-xml';
-
-		} else if (type == 'text/x-python') {
-			icon = 'file-type-py';
-
-		} else if (type == 'text/x-lua') {
-			icon = 'file-type-lua';
-
-		} else if (type == 'application/x-tar' || type == 'application/zip' || type == 'application/gzip' || type == 'application/x-rar' || type == 'application/x-rar-compressed') {
-			icon = 'file-type-zip';
-
-		} else if (type == 'text/plain') {
-			icon = 'file-type-txt';
-
-		} else if (type == 'text/csv') {
-			icon = 'file-type-csv';
-
-		} else if (type == 'application/json') {
-			icon = 'file-type-json';
-
-		} else if (type == 'application/x-nexe') {
-			icon = 'file-type-nexe';
-
-		} else if (type == 'text/x-csrc' || type == 'text/x-chdr') {
-			icon = 'file-type-c';
-
-		} else {
-			icon = 'file-type-file';
-		}
-
-		return icon;
 	}
 
 	function makeShortFileName(n, len) {
