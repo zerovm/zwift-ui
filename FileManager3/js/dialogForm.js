@@ -25,17 +25,22 @@ document.addEventListener("DOMContentLoaded", function(){
 		input.classList.add(inputInvalidClass);
 	}
 
-	document.getElementById("CancelDialog").addEventListener("click", function(){
-		oncancel && oncancel();
+	function hide(){
 		dialogContainer.classList.add(hiddenClass);
 		input.value = "";
 		input.classList.remove(inputInvalidClass);
 		window.FileManager.errorMsgHandler.hide();
+	}
+
+	document.getElementById("CancelDialog").addEventListener("click", function(){
+		oncancel && oncancel();
+		hide();
 	});
 	form.addEventListener("submit", function(e){
 		e.stopPropagation();
 		e.preventDefault();
 		onconfirm && onconfirm(input);
+		hide();
 		return false;
 	});
 	if(!window.FileManager){
@@ -43,6 +48,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	}
 	window.FileManager.dialogForm = {
 		show: show,
+		hide: hide,
 		onerror: error
 	};
 });

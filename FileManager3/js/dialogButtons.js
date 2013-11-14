@@ -102,8 +102,8 @@ document.addEventListener("DOMContentLoaded", function(){
 	}
 
 	function onfile(input){
-		var path;
-		if(!input.value){
+		var path, inputValue = input.value;
+		if(!inputValue){
 			window.FileManager.errorMsgHandler.show({
 				header: errorMsgMap.emptyInput,
 				callback: window.FileManager.dialogForm.onerror
@@ -111,15 +111,14 @@ document.addEventListener("DOMContentLoaded", function(){
 			return;
 		}
 
-		path = FileManager.CurrentPath().withoutAccount() + input.value;
+		path = FileManager.CurrentPath().withoutAccount() + inputValue;
 
 		SwiftV1.createFile({
 			path: path,
 			contentType: 'text/plain',
+			data:"ewrqwerwqerwaer",
 			created: function(){
-				FileManager.fileEditor.show();
-				location.hash = location.hash + input.value;
-				FileManager.File.showMenu();
+				location.hash = location.hash + inputValue;
 				cancel();
 			},
 			error: ajaxError

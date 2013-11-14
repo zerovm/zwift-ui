@@ -16,7 +16,8 @@ document.addEventListener("DOMContentLoaded", function(){
 			buttonsClasses = {
 				save: "save",
 				undo: "undo",
-				redo: "redo"
+				redo: "redo",
+				saveAs: "save-as"
 			};
 
 		function enableButton(className){
@@ -34,19 +35,19 @@ document.addEventListener("DOMContentLoaded", function(){
 			}
 		}
 
-		function saveFile(e){
+		function save(account, path, oncreateCallback){
 			var requestArgs = {};
-			e.stopPropagation();
-			requestArgs.path = FileManager.CurrentPath().withoutAccount();
-			requestArgs.contentType = FileManager.File.contentType;
+			requestArgs.path = path;
+			requestArgs.contentType = FileManager.File.contentType;//TODO: change it
 			requestArgs.data = editor.getValue();
 
 			if (FileManager.ENABLE_SHARED_CONTAINERS) {
-				requestArgs.account = FileManager.CurrentPath().account();
+				requestArgs.account = account;
 			}
 
 			requestArgs.created = function () {
 				setButtonState(false, buttonsClasses.save);
+				oncreateCallback && oncreateCallback();
 			};
 			requestArgs.error = function (status, statusText) {
 				window.FileManager.errorMsgHandler.show({
@@ -57,6 +58,29 @@ document.addEventListener("DOMContentLoaded", function(){
 			};
 			SwiftV1.createFile(requestArgs);
 			editor.focus();
+		}
+
+		function saveFile(e){
+			var pathObj = FileManager.CurrentPath(),
+				path = pathObj.withoutAccount(),
+				account = pathObj.account();
+			e.stopPropagation();
+			save(account, path);
+		}
+
+		function saveAsFile(e){
+			e.stopPropagation();
+			window.FileManager.dialogForm.show("New name of file", saveAsConfirm, null);
+		}
+
+		function saveAsConfirm(input){
+			var pathObj = FileManager.CurrentPath(),
+				inputValue = input.value,
+				pathPrefix = pathObj.up().replace(pathObj.account() + "/", ""),
+				account = pathObj.account();
+			save(account, pathPrefix + inputValue, function(){
+				location.hash = pathObj.up() + inputValue;
+			});
 		}
 
 		function initEditor(){
@@ -90,6 +114,7 @@ document.addEventListener("DOMContentLoaded", function(){
 				editor.focus();
 			});
 			fileMenuButtonsWrapper.getElementsByClassName(buttonsClasses.save)[0].addEventListener("click", saveFile);
+			fileMenuButtonsWrapper.getElementsByClassName(buttonsClasses.saveAs)[0].addEventListener("click", saveAsFile);
 		}
 
 		this.id = "codeEditor";

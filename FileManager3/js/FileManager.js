@@ -1117,9 +1117,6 @@ FileManager.File.edit = function (el) {
 		FileManager.File.showMenu();
 		FileManager.File.showTxtButton();
 
-		document.querySelector('.menu-file button.save-as').classList.remove('selected');
-		document.querySelector('.save-as-dialog').setAttribute('hidden', 'hidden');
-
 		document.getElementById('UpButton').removeAttribute('disabled');
 	}
 };
@@ -1154,56 +1151,6 @@ FileManager.File.hideTxtButton = function () {
 		txtBtnArr[i].setAttribute('hidden', 'hidden');
 	}
 };
-
-FileManager.File.saveAs = function (el) {
-	if (el.classList.contains('selected')) {
-		el.classList.remove('selected');
-		document.querySelector('.save-as-dialog').setAttribute('hidden', 'hidden');
-	} else {
-		el.classList.add('selected');
-		document.querySelector('.save-as-dialog').removeAttribute('hidden');
-		document.querySelector('.save-as-input-path').value = FileManager.CurrentPath().get();
-		document.querySelector('.save-as-input-type').value = FileManager.File.contentType;
-	}
-};
-
-
-FileManager.SaveAs = {};
-
-FileManager.SaveAs.click = function () {
-	var pathEl = document.querySelector('.save-as-input-path');
-	var typeEl = document.querySelector('.save-as-input-type');
-	var path = pathEl.value;
-
-	if (!path) {
-		pathEl.classList.add('invalid-input');
-		return;
-	}
-
-	var args = {
-		path: FileManager.Path(path).withoutAccount(),
-		contentType: typeEl.value,
-		data: FileManager.File.codeMirror.getValue(),
-		created: function () {
-			location.hash = path;
-		},
-		error: function (status, statusText) {
-			var el = document.querySelector('.save-as-error-ajax');
-			FileManager.AjaxError.show(el, status, statusText);
-		}
-	};
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		args.account = FileManager.Path(path).account();
-	}
-
-	SwiftV1.createFile(args);
-};
-
-FileManager.SaveAs.clearErrors = function () {
-	document.querySelector('.save-as-input-path').classList.remove('invalid-input');
-};
-
 
 FileManager.Containers = {};
 
@@ -1908,10 +1855,6 @@ document.addEventListener('click', function (e) {
 		FileManager.Metadata.discardChanges();
 	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'remove-metadata')) {
 		FileManager.Metadata.remove(el);
-	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'save-as')) {
-		FileManager.File.saveAs(el);
-	} else if (FileManager.toolbox.getParentByClassName(e.target,'save-as-button')) {
-		FileManager.SaveAs.click();
 	} else if (FileManager.toolbox.getParentByClassName(e.target,'content-type-button')) {
 		FileManager.ContentType.click();
 	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'cancel-upload-button')) {
