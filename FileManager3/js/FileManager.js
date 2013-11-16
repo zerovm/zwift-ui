@@ -1113,7 +1113,7 @@ FileManager.File.edit = function (el) {
 		FileManager.CurrentDirLabel.setTooltip(filePath);
 
 		FileManager.File.contentType = contentType;
-		window.FileManager.fileEditor.show(data);
+		window.FileManager.fileEditor.show(data, contentType, fileName);
 		FileManager.File.showMenu();
 		FileManager.File.showTxtButton();
 
@@ -1470,7 +1470,7 @@ FileManager.Files.listHtml = function (files) {
 
 	function createFile(file) {
 		var _name = FileManager.Path(file.name).name();
-		var icon = (file.content_type && file.content_type.replace("/", "-").replace(".", "-")) || "file-type";
+		var icon = (file.content_type !== "undefined" && file.content_type.replace("/", "-").replace(".", "-")) || "file-type";
 		var name = makeShortFileName(_name);
 		var title = _name;
 		var size = FileManager.Utils.bytesToSize(file.bytes);

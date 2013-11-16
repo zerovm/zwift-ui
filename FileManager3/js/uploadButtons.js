@@ -10,13 +10,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		hiddenClass = "hidden",
 		buttons = document.getElementsByClassName("upload-button"),
 		slashAtEndRegex = /\/$/,
-		extRegex = /\.(\w*)$/,
 		uploads;
-
-	function getContentType(fileName){
-		var extension = fileName.match(extRegex);
-		return (extension && window.FileManager.toolbox.getMIMEType(extension[1])) || null;
-	}
 
 	uploads = new function(){
 		var uploadRequests = [],
@@ -26,8 +20,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		function uploadFile(file, index){
 			var _type, _name, id, url, uploadRequest;
 			_name = file.newName || file.name;
-			//_type = file.newType || getContentType(_name) || file.type;
-			_type = file.newType || file.type || getContentType(_name);
+			_type = file.newType || file.type || window.FileManager.toolbox.getMIMEType(_name);
 
 			id = 'upload-' + index;
 			/*itemUploadHtml = itemUploadTemplate;
@@ -49,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			uploadRequest.open('PUT', url, true);
 			uploadRequest.onload = function(){
 				uploadingFiles--;
-				 setProgress(this.upload['id'], 100, 'Upload completed.');
+				setProgress(this.upload['id'], 100, 'Upload completed.');
 
 				if(uploadingFiles == 0){
 					FileManager.ContentChange.animate();
@@ -131,7 +124,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
 	function change(e){
 		/*e.stopPropagation();
-		e.preventDefault();*/
+		 e.preventDefault();*/
 		switch(e.target.dataset.action){
 			case "file":
 				uploads.uploadFiles(e);

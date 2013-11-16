@@ -83,6 +83,17 @@ document.addEventListener("DOMContentLoaded", function(){
 			});
 		}
 
+		function setMode(editor, type, name){
+			var pathPrefix = "ace/mode/",
+				type = FileManager.toolbox.isEditable(type, name);
+			window.editor = editor;
+			if(type){
+				editor.getSession().setMode(pathPrefix + type);
+			}else{
+				editor.getSession().setMode("");
+			}
+		}
+
 		function initEditor(){
 			editor = ace.edit(that.id);
 			fileMenuButtonsWrapper = document.getElementsByClassName("menu-file")[0];
@@ -123,12 +134,12 @@ document.addEventListener("DOMContentLoaded", function(){
 			window.removeEventListener("hashchange", that.hide);
 			document.body.classList.remove(showClass);
 		};
-		this.show = function(data){
-			this.set(data);
+		this.show = function(data, type, name){
+			this.set(data, type, name);
 			window.addEventListener("hashchange", that.hide);
 			document.body.classList.add(showClass);
 		};
-		this.set = function(data){
+		this.set = function(data, type, name){
 			var session;
 			if(!editor){
 				initEditor();
@@ -137,6 +148,7 @@ document.addEventListener("DOMContentLoaded", function(){
 					fileMenuButtonsWrapper.classList.remove(className);
 				});
 			}
+			setMode(editor, type, name);
 			session = editor.getSession();
 			session.setValue(data);
 			undoManager = session.getUndoManager();

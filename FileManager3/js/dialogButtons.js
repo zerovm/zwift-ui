@@ -116,7 +116,6 @@ document.addEventListener("DOMContentLoaded", function(){
 		SwiftV1.createFile({
 			path: path,
 			contentType: 'text/plain',
-			data:"ewrqwerwqerwaer",
 			created: function(){
 				location.hash = location.hash + inputValue;
 				cancel();
