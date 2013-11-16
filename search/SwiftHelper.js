@@ -30,28 +30,30 @@
 		execute(data);
 
 		function createConfiguration(){
-			var account = ZLitestackDotCom.getAccount();//TODO: find out description for params (num of outputed files etc)
-			return [
-				{
-					'name': 'search',
-					'exec': {
-						'path': 'swift://' + account + '/.gui/LiteStack/Search/0.1/execute/sys/search.nexe',
-						'args': '-c index/zsphinx.conf -i mainindex -m -ws ' + input
-					},
-					'file_list': [
-						{
-							'device': 'input',
-							'path': 'swift://' + account + '/.gui/LiteStack/Search/0.1/execute/sys/rwindex' + lastRWIndex
+			var account = ZLitestackDotCom.getAccount(),
+				additionParams = window.searchApp.preferences.getPreference("shorttext") ? "" : "-j key value ",
+				request = [
+					{
+						'name': 'search',
+						'exec': {
+							'path': 'swift://' + account + '/.gui/LiteStack/Search/0.1/execute/sys/search.nexe',
+							'args': '-c index/zsphinx.conf -i mainindex -m -ws ' + additionParams + input
 						},
-						{
-							'device': 'stdout'
-						},
-						{
-							'device': 'stderr'
-						}
-					]
-				}
-			];
+						'file_list': [
+							{
+								'device': 'input',
+								'path': 'swift://' + account + '/.gui/LiteStack/Search/0.1/execute/sys/rwindex' + lastRWIndex
+							},
+							{
+								'device': 'stdout'
+							},
+							{
+								'device': 'stderr'
+							}
+						]
+					}
+				];
+			return request;
 		}
 
 		function execute(data){
