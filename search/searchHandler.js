@@ -55,6 +55,11 @@
 
 	function splitResult(result, input){
 		var splittedResult;
+
+		if(!result){
+			displayNoResult();
+			return;
+		}
 		splittedResult = result.split(lineSplitterRegex).filter(function(str){
 			return str;
 		});
@@ -69,7 +74,6 @@
 			processMultipleRequests(splittedResult, input);
 			return;
 		}
-		displayNoResult();
 	}
 
 	function processMultipleRequests(splittedResult, input){

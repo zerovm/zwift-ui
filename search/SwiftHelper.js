@@ -2,25 +2,25 @@
 	"use strict";
 
 	var SearchApp = {},
-		lastRWIndex = 0;
+		lastRWIndex = 0,
+		isLastRWIndexFetched;
 
 	SearchApp.search = function(text, callback, outputEl){
 		var input, i;
-		input = parse(text);
-		function parse(str){//TODO: wtf is it?
-			var arr = str.split('"');
-			for(i = 1; i < arr.length; i += 2){
-				arr[i] = arr[i].replace(':', ' ');
-			}
-			str = arr.join('');
-			arr = str.split(' ');
-			for(i = 0; i < arr.length; i++){
-				if(arr[i].indexOf(':') != -1){
-					arr[i] = '-j ' + arr[i].replace(':', ' ');
-				}
-			}
-			return arr.join(' ');
+		if(text instanceof Object){//!!!!!!!!TODO:rewrite it!!!!!!!!!!!!!!
+			outputEl = text[2];
+			callback = text[1];
+			text = text[0];
 		}
+		input = text;
+
+
+		if(!isLastRWIndexFetched){
+			isLastRWIndexFetched = true;
+			getLastIndexFileName(SearchApp.search, arguments);
+			return;
+		}
+
 
 		outputEl.textContent = 'Loading...';
 		outputEl.classList.remove('error');
@@ -80,6 +80,12 @@
 		indexResultEl.classList.remove('error');
 		indexResultEl.textContent = '';
 		indexResultEl.removeAttribute('hidden');
+
+		if(!isLastRWIndexFetched){
+			isLastRWIndexFetched = true;
+			getLastIndexFileName(SearchApp.index, paramsObj);
+			return;
+		}
 
 		index(JSON.stringify(createConfiguration()));
 
@@ -169,9 +175,6 @@
 					"replicate": 0
 				});
 			});
-			console.log("index")
-			console.log(lastRWIndex);
-			console.log(request[5].file_list)
 			return request;
 		}
 
@@ -245,9 +248,6 @@
 					"replicate": 0
 				}
 			];
-			console.log("merge")
-			console.log(lastRWIndex);
-			console.log(result[0].file_list)
 			return result;
 		}
 	};
@@ -324,39 +324,29 @@
 		}
 	};
 
-
-	//hack-hack
-
-	document.addEventListener("DOMContentLoaded", function(){
-		setTimeout(function(){
-			console.log("started")
-			SwiftV1.Container.get({
-				format: "json",
-				prefix: "LiteStack/Search/0.1/execute/sys/",
-				DELIMITER: "/",
-				containerName: ".gui",
-				success: function(response){
-					var maxRWIndexNum = "";
-					response = JSON.parse(response);
-					response.forEach(function(fileObj){
-						var rw = fileObj.name.match(/rwindex\d*$/),
-							rwIndex;
-						if(rw){
-							rwIndex = parseInt(rw[0].replace("rwindex", ""));
-							if(!isNaN(rwIndex)){
-								lastRWIndex = rwIndex;
-							}
+	function getLastIndexFileName(callback, params){
+		SwiftV1.Container.get({
+			format: "json",
+			prefix: "LiteStack/Search/0.1/execute/sys/",
+			DELIMITER: "/",
+			containerName: ".gui",
+			success: function(response){
+				response = JSON.parse(response);
+				response.forEach(function(fileObj){
+					var rw = fileObj.name.match(/rwindex\d*$/),
+						rwIndex;
+					if(rw){
+						rwIndex = parseInt(rw[0].replace("rwindex", ""));
+						if(!isNaN(rwIndex) && rwIndex > lastRWIndex){
+							lastRWIndex = rwIndex;
 						}
-					});
-					console.log(lastRWIndex);
-				},
-				notExist: function(response){}
-			});
-		}, 1000)
-	});
-
-	//hack-hack ends here
-
+					}
+				});
+				callback(params);
+			},
+			notExist: function(response){}
+		});
+	}
 
 	window.SearchApp = SearchApp;
 })();
