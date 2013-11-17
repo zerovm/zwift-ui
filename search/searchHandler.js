@@ -33,6 +33,7 @@
 		divString = "div",
 		tagStrongStart = "<strong>",
 		tagStrongFinish = "</strong>",
+		noResultClass = "no-result",
 		callbackCounter,
 		callbackCounterMax;
 
@@ -51,6 +52,7 @@
 	function displayNoResult(text){
 		removeChildren(searchResultEl);
 		searchResultEl.innerHTML = text || noResultText;
+		searchResultEl.classList.add(noResultClass);
 	}
 
 	function splitResult(result, input){
@@ -137,6 +139,7 @@
 		if(isError){
 			preview.innerHTML = "An error occured";
 		}else{
+			searchResultEl.classList.remove(noResultClass);
 			if(requestLines.length > 2){//third line should be a flag marked metadata
 				onlyWordRegexp = getWordRegex(options.input);
 				if(options.location.match(onlyWordRegexp)){

@@ -7,8 +7,8 @@
 }
 .progress-bar .ui-progressbar-value{
 	width: 0;
-	border: 1px solid #d3d3d3;
-	background: #d3d3d3;
+	border: 1px solid rgb(163, 176, 193);
+	background: rgba(163, 176, 193, 0.85);
 	color: #fff;
 	font-weight: bold;
 }

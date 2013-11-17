@@ -1,12 +1,14 @@
 .preferences{
 	position: relative;
 	float: left;
+	margin: 0;
+	height: 65px;
 }
 .preferences .show-preferences{
 	border: none;
 	outline: none;
-	width: 36px;
-	height: 36px;
+	width: 55px;
+	height: 45px;
 	background: url(gear.png) center center no-repeat;
 	background-size: 100% auto;
 }
@@ -14,24 +16,25 @@
 	overflow: hidden;
 	display: inline-block;
 	position: absolute;
-	left: 46px;
-	top: 0;
+	left: 60px;
+	top: -30px;
+	height: 100px;
 }
 .preferences .preferences-list{
 	width: 120px;
 	padding: 0;
 	margin: 0;
-	transform: translate3d(0, -150%, 0);
-	-moz-transform: translate3d(0, -150%, 0);
-	-webkit-transform: translate3d(0, -150%, 0);
+	transform: translate3d(0, -200%, 0);
+	-moz-transform: translate3d(0, -200%, 0);
+	-webkit-transform: translate3d(0, -200%, 0);
 	transition: 155ms transform 0 ease-out;
 	-moz-transition: -moz-transform 155ms ease-in-out 0ms;
 	-webkit-transition: 155ms -webkit-transform 0ms ease-out;
 }
 .preferences.visible .preferences-list{
-	transform: translate3d(0, 0, 0);
-	-moz-transform: translate3d(0, 0, 0);
-	-webkit-transform: translate3d(0, 0, 0);
+	transform: translate3d(0, 30px, 0);
+	-moz-transform: translate3d(0, 30px, 0);
+	-webkit-transform: translate3d(0, 30px, 0);
 	transition-duration: 333ms;
 	-moz-transition-duration: 333ms;
 	-webkit-transition-duration: 333ms;

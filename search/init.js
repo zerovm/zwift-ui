@@ -71,8 +71,6 @@ document.addEventListener('DOMContentLoaded', function(){
 	document.addEventListener('click', function(e){//TODO: change it!!!!!!
 		if(isIndexButton(e)){
 			indexMemo.onInput(window.searchApp.indexInput, window.searchApp.index);
-		}else if(isIndexResultCloseButton(e)){
-			indexResultCloseButtonClick(e);
 		}else if(isSearchButton(e)){
 			clearTimeout(timeout);
 			searchMemo.onInput(window.searchApp.searchInput, window.searchApp.search);
@@ -84,22 +82,12 @@ document.addEventListener('DOMContentLoaded', function(){
 			return checkParentClassName(e.target, "index-button");
 		}
 
-		function isIndexResultCloseButton(e){
-			return e.target.classList.contains('index-result-close-button');
-		}
-
 		function isSearchButton(e){
 			return e.target.classList.contains('search-button');
 		}
 
 		function isPreferences(e){
 			return e.target.classList.contains('preferences-element');
-		}
-
-		function indexResultCloseButtonClick(e){
-			var indexResultEl = document.querySelector('.index-result');
-			indexResultEl.setAttribute('hidden', 'hidden');
-			e.target.setAttribute('hidden', 'hidden');
 		}
 	});
 });

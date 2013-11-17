@@ -199,7 +199,6 @@
 			var reader = new FileReader();
 			reader.addEventListener('load', function(e){
 				indexResultEl.textContent = e.target.result;
-				document.querySelector('.index-result-close-button').removeAttribute('hidden');
 			});
 			reader.addEventListener('error', function(message){
 				indexResultEl.textContent = message;
@@ -215,7 +214,6 @@
 				contentType: 'application/json',
 				success: function(result, report){
 					indexResultEl.textContent = 'Merge completed. ' + result;
-					document.querySelector('.index-result-close-button').removeAttribute('hidden');
 				},
 				error: function(status, statusText, response){
 					var errorMessage = '';
