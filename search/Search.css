@@ -39,7 +39,7 @@ body{
 	padding-bottom: 10px;
 }
 .strip .wrapper{
-	margin-top: 23px;
+	padding-top: 17px;
 	overflow: hidden;
 }
 .index-container{
@@ -216,30 +216,24 @@ button, p, li{
 	background: url(img/buttons.png) -77px;
 	height: 51px;
 }
-
-
-
-::-webkit-scrollbar {
+::-webkit-scrollbar{
+	-moz-appearence: none;
 	width: 14px;
+	border: 1px solid #76869B;
 }
-::-webkit-scrollbar-button {
+::-webkit-scrollbar-button{
 	background: url(img/buttons.png) -154px -17px;
 	height: 14px;
 }
-::-webkit-scrollbar-button:end {
+::-webkit-scrollbar-button:end{
 	background-position-x: -135px;
-}
-::-webkit-scrollbar{
-	border: 1px solid #76869B;
 }
 ::-webkit-scrollbar-thumb{
 	border: 1px solid gray;
+	background: #d6d6d6;
+	box-shadow: inset 2px 0 4px 0 rgba(99, 112, 129, 0.7);
 }
 ::-webkit-scrollbar-track-piece{
 	background: #f4f4f4;
-	box-shadow: inset 2px 0 4px 0 rgba(0,0,0,0.5);
-}
-::-webkit-scrollbar-thumb{
-	background: #d6d6d6;
-	box-shadow: inset 2px 0 4px 0 rgba(99,112,129,0.7);
+	box-shadow: inset 2px 0 4px 0 rgba(0, 0, 0, 0.5);
 }

@@ -2,7 +2,8 @@
 	position: relative;
 	float: left;
 	margin: 0;
-	height: 65px;
+	height: 70px;
+	width: 185px;
 }
 .preferences .show-preferences{
 	border: none;
@@ -32,9 +33,9 @@
 	-webkit-transition: 155ms -webkit-transform 0ms ease-out;
 }
 .preferences.visible .preferences-list{
-	transform: translate3d(0, 30px, 0);
-	-moz-transform: translate3d(0, 30px, 0);
-	-webkit-transform: translate3d(0, 30px, 0);
+	transform: translate3d(0, 24px, 0);
+	-moz-transform: translate3d(0, 24px, 0);
+	-webkit-transform: translate3d(0, 24px, 0);
 	transition-duration: 333ms;
 	-moz-transition-duration: 333ms;
 	-webkit-transition-duration: 333ms;
