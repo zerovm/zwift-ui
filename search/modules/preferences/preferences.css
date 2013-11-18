@@ -22,7 +22,6 @@
 	height: 100px;
 }
 .preferences .preferences-list{
-	width: 120px;
 	padding: 0;
 	margin: 0;
 	transform: translate3d(0, -200%, 0);
@@ -31,16 +30,20 @@
 	transition: 155ms transform 0 ease-out;
 	-moz-transition: -moz-transform 155ms ease-in-out 0ms;
 	-webkit-transition: 155ms -webkit-transform 0ms ease-out;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
 }
 .preferences.visible .preferences-list{
-	transform: translate3d(0, 24px, 0);
-	-moz-transform: translate3d(0, 24px, 0);
-	-webkit-transform: translate3d(0, 24px, 0);
+	transform: translate3d(0, 27px, 0);
+	-moz-transform: translate3d(0, 27px, 0);
+	-webkit-transform: translate3d(0, 27px, 0);
 	transition-duration: 333ms;
 	-moz-transition-duration: 333ms;
 	-webkit-transition-duration: 333ms;
 }
 .preferences .preferences-list li{
+	display: flex;
 	font-size: 14px;
 	white-space: nowrap;
 	list-style: none;
@@ -76,8 +79,8 @@
 	transition: 150ms background 0 ease-in-out;
 	-moz-transition: background 150ms ease-in-out 0ms;
 	-webkit-transition: 150ms background 0ms ease-in-out;
-	position: absolute;
-	left: 0;
+	margin-right: 10px;
+	position: relative;
 	top: 0;
 }
 .preferences .input-slider{
@@ -101,7 +104,8 @@
 	transition-property: color;
 	-moz-transition-property: color;
 	-webkit-transition-property: color;
-	vertical-align: middle;
+	position: relative;
+	top: 3px;
 }
 .preferences li input:checked ~ span{
 	color: black;
