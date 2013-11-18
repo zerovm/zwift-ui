@@ -65,7 +65,7 @@
 	border-spacing: 0;
 	border-collapse: collapse;
 }
-.file-selector .top-wrapper{
+.file-selector .content-wrapper{
 	width: 100%;
 	height: 50px;
 	border: 1px solid rgb(229, 151, 0);
@@ -87,25 +87,50 @@
 }
 
 .popup-wrapper.file-selector .popup-box-wrapper{
-	width: 50%;
-	height: auto;
-	position: relative;
-	left: 0;
-	top: 0;
-	margin: 13% auto;
-	padding: 10px;
-	border: 1px solid rgb(229, 151, 0);
-	background: white;
-	border-radius: 2px;
+	padding: 88px 0 75px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	width: 85%;
+	max-width: 735px;
+	height: 100%;
+	margin: 0 auto;
 }
 .popup-wrapper.file-selector .popup{
-	width: 98%;
-	min-height: 215px;
-	height: auto;
-	margin: 0 auto;
+	padding: 3% 0;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	flex: 1;
 	position: static;
-	box-shadow: none;
-	border-radius: 2px;
+	background: transparent;
+	width: 100%;
+}
+.popup-wrapper.file-selector .button-wrapper,
+.popup-wrapper.file-selector .popup::before{
+	background: #93b3cc;
+	border-radius: 8px;
+	border: 1px solid #596e7a;
+	-webkit-box-shadow: 0 1px 3px 1px rgba(0,0,0,0.3);
+}
+.popup-wrapper.file-selector .popup::before{
+	content: "";
+	width: 100%;
+	height: 30px;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+.popup-wrapper.file-selector .popup > div:first-child{
+	min-height: 215px;
+	background: white;
+	flex: 1;
+	display: flex;
+}
+.popup-wrapper.file-selector .content-wrapper,
+.popup-wrapper.file-selector .table-wrapper{
+	width: 98%;
 }
 .popup-wrapper.file-selector .table-wrapper{
 	border: 1px solid rgb(229, 151, 0);
@@ -115,18 +140,23 @@
 	min-height: 175px;
 	overflow-y: auto;
 	padding-bottom: 15px;
+	flex: 1;
 }
 .popup-wrapper.file-selector .popup>.button-wrapper{
 	text-align: center;
-	width: auto;
-	height: auto;
+	width: 100%;
+	height: 75px;
 	border: none;
 	padding: 0;
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
 }
 .popup-wrapper.file-selector .button-wrapper .close-button{
 	display: inline-block;
 	margin: 15px 20px 0;
+	background: white;
 }
+/*
 
 .file-selector ::-webkit-scrollbar{
 	width: 12px;
@@ -150,4 +180,4 @@
 }
 .file-selector ::-webkit-scrollbar-thumb:active{
 	-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.6);
-}
+}*/

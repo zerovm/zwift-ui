@@ -168,10 +168,12 @@
 
 		function createHTML(path){
 			var shownObject, topperLevel, currentDirectory,
-				topWrapper = document.createElement("div"),
+				contentWrapper = document.createElement("div"),
+				headerWrapper = document.createElement("div"),
 				tableWrapper = document.createElement("div"),
 				pathHeaderEl;
-			topWrapper.className = "top-wrapper";
+			contentWrapper.className = "content-wrapper";
+			headerWrapper.className = "top-wrapper";
 			tableWrapper.className = "table-wrapper";
 			pathHeaderEl = document.createElement("h2");
 			table = document.createElement("table");
@@ -180,7 +182,7 @@
 				topperLevel = path.split(allSlashRegex).filter(function(str){return str});
 				currentDirectory = topperLevel.pop();
 				topperLevel = topperLevel.join(slashStr);
-				topWrapper.appendChild(createBackbutton(topperLevel));
+				headerWrapper.appendChild(createBackbutton(topperLevel));
 				pathHeaderEl.innerText ? pathHeaderEl["innerText"] = topperLevel + currentDirectory + slashStr : pathHeaderEl["textContent"] = topperLevel + currentDirectory + slashStr;
 				shownObject = getNode(path).childNodes;
 
@@ -191,11 +193,11 @@
 			Object.keys(shownObject).forEach(function(containerName){
 				table.appendChild(createNodes(shownObject[containerName], containerName));
 			});
-
-			topWrapper.appendChild(pathHeaderEl);
-			fragment.appendChild(topWrapper);
+			headerWrapper.appendChild(pathHeaderEl);
 			tableWrapper.appendChild(table);
-			fragment.appendChild(tableWrapper);
+			contentWrapper.appendChild(headerWrapper);
+			contentWrapper.appendChild(tableWrapper);
+			fragment.appendChild(contentWrapper);
 			return fragment;
 		}
 
