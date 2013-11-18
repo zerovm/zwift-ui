@@ -5,10 +5,13 @@
 	width: auto;
 	height: 15px;
 }
-.progress-bar .ui-progressbar-value{
+.progress-bar .ui-progressbar-value.ui-widget-content{
 	width: 0;
-	border: 1px solid rgb(163, 176, 193);
-	background: rgba(163, 176, 193, 0.85);
+	background: #5c727a;
 	color: #fff;
 	font-weight: bold;
+}
+.progress-bar-wrapper .ui-widget-content{
+	background: #8f9ba0;
+	color: #333333;
 }

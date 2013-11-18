@@ -44,10 +44,20 @@ body{
 }
 .index-container{
 	float: right;
+	position: relative;
 	margin: 0;
 	min-width: 355px;
 	width: 60%;
+	height: 70px;
 	max-width: 430px;
+}
+.index-result{
+	position: absolute;
+	left: 6px;
+	top: 0;
+	color: white;
+	font-size: 13px;
+	line-height: 16px;
 }
 .index-button{
 	font-size: large;
@@ -63,8 +73,17 @@ body{
 	vertical-align: middle;
 	margin-right: 10px;
 }
+.progress-bar-wrapper,
 .index-input{
 	width: 84%;
+}
+.progress-bar-wrapper{
+	position: absolute;
+	left: 5px;
+	bottom: 8px;
+	width: 82%;
+}
+.index-input{
 	height: 35px;
 	padding: 0 3px;
 	font-size: large;
