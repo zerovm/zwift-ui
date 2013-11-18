@@ -66,17 +66,29 @@ FileManager.CurrentDirLabel = {};
 
 FileManager.CurrentDirLabel.MAX_LENGTH = 40;
 
+document.addEventListener("DOMContentLoaded", function(){//TODO: extract into separated file!!!
+	document.querySelector('.current-dir-label').addEventListener("click", function(e){
+		if(e.target.nodeName === "A"){
+			e.preventDefault();
+			e.stopPropagation();
+			location.hash = location.hash.match(new RegExp(".*" + e.target.textContent + ".")).pop();
+			return false;
+		}
+	});
+});
+
 FileManager.CurrentDirLabel.setContent = function (content, isArrowsSeparated) {
 	var el = document.querySelector('.current-dir-label'),
-		splittedContent, i, prevValue,
+		splittedContent, i, prevValue, joiner = "/",
 		isCarringHiddenClass;//for browsers img rendering issue
 	if(el.classList.contains("hidden")){
 		isCarringHiddenClass = true;
 	}else{
 		el.classList.add("hidden");
 	}
+	el.removeChildren();
 	if(content.length > FileManager.CurrentDirLabel.MAX_LENGTH){
-		splittedContent = content.split("/");
+		splittedContent = content.split("/").filter(function(str){return str;});
 		content = "";
 		i = splittedContent.length - 1;
 		do{
@@ -89,10 +101,13 @@ FileManager.CurrentDirLabel.setContent = function (content, isArrowsSeparated) {
 			content = splittedContent[splittedContent.length];
 		}
 	}
-	el.textContent = content;
 	if(isArrowsSeparated){
-		el.innerHTML = el.innerHTML.replace(/\//g, "<img class='path-separator' src='img/go.png'/>");
+		joiner = "<img class='path-separator' src='img/go.png'/>";
 	}
+	content = content.split("/").map(function(pathPart){
+		return "<a href='#'>" + pathPart + "</a>";
+	}).join(joiner);
+	el.innerHTML = content;
 	!isCarringHiddenClass && el.classList.remove("hidden");
 };
 
