@@ -23,30 +23,42 @@
 	<script src="init.js" type="text/javascript"></script>
 </head>
 <body>
-<div class="preferences">
-	<button role="toggler" class="show-preferences preferences-element"></button>
-	<div class="preferences-list-wrapper">
-		<ul class="preferences-list">
-			<li>
-				<input autocomplete="off" data-preference="forwardsearch" class="preferences-element" type="checkbox" checked="true"/><span>forward search</span>
-				<div class="input-slider-wrapper"><div class="input-slider"></div></div>
-			</li>
-		</ul>
+<div class="elements-wrapper">
+	<div class="strip">
+		<div class="wrapper">
+			<div class="preferences">
+				<button role="toggler" class="show-preferences preferences-element"></button>
+				<div class="preferences-list-wrapper">
+					<ul class="preferences-list">
+						<li>
+							<input autocomplete="off" data-preference="forwardsearch" class="preferences-element" type="checkbox" checked="true"/>
+							<div class="input-slider-wrapper"><div class="input-slider"></div></div>
+							<span>forward search</span>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="file-list-container">
+				<div>
+					<input autocomplete="off" class="file-list-input dark-blue-border" placeholder="Container Name[/Path to file]" value="search/doc/" tabindex="100">
+					<button class="file-list-button"></button>
+				</div>
+				<div class="overlay hide"></div>
+			</div>
+		</div>
 	</div>
-</div>
-<div class="file-list-container">
-	<div>
-		<input autocomplete="off" class="file-list-input" placeholder="Container Name[/Path to file]" value="search/doc/" tabindex="100">
-		<button class="file-list-button"><img src="img/file-list.png">File tree</button>
+	<div class="wrapper">
+		<div class="search-container-wrapper">
+			<div class="search-container">
+				<input autocomplete="off" class="search-input dark-blue-border" placeholder="search" autofocus="autofocus" tabindex="101">
+				<button class="search-button"></button>
+			</div>
+			<div class="result-container">
+				<div class="search-results dark-blue-border" hidden></div>
+			</div>
+		</div>
 	</div>
-	<div class="overlay hide"></div>
-</div>
-<div class="search-container-wrapper">
-	<div class="search-container">
-		<input autocomplete="off" class="search-input" placeholder="search" autofocus="autofocus" tabindex="101">
-		<img src="img/search.png" class="search-button">
-		<div class="search-results" hidden></div>
-	</div>
+	<div class="bottom strip"></div>
 </div>
 </body>
 </html>
