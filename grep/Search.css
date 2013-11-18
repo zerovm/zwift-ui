@@ -239,6 +239,7 @@ button, p, li{
 	box-shadow: inset 2px 0 4px 0 rgba(0, 0, 0, 0.5);
 }
 button:hover,
+button:focus,
 button:active{
 	border:none;
 }

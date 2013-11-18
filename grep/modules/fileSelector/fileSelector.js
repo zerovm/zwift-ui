@@ -13,10 +13,10 @@
 		allSlashRegex = /\//g,
 		slashStr = "/",
 		emptyString = "",
-		trString = "tr",
-		tdString = "td",
+		divString = "div",
+		liString = "li",
 		imgString = "img",
-		iconMap = {
+		iconMap = {//TODO: change to sprite
 			"text/plain": "img/file32_txt.png",
 			"application/pdf": "img/file32_pdf.png",
 			"application/msword": "img/file32_doc.png",
@@ -60,15 +60,11 @@
 	}
 
 	function getInvertedDate(time){
-		var alternative = (new Date(time)).toDateString();
-
-		var diff = ((new Date()).getTime() - (new Date(time)).getTime()) / 1000,
+		var alternative = new Date(time),
+			pretty,
+			diff = (new Date().getTime() - alternative.getTime()) / 1000,
 			day_diff = Math.floor(diff / 86400);
-
-		if(isNaN(day_diff) || day_diff < 0 || day_diff >= 31)
-			return alternative;
-
-		var pretty = day_diff == 0 && (
+		pretty = day_diff == 0 && (
 			diff < 60 && "just now" ||
 				diff < 120 && "1 minute ago" ||
 				diff < 3600 && Math.floor(diff / 60) + " minutes ago" ||
@@ -77,8 +73,7 @@
 			day_diff == 1 && "Yesterday" ||
 			day_diff < 7 && day_diff + " days ago" ||
 			day_diff < 31 && Math.ceil(day_diff / 7) + " weeks ago";
-
-		return pretty || alternative;
+		return pretty || alternative.toDateString();
 	}
 
 	function FileSelector(params){
@@ -87,7 +82,7 @@
 			chosenFileList,
 			chosenFileListArray,
 			isEverythingOk = true,
-			table;
+			list;
 
 		function onBroke(response){
 			isEverythingOk = false;
@@ -112,37 +107,35 @@
 		}
 
 		function createNodes(obj, containerName){
-			var tr = document.createElement(trString), td, img,
-				innerText = tr.innerText ? "innerText" : "textContent";//TODO: extend htmlelement
+			var tr = document.createElement(liString), td, img;//TODO: extend htmlelement
 			tr.dataset.path = obj.fullPath || obj.name;
-			tr.className = trClassName;
-			td = document.createElement(tdString);
-			td.className = "item-icon radio";
-			td.appendChild(document.createElement("span"));
-			tr.appendChild(td);
-
-			td = document.createElement(tdString);
+			tr.className = trClassName + " tr";
+			td = document.createElement(divString);
 			img = document.createElement(imgString);
 			img.src = getImgSrc(obj.content_type);
 			td.appendChild(img);
-			td.className = "item-icon";
+			td.className = "item-icon td";
 			tr.appendChild(td);
 
-			td = document.createElement(tdString);
-			td[innerText] = containerName;
-			td.className = "item-name";
+			td = document.createElement(divString);
+			td.textContent = containerName;
+			td.className = "item-name td";
 			tr.appendChild(td);
 
-			td = document.createElement(tdString);
-			obj.bytes && (td[innerText] = getTransformedBytes(parseInt(obj.bytes)));
-			td.className = "item-size";
+			td = document.createElement(divString);
+			obj.bytes && (td.textContent = getTransformedBytes(parseInt(obj.bytes)));
+			td.className = "item-size td";
 			tr.appendChild(td);
 
-			td = document.createElement(tdString);
-			obj.last_modified && (td[innerText] = getInvertedDate(obj.last_modified));
-			td.className = "item-modified";
+			td = document.createElement(divString);
+			obj.last_modified && (td.textContent = getInvertedDate(obj.last_modified));
+			td.className = "item-modified td";
 			tr.appendChild(td);
 
+			td = document.createElement(divString);
+			td.className = "item-icon radio td";
+			td.appendChild(document.createElement("span"));
+			tr.appendChild(td);
 			return tr;
 		}
 
@@ -168,36 +161,34 @@
 
 		function createHTML(path){
 			var shownObject, topperLevel, currentDirectory,
-				contentWrapper = document.createElement("div"),
-				headerWrapper = document.createElement("div"),
-				tableWrapper = document.createElement("div"),
+				headerWrapper = document.createElement(divString),
+				listWrapper = document.createElement(divString),
 				pathHeaderEl;
-			contentWrapper.className = "content-wrapper";
-			headerWrapper.className = "top-wrapper";
-			tableWrapper.className = "table-wrapper";
+			headerWrapper.className = "header-wrapper";
+			listWrapper.className = "list-wrapper";
 			pathHeaderEl = document.createElement("h2");
-			table = document.createElement("table");
+			list = document.createElement("ul");
 			fragment = document.createDocumentFragment();
 			if(path){
-				topperLevel = path.split(allSlashRegex).filter(function(str){return str});
+				topperLevel = path.split(allSlashRegex).filter(function(str){
+					return str
+				});
 				currentDirectory = topperLevel.pop();
 				topperLevel = topperLevel.join(slashStr);
 				headerWrapper.appendChild(createBackbutton(topperLevel));
-				pathHeaderEl.innerText ? pathHeaderEl["innerText"] = topperLevel + currentDirectory + slashStr : pathHeaderEl["textContent"] = topperLevel + currentDirectory + slashStr;
+				pathHeaderEl.textContent = topperLevel + currentDirectory + slashStr;
 				shownObject = getNode(path).childNodes;
-
 			}else{
-				pathHeaderEl.innerText ? pathHeaderEl["innerText"] = "Root" : pathHeaderEl["textContent"] = "Root";
+				pathHeaderEl.textContent = "Root";
 				shownObject = pathObj.childNodes;
 			}
 			Object.keys(shownObject).forEach(function(containerName){
-				table.appendChild(createNodes(shownObject[containerName], containerName));
+				list.appendChild(createNodes(shownObject[containerName], containerName));
 			});
 			headerWrapper.appendChild(pathHeaderEl);
-			tableWrapper.appendChild(table);
-			contentWrapper.appendChild(headerWrapper);
-			contentWrapper.appendChild(tableWrapper);
-			fragment.appendChild(contentWrapper);
+			listWrapper.appendChild(list);
+			fragment.appendChild(headerWrapper);
+			fragment.appendChild(listWrapper);
 			return fragment;
 		}
 
@@ -241,9 +232,9 @@
 						containerNum++;
 						pathObj.childNodes[container.name] = container.createCopy();
 						window.grepApp.getFilelist({
-							input:container.name,
-							onsuccess:createContainerBranch,
-							onerror:onBroke
+							input: container.name,
+							onsuccess: createContainerBranch,
+							onerror: onBroke
 						});
 					}
 				});
@@ -272,7 +263,6 @@
 
 		function onDecline(){
 			chosenFileList = {};
-			chosenFileListArray;
 			params && params.ondecline() && params.ondecline();
 		}
 
@@ -281,8 +271,8 @@
 			params && params.onbeforeCreate && params.onbeforeCreate.apply(that);
 			window.grepApp.getFilelist({
 				input: emptyString,
-				onsuccess:createPathObj,
-				onerror:onBroke
+				onsuccess: createPathObj,
+				onerror: onBroke
 			});
 		}
 
@@ -305,7 +295,7 @@
 			if(isSorted){
 				chosenFileListArray = chosenFileListArray.map(function(path){
 					return getNode(path);
-				}).sort(function(a,b){
+				}).sort(function(a, b){
 						return Date.parse(a.last_modified) - Date.parse(b.last_modified);
 					}).map(function(pathObj){
 						return pathObj.fullPath;
