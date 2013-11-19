@@ -5,6 +5,8 @@ Auth.useZLitestackDotCom();
 var FileManager;
 if(!window.FileManager){
 	FileManager = window.FileManager = {};
+}else{
+	FileManager = window.FileManager;
 }
 
 FileManager.ENABLE_SHARED_CONTAINERS = true;
@@ -219,7 +221,7 @@ FileManager.execute = function (data, contentType) {
 	});
 
 	function showResult(result) {
-		var el = document.querySelector('.scrolling-content');
+		var el = window.FileManager.elements.itemsWrapperEl;
 		FileManager.File.hideMenu();
 		FileManager.File.codeMirror = CodeMirror(el, {
 			value: result,
@@ -297,7 +299,7 @@ FileManager.ExecuteReport.create = function (report) {
 
 	FileManager.ExecuteReport.report = report;
 
-	var scrollingContentEl = document.querySelector('.scrolling-content');
+	var scrollingContentEl = window.FileManager.elements.itemsWrapperEl;
 	scrollingContentEl.innerHTML = document.querySelector('#reportTemplate').innerHTML;
 
 	executionReport();
@@ -661,6 +663,9 @@ FileManager.Item.selectedPath = null;
 FileManager.Item.click = function (itemEl) {
 
 	var name = itemEl.getAttribute('title');//TODO: change to data-attribute
+	if(!name){
+		return;
+	}
 	FileManager.Item.selectedPath = FileManager.CurrentPath().add(name);
 
 	FileManager.Loading.hide();
@@ -1365,7 +1370,7 @@ FileManager.Files.list = function (callback) {
 
 	requestArgs.error = function error(status, statusText) {
 
-		var loadingEl = document.querySelector('.item-loading') || document.querySelector('.scrolling-content-loading') || document.querySelector('.scrolling-content');
+		var loadingEl = document.querySelector('.item-loading') || document.querySelector('.scrolling-content-loading') || window.FileManager.elements.itemsWrapperEl;
 		loadingEl.textContent = 'Error: ' + status + ' ' + statusText;
 
 		var scrollingContentEl = document.querySelector('.new-scrolling-content');
@@ -1550,7 +1555,7 @@ FileManager.ContentChange.animate = function () {
 
 	var parentEl, newEl, oldEl, template;
 
-	oldEl = document.querySelector('.scrolling-content');
+	oldEl = window.FileManager.elements.itemsWrapperEl;
 	parentEl = oldEl.parentNode;
 
 	template = document.querySelector('#newScrollingContentTemplate').innerHTML;
@@ -1597,7 +1602,7 @@ FileManager.ContentChange.transition = function (e) {
 	if (el.classList.contains('old-scrolling-content')) {
 		el.parentNode.removeChild(el);
 
-		var newEl = document.querySelector('.scrolling-content');
+		var newEl = window.FileManager.elements.itemsWrapperEl;
 		newEl.classList.add('no-transition');
 		newEl.style.paddingTop = '';
 		window.scrollTo(0,0);

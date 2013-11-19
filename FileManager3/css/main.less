@@ -112,8 +112,8 @@ input[type=file]{
 .toolbar-button:disabled{
   opacity: 0.15;
 }
-.toolbar-button.input-wrapper:hover,
-.toolbar-button:enabled:hover{
+body:not(.freeze-all) .toolbar-button.input-wrapper:hover,
+body:not(.freeze-all) .toolbar-button:enabled:hover{
   opacity: 1;
 }
 .toolbar-button:enabled:active{
@@ -128,7 +128,7 @@ input[type=file]{
 }
 
 .disabled #UpButton,
-.disabled #UpButton:hover,
+body:not(.freeze-all) .disabled #UpButton:hover,
 .disabled #UpButton:active{
   opacity: 0.5 !important;
   border: none !important;
@@ -185,7 +185,7 @@ input[type=file]{
 }
 .current-dir-label a:active,
 .current-dir-label a:visited,
-.current-dir-label a:hover,
+body:not(.freeze-all) .current-dir-label a:hover,
 .current-dir-label a{
   font-weight: bold;
   color: #ffffff;
@@ -271,9 +271,11 @@ input[type=file]{
   -webkit-transition: all 0.1s;
   cursor: pointer;
 }
-
-.item:hover,
-.load-more-button:hover{
+.item{
+  cursor: default;
+}
+body:not(.freeze-all) .item:hover,
+body:not(.freeze-all) .load-more-button:hover{
   background-color: white;
 }
 
@@ -286,6 +288,7 @@ input[type=file]{
 .item.clicked{
   background: #D3D3D3;
   border-color: darkgray;
+  cursor: default;
 }
 
 .item-loading{
@@ -366,7 +369,7 @@ input[type=file]{
   background: white !important;
   color: black !important;
 }
-.error-reason:hover{
+body:not(.freeze-all) .error-reason:hover{
   background: #ff0000 !important;
   color: white !important;
   border-color: white !important;
@@ -388,8 +391,8 @@ input[type=file]{
   margin: 1px;
 }
 
-.item-menu menu button:hover,
-.item-confirm-delete button:hover{
+body:not(.freeze-all) .item-menu menu button:hover,
+body:not(.freeze-all) .item-confirm-delete button:hover{
   outline: #dcdcdc 2px solid;
   background-color: white;
   border: outset 1px;
@@ -450,7 +453,7 @@ input[type=file]{
   opacity: 0.3;
 }
 
-.menu-file button:enabled:hover{
+body:not(.freeze-all) .menu-file button:enabled:hover{
   background-color: rgba(0, 0, 0, 0.35);
 }
 .menu-file button:enabled:active{
@@ -786,4 +789,56 @@ template{
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+.progressbar{
+  display: flex;
+  align-items: center;
+}
+.progressbar .progress{
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: #8f9ba0;
+  margin: 0;
+  padding-left: 10px;
+  position: relative;
+}
+.progressbar .progress-value{
+  width: 0;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background: #5c727a;
+  -webkit-transition: 0 width 250ms ease-in-out;
+  -moz-transition: 0 width 250ms ease-in-out;
+  transition: 0 width 250ms ease-in-out;
+}
+.progressbar p{
+  position: relative;
+  z-index: 10;
+  font-size: 14px;
+  line-height: 14px;
+  margin: 0;
+  color: white;
+}
+.progressbar .buttons-wrapper{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 140px;
+  padding: 0 0 0 10px;
+}
+.progressbar .buttons-wrapper button{
+  font-size: 12px;
+  line-height: 12px;
+  width: 60px;
+  height: 30px;
+}
+.freeze-all *{
+  pointer-events: none;
+  cursor: default !important;
+}
+.freeze-all.progressbar-buttons .progressbar button{
+  pointer-events: auto;
 }
