@@ -79,6 +79,11 @@ input[type=file]{
   width: 100%;
   max-width: 800px;
 }
+body.wide-content .code-editor-wrapper,
+body.wide-content .scrolling-content,
+body.wide-content .center{
+  max-width: none;
+}
 .center{
   position: relative;
   margin: 0 auto;
@@ -176,7 +181,7 @@ body:not(.freeze-all) .disabled #UpButton:hover,
   background: url("../img/white-icon.png") -295px -6px no-repeat;
 }
 
-#UnwideButton{
+body.wide-content #WideButton{
   background: url("../img/white-icon.png") -344px -6px no-repeat;
 }
 .current-dir-label a:active,

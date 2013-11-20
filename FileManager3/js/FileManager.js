@@ -143,32 +143,6 @@ FileManager.CurrentDirLabel.showLoading = function () {
 	FileManager.CurrentDirLabel.removeTooltip();
 };
 
-
-FileManager.WideButton = {};
-
-FileManager.WideButton.click = function () {
-	var centerEls = document.getElementsByClassName('center');
-	for (var i = 0; i < centerEls.length; i++) {
-		centerEls[i].style.maxWidth = '100%';
-	}
-	document.getElementsByClassName('fixed-background')[0].style.width = '100%';
-	document.getElementById('WideButton').classList.add('hidden');
-	document.getElementById('UnwideButton').classList.remove('hidden');
-};
-
-FileManager.UnwideButton = {};
-
-FileManager.UnwideButton.click = function () {
-	var centerEls = document.getElementsByClassName('center');
-	for (var i = 0; i < centerEls.length; i++) {
-		centerEls[i].style.maxWidth = '800px';
-	}
-	document.getElementsByClassName('fixed-background')[0].style.width = '800px';
-	document.getElementById('UnwideButton').classList.add('hidden');
-	document.getElementById('WideButton').classList.remove('hidden');
-};
-
-
 FileManager.OpenButton = {};
 
 FileManager.OpenButton.click = function () {
@@ -1319,8 +1293,9 @@ document.addEventListener('DOMContentLoaded', function () {
 		document.getElementById('SignOutButton').addEventListener('click', FileManager.SignOutButton.click);
 		document.getElementById('UpButton').addEventListener('click', upButtonClick);
 
-		document.getElementById('WideButton').addEventListener('click', FileManager.WideButton.click);
-		document.getElementById('UnwideButton').addEventListener('click', FileManager.UnwideButton.click);
+		document.getElementById("WideButton").addEventListener("click", function(){
+			document.body.classList.toggle("wide-content");
+		});
 	});
 });
 
