@@ -17,7 +17,17 @@ document.addEventListener("DOMContentLoaded", function(){
 			dirAlreadyExist: "Directory is already exists.",
 			nameTooLong: "Container name should be less then 256 characters.",
 			emptyInput: "The name should be bit longer."
-		};
+		},
+		slashStr = "/",
+		rootClass = "location-root";
+
+	function setRootClass(){
+		if(location.hash.indexOf(slashStr) !== -1){
+			document.body.classList.remove(rootClass);
+		}else{
+			document.body.classList.add(rootClass);
+		}
+	}
 
 	function ajaxError(status, statusText){
 		window.FileManager.errorMsgHandler.show({
@@ -53,13 +63,14 @@ document.addEventListener("DOMContentLoaded", function(){
 				default:
 					console.log("unkown action: " + action);
 					return;
-					break;
 			}
 			window.FileManager.dialogForm.show(this.dataset.placeholder, callback, cancel);
 			this.classList.add(selectedClass);
 		}
 	}
 
+	setRootClass();
+	window.addEventListener("hashchange", setRootClass);
 	window.addEventListener("hashchange", cancel);
 	buttons.forEach(function(el){
 		el.addEventListener("click", showCreateButtonDialog);
