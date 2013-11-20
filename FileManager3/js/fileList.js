@@ -23,9 +23,9 @@
 				html;
 			scrollingContentEl.innerHTML = "";
 			if(checkFirstFile(files)){
-				files = files.splice(1);
+				files.shift();
 			}
-			if(files.length == 0){
+			if(files.length === 0){
 				html = document.querySelector("#noFilesTemplate").innerHTML;
 				scrollingContentEl.insertAdjacentHTML("beforeend", html);
 			}else{

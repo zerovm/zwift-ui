@@ -105,7 +105,7 @@ FileManager.CurrentDirLabel.setContent = function (content, isArrowsSeparated) {
 		joiner = "<img class='path-separator' src='img/go.png'/>";
 	}
 	content = content.split("/").map(function(pathPart){
-		return "<a href='#' data-hash='" + pathPart + "'>" + pathPart + "</a>";
+		return pathPart ? "<a href='#' data-hash='" + pathPart + "'>" + pathPart + "</a>" : "";
 	}).join(joiner);
 	el.innerHTML = content;
 	!isCarringHiddenClass && el.classList.remove("hidden");

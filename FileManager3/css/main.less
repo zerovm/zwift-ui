@@ -121,7 +121,6 @@ body:not(.freeze-all) .toolbar-button:enabled:hover{
 
 #UpButton{
   background: url("../img/white-icon.png") -398px -2px no-repeat;
-  border: 1px solid transparent;
 }
 
 .disabled #UpButton,
@@ -841,4 +840,10 @@ template{
 }
 .freeze-all.progressbar-buttons .progressbar button{
   pointer-events: auto;
+}
+button:active,
+button:focus,
+button:hover{
+  border: none;
+  outline: none;
 }
