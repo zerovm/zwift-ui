@@ -31,12 +31,10 @@
 			}else{
 				html = listHTML(files);
 				scrollingContentEl.insertAdjacentHTML("beforeend", html);
-				if(FILES.length == 20){
+				if(FILES.length === LIMIT){
 					FileManager.toolbox.createLoadMoreButton(scrollingContentEl);
 				}
-				if(document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0){
-					loadMore();
-				}
+				checkLoadMore();
 			}
 			document.getElementById("UpButton").removeAttribute("disabled");
 			FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().withoutAccount(), true);
@@ -74,8 +72,8 @@
 	}
 
 	function loadMore(){
-		var el = document.querySelector(".load-more-button"),
-			lastFile,
+		var el = document.getElementsByClassName("load-more-button")[0],
+			lastFile, prefix,
 			filesArgs = {};
 
 		if(!el){
@@ -89,10 +87,10 @@
 		filesArgs.format = "json";
 		filesArgs.limit = LIMIT;
 
-		lastFile = document.querySelector(".item:nth-last-child(2)").getAttribute("title");
+		lastFile = el.previousElementSibling.getAttribute("title");
 
 		if(FileManager.CurrentPath().isDirectory()){
-			var prefix = FileManager.CurrentPath().prefix();
+			prefix = FileManager.CurrentPath().prefix();
 			filesArgs.marker = prefix + lastFile;
 			filesArgs.prefix = prefix;
 		}else{
@@ -104,9 +102,10 @@
 		}
 
 		filesArgs.success = function(files){
-			var el = document.querySelector(".load-more-button");
-			if(files.length == 0){
-				el && el.parentNode.removeChild(el);
+			var el = document.querySelector(".load-more-button");//TODO: check wether it is needed
+			if(files.length < LIMIT){
+				el.insertAdjacentHTML("beforebegin", listHTML(files));
+				el.parentNode.removeChild(el);
 				return;
 			}
 			el.insertAdjacentHTML("beforebegin", listHTML(files));
@@ -134,7 +133,7 @@
 			}else{
 				scrollingContentEl.innerHTML = "Directory not exist.";
 			}
-		}catch (e){//TODO: solve scollingContentEl existance
+		}catch(e){//TODO: solve scollingContentEl existance
 			console.log(e);
 		}
 	}
@@ -268,8 +267,33 @@
 		}
 	}
 
+	function checkLoadMore(){
+		var el = window.FileManager.elements.itemsContainer;
+		if(Math.abs(el.scrollTop - (el.scrollHeight - el.clientHeight)) < 4){
+			if(FileManager.CurrentPath().isContainersList()){
+				FileManager.Containers.loadMore();
+			}else{
+				window.FileManager.files.loadMore();
+			}
+		}
+	}
+
 	document.addEventListener("transitionend", ontransition);
 	document.addEventListener("webkitTransitionEnd", ontransition);
+
+	document.addEventListener("DOMContentLoaded", function(){
+		var scrollWrapper = document.getElementsByClassName("content-wrapper")[0];
+		scrollWrapper.addEventListener('scroll', function (e) {
+			e = e.target ? e.target : e;
+			if(Math.abs(e.scrollTop - (e.scrollHeight - e.clientHeight)) < 4){
+				if(FileManager.CurrentPath().isContainersList()){
+					FileManager.Containers.loadMore();
+				}else{
+					window.FileManager.files.loadMore();
+				}
+			}
+		});
+	});
 
 	if(!window.FileManager){
 		window.FileManager = {};

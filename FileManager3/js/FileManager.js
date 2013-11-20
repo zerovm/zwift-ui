@@ -52,16 +52,14 @@ FileManager.AccountLabel.init = function () {
 };
 
 
-FileManager.UpButton = {};
-
-FileManager.UpButton.click = function () {
+function upButtonClick() {
 	var upperLevel = FileManager.CurrentPath().up();
-	if (!FileManager.Loading.visible && upperLevel) {
+	if (!FileManager.Loading.visible && upperLevel){
 		FileManager.Loading.hide();
 		FileManager.CurrentDirLabel.showLoading();
 		location.hash = upperLevel;
 	}
-};
+}
 
 
 FileManager.CurrentDirLabel = {};
@@ -73,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function(){//TODO: extract into se
 		if(e.target.nodeName === "A"){
 			e.preventDefault();
 			e.stopPropagation();
-			location.hash = location.hash.match(new RegExp(".*" + e.target.textContent + ".")).pop();
+			location.hash = location.hash.match(new RegExp(".*" + e.target.dataset.hash + ".")).pop();
 			return false;
 		}
 	});
@@ -107,7 +105,7 @@ FileManager.CurrentDirLabel.setContent = function (content, isArrowsSeparated) {
 		joiner = "<img class='path-separator' src='img/go.png'/>";
 	}
 	content = content.split("/").map(function(pathPart){
-		return "<a href='#'>" + pathPart + "</a>";
+		return "<a href='#' data-hash='" + pathPart + "'>" + pathPart + "</a>";
 	}).join(joiner);
 	el.innerHTML = content;
 	!isCarringHiddenClass && el.classList.remove("hidden");
@@ -375,181 +373,6 @@ FileManager.ExecuteReport.showFullReport = function (el) {
 	document.querySelector('#execute-tbody').innerHTML += html;
 };
 
-
-FileManager.ContainersMenu = {};
-
-FileManager.ContainersMenu.show = function () {
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		FileManager.AddShared.clear();
-	}
-
-	FileManager.CreateContainerDialog.clear();
-	document.querySelector('.menu-containers').removeAttribute('hidden');
-};
-
-FileManager.ContainersMenu.hide = function () {
-	document.querySelector('.menu-containers').setAttribute('hidden', 'hidden');
-};
-
-
-FileManager.FilesMenu = {};
-
-FileManager.FilesMenu.show = function () {
-	document.querySelector('.menu-files').removeAttribute('hidden');
-};
-
-FileManager.FilesMenu.hide = function () {
-	document.querySelector('.menu-files').setAttribute('hidden', 'hidden');
-};
-
-
-FileManager.CreateContainerDialog = {};
-
-FileManager.CreateContainerDialog.clear = function () {
-	var inputEl = document.getElementById('input_CreateContainerDialog');
-	inputEl.value = '';
-	FileManager.CreateContainerDialog.clearErrors(inputEl);
-};
-
-FileManager.CreateContainerDialog.clearErrors = function (inputEl) {
-	inputEl.classList.remove('invalid-input');
-
-	var errElArr = document.querySelectorAll('#CreateContainerDialog .err-msg');
-	for (var i = 0; i < errElArr.length; i++) {
-		errElArr[i].setAttribute('hidden', 'hidden');
-	}
-};
-
-FileManager.CreateDirectoryDialog = {};
-
-
-FileManager.CreateDirectoryDialog.clear = function () {
-	document.getElementById('input_CreateDirectoryDialog').value = '';
-};
-
-FileManager.CreateDirectoryDialog.clearErrors = function () {
-	document.getElementById('input_CreateDirectoryDialog').classList.remove('invalid-input');
-
-	var errElArr = document.querySelectorAll('#CreateDirectoryDialog .err-msg');
-	for (var i = 0; i < errElArr.length; i++) {
-		errElArr[i].setAttribute('hidden', 'hidden');
-	}
-};
-
-FileManager.CreateDirectoryDialog.cancel = function () {
-	document.getElementById('CreateDirectoryButton').classList.remove('selected');
-	document.getElementById('CreateDirectoryDialog').classList.add('hidden');
-};
-
-
-FileManager.CreateFileDialog = {};
-
-FileManager.CreateFileDialog.ok = function () {
-	var nameEl = document.getElementById('inputName_CreateFileDialog');
-	var typeEl = document.getElementById('inputType_CreateFileDialog');
-
-	if (!nameEl.value) {
-		nameEl.classList.add('invalid-input');
-		return;
-	}
-
-	var filePath = FileManager.CurrentPath().add(nameEl.value);
-
-	var requestArgs = {};
-	requestArgs.path = FileManager.Path(filePath).withoutAccount();
-	requestArgs.contentType = typeEl.value;
-	requestArgs.data = '';
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		requestArgs.account = FileManager.CurrentPath().account();
-	}
-
-	requestArgs.created = function () {
-		window.FileManager.files.addFileListContent();
-		FileManager.CreateFileDialog.clear();
-	};
-
-	requestArgs.error = function (status, statusText) {
-		var el = document.getElementById('create-file-error-ajax');
-		FileManager.AjaxError.show(el, status, statusText);
-	};
-
-	SwiftV1.createFile(requestArgs);
-};
-
-FileManager.CreateFileDialog.clear = function () {
-	document.getElementById('inputName_CreateFileDialog').value = '';
-	document.getElementById('inputType_CreateFileDialog').value = '';
-	FileManager.CreateFileDialog.clearErrors();
-};
-
-FileManager.CreateFileDialog.clearErrors = function () {
-	document.getElementById('inputName_CreateFileDialog').classList.remove('invalid-input');
-	document.getElementById('inputType_CreateFileDialog').classList.remove('invalid-input');
-};
-
-
-FileManager.UploadFiles = {};
-
-FileManager.UploadFiles.uploadRequests = [];
-
-FileManager.UploadFiles.change = function (files) {
-	var el = document.querySelector('.upload-files');
-	el.value = null;
-
-	for (var i = 0; i < files.length; i++) {
-		FileManager.UploadFiles.uploadFile(files[i], files[i].name, files[i].type);
-	}
-
-};
-
-FileManager.UploadFiles.uploadFile = function (file, name, contentType) {
-
-	createUploadEl(name);
-	var index = FileManager.UploadFiles.uploadRequests.length;
-	var path = FileManager.CurrentPath().add(name);
-	FileManager.UploadFiles.uploadRequests[index] = SwiftV1.createFile({
-		path: FileManager.Path(path).withoutAccount(),
-		data: file,
-		contentType: contentType,
-		created: function () {
-			var el = document.querySelector('#upload-' + index);
-			el.parentNode.removeChild(el);
-			window.FileManager.files.addFileListContent();
-		},
-		progress: function (percent, loaded, total) {
-			document.querySelector('#upload-' + index + ' progress').value = percent;
-			var percentStr = '&nbsp;0%&nbsp;';
-			if (percent < 10) {
-				percentStr = '&nbsp;' + percent + '%&nbsp;';
-			} else if (percent < 100) {
-				percentStr = '&nbsp;' + percent + '%';
-			} else {
-				percentStr = percent + '%';
-			}
-			document.querySelector('#upload-' + index + ' .progresslabel').innerHTML = percentStr;
-		},
-		error: function (status, statusText) {
-			var el = document.querySelector('#upload-' + index + ' .error');
-			FileManager.AjaxError.show(el, status, statusText);
-		}
-	});
-
-	function createUploadEl(name) {
-		var index = FileManager.UploadFiles.uploadRequests.length;
-		var template = document.querySelector('#uploadTemplate').innerHTML;
-		template = template.replace('{{upload-label-name}}', name);
-		template = template.replace('{{upload-id}}', 'upload-' + index);
-		document.querySelector('.menu-files').insertAdjacentHTML('beforeend', template);
-	}
-};
-
-FileManager.UploadFiles.cancelClick  = function (el) {
-	var index = parseInt(el.parentNode.parentNode.parentNode.id.substr('upload-'.length));
-	FileManager.UploadFiles.uploadRequests[index].abort();
-	el.parentNode.parentNode.parentNode.parentNode.removeChild(el.parentNode.parentNode.parentNode);
-};
 
 
 FileManager.UploadAs = {};
@@ -1017,8 +840,6 @@ FileManager.Copy.click = function () {
 
 FileManager.File = {};
 
-FileManager.File.codeMirror = null;
-
 FileManager.File.contentType = '';
 
 FileManager.File.open = function (el, callback) {
@@ -1300,6 +1121,8 @@ FileManager.Containers.create = function (containerObj) {
 	return html;
 };
 
+
+
 FileManager.AjaxError = {};
 
 FileManager.AjaxError.show = function (el, status, statusText) {
@@ -1393,22 +1216,6 @@ FileManager.CurrentPath = function () {
 
 window.addEventListener('hashchange', function () {
 	window.FileManager.files.addFileListContent();
-});
-
-document.addEventListener("DOMContentLoaded", function(){
-	var scrollWrapper = document.getElementsByClassName("content-wrapper")[0];
-	if (scrollWrapper.scrollHeight - scrollWrapper.clientHeight < 4) {
-		window.FileManager.files.loadMore();
-	}
-	scrollWrapper.addEventListener('scroll', function (e) {//TODO: move it into filelist
-		if(Math.abs(e.target.scrollTop - (e.target.scrollHeight - e.target.clientHeight)) < 4){//the reason - one extra pixel
-			if(FileManager.CurrentPath().isContainersList()){
-				FileManager.Containers.loadMore();
-			}else{
-				window.FileManager.files.loadMore();
-			}
-		}
-	});
 });
 
 document.addEventListener('click', function (e) {
@@ -1506,7 +1313,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		FileManager.reAuth();
 
 		document.getElementById('SignOutButton').addEventListener('click', FileManager.SignOutButton.click);
-		document.getElementById('UpButton').addEventListener('click', FileManager.UpButton.click);
+		document.getElementById('UpButton').addEventListener('click', upButtonClick);
 
 		document.getElementById('WideButton').addEventListener('click', FileManager.WideButton.click);
 		document.getElementById('UnwideButton').addEventListener('click', FileManager.UnwideButton.click);

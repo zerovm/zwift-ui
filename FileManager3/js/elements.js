@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		window.FileManager = {}
 	}
 	window.FileManager.elements = {
+		itemsContainer: content,
 		get itemsWrapperEl(){return content.firstElementChild}
 	}
 });
