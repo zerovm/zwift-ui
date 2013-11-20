@@ -30,7 +30,7 @@
 	}]);
 	attachMethods(HTMLCollection, [{
 		obj: Array,
-		methods: ["forEach"]
+		methods: ["forEach", "indexOf"]
 	}]);
 
 })();

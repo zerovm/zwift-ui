@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			if(uploadingFiles === 0){
 				document.body.classList.remove(disableAllClass);
 				document.body.classList.remove(buttonsPointerClass);
-				FileManager.ContentChange.animate();
+				window.FileManager.files.addFileListContent();
 			}
 		}
 
