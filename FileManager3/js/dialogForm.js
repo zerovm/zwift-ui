@@ -43,6 +43,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		hide();
 		return false;
 	});
+	window.addEventListener("hashchange", hide);
 	if(!window.FileManager){
 		window.FileManager = {};
 	}

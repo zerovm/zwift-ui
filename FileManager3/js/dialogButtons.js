@@ -60,6 +60,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		}
 	}
 
+	window.addEventListener("hashchange", cancel);
 	buttons.forEach(function(el){
 		el.addEventListener("click", showCreateButtonDialog);
 	});

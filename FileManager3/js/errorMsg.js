@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	function hideError(){
 		errorsEl.classList.add(hiddenClass);
 	}
-
+	hideError();
 	if(!window.FileManager){
 		window.FileManager = {};
 	}
