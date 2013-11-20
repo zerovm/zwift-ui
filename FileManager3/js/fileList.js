@@ -160,7 +160,7 @@
 		modified = window.FileManager.toolbox.makeDatePretty(file.last_modified);
 		html = document.getElementById("fileTemplate").innerHTML;
 		return html.replace("{{file-type}}", FileManager.toolbox.escapeHTML(icon))
-			.replace("{{name}}", FileManager.toolbox.escapeHTML(name))
+			.replace("{{name}}", "<span>" + FileManager.toolbox.escapeHTML(name) + "</span>")
 			.replace("{{title}}", FileManager.toolbox.escapeHTML(_name))
 			.replace("{{size}}", FileManager.toolbox.escapeHTML(size))
 			.replace("{{modified}}", FileManager.toolbox.escapeHTML(modified));

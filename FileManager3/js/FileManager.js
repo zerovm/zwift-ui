@@ -101,6 +101,10 @@ FileManager.CurrentDirLabel.setContent = function (content, isArrowsSeparated) {
 			content = splittedContent[splittedContent.length];
 		}
 	}
+	if(!content){
+		el.innerHTML = content;
+		return;
+	}
 	if(isArrowsSeparated){
 		joiner = "<img class='path-separator' src='img/go.png'/>";
 	}

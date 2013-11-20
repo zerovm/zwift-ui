@@ -272,6 +272,7 @@ body:not(.freeze-all) .current-dir-label a:hover,
 }
 .item{
   cursor: default;
+  display: flex;
 }
 body:not(.freeze-all) .item:hover,
 body:not(.freeze-all) .load-more-button:hover{
@@ -297,28 +298,29 @@ body:not(.freeze-all) .load-more-button:hover{
   left: 40%;
   padding-top: 3px;
 }
-
-.item:first-child{
-/*margin-top: 1px;*/
-}
-
-.item *{
-  vertical-align: middle;
-  display: inline-block;
-}
-
 .item .left{
-  float: left;
+  display: flex;
+  flex: 1;
 }
 .item .right{
-  padding: 8px 0;
-  position: absolute;
-  right: 6px;
+  display: flex;
+  align-items: center;
 }
 .item label.name{
   cursor: default;
-  word-break: break-all;
   font-size: medium;
+  margin: 0;
+  flex-grow: 1;
+  line-height: normal;
+  display: flex;
+  align-items: center;
+  padding-left: 5px;
+}
+.item label.name span{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
 }
 .item label.files{
   cursor: default;
@@ -697,6 +699,7 @@ template{
 
 .file-type{
   width: 40px;
+  min-width: 40px;
   height: 40px;
   background: url("../img/file-type-all-gray.png") -97px -104px no-repeat;
 }
@@ -841,9 +844,9 @@ template{
 .freeze-all.progressbar-buttons .progressbar button{
   pointer-events: auto;
 }
-button:active,
-button:focus,
-button:hover{
+button:not(.btn-primary):active,
+button:not(.btn-primary):focus,
+button:not(.btn-primary):hover{
   border: none;
   outline: none;
 }
