@@ -87,7 +87,7 @@
 		filesArgs.format = "json";
 		filesArgs.limit = LIMIT;
 
-		lastFile = el.previousElementSibling.getAttribute("title");
+		lastFile = el.previousElementSibling.dataset.path;
 
 		if(FileManager.CurrentPath().isDirectory()){
 			prefix = FileManager.CurrentPath().prefix();
@@ -154,13 +154,14 @@
 	function createFile(file){
 		var _name, icon, name, size, modified, html;
 		_name = FileManager.Path(file.name).name();
-		icon = (file.content_type !== "undefined" && file.content_type.replace("/", "-").replace(".", "-")) || "file-type";
+		icon = (file.content_type && file.content_type !== "undefined" && file.content_type.replace("/", "-").replace(".", "-")) || "file-type";
 		name = window.FileManager.toolbox.makeShortName(_name);
 		size = FileManager.toolbox.shortenSize(file.bytes);
 		modified = window.FileManager.toolbox.makeDatePretty(file.last_modified);
 		html = document.getElementById("fileTemplate").innerHTML;
 		return html.replace("{{file-type}}", FileManager.toolbox.escapeHTML(icon))
 			.replace("{{name}}", "<span>" + FileManager.toolbox.escapeHTML(name) + "</span>")
+			.replace("{{path}}", FileManager.toolbox.escapeHTML(_name))
 			.replace("{{title}}", FileManager.toolbox.escapeHTML(_name))
 			.replace("{{size}}", FileManager.toolbox.escapeHTML(size))
 			.replace("{{modified}}", FileManager.toolbox.escapeHTML(modified));
@@ -177,6 +178,7 @@
 		name = FileManager.toolbox.makeShortName(_name);
 		html = document.getElementById("directoryTemplate").innerHTML;
 		html = html.replace("{{name}}", FileManager.toolbox.escapeHTML(name));
+		html = html.replace("{{path}}", FileManager.toolbox.escapeHTML(_name));
 		html = html.replace("{{title}}", FileManager.toolbox.escapeHTML(_name));
 		return html;
 	}

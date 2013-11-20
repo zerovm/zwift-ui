@@ -115,32 +115,21 @@ FileManager.CurrentDirLabel.setContent = function (content, isArrowsSeparated) {
 	!isCarringHiddenClass && el.classList.remove("hidden");
 };
 
-FileManager.CurrentDirLabel.setTooltip = function (content) {
-	document.querySelector('.current-dir-label').title = content;
-};
-
-FileManager.CurrentDirLabel.removeTooltip = function () {
-	document.querySelector('.current-dir-label').removeAttribute('title');
-};
-
 FileManager.CurrentDirLabel.root = function () {
 
 	if (FileManager.ENABLE_EMAILS) {
 		Auth.getEmail(function (email) {
 			FileManager.CurrentDirLabel.setContent(email);
-			FileManager.CurrentDirLabel.setTooltip(email);
 		});
 		return;
 	}
 
 	var account = Auth.getAccount();
 	FileManager.CurrentDirLabel.setContent(account);
-	FileManager.CurrentDirLabel.setTooltip(account);
 };
 
 FileManager.CurrentDirLabel.showLoading = function () {
 	FileManager.CurrentDirLabel.setContent('Loading...');
-	FileManager.CurrentDirLabel.removeTooltip();
 };
 
 FileManager.OpenButton = {};
@@ -398,7 +387,7 @@ FileManager.ConfirmDelete.click = function (el) {
 	document.querySelector('.delete-deleting-label').removeAttribute('hidden');
 
 	var itemEl = el.parentNode.previousElementSibling;
-	var name = itemEl.title;
+	var name = itemEl.dataset.path;
 	var itemPath = FileManager.CurrentPath().add(name);
 
 	if (FileManager.ENABLE_SHARED_CONTAINERS
@@ -463,7 +452,7 @@ FileManager.Item.selectedPath = null;
 
 FileManager.Item.click = function (itemEl) {
 
-	var name = itemEl.getAttribute('title');//TODO: change to data-attribute
+	var name = itemEl.dataset.path;
 	if(!name){
 		return;
 	}
@@ -929,7 +918,6 @@ FileManager.File.edit = function (el) {
 
 		el.removeChildren();
 		FileManager.CurrentDirLabel.setContent(fileName);
-		FileManager.CurrentDirLabel.setTooltip(filePath);
 
 		FileManager.File.contentType = contentType;
 		window.FileManager.fileEditor.show(data, contentType, fileName);
@@ -1046,7 +1034,7 @@ FileManager.Containers.loadMore = function () {
 	document.querySelector('.load-more-button').textContent = 'Loading...';
 	document.querySelector('.load-more-button').setAttribute('disabled', 'disabled');
 
-	var marker = document.querySelector('.item:nth-last-child(2)').getAttribute('title');
+	var marker = document.querySelector('.item:nth-last-child(2)').dataset.path;
 
 	SwiftV1.listContainers({
 		marker: marker,
@@ -1069,7 +1057,7 @@ FileManager.Containers.loadMore = function () {
 			document.querySelector('.load-more-button').textContent = 'Load more';
 			document.querySelector('.load-more-button').removeAttribute('disabled');
 
-			if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
+			if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 4) {
 				FileManager.Containers.loadMore();
 			}
 		},
@@ -1092,6 +1080,7 @@ FileManager.Containers.create = function (containerObj) {
 	var html = document.querySelector('#containerTemplate').innerHTML;
 
 	html = html.replace('{{name}}', FileManager.toolbox.escapeHTML(name));
+	html = html.replace('{{path}}', FileManager.toolbox.escapeHTML(title));
 	html = html.replace('{{title}}', FileManager.toolbox.escapeHTML(title));
 	html = html.replace('{{size}}', FileManager.toolbox.escapeHTML(size));
 	html = html.replace('{{files}}', FileManager.toolbox.escapeHTML(files));
@@ -1318,6 +1307,7 @@ FileManager.Shared.listSharedContainers = function (sharedContainers, scrollingC
 		var title = sharedContainer;
 		var html = document.querySelector('#sharedContainerTemplate').innerHTML;
 		html = html.replace('{{name}}', FileManager.toolbox.escapeHTML(name));
+		html = html.replace('{{path}}', FileManager.toolbox.escapeHTML(title));
 		html = html.replace('{{title}}', FileManager.toolbox.escapeHTML(title));
 		scrollingContentEl.insertAdjacentHTML('afterbegin', html);
 	}
@@ -1329,14 +1319,14 @@ FileManager.Shared.listSharedContainers = function (sharedContainers, scrollingC
 			success: function (bytes, count) {
 				var size = FileManager.toolbox.shortenSize(bytes);
 
-				var selector = '.item[title="' + path + '"]';
+				var selector = '.item[data-path="' + path + '"]';//owful
 				var el = scrollingContentEl.querySelector(selector);
 
 				el.querySelector('.size').textContent = size;
 				el.querySelector('.files').textContent = count;
 			},
 			error: function (status, statusText) {
-				var selector = '.item[title="' + path + '"]';
+				var selector = '.item[data-path="' + path + '"]';
 				var el = scrollingContentEl.querySelector(selector);
 				el.querySelector('.size').textContent = 'Error: ' + status + ' ' + statusText;
 			}
