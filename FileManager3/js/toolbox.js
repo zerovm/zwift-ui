@@ -116,14 +116,18 @@
 	}
 
 	function makeShortName(name, len) {
-		if (!name) {
-			return '';
-		}
+		var ext, filename;
 		len = len || 30;
-		if (name.length <= len) {
+		if(name.length <= len){
 			return name;
 		}
-		return name.substr(0, len) + '&raquo;';
+		if(name.indexOf(".") !== -1){
+			ext = name.substring(name.lastIndexOf("."), name.length);
+			filename = name.replace(ext, "");
+			filename = filename.substr(0, len) + "&raquo;" + ext;
+			return filename;
+		}
+		return name.substr(0, len) + "&raquo;";
 	}
 
 	function createLoadMoreButton(parent){
@@ -131,6 +135,24 @@
 		el.className = "load-more-button";
 		el.textContent = "Load More";
 		parent.appendChild(el);
+	}
+
+
+	function makeDatePretty(time){
+		var alternative = new Date(time),
+			pretty,
+			diff = (new Date().getTime() - alternative.getTime()) / 1000,
+			day_diff = Math.floor(diff / 86400);
+		pretty = day_diff == 0 && (
+			diff < 60 && "just now" ||
+				diff < 120 && "1 minute ago" ||
+				diff < 3600 && Math.floor(diff / 60) + " minutes ago" ||
+				diff < 7200 && "1 hour ago" ||
+				diff < 86400 && Math.floor(diff / 3600) + " hours ago") ||
+			day_diff == 1 && "Yesterday" ||
+			day_diff < 7 && day_diff + " days ago" ||
+			day_diff < 31 && Math.ceil(day_diff / 7) + " weeks ago";
+		return pretty || alternative.toDateString();
 	}
 
 	Object.keys(extObj).forEach(function(ext){
@@ -154,6 +176,7 @@
 		shortenSize: getTransformedBytes,
 		makeShortName: makeShortName,
 		createLoadMoreButton: createLoadMoreButton,
-		escapeHTML: escapeHTML
+		escapeHTML: escapeHTML,
+		makeDatePretty: makeDatePretty
 	};
 })();

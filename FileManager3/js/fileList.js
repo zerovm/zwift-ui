@@ -149,55 +149,21 @@
 			}
 		}
 		return html;
+	}
 
-		function createFile(file){
-			var _name, icon, name, size, modified, html;
-			_name = FileManager.Path(file.name).name();
-			icon = (file.content_type !== "undefined" && file.content_type.replace("/", "-").replace(".", "-")) || "file-type";
-			name = makeShortFileName(_name);
-			size = FileManager.toolbox.shortenSize(file.bytes);
-			modified = makeDatePretty(file.last_modified);
-
-			html = document.getElementById("fileTemplate").innerHTML;
-
-			return html.replace("{{file-type}}", FileManager.toolbox.escapeHTML(icon))
-				.replace("{{name}}", FileManager.toolbox.escapeHTML(name))
-				.replace("{{title}}", FileManager.toolbox.escapeHTML(_name))
-				.replace("{{size}}", FileManager.toolbox.escapeHTML(size))
-				.replace("{{modified}}", FileManager.toolbox.escapeHTML(modified));
-		}
-
-		function makeShortFileName(n, len){
-			var ext, filename;
-			len = len || 30;
-			if(n.length <= len){
-				return n;
-			}
-			if(n.indexOf(".") != -1){
-				ext = n.substring(n.lastIndexOf("."), n.length);
-				filename = n.replace(ext, "");
-				filename = filename.substr(0, len) + "&raquo;" + ext;
-				return filename;
-			}
-			return n.substr(0, len) + "&raquo;";
-		}
-
-		function makeDatePretty(time){
-			var alternative = new Date(time),
-				pretty,
-				diff = (new Date().getTime() - alternative.getTime()) / 1000,
-				day_diff = Math.floor(diff / 86400);
-			pretty = day_diff == 0 && (
-				diff < 60 && "just now" ||
-					diff < 120 && "1 minute ago" ||
-					diff < 3600 && Math.floor(diff / 60) + " minutes ago" ||
-					diff < 7200 && "1 hour ago" ||
-					diff < 86400 && Math.floor(diff / 3600) + " hours ago") ||
-				day_diff == 1 && "Yesterday" ||
-				day_diff < 7 && day_diff + " days ago" ||
-				day_diff < 31 && Math.ceil(day_diff / 7) + " weeks ago";
-			return pretty || alternative.toDateString();
-		}
+	function createFile(file){
+		var _name, icon, name, size, modified, html;
+		_name = FileManager.Path(file.name).name();
+		icon = (file.content_type !== "undefined" && file.content_type.replace("/", "-").replace(".", "-")) || "file-type";
+		name = window.FileManager.toolbox.makeShortName(_name);
+		size = FileManager.toolbox.shortenSize(file.bytes);
+		modified = window.FileManager.toolbox.makeDatePretty(file.last_modified);
+		html = document.getElementById("fileTemplate").innerHTML;
+		return html.replace("{{file-type}}", FileManager.toolbox.escapeHTML(icon))
+			.replace("{{name}}", FileManager.toolbox.escapeHTML(name))
+			.replace("{{title}}", FileManager.toolbox.escapeHTML(_name))
+			.replace("{{size}}", FileManager.toolbox.escapeHTML(size))
+			.replace("{{modified}}", FileManager.toolbox.escapeHTML(modified));
 	}
 
 	function createDirectory(file){
@@ -283,7 +249,7 @@
 
 	document.addEventListener("DOMContentLoaded", function(){
 		var scrollWrapper = document.getElementsByClassName("content-wrapper")[0];
-		scrollWrapper.addEventListener('scroll', function (e) {
+		scrollWrapper.addEventListener('scroll', function(e){
 			e = e.target ? e.target : e;
 			if(Math.abs(e.scrollTop - (e.scrollHeight - e.clientHeight)) < 4){
 				if(FileManager.CurrentPath().isContainersList()){

@@ -1044,7 +1044,7 @@ FileManager.Containers.list = function (callback) {
 
 		callback();
 
-		if (containers.length == 20) {
+		if (containers.length == FileManager.Containers.LIMIT) {
 			FileManager.toolbox.createLoadMoreButton(scrollingContentEl);
 		}
 
