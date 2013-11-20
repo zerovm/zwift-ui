@@ -43,7 +43,8 @@
 			"php": {"mime": "text/plain", "isEditable": "php"},
 			"rb": {"mime": "text/plain", "isEditable": "ruby"},
 			"pl": {"mime": "text/plain", "isEditable": "perl"}
-		};
+		},
+		gradeMap = ["B", "KB", "MB", "GB"];
 
 	function getMIME(e){
 		var extension = e.match(extRegex), mime;
@@ -89,6 +90,46 @@
 		return null;
 	}
 
+	function getTransformedBytes(bytes){
+		var counter = 1,
+			grade = 1024,
+			checksum = Math.pow(grade, counter);
+		while(bytes > checksum){
+			counter++;
+			checksum = Math.pow(grade, counter);
+		}
+		return (bytes / Math.pow(grade, counter - 1)).toFixed(2) + gradeMap[counter - 1];
+	}
+
+	function escapeHTML(str) {
+		return String(str)
+			.replace('&raquo;', '///')
+			.replace(/&/g, '&amp;')
+			.replace(/"/g, '&quot;')
+			.replace(/'/g, '&#39;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace('///', '&raquo;');
+	}
+
+	function makeShortName(name, len) {
+		if (!name) {
+			return '';
+		}
+		len = len || 30;
+		if (name.length <= len) {
+			return name;
+		}
+		return name.substr(0, len) + '&raquo;';
+	}
+
+	function createLoadMoreButton(parent){
+		var el = document.createElement("div");
+		el.className = "load-more-button";
+		el.textContent = "Load More";
+		parent.appendChild(el);
+	}
+
 	Object.keys(extObj).forEach(function(ext){
 		var obj = extObj[ext],
 			mime = obj.mime;
@@ -106,6 +147,10 @@
 		getMIMEType: getMIME,
 		getParentByClassName: checkParentClassName,
 		isEditable: isEditable,
-		isExecutable: isExecutable
+		isExecutable: isExecutable,
+		shortenSize: getTransformedBytes,
+		makeShortName: makeShortName,
+		createLoadMoreButton: createLoadMoreButton,
+		escapeHTML: escapeHTML
 	};
 })();

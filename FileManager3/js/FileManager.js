@@ -331,15 +331,15 @@ FileManager.ExecuteReport.create = function (report) {
 
 
 			document.querySelector('#reads-from-disk-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['readsFromDisk'] || '-'));
-			document.querySelector('#bytes-read-from-disk-tr').insertAdjacentHTML('beforeend', td(FileManager.Utils.bytesToSize(report.billing.nodes[i]['bytesReadFromDisk']) || '-'));
+			document.querySelector('#bytes-read-from-disk-tr').insertAdjacentHTML('beforeend', td(FileManager.toolbox.shortenSize(report.billing.nodes[i]['bytesReadFromDisk']) || '-'));
 
 			document.querySelector('#writes-to-disk-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['writesToDisk'] || '-'));
-			document.querySelector('#bytes-written-to-disk-tr').insertAdjacentHTML('beforeend', td(FileManager.Utils.bytesToSize(report.billing.nodes[i]['bytesWrittenToDisk']) || '-'));
+			document.querySelector('#bytes-written-to-disk-tr').insertAdjacentHTML('beforeend', td(FileManager.toolbox.shortenSize(report.billing.nodes[i]['bytesWrittenToDisk']) || '-'));
 			document.querySelector('#reads-from-network-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['readsFromNetwork'] || '-'));
 
-			document.querySelector('#bytes-read-from-network-tr').insertAdjacentHTML('beforeend', td(FileManager.Utils.bytesToSize(report.billing.nodes[i]['bytesReadFromNetwork']) || '-'));
+			document.querySelector('#bytes-read-from-network-tr').insertAdjacentHTML('beforeend', td(FileManager.toolbox.shortenSize(report.billing.nodes[i]['bytesReadFromNetwork']) || '-'));
 			document.querySelector('#writes-to-network-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['writesToNetwork'] || '-'));
-			document.querySelector('#bytes-written-to-network-tr').insertAdjacentHTML('beforeend', td(FileManager.Utils.bytesToSize(report.billing.nodes[i]['bytesWrittenToNetwork']) || '-'));
+			document.querySelector('#bytes-written-to-network-tr').insertAdjacentHTML('beforeend', td(FileManager.toolbox.shortenSize(report.billing.nodes[i]['bytesWrittenToNetwork']) || '-'));
 		}
 		document.querySelector('#billing-report-title').setAttribute('colspan', String(1+nodesLength));
 		if (nodesLength > 3) {
@@ -823,8 +823,8 @@ FileManager.Metadata.load = function (metadata) {
 
 		var html = document.querySelector('#metadataRowTemplate').innerHTML;
 
-		html = html.replace('{{key}}', FileManager.Utils.htmlEscape(key));
-		html = html.replace('{{value}}', FileManager.Utils.htmlEscape(value));
+		html = html.replace('{{key}}', FileManager.toolbox.escapeHTML(key));
+		html = html.replace('{{value}}', FileManager.toolbox.escapeHTML(value));
 
 		document.querySelector('.metadata-table tbody').insertAdjacentHTML('beforeend', html);
 	}
@@ -1224,7 +1224,7 @@ FileManager.Containers.list = function (callback) {
 		callback();
 
 		if (containers.length == 20) {
-			FileManager.Utils.addLoadMoreButton(scrollingContentEl);
+			FileManager.toolbox.createLoadMoreButton(scrollingContentEl);
 		}
 
 		if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
@@ -1285,17 +1285,17 @@ FileManager.Containers.loadMore = function () {
 
 FileManager.Containers.create = function (containerObj) {
 
-	var name = FileManager.Utils.makeShortName(containerObj.name);
+	var name = FileManager.toolbox.makeShortName(containerObj.name);
 	var title = containerObj.name;
-	var size = FileManager.Utils.bytesToSize(containerObj.bytes);
+	var size = FileManager.toolbox.shortenSize(containerObj.bytes);
 	var files = containerObj.count;
 
 	var html = document.querySelector('#containerTemplate').innerHTML;
 
-	html = html.replace('{{name}}', FileManager.Utils.htmlEscape(name));
-	html = html.replace('{{title}}', FileManager.Utils.htmlEscape(title));
-	html = html.replace('{{size}}', FileManager.Utils.htmlEscape(size));
-	html = html.replace('{{files}}', FileManager.Utils.htmlEscape(files));
+	html = html.replace('{{name}}', FileManager.toolbox.escapeHTML(name));
+	html = html.replace('{{title}}', FileManager.toolbox.escapeHTML(title));
+	html = html.replace('{{size}}', FileManager.toolbox.escapeHTML(size));
+	html = html.replace('{{files}}', FileManager.toolbox.escapeHTML(files));
 
 	return html;
 };
@@ -1341,7 +1341,7 @@ FileManager.Files.list = function (callback) {
 			scrollingContentEl.insertAdjacentHTML('beforeend', html);
 
 			if (FILES.length == 20) {
-				FileManager.Utils.addLoadMoreButton(scrollingContentEl);
+				FileManager.toolbox.createLoadMoreButton(scrollingContentEl);
 			}
 
 			if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
@@ -1477,13 +1477,13 @@ FileManager.Files.listHtml = function (files) {
 
 		_name = FileManager.Path(_name).name();
 
-		var name = FileManager.Utils.makeShortName(_name);
+		var name = FileManager.toolbox.makeShortName(_name);
 		var title = _name;
 
 		var html = document.querySelector('#directoryTemplate').innerHTML;
 
-		html = html.replace('{{name}}', FileManager.Utils.htmlEscape(name));
-		html = html.replace('{{title}}', FileManager.Utils.htmlEscape(title));
+		html = html.replace('{{name}}', FileManager.toolbox.escapeHTML(name));
+		html = html.replace('{{title}}', FileManager.toolbox.escapeHTML(title));
 
 		return html;
 	}
@@ -1493,16 +1493,16 @@ FileManager.Files.listHtml = function (files) {
 		var icon = (file.content_type !== "undefined" && file.content_type.replace("/", "-").replace(".", "-")) || "file-type";
 		var name = makeShortFileName(_name);
 		var title = _name;
-		var size = FileManager.Utils.bytesToSize(file.bytes);
+		var size = FileManager.toolbox.shortenSize(file.bytes);
 		var modified = makeDatePretty(file.last_modified);
 
 		var html = document.querySelector('#fileTemplate').innerHTML;
 
-		html = html.replace('{{file-type}}', FileManager.Utils.htmlEscape(icon));
-		html = html.replace('{{name}}', FileManager.Utils.htmlEscape(name));
-		html = html.replace('{{title}}', FileManager.Utils.htmlEscape(title));
-		html = html.replace('{{size}}', FileManager.Utils.htmlEscape(size));
-		html = html.replace('{{modified}}', FileManager.Utils.htmlEscape(modified));
+		html = html.replace('{{file-type}}', FileManager.toolbox.escapeHTML(icon));
+		html = html.replace('{{name}}', FileManager.toolbox.escapeHTML(name));
+		html = html.replace('{{title}}', FileManager.toolbox.escapeHTML(title));
+		html = html.replace('{{size}}', FileManager.toolbox.escapeHTML(size));
+		html = html.replace('{{modified}}', FileManager.toolbox.escapeHTML(modified));
 
 		return html;
 	}
@@ -1567,6 +1567,7 @@ FileManager.ContentChange.animate = function () {
 	var callback = function () {
 		oldEl.classList.add('old-scrolling-content');
 		newEl.classList.remove('new-scrolling-content');
+		window.FileManager.elements.itemsWrapperEl.scrollIntoView();
 	};
 
 	el.textContent = 'Loading...';
@@ -1615,67 +1616,6 @@ FileManager.ContentChange.transition = function (e) {
 
 document.addEventListener('transitionend', FileManager.ContentChange.transition);
 document.addEventListener('webkitTransitionEnd', FileManager.ContentChange.transition);
-
-FileManager.Utils = {};
-FileManager.Utils.htmlEscape = function (str) {
-	return String(str)
-		.replace('&raquo;', '///')
-		.replace(/&/g, '&amp;')
-		.replace(/"/g, '&quot;')
-		.replace(/'/g, '&#39;')
-		.replace(/</g, '&lt;')
-		.replace(/>/g, '&gt;')
-		.replace('///', '&raquo;');
-};
-
-FileManager.Utils.makeShortName = function (name, len) {
-	if (!name) {
-		return '';
-	}
-
-	len = len || 30;
-
-	if (name.length <= len) {
-		return name;
-	}
-
-	return name.substr(0, len) + '&raquo;';
-};
-
-FileManager.Utils.bytesToSize = function (bytes, precision) {
-	bytes = Number(bytes);
-	if (typeof bytes != 'number') {
-		return '-';
-	}
-	var kilobyte = 1024;
-	var megabyte = kilobyte * 1024;
-	var gigabyte = megabyte * 1024;
-	var terabyte = gigabyte * 1024;
-
-	if ((bytes >= 0) && (bytes < kilobyte)) {
-		return bytes + ' B';
-
-	} else if ((bytes >= kilobyte) && (bytes < megabyte)) {
-		return (bytes / kilobyte).toFixed(precision) + ' KB';
-
-	} else if ((bytes >= megabyte) && (bytes < gigabyte)) {
-		return (bytes / megabyte).toFixed(precision) + ' MB';
-
-	} else if ((bytes >= gigabyte) && (bytes < terabyte)) {
-		return (bytes / gigabyte).toFixed(precision) + ' GB';
-
-	} else if (bytes >= terabyte) {
-		return (bytes / terabyte).toFixed(precision) + ' TB';
-
-	} else {
-		return bytes + ' B';
-	}
-};
-
-FileManager.Utils.addLoadMoreButton = function (scrollingContentEl) {
-	var html = document.querySelector('#loadMoreButtonTemplate').innerHTML;
-	scrollingContentEl.insertAdjacentHTML('beforeend', html);
-};
 
 FileManager.AjaxError = {};
 
@@ -1905,11 +1845,11 @@ FileManager.Shared.listSharedContainers = function (sharedContainers, scrollingC
 	function add(sharedContainer, email) {
 
 		var name = email + '/' + sharedContainer.split('/')[1];
-		name = FileManager.Utils.makeShortName(name);
+		name = FileManager.toolbox.makeShortName(name);
 		var title = sharedContainer;
 		var html = document.querySelector('#sharedContainerTemplate').innerHTML;
-		html = html.replace('{{name}}', FileManager.Utils.htmlEscape(name));
-		html = html.replace('{{title}}', FileManager.Utils.htmlEscape(title));
+		html = html.replace('{{name}}', FileManager.toolbox.escapeHTML(name));
+		html = html.replace('{{title}}', FileManager.toolbox.escapeHTML(title));
 		scrollingContentEl.insertAdjacentHTML('afterbegin', html);
 	}
 
@@ -1918,7 +1858,7 @@ FileManager.Shared.listSharedContainers = function (sharedContainers, scrollingC
 			account: FileManager.Path(path).account(),
 			container: FileManager.Path(path).container(),
 			success: function (bytes, count) {
-				var size = FileManager.Utils.bytesToSize(bytes);
+				var size = FileManager.toolbox.shortenSize(bytes);
 
 				var selector = '.item[title="' + path + '"]';
 				var el = scrollingContentEl.querySelector(selector);
