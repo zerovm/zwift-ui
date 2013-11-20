@@ -93,12 +93,15 @@
 	function getTransformedBytes(bytes){
 		var counter = 1,
 			grade = 1024,
-			checksum = Math.pow(grade, counter);
+			checksum = Math.pow(grade, counter),
+			result;
 		while(bytes > checksum){
 			counter++;
 			checksum = Math.pow(grade, counter);
 		}
-		return (bytes / Math.pow(grade, counter - 1)).toFixed(2) + gradeMap[counter - 1];
+		result = (bytes / Math.pow(grade, counter - 1));
+		result = result % 1 ? result.toFixed(2) : result;
+		return result + gradeMap[counter - 1];
 	}
 
 	function escapeHTML(str) {
