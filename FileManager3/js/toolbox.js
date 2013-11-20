@@ -155,6 +155,17 @@
 		return pretty || alternative.toDateString();
 	}
 
+	function onscrollLoadMore(e){//TODO: move it somewhere else
+		e = e.target ? e.target : e;
+		if(Math.abs(e.scrollTop - (e.scrollHeight - e.clientHeight)) < 4){
+			if(FileManager.CurrentPath().isContainersList()){
+				FileManager.Containers.loadMore();
+			}else{
+				window.FileManager.files.loadMore();
+			}
+		}
+	}
+
 	Object.keys(extObj).forEach(function(ext){
 		var obj = extObj[ext],
 			mime = obj.mime;
@@ -177,6 +188,7 @@
 		makeShortName: makeShortName,
 		createLoadMoreButton: createLoadMoreButton,
 		escapeHTML: escapeHTML,
-		makeDatePretty: makeDatePretty
+		makeDatePretty: makeDatePretty,
+		onscrollLoadMore: onscrollLoadMore
 	};
 })();

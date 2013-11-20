@@ -250,17 +250,8 @@
 	document.addEventListener("webkitTransitionEnd", ontransition);
 
 	document.addEventListener("DOMContentLoaded", function(){
-		var scrollWrapper = document.getElementsByClassName("content-wrapper")[0];
-		scrollWrapper.addEventListener('scroll', function(e){
-			e = e.target ? e.target : e;
-			if(Math.abs(e.scrollTop - (e.scrollHeight - e.clientHeight)) < 4){
-				if(FileManager.CurrentPath().isContainersList()){
-					FileManager.Containers.loadMore();
-				}else{
-					window.FileManager.files.loadMore();
-				}
-			}
-		});
+		console.log(window.FileManager.elements.scrollWrapper)
+		window.FileManager.elements.scrollWrapper.addEventListener('scroll', window.FileManager.toolbox.onscrollLoadMore);
 	});
 
 	if(!window.FileManager){

@@ -79,13 +79,8 @@ document.addEventListener("DOMContentLoaded", function(){//TODO: extract into se
 
 FileManager.CurrentDirLabel.setContent = function (content, isArrowsSeparated) {
 	var el = document.querySelector('.current-dir-label'),
-		splittedContent, i, prevValue, joiner = "/",
-		isCarringHiddenClass;//for browsers img rendering issue
-	if(el.classList.contains("hidden")){
-		isCarringHiddenClass = true;
-	}else{
-		el.classList.add("hidden");
-	}
+		splittedContent, i, prevValue, joiner = "/";
+	el.classList.add("hidden");
 	el.removeChildren();
 	if(content.length > FileManager.CurrentDirLabel.MAX_LENGTH){
 		splittedContent = content.split("/").filter(function(str){return str;});
@@ -112,7 +107,7 @@ FileManager.CurrentDirLabel.setContent = function (content, isArrowsSeparated) {
 		return pathPart ? "<a href='#' data-hash='" + pathPart + "'>" + pathPart + "</a>" : "";
 	}).join(joiner);
 	el.innerHTML = content;
-	!isCarringHiddenClass && el.classList.remove("hidden");
+	el.classList.remove("hidden");
 };
 
 FileManager.CurrentDirLabel.root = function () {
@@ -581,7 +576,7 @@ FileManager.LoadMoreButton = {};
 
 FileManager.LoadMoreButton.click = function () {
 	if (FileManager.CurrentPath().isContainersList()) {
-		FileManager.Containers.loadMore();
+		window.FileManager.toolbox.onscrollLoadMore(window.FileManager.elements.scrollWrapper);
 	} else {
 		window.FileManager.files.loadMore();
 	}
@@ -1014,9 +1009,7 @@ FileManager.Containers.list = function (callback) {
 			FileManager.toolbox.createLoadMoreButton(scrollingContentEl);
 		}
 
-		if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
-			FileManager.Containers.loadMore();
-		}
+		window.FileManager.toolbox.onscrollLoadMore(window.FileManager.elements.scrollWrapper);
 	}
 
 	function noContainers() {
@@ -1057,9 +1050,7 @@ FileManager.Containers.loadMore = function () {
 			document.querySelector('.load-more-button').textContent = 'Load more';
 			document.querySelector('.load-more-button').removeAttribute('disabled');
 
-			if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 4) {
-				FileManager.Containers.loadMore();
-			}
+			window.FileManager.toolbox.onscrollLoadMore(window.FileManager.elements.scrollWrapper);
 		},
 		error: error
 	});
