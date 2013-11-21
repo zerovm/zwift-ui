@@ -52,15 +52,6 @@ FileManager.AccountLabel.init = function () {
 };
 
 
-function upButtonClick() {
-	var upperLevel = FileManager.CurrentPath().up();
-	if (!FileManager.Loading.visible && upperLevel){
-		FileManager.Loading.hide();
-		FileManager.CurrentDirLabel.showLoading();
-		location.hash = upperLevel;
-	}
-}
-
 
 FileManager.CurrentDirLabel = {};
 
@@ -1271,7 +1262,15 @@ document.addEventListener('DOMContentLoaded', function () {
 		FileManager.reAuth();
 
 		document.getElementById('SignOutButton').addEventListener('click', FileManager.SignOutButton.click);
-		document.getElementById('UpButton').addEventListener('click', upButtonClick);
+		document.getElementById('UpButton').addEventListener('click', function(){
+				var upperLevel = FileManager.CurrentPath().up();
+				if (!FileManager.Loading.visible && upperLevel){
+					FileManager.Loading.hide();
+					FileManager.CurrentDirLabel.showLoading();
+					location.hash = upperLevel;
+				}
+			}
+		);
 
 		document.getElementById("WideButton").addEventListener("click", function(){
 			document.body.classList.toggle("wide-content");

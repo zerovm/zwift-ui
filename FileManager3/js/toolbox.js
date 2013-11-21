@@ -40,9 +40,9 @@
 			"psd": {"mime": "image/vnd.adobe.photoshop"},
 			"avi": {"mime": "video/x-msvideo"},
 
-			"php": {"mime": "text/plain", "isEditable": "php"},
-			"rb": {"mime": "text/plain", "isEditable": "ruby"},
-			"pl": {"mime": "text/plain", "isEditable": "perl"}
+			"php": {"mime": "text/php", "isEditable": "php"},
+			"rb": {"mime": "text/ruby", "isEditable": "ruby"},
+			"pl": {"mime": "text/perl", "isEditable": "perl"}
 		},
 		gradeMap = ["B", "KB", "MB", "GB"];
 

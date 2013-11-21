@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			var pathPrefix = "ace/mode/",
 				type = FileManager.toolbox.isEditable(type, name);
 			window.editor = editor;
-			if(type){
+			if(type && type !== "txt"){
 				editor.getSession().setMode(pathPrefix + type);
 			}else{
 				editor.getSession().setMode("");
