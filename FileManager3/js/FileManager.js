@@ -63,7 +63,6 @@ document.addEventListener("DOMContentLoaded", function(){//TODO: extract into se
 			e.preventDefault();
 			e.stopPropagation();
 			location.hash = location.hash.match(new RegExp(".*" + e.target.dataset.hash + ".")).pop();
-			return false;
 		}
 	});
 });
@@ -151,7 +150,6 @@ FileManager.execute = function (data, contentType) {
 	FileManager.ExecuteButton.hide();
 	FileManager.ExecuteTimer.start();
 	FileManager.OpenButton.hide();
-	FileManager.FilesMenu.hide();
 
 	ZeroVmOnSwift.execute({
 		data: data,
@@ -186,7 +184,7 @@ FileManager.execute = function (data, contentType) {
 FileManager.ExecuteButton = {};
 
 FileManager.ExecuteButton.click = function () {
-	FileManager.execute(FileManager.File.codeMirror.getValue(), 'application/json');
+	//FileManager.execute(FileManager.File.codeMirror.getValue(), 'application/json');
 };
 
 FileManager.ExecuteButton.hide = function () {
@@ -328,38 +326,6 @@ FileManager.ExecuteReport.showFullReport = function (el) {
 
 
 
-FileManager.UploadAs = {};
-
-FileManager.UploadAs.files = [];
-
-FileManager.UploadAs.change = function (files) {
-
-	for (var i = 0; i < files.length; i++) {
-		FileManager.UploadAs.files.push(files[i]);
-		var index = FileManager.UploadAs.files.length - 1;
-		var template = document.querySelector('#uploadAsTemplate').innerHTML;
-		var find = '{{index}}', re = new RegExp(find, 'g');
-		template = template.replace(re, String(index));
-		if (files[i].hasOwnProperty('override_name')) {}
-		template = template.replace('{{upload-input-name}}', files[i].name);
-		template = template.replace('{{upload-input-type}}', files[i].type);
-		document.querySelector('.menu-files').insertAdjacentHTML('beforeend', template);
-	}
-
-};
-
-FileManager.UploadAs.click = function (el) {
-	var indexStr = el.getAttribute('data-index');
-	var index = Number(indexStr);
-	var uploadAsEl = document.querySelector('#upload-as-' + indexStr);
-	var name = uploadAsEl.querySelector('.upload-as-input-name').value;
-	var contentType = uploadAsEl.querySelector('.upload-as-input-type').value;
-	uploadAsEl.parentNode.removeChild(uploadAsEl);
-	FileManager.UploadFiles.uploadFile(FileManager.UploadAs.files[index], name, contentType);
-	FileManager.UploadAs.files[index] = null;
-};
-
-
 FileManager.UploadAndExecute = {};
 
 FileManager.UploadAndExecute.change = function (file) {
@@ -429,137 +395,6 @@ FileManager.ConfirmDelete.click = function (el) {
 		}
 	});
 
-};
-
-
-FileManager.Item = {};
-
-FileManager.Item.selectedPath = null;
-
-FileManager.Item.click = function (itemEl) {
-
-	var name = itemEl.dataset.path;
-	if(!name){
-		return;
-	}
-	FileManager.Item.selectedPath = FileManager.CurrentPath().add(name);
-
-	FileManager.Loading.hide();
-	FileManager.Item.showLoading(itemEl);
-	location.hash = FileManager.Item.selectedPath;
-
-	function editMode() {
-		var args, itemMenuHtml, path;
-		FileManager.Item.unselect();
-
-		itemEl.classList.add('clicked');
-
-		itemMenuHtml = document.querySelector('#itemMenuTemplate').innerHTML;
-		itemEl.insertAdjacentHTML('afterend', itemMenuHtml);
-
-		FileManager.Metadata.showLoading();
-
-		path = FileManager.Item.selectedPath;
-
-		if (FileManager.Path(path).isContainer()) {
-
-			var xhr;
-			args = {
-				containerName: FileManager.Path(path).container(),
-				success: function (metadata, objectCount, bytesUsed) {
-					FileManager.Item.metadata = metadata;
-					FileManager.Metadata.load(metadata);
-
-					if (FileManager.ENABLE_SHARED_CONTAINERS && !FileManager.Shared.isShared(path)) {
-						var rights = SharedContainersOnSwift.getRights(xhr);
-						FileManager.Rights.load(rights);
-					}
-				},
-				error: function (status, statusText) {
-					FileManager.Metadata.showError(status, statusText);
-
-					if (FileManager.ENABLE_SHARED_CONTAINERS && !FileManager.Shared.isShared(path)) {
-						FileManager.Rights.showError(status, statusText);
-					}
-				},
-				notExist: function () {
-					FileManager.Metadata.showError(404, 'Not Found');
-				}
-			};
-
-			if (FileManager.ENABLE_SHARED_CONTAINERS) {
-				args.account = FileManager.Path(FileManager.Item.selectedPath).account();
-
-				if (FileManager.Shared.isShared(path)) {
-					FileManager.Rights.sharedContainers();
-				} else {
-					FileManager.Rights.showLoading();
-				}
-			}
-
-			xhr = SwiftV1.Container.head(args);
-		} else {
-			FileManager.ContentType.showLoading();
-			FileManager.Copy.show();
-
-			args = {
-				path: FileManager.Path(path).withoutAccount(),
-				success: function (metadata, contentType, contentLength, lastModified) {
-					FileManager.Item.metadata = metadata;
-					FileManager.Item.contentType = contentType;
-					FileManager.ContentType.load(contentType);
-					FileManager.Metadata.load(metadata);
-				},
-				error: function (status, statusText) {
-					FileManager.ContentType.showError(status, statusText);
-					FileManager.Metadata.showError(status, statusText);
-				},
-				notExist: function () {
-					FileManager.ContentType.showError(404, 'Not Found');
-					FileManager.Metadata.showError(404, 'Not Found');
-				}
-			};
-
-			if (FileManager.ENABLE_SHARED_CONTAINERS) {
-				args.account = FileManager.Path(FileManager.Item.selectedPath).account();
-			}
-			SwiftV1.File.head(args);
-		}
-	}
-};
-
-FileManager.Item.deleteclick = function (el) {
-
-	FileManager.Item.unselect();
-
-	var itemConfirmDelete = document.querySelector('#itemConfirmDeleteTemplate').innerHTML;
-
-	var itemEl = el.parentNode.parentNode;
-	itemEl.classList.add('clicked');
-	itemEl.insertAdjacentHTML('afterend', itemConfirmDelete);
-};
-
-FileManager.Item.unselect = function () {
-
-	var menuItem = document.querySelector('.item-menu');
-	var confirmDeleteItem = document.querySelector('.item-confirm-delete');
-
-	if (menuItem) {
-		menuItem.parentNode.removeChild(menuItem);
-		document.querySelector('.clicked').classList.remove('clicked');
-	}
-
-	if (confirmDeleteItem) {
-		confirmDeleteItem.parentNode.removeChild(confirmDeleteItem);
-		document.querySelector('.clicked').classList.remove('clicked');
-	}
-
-};
-
-FileManager.Item.showLoading = function (itemEl) {
-	var loadingHtml = document.querySelector('#itemLoadingTemplate').innerHTML;
-	itemEl.classList.add('clicked');
-	itemEl.insertAdjacentHTML('afterbegin', loadingHtml);
 };
 
 
@@ -899,8 +734,7 @@ FileManager.File.edit = function (el) {
 	FileManager.File.getFileXhr = SwiftV1.getFile(args);
 
 	function handleResponse(data, contentType) {
-		var fileName = FileManager.CurrentPath().name(),
-			filePath = FileManager.CurrentPath().get();
+		var fileName = FileManager.CurrentPath().name();
 
 		el.removeChildren();
 		FileManager.CurrentDirLabel.setContent(fileName);
@@ -1180,6 +1014,8 @@ document.addEventListener('click', function (e) {
 		}
 	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'delete')) {
 		FileManager.Item.deleteclick(el);
+	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'tree-dot')) {
+		FileManager.Item.toggleMenu(el);
 	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'item')) {
 		FileManager.Item.click(el);
 	} else if (FileManager.toolbox.getParentByClassName(e.target,'load-more-button')) {
@@ -1197,16 +1033,12 @@ document.addEventListener('click', function (e) {
 		FileManager.Metadata.remove(el);
 	} else if (FileManager.toolbox.getParentByClassName(e.target,'content-type-button')) {
 		FileManager.ContentType.click();
-	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'cancel-upload-button')) {
-		FileManager.UploadFiles.cancelClick(el);
 	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'execute-close-button')) {
 		FileManager.ExecuteReport.remove();
 	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'execute-full-button')) {
 		FileManager.ExecuteReport.showFullReport(el);
 	} else if (FileManager.toolbox.getParentByClassName(e.target,'copy-button')) {
 		FileManager.Copy.click();
-	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'upload-as-button')) {
-		FileManager.UploadAs.click(el);
 	} else if (FileManager.toolbox.getParentByClassName(e.target,'open-button')) {
 		FileManager.OpenButton.click();
 	}
@@ -1294,11 +1126,10 @@ FileManager.Shared.listSharedContainers = function (sharedContainers, scrollingC
 
 		var name = email + '/' + sharedContainer.split('/')[1];
 		name = FileManager.toolbox.makeShortName(name);
-		var title = sharedContainer;
 		var html = document.querySelector('#sharedContainerTemplate').innerHTML;
 		html = html.replace('{{name}}', FileManager.toolbox.escapeHTML(name));
-		html = html.replace('{{path}}', FileManager.toolbox.escapeHTML(title));
-		html = html.replace('{{title}}', FileManager.toolbox.escapeHTML(title));
+		html = html.replace('{{path}}', FileManager.toolbox.escapeHTML(sharedContainer));
+		html = html.replace('{{title}}', FileManager.toolbox.escapeHTML(sharedContainer));
 		scrollingContentEl.insertAdjacentHTML('afterbegin', html);
 	}
 

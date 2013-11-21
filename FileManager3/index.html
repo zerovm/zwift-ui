@@ -28,6 +28,7 @@
 		<script src="js/dialogForm.js"></script>
 
 		<script src="js/fileList.js"></script>
+		<script src="js/item.js"></script>
 		<script src="js/dialogButtons.js"></script>
 		<script src="js/uploadButtons.js"></script>
 		<script src="js/FileManager.js"></script>
@@ -113,6 +114,7 @@
 				<label class="size">{{size}}</label>
 				<label class="files">{{files}}</label>
 			</span>
+			<button class="tree-dot"></button>
 			</div>
 		</template>
 
@@ -126,6 +128,7 @@
 				<label class="size">...</label>
 				<label class="files">...</label>
 			</span>
+			<button class="tree-dot"></button>
 			</div>
 		</template>
 
@@ -139,6 +142,7 @@
 				<label class="size">{{size}}</label>
 				<label class="modified">{{modified}}</label>
 			</span>
+			<button class="tree-dot"></button>
 			</div>
 		</template>
 
@@ -150,6 +154,7 @@
 			</span>
 			<span class="right">
 			</span>
+			<button class="tree-dot"></button>
 			</div>
 		</template>
 
@@ -295,42 +300,6 @@
 			</tr>
 		</template>
 
-		<template id="itemConfirmDeleteTemplate">
-			<div class="item-confirm-delete">
-				<div class="delete-label" style="margin: 8px;display: inline-block;">Are you sure you want delete?</div>
-				<button class="delete-button" style="float: right;">Delete</button>
-				<label class="delete-deleting-label" hidden>Deleting...</label>
-				<label class="delete-error-ajax" hidden>Error: <span class="status"></span> <span class="status-text"></span>.</label>
-			</div>
-		</template>
-
-		<template id="uploadTemplate">
-			<table class="input-group-table" id="{{upload-id}}">
-				<tr>
-					<td><img src="img/file.png"></td>
-					<td style="text-align: left;"><label class="upload-label-name">{{upload-label-name}}</label></td>
-					<td style="text-align: right;"><span class="progresslabel">&nbsp;0%&nbsp;</span><progress style="width: 100px;" class="upload-progress" max="100" value="0"></progress></td>
-					<td class="cancel-upload-button">x</td>
-				</tr>
-				<tr class="err-msg error" hidden>
-					<td></td>
-					<td colspan="2">Error: <span class="status"></span> <span class="status-text"></span>.</td>
-					<td></td>
-				</tr>
-			</table>
-		</template>
-
-		<template id="uploadAsTemplate">
-			<table class="input-group-table">
-				<tr id="upload-as-{{index}}">
-					<td><img src="img/file.png"></td>
-					<td><input data-index="{{index}}" class="upload-as-input-name" placeholder="File Name" value="{{upload-input-name}}"></td>
-					<td><input data-index="{{index}}" class="upload-as-input-type" placeholder="Content Type" value="{{upload-input-type}}"></td>
-					<td data-index="{{index}}" class="upload-as-button">+</td>
-				</tr>
-			</table>
-		</template>
-
 		<template id="reportTemplate">
 			<div id="report">
 				<table>
@@ -461,9 +430,5 @@
 
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
 		<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>')</script>
-
-		<!--<script src="js/vendor/bootstrap.min.js"></script>-->
-
-		<script src="js/main.js"></script>
 	</body>
 </html>
