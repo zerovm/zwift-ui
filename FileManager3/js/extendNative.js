@@ -26,7 +26,7 @@
 	}]);
 	attachMethods(FileList, [{
 		obj: Array,
-		methods: ["forEach"]
+		methods: ["forEach", "map"]
 	}]);
 	attachMethods(HTMLCollection, [{
 		obj: Array,

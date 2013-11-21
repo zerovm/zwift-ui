@@ -279,12 +279,12 @@ body:not(.freeze-all) .current-dir-label a:hover,
   cursor: default;
   display: flex;
 }
-body:not(.freeze-all) .item:hover,
+body:not(.freeze-all) .item:not(.upload-as):hover,
 body:not(.freeze-all) .load-more-button:hover{
   background-color: white;
 }
 
-.item:active,
+.item:not(.upload-as):active,
 .load-more-button:active{
   background: #D3D3D3;
   border-color: darkgray;
@@ -295,7 +295,36 @@ body:not(.freeze-all) .load-more-button:hover{
   border-color: darkgray;
   cursor: default;
 }
-
+.upload-as form{
+  display: flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+}
+.upload-as form .input-wrapper{
+  flex: 1;
+  padding-right: 15px;
+  display: flex;
+  justify-content: flex-start;
+  cursor: default;
+}
+.upload-as form .input-wrapper span{
+  margin: 0 5px;
+  display: inline-flex;
+  align-items: center;
+}
+.upload-as form .input-wrapper input{
+  flex: 1;
+  min-width: 100px;
+  height: 26px;
+  padding: 4px;
+}
+.upload-as form .input-wrapper button{
+  margin: 0 5px;
+}
+.upload-as .progressbar.item{
+  flex: 1;
+}
 .item-loading{
   color: rgba(0, 0, 0, 0.35);
   position: absolute;
@@ -842,16 +871,21 @@ template{
   width: 60px;
   height: 30px;
 }
-.freeze-all *{
+.freeze-all .fixed-top *{
   pointer-events: none;
   cursor: default !important;
 }
+.freeze-all #UpButton,
+.freeze-all .hot-buttons,
 .freeze-all.progressbar-buttons .progressbar button{
   pointer-events: auto;
 }
-button:not(.btn-primary):active,
-button:not(.btn-primary):focus,
-button:not(.btn-primary):hover{
+button:not(.btn):active,
+button:not(.btn):focus,
+button:not(.btn):hover{
   border: none;
   outline: none;
+}
+.disable-toolbar-right .toolbar .right *{
+  pointer-events: none;
 }

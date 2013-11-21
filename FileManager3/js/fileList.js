@@ -104,8 +104,12 @@
 		filesArgs.success = function(files){
 			var el = document.querySelector(".load-more-button");//TODO: check wether it is needed
 			if(files.length < LIMIT){
-				el.insertAdjacentHTML("beforebegin", listHTML(files));
-				el.parentNode.removeChild(el);
+				if(!el){
+					window.FileManager.elements.itemsWrapperEl.insertAdjacentHTML("beforeend", listHTML(files));
+				}else{
+					el.insertAdjacentHTML("beforebegin", listHTML(files));
+					el.parentNode.removeChild(el);
+				}
 				return;
 			}
 			el.insertAdjacentHTML("beforebegin", listHTML(files));
@@ -250,7 +254,6 @@
 	document.addEventListener("webkitTransitionEnd", ontransition);
 
 	document.addEventListener("DOMContentLoaded", function(){
-		console.log(window.FileManager.elements.scrollWrapper)
 		window.FileManager.elements.scrollWrapper.addEventListener('scroll', window.FileManager.toolbox.onscrollLoadMore);
 	});
 

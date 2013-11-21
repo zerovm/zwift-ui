@@ -9,7 +9,34 @@ document.addEventListener("DOMContentLoaded", function(){
 	var slashAtEndRegex = /\/$/,
 		uploads,
 		disableAllClass = "freeze-all",
-		buttonsPointerClass = "progressbar-buttons";
+		buttonsPointerClass = "progressbar-buttons",
+		requests = [];
+
+	function enableButtons(){
+		document.body.classList.remove(disableAllClass);
+		document.body.classList.remove(buttonsPointerClass);
+	}
+
+	function disableButtons(){
+		document.body.classList.remove(disableAllClass);
+		document.body.classList.remove(buttonsPointerClass);
+	}
+
+	function clearOnfinish(e){
+		window.removeEventListener("hashchange", clearOnfinish);
+		enableButtons();
+		document.body.classList.remove("disable-toolbar-right");
+		if(!e){
+			requests = [];
+			return;
+		}
+		if(requests){
+			requests.forEach(function(request){
+				request.abort();
+			});
+			requests = [];
+		}
+	}
 
 	function ProgressBar(wrapper, request, onEndCallback){
 		var progressbarEl = document.createElement("div"),
@@ -27,11 +54,11 @@ document.addEventListener("DOMContentLoaded", function(){
 				percentLoaded = Math.round((e.loaded / e.total) * 100);
 				progressValueEl.style.width = percentLoaded + "%";
 				if(percentLoaded < 5){
-					textEl.innerHTML =  "Upload started.";
+					textEl.innerHTML = "Upload started.";
 				}else if(percentLoaded < 98){
-					textEl.innerHTML =  "Uploading...";
+					textEl.innerHTML = "Uploading...";
 				}else{
-					textEl.innerHTML =  "Finalizing";
+					textEl.innerHTML = "Finalizing";
 				}
 			}
 		}
@@ -42,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function(){
 				isRemoved = true;
 				onEndCallback && onEndCallback();
 				setTimeout(function(){
-					progressbarEl.parentNode.removeChild(progressbarEl);
+					progressbarEl && progressbarEl.parentNode.removeChild(progressbarEl);
 				}, 100);
 			}
 		}
@@ -66,9 +93,11 @@ document.addEventListener("DOMContentLoaded", function(){
 		progressbarEl.appendChild(progressEl);
 		cancelButton.addEventListener("click", cancel);
 		cancelButton.innerHTML = "Cancel";
+		cancelButton.className = "btn btn-default";
 		buttonWrapper.appendChild(cancelButton);
 		hideButton.addEventListener("click", remove);
 		hideButton.innerHTML = "Hide";
+		hideButton.className = "btn btn-default";
 		buttonWrapper.appendChild(hideButton);
 		progressbarEl.appendChild(buttonWrapper);
 		wrapper.insertBefore(progressbarEl, wrapper.firstElementChild);
@@ -82,37 +111,135 @@ document.addEventListener("DOMContentLoaded", function(){
 		function onloadCallback(){
 			uploadingFiles--;
 			if(uploadingFiles === 0){
-				document.body.classList.remove(disableAllClass);
-				document.body.classList.remove(buttonsPointerClass);
+				enableButtons();
 				window.FileManager.files.addFileListContent();
+				clearOnfinish();
 			}
 		}
 
-		function uploadFile(file){
+		function uploadFile(file, callback, wrapper){
 			var _type, _name, url, uploadRequest;
 			_name = file.newName || file.name;
 			_type = file.newType || file.type || window.FileManager.toolbox.getMIMEType(_name);
 
-			url = urlPrefix + _name;
+			url = "https://z.litestack.com/v1/" + FileManager.CurrentPath().get() + _name;//TODO: replace hardcode with smth
 			uploadRequest = new XMLHttpRequest();
-			new ProgressBar(window.FileManager.elements.itemsWrapperEl, uploadRequest, onloadCallback);
+			requests.push(uploadRequest);
+			new ProgressBar(wrapper ? wrapper : window.FileManager.elements.itemsWrapperEl, uploadRequest, callback);
 			uploadRequest.open('PUT', url, true);
 
 			uploadRequest.setRequestHeader('Content-Type', _type);
 			uploadRequest.send(file);
+			return uploadRequest;
 		}
 
 		this.uploadFiles = function(e){
-			var path = FileManager.CurrentPath().get();
-			urlPrefix = "https://z.litestack.com/v1/" + path;//TODO: replace hardcode with smth
-			!urlPrefix.match(slashAtEndRegex) && (urlPrefix += "/");
 			uploadingFiles = e.target.files.length;
-			document.body.classList.add(disableAllClass);
-			document.body.classList.add(buttonsPointerClass);
-			e.target.files.forEach(uploadFile);
+			disableButtons();
+			requests = e.target.files.map(function(file){
+				uploadFile(file, onloadCallback);
+			});
 			e.target.value = [];
 		};
+		this.uploadFile = uploadFile;
 	};
+
+	function createDialog(file, onconfirm, oncancel){
+		var wrapper = document.createElement("div"),
+			form = document.createElement("form"),
+			textEl, inputElement, button,
+			buttonWrapper = document.createElement("div"),
+			inputWrapper = document.createElement("div");
+		wrapper.className = "item upload-as";
+		buttonWrapper.className = "button-wrapper";
+		inputWrapper.className = "input-wrapper";
+		form.className = "input-group";
+
+		textEl = document.createElement("span");
+		textEl.textContent = "New name";
+		inputWrapper.appendChild(textEl);
+		inputElement = document.createElement("input");
+		inputElement.className = "form-control";
+		inputElement.placeholder = textEl.textContent;
+		inputElement.value = file.name;
+		inputWrapper.appendChild(inputElement);
+
+		textEl = document.createElement("span");
+		textEl.textContent = "New type";
+		inputWrapper.appendChild(textEl);
+		inputElement = document.createElement("input");
+		inputElement.className = "form-control";
+		inputElement.placeholder = textEl.textContent;
+		file.type && (inputElement.value = file.type);
+		inputWrapper.appendChild(inputElement);
+		form.appendChild(inputWrapper);
+
+		button = document.createElement("button");
+		button.className = "hot-buttons btn btn-primary";
+		button.textContent = "OK";
+		button.type = "submit";
+		buttonWrapper.appendChild(button);
+		button = document.createElement("button");
+		button.className = "hot-buttons btn btn-default";
+		button.textContent = "Cancel";
+		button.type = "button";
+		button.addEventListener("click", oncancel);
+		buttonWrapper.appendChild(button);
+		form.appendChild(buttonWrapper);
+
+		form.addEventListener("submit", function(e){
+			var name = e.target[0].value,
+				type = e.target[1].value;
+			e.preventDefault();
+			name && (file.newName = name);
+			type && (file.newType = type);
+			onconfirm(file, wrapper);
+			return false;//just in case
+		});
+
+		wrapper.appendChild(form);
+		return wrapper;
+	}
+
+	function uploadAs(e){
+		var filesCounter = e.target.files.length,
+			wrapper = window.FileManager.elements.itemsWrapperEl,
+			fragment = document.createDocumentFragment(),
+			wasSmthUploded;
+
+		e.target.files.forEach(function(file){
+			fragment.appendChild(createDialog(file, onconfirm, oncancel));
+		});
+		e.target.value = null;
+		wrapper.insertBefore(fragment, wrapper.firstElementChild);
+		wrapper.getElementsByTagName("input")[0].focus();
+
+		function onconfirm(file, wrapper){
+			wrapper.removeChildren();
+			uploads.uploadFile(file, onloadedCallback, wrapper);
+			wasSmthUploded = true;
+		}
+
+		function oncancel(e){
+			var el;
+			onloadedCallback();
+			el = window.FileManager.toolbox.getParentByClassName(e.target, "upload-as");
+			el && el.parentNode.removeChild(el);
+		}
+
+		function onloadedCallback(){
+			filesCounter--;
+			if(!filesCounter){
+				enableButtons();
+				if(wasSmthUploded){
+					window.FileManager.files.addFileListContent();
+				}
+				clearOnfinish();
+			}
+		}
+
+		disableButtons();
+	}
 
 	function change(e){
 		e.stopPropagation();
@@ -122,6 +249,7 @@ document.addEventListener("DOMContentLoaded", function(){
 				uploads.uploadFiles(e);
 				break;
 			case "as":
+				uploadAs(e);
 				break;
 			case "exec":
 				break;
@@ -129,10 +257,10 @@ document.addEventListener("DOMContentLoaded", function(){
 				console.log("unkown action: " + e.target.dataset.action);
 				break;
 		}
+		document.body.classList.add("disable-toolbar-right");
+		window.addEventListener("hashchange", clearOnfinish);
 		return false;
 	}
-
-	//document.getElementById("CancelDialog").addEventListener("click", cancel);
 
 	document.getElementsByClassName("upload-input").forEach(function(input){
 		input.addEventListener("change", change);
