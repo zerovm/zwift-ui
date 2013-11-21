@@ -251,6 +251,7 @@ body:not(.freeze-all) .current-dir-label a:hover,
 }
 
 .item,
+.submenu.appear-submenu,
 .load-more-button{
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -279,7 +280,7 @@ body:not(.freeze-all) .current-dir-label a:hover,
   cursor: default;
   display: flex;
 }
-body:not(.freeze-all) .item:not(.upload-as):hover,
+body:not(.freeze-all) .item:not(.no-hover):hover,
 body:not(.freeze-all) .load-more-button:hover{
   background-color: white;
 }
@@ -891,4 +892,19 @@ button:not(.btn):hover{
 }
 .tree-dot{
   width: 20px;
+}
+.submenu{
+  height: 0;
+  -webkit-transition: 330ms height 0 ease-in-out;
+  -moz-transition: 330ms height 0 ease-in-out;
+  transition: 330ms height 0 ease-in-out;
+  padding: 0;
+  border: 0;
+}
+.submenu.appear-submenu{
+  height: 45px;
+}
+.submenu button{
+  width: 40px;
+  height: 40px;
 }
