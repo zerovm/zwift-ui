@@ -6,7 +6,7 @@
 		appearClass = "appear-submenu",
 		submenu = new Submenu();
 
-	function onclick(itemEl){
+	function onItemClick(itemEl){
 		var name = itemEl.dataset.path;
 		if(!name){
 			return;
@@ -79,6 +79,7 @@
 				onexecute: function(e){
 				},
 				onedit: function(e){
+					onItemClick(previousParent);
 				}
 			};
 
@@ -114,7 +115,7 @@
 	}
 	window.FileManager.Item = {
 		selectedPath: selectedPath,
-		click: onclick,
+		click: onItemClick,
 		deleteclick: deleteclick,
 		showLoading: showLoading,
 		toggleMenu: toggleMenu
