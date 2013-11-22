@@ -55,6 +55,7 @@
 	}
 
 	function removeSubmenu(){
+		previousParent = null;
 		submenu.wrapper.classList.remove(appearClass);
 		submenu.wrapper.parentNode.removeChild(submenu.wrapper);
 	}

@@ -171,12 +171,6 @@ FileManager.execute = function (data, contentType) {
 
 	function showResult(result) {
 		var el = window.FileManager.elements.itemsWrapperEl;
-		FileManager.File.hideMenu();
-		FileManager.File.codeMirror = CodeMirror(el, {
-			value: result,
-			mode: 'text/plain',
-			lineNumbers: false
-		});
 	}
 };
 
@@ -759,10 +753,6 @@ FileManager.File.notTextFile = function (el) {
 
 FileManager.File.showMenu = function () {
 	document.querySelector('.menu-file').removeAttribute('hidden');
-};
-
-FileManager.File.hideMenu = function () {
-	document.querySelector('.menu-file').setAttribute('hidden', 'hidden');
 };
 
 FileManager.File.showTxtButton = function () {
