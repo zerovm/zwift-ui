@@ -122,7 +122,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			_name = file.newName || file.name;
 			_type = file.newType || file.type || window.FileManager.toolbox.getMIMEType(_name);
 
-			url = "https://z.litestack.com/v1/" + FileManager.CurrentPath().get() + _name;//TODO: replace hardcode with smth
+			url = window.FileManager.elements.originalPath + FileManager.CurrentPath().get() + _name;//TODO: replace hardcode with smth
 			uploadRequest = new XMLHttpRequest();
 			requests.push(uploadRequest);
 			new ProgressBar(wrapper ? wrapper : window.FileManager.elements.itemsWrapperEl, uploadRequest, callback);

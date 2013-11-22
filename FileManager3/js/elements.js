@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		window.FileManager = {}
 	}
 	window.FileManager.elements = {
+		originalPath: "https://z.litestack.com/v1/",
 		scrollWrapper: scrollWrapper,
 		itemsContainer: content,
 		upButton: upButton,

@@ -564,9 +564,10 @@ FileManager.File.contentType = '';
 FileManager.File.open = function (el, callback) {
 
 	function fileExist(metadata, contentType, contentLength, lastModified) {
-		var Current = FileManager.CurrentPath();
-		var href = Auth.getStorageUrl() + Current.get();
-		var filename = Current.name();
+		var Current = FileManager.CurrentPath(),
+			href = Auth.getStorageUrl() + Current.get(),
+			filename = Current.name(),
+			downloadLink = document.querySelector('.download-link');
 
 		if (isTextFile(contentType)) {
 			FileManager.File.edit(el);
@@ -580,7 +581,8 @@ FileManager.File.open = function (el, callback) {
 			FileManager.ExecuteButton.show();
 		}
 
-		document.querySelector('.download-link').setAttribute('href', href);
+		downloadLink.setAttribute('href', href);
+		downloadLink.download = filename;
 		//document.querySelector('.download-link').setAttribute('download', filename);
 
 		callback();
