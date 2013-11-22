@@ -36,7 +36,7 @@
 				}
 				checkLoadMore();
 			}
-			document.getElementById("UpButton").removeAttribute("disabled");
+			window.FileManager.elements.upButton.removeAttribute("disabled");
 			FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().withoutAccount(), true);
 			callback();
 
@@ -61,7 +61,7 @@
 
 			var scrollingContentEl = document.getElementsByClassName(".new-scrolling-content")[0];
 			scrollingContentEl.innerHTML = "Error: " + status + " " + statusText;
-			document.getElementById("UpButton").removeAttribute("disabled");
+			window.FileManager.elements.upButton.removeAttribute("disabled");
 			FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().name());
 			callback();
 		};

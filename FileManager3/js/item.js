@@ -33,9 +33,7 @@
 	function toggleMenu(e){
 		var parent = FileManager.toolbox.getParentByClassName(e, 'item');
 		if(previousParent === parent){
-			if(submenu.wrapper.classList.contains(appearClass)){
-				submenu.wrapper.classList.toggle(appearClass)
-			}
+			submenu.wrapper.classList.toggle(appearClass)
 		}else{
 			previousParent = parent;
 			submenu.wrapper.classList.remove(appearClass);
@@ -89,7 +87,7 @@
 		};
 
 		this.wrapper = wrapper = document.createElement("div");
-		wrapper.className = "item submenu no-hover";
+		wrapper.className = "item submenu no-hover no-active";
 
 		Object.keys(handlers).forEach(function(className){
 			className = className.replace(actionPrefix, "");
@@ -100,10 +98,14 @@
 			wrapper.appendChild(button);
 		});
 		wrapper.addEventListener("click", function(e){
-			var action = FileManager.toolbox.getParentByClassName(e.target, buttonsClass).dataset.action;
+			var actionEl = FileManager.toolbox.getParentByClassName(e.target, buttonsClass),
+				handler;
 			e.preventDefault();
 			e.stopPropagation();
-			action && handlers[actionPrefix + action]();
+			if(actionEl){
+				handler = actionPrefix + actionEl.dataset.action;
+				handlers[handler] && handlers[handler]();
+			}
 		});
 	}
 

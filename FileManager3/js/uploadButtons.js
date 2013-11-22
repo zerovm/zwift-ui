@@ -150,7 +150,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			textEl, inputElement, button,
 			buttonWrapper = document.createElement("div"),
 			inputWrapper = document.createElement("div");
-		wrapper.className = "item upload-as no-hover";
+		wrapper.className = "item upload-as no-hover no-active";
 		buttonWrapper.className = "button-wrapper";
 		inputWrapper.className = "input-wrapper";
 		form.className = "input-group";
