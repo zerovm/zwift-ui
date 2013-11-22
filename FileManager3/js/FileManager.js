@@ -512,51 +512,6 @@ FileManager.ContentType.click = function () {
 };
 
 
-FileManager.Copy = {};
-
-FileManager.Copy.show = function () {
-	document.querySelector('.copy-input').value = FileManager.Item.selectedPath;
-	document.querySelector('.copy-table').removeAttribute('hidden');
-};
-
-FileManager.Copy.click = function () {
-	document.querySelector('.copy-table tbody').setAttribute('hidden', 'hidden');
-	document.querySelector('.copy-loading').removeAttribute('hidden');
-	var copyTo = document.querySelector('.copy-input').value;
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS && FileManager.Shared.isShared(FileManager.Item.selectedPath)) {
-		SharedContainersOnSwift.copy({
-			account: FileManager.Path(copyTo).account(),
-			path: FileManager.Path(copyTo).withoutAccount(),
-			copyFrom: FileManager.Path(FileManager.Item.selectedPath).get(),
-			copied: copied,
-			error: error
-		});
-		return;
-	}
-
-	SwiftV1.copyFile({
-		path: FileManager.Path(copyTo).withoutAccount(),
-		copyFrom: FileManager.Path(FileManager.Item.selectedPath).withoutAccount(),
-		copied: copied,
-		error: error
-	});
-
-	function copied() {
-		document.querySelector('.copy-ok').removeAttribute('hidden');
-		document.querySelector('.copy-loading').setAttribute('hidden', 'hidden');
-		document.querySelector('.copy-table tbody').removeAttribute('hidden');
-	}
-
-	function error(status, statusText) {
-		document.querySelector('.copy-loading').setAttribute('hidden', 'hidden');
-		document.querySelector('.copy-table tbody').removeAttribute('hidden');
-		var el = document.querySelector('.content-type-error-ajax');
-		FileManager.AjaxError.show(el, status, statusText);
-	}
-};
-
-
 FileManager.File = {};
 
 FileManager.File.contentType = '';

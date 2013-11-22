@@ -25,6 +25,35 @@
 		});
 	}
 
+	function copy(){
+		var copyTo = document.querySelector('.copy-input').value;
+		function ajaxError(status, statusText){
+			window.FileManager.errorMsgHandler.show({
+				header: "Error:",
+				status: status,
+				statusText: statusText
+			})
+		}
+
+		if(FileManager.ENABLE_SHARED_CONTAINERS && FileManager.Shared.isShared(FileManager.Item.selectedPath)){
+			SharedContainersOnSwift.copy({
+				account: FileManager.Path(copyTo).account(),
+				path: FileManager.Path(copyTo).withoutAccount(),
+				copyFrom: FileManager.Path(FileManager.Item.selectedPath).get(),
+				copied: window.FileManager.files.addFileListContent,
+				error: ajaxError
+			});
+			return;
+		}
+
+		SwiftV1.copyFile({
+			path: FileManager.Path(copyTo).withoutAccount(),
+			copyFrom: FileManager.Path(FileManager.Item.selectedPath).withoutAccount(),
+			copied: window.FileManager.files.addFileListContent,
+			error: ajaxError
+		});
+	}
+
 	function deleteItem(el){
 		var name = el.dataset.path,
 			itemPath = FileManager.CurrentPath().add(name);
@@ -121,8 +150,7 @@
 					a.download = previousParent.dataset.path;
 					a.dispatchEvent(clickEvent);
 				},
-				oncopy: function(e){
-				},
+				oncopy: copy,
 				onmetadata: function(e){
 				},
 				ontype: function(e){
