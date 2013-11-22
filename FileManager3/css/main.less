@@ -912,7 +912,19 @@ button:not(.btn):hover{
 #CreateDialog .dialog-wrapper{
   display: none;
 }
-#CreateDialog.input-shown #input_CreateContainerDialog,
-#CreateDialog.dialog-shown #input_CreateContainerDialog{
+#CreateDialog.input-shown #input_CreateContainerDialog{
   display: block;
+}
+#CreateDialog.dialog-shown .dialog-wrapper{
+  display: flex;
+  align-items: center;
+  color: #ffffff;
+  height: 33px;//TODO: to hell with bootstrap!!!
+}
+#CreateDialog.dialog-shown .dialog-wrapper strong{
+  display: inline-block;
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }

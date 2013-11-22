@@ -17,11 +17,57 @@
 		location.hash = selectedPath;
 	}
 
-	function deleteclick(el){
-		var itemConfirmDelete = document.querySelector('#itemConfirmDeleteTemplate').innerHTML;
-		var itemEl = el.parentNode.parentNode;
-		itemEl.classList.add('clicked');
-		itemEl.insertAdjacentHTML('afterend', itemConfirmDelete);
+	function ajaxError(status, statusText){
+		window.FileManager.errorMsgHandler.show({
+			header: "Ajax error:",
+			status: status,
+			statusText: statusText
+		});
+	}
+
+	function deleteItem(el){
+		var name = el.dataset.path,
+			itemPath = FileManager.CurrentPath().add(name);
+		if(FileManager.ENABLE_SHARED_CONTAINERS
+			&& FileManager.Shared.isShared(itemPath)
+			&& el.dataset.type === "container"){
+			SharedContainersOnSwift.removeSharedContainer({
+				account: FileManager.Path(name).account(),
+				container: FileManager.Path(name).container(),
+				removed: function(){
+					window.FileManager.files.addFileListContent();
+				},
+				error: ajaxError
+			});
+			return;
+		}
+		if(el.dataset.type === "file"){
+			SwiftAdvancedFunctionality.delete({
+				path: FileManager.Path(itemPath).withoutAccount(),
+				deleted: function(){
+					window.FileManager.files.addFileListContent();
+				},
+				error: ajaxError,
+				notExist: function(){
+					window.FileManager.files.addFileListContent();
+				}
+			});
+			return;
+		}
+
+		SwiftAdvancedFunctionality.deleteAll({
+			path: FileManager.Path(itemPath).withoutAccount(),
+			account: FileManager.CurrentPath().account(),
+			deleted: function(){
+				window.FileManager.files.addFileListContent();
+			},
+			progress: function(totalFiles, deletedFiles, message){
+				var percentComplete = totalFiles / deletedFiles * 100;
+				console.log('Deleting... (' + deletedFiles + '/' + totalFiles + ') ' + percentComplete + '% complete.');
+			},
+			error: ajaxError
+		});
+
 	}
 
 	function showLoading(itemEl){
@@ -35,7 +81,6 @@
 		if(previousParent === parent){
 			submenu.wrapper.classList.toggle(appearClass)
 		}else{
-			previousParent = parent;
 			submenu.wrapper.classList.remove(appearClass);
 			submenu.wrapper.parentNode && removeSubmenu();
 			submenu.setPath(parent.dataset.path);
@@ -44,7 +89,7 @@
 				submenu.wrapper.classList.add(appearClass);
 			}, 0);
 		}
-
+		previousParent = parent;
 	}
 
 	function appendSubmenu(parentEl){
@@ -76,6 +121,13 @@
 				ontype: function(e){
 				},
 				ondelete: function(e){
+					window.FileManager.dialogForm.show({
+						confirm: function(){
+							deleteItem(previousParent);
+						},
+						dialogContent: createDialog(),
+						type: "dialog"
+					});
 				},
 				onexecute: function(e){
 				},
@@ -83,6 +135,17 @@
 					onItemClick(previousParent);
 				}
 			};
+
+		function createDialog(){
+			var textEl = document.createElement("span"),
+				fragment = document.createDocumentFragment();
+			textEl.innerHTML = "Are you sure of deleting&nbsp;";
+			fragment.appendChild(textEl);
+			textEl = document.createElement("strong");
+			textEl.textContent = previousParent.dataset.path + "?";
+			fragment.appendChild(textEl);
+			return fragment;
+		}
 
 		this.setPath = function(p){
 			path = p;
@@ -117,7 +180,6 @@
 	window.FileManager.Item = {
 		selectedPath: selectedPath,
 		click: onItemClick,
-		deleteclick: deleteclick,
 		showLoading: showLoading,
 		toggleMenu: toggleMenu
 	};

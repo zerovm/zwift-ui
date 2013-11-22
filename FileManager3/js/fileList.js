@@ -209,13 +209,11 @@
 		if(FileManager.CurrentPath().isContainersList()){
 			FileManager.Containers.list(callback);
 
-			FileManager.File.hideMenu();
 			FileManager.ExecuteButton.hide();
 			FileManager.OpenButton.hide();
 		}else if(FileManager.CurrentPath().isFilesList()){
 			list(callback);
 
-			FileManager.File.hideMenu();
 			FileManager.ExecuteButton.hide();
 			FileManager.OpenButton.hide();
 		}else{

@@ -106,7 +106,7 @@
 
 		<!-- templates -->
 		<template id="containerTemplate">
-			<div class="item" title="{{title}}"  data-path="{{path}}">
+			<div class="item" title="{{title}}"  data-path="{{path}}" data-type="container">
 			<span class="left">
 				<span style="background:url('img/container-gray.png');width: 42px;height: 42px;"></span>
 				<label class="name">{{name}}</label>
@@ -120,7 +120,7 @@
 		</template>
 
 		<template id="sharedContainerTemplate">
-			<div class="item" title="{{title}}" data-path="{{path}}">
+			<div class="item" title="{{title}}" data-path="{{path}}" data-type="shared">
 			<span class="left">
 				<span style="background:url('img/shared-container-gray.png');width: 42px;height: 42px;"></span>
 				<label class="name">{{name}}</label>
@@ -134,7 +134,7 @@
 		</template>
 
 		<template id="fileTemplate">
-			<div class="item" title="{{title}}" data-path="{{path}}">
+			<div class="item" title="{{title}}" data-path="{{path}}" data-type="file">
 			<span class="left">
 				<span class="file-type {{file-type}}"></span>
 				<label class="name">{{name}}</label>
@@ -148,7 +148,7 @@
 		</template>
 
 		<template id="directoryTemplate">
-			<div class="item" title="{{title}}" data-path="{{path}}">
+			<div class="item" title="{{title}}" data-path="{{path}}" data-type="directory">
 			<span class="left">
 				<img src="img/folder-gray.png">
 				<label class="name">{{name}}</label>

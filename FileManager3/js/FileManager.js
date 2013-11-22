@@ -327,69 +327,6 @@ FileManager.UploadAndExecute.change = function (file) {
 };
 
 
-FileManager.ConfirmDelete = {};
-
-FileManager.ConfirmDelete.click = function (el) {
-	document.querySelector('.delete-deleting-label').removeAttribute('hidden');
-
-	var itemEl = el.parentNode.previousElementSibling;
-	var name = itemEl.dataset.path;
-	var itemPath = FileManager.CurrentPath().add(name);
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS
-			&& FileManager.Shared.isShared(itemPath)
-			&& FileManager.Path(itemPath).isContainer()) {
-
-		SharedContainersOnSwift.removeSharedContainer({
-			account: FileManager.Path(name).account(),
-			container: FileManager.Path(name).container(),
-			removed: function () {
-				window.FileManager.files.addFileListContent();
-			},
-			error: function (status, statusText) {
-				var el = document.querySelector('.delete-error-ajax');
-				FileManager.AjaxError.show(el, status, statusText);
-			}
-		});
-		return;
-	}
-
-	if (FileManager.Path(itemPath).isFile()) {
-
-		SwiftAdvancedFunctionality.delete({
-			path: FileManager.Path(itemPath).withoutAccount(),
-			deleted: function () {
-				window.FileManager.files.addFileListContent();
-			},
-			error: function(status, statusText) {
-				var el = document.querySelector('.delete-error-ajax');
-				FileManager.AjaxError.show(el, status, statusText);
-			},
-			notExist: function () {
-				window.FileManager.files.addFileListContent();
-			}
-		});
-		return;
-	}
-
-	SwiftAdvancedFunctionality.deleteAll({
-		path: FileManager.Path(itemPath).withoutAccount(),
-		account: FileManager.CurrentPath().account(),
-		deleted: function () {
-			window.FileManager.files.addFileListContent();
-		},
-		progress: function (totalFiles, deletedFiles, message) {
-			var percentComplete = totalFiles / deletedFiles * 100;
-			var progressMsg = 'Deleting... (' + deletedFiles + '/' + totalFiles + ') ' + percentComplete + '% complete.';
-			document.querySelector('.delete-label').textContent = progressMsg;
-		},
-		error: function (status, statusText) {
-			var el = document.querySelector('.delete-error-ajax');
-			FileManager.AjaxError.show(el, status, statusText);
-		}
-	});
-
-};
 
 
 FileManager.LoadMoreButton = {};
@@ -1002,9 +939,7 @@ document.addEventListener('click', function (e) {
 		if (FileManager.ENABLE_ZEROVM) {
 			FileManager.ExecuteButton.click();
 		}
-	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'delete')) {
-		FileManager.Item.deleteclick(el);
-	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'tree-dot')) {
+	}else if (el = FileManager.toolbox.getParentByClassName(e.target,'tree-dot')) {
 		FileManager.Item.toggleMenu(el);
 	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'item')) {
 		FileManager.Item.click(el);
