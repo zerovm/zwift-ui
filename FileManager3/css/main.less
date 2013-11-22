@@ -908,3 +908,11 @@ button:not(.btn):hover{
   width: 40px;
   height: 40px;
 }
+#CreateDialog #input_CreateContainerDialog,
+#CreateDialog .dialog-wrapper{
+  display: none;
+}
+#CreateDialog.input-shown #input_CreateContainerDialog,
+#CreateDialog.dialog-shown #input_CreateContainerDialog{
+  display: block;
+}

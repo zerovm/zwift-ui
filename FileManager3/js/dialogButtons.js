@@ -64,7 +64,12 @@ document.addEventListener("DOMContentLoaded", function(){
 					console.log("unkown action: " + action);
 					return;
 			}
-			window.FileManager.dialogForm.show(this.dataset.placeholder, callback, cancel);
+			window.FileManager.dialogForm.show({
+				type: "input",
+				placeholder: this.dataset.placeholder,
+				confirm: callback,
+				decline: cancel
+			});
 			this.classList.add(selectedClass);
 		}
 	}
