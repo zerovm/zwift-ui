@@ -463,9 +463,13 @@ body:not(.freeze-all) .item-confirm-delete button:hover{
 }
 
 .menu-file{
-  text-align: left !important;
-  padding: 0 !important;
+  text-align: left;
+  padding: 0;
   height: 50px;
+  display: none;
+}
+.code-editor-is-shown .menu-file{
+  display: block;
 }
 
 .menu-file button{
@@ -927,4 +931,12 @@ button:not(.btn):hover{
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+.item:not([data-type="file"]) + .item.submenu button[data-action="edit"],
+.item:not([data-type="file"]) + .item.submenu button[data-action="execute"],
+.item:not([data-type="file"]) + .item.submenu button[data-action="type"],
+.item:not([data-type="file"]) + .item.submenu button[data-action="copy"],
+.item:not([data-type="file"]) + .item.submenu button[data-action="metadata"],
+.item:not([data-type="file"]) + .item.submenu button[data-action="download"]{
+  display: none;
 }
