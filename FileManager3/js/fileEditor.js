@@ -70,7 +70,12 @@ document.addEventListener("DOMContentLoaded", function(){
 
 		function saveAsFile(e){
 			e.stopPropagation();
-			window.FileManager.dialogForm.show("New name of file", saveAsConfirm, null);
+			window.FileManager.dialogForm.show({
+				type: "input",
+				placeholder: "New name of file",
+				confirm: saveAsConfirm,
+				decline: null
+			});
 		}
 
 		function saveAsConfirm(input){
@@ -81,6 +86,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			save(account, pathPrefix + inputValue, function(){
 				location.hash = pathObj.up() + inputValue;
 			});
+			window.FileManager.dialogForm.hide();
 		}
 
 		function setMode(editor, type, name){

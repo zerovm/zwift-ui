@@ -156,7 +156,6 @@ document.addEventListener("DOMContentLoaded", function(){
 			return;
 		}
 
-		window.FileManager.dialogForm.hide();
 		dirName = input.value + "/";
 		dirPath = FileManager.CurrentPath().add(dirName);
 		dirPathWithoutAccount = FileManager.Path(dirPath).withoutAccount();
@@ -183,5 +182,6 @@ document.addEventListener("DOMContentLoaded", function(){
 		};
 		requestArgs.error = ajaxError;
 		SwiftV1.checkDirectoryExist(requestArgs);
+		window.FileManager.dialogForm.hide();
 	}
 });

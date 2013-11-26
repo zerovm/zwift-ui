@@ -164,6 +164,7 @@
 					window.FileManager.dialogForm.show({
 						confirm: function(){
 							deleteItem(previousParent);
+							window.FileManager.dialogForm.hide();
 						},
 						dialogContent: createDialog(),
 						type: "dialog"
