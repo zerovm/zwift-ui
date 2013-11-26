@@ -18,14 +18,13 @@ document.addEventListener("DOMContentLoaded", function(){
 			nameTooLong: "Container name should be less then 256 characters.",
 			emptyInput: "The name should be bit longer."
 		},
-		slashStr = "/",
 		rootClass = "location-root";
 
 	function setRootClass(){
-		if(location.hash.indexOf(slashStr) !== -1){
-			document.body.classList.remove(rootClass);
-		}else{
+		if(window.FileManager.CurrentPath().isContainersList()){
 			document.body.classList.add(rootClass);
+		}else{
+			document.body.classList.remove(rootClass);
 		}
 	}
 

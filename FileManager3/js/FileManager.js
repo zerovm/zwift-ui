@@ -774,13 +774,15 @@ FileManager.Containers.create = function (containerObj) {
 
 	var name = FileManager.toolbox.makeShortName(containerObj.name);
 	var title = containerObj.name;
+	var slashStr = "/";
+	var path = title.indexOf(slashStr) === -1 ? title + slashStr : title;
 	var size = FileManager.toolbox.shortenSize(containerObj.bytes);
 	var files = containerObj.count;
 
 	var html = document.querySelector('#containerTemplate').innerHTML;
 
 	html = html.replace('{{name}}', FileManager.toolbox.escapeHTML(name));
-	html = html.replace('{{path}}', FileManager.toolbox.escapeHTML(title));
+	html = html.replace('{{path}}', FileManager.toolbox.escapeHTML(path));
 	html = html.replace('{{title}}', FileManager.toolbox.escapeHTML(title));
 	html = html.replace('{{size}}', FileManager.toolbox.escapeHTML(size));
 	html = html.replace('{{files}}', FileManager.toolbox.escapeHTML(files));
@@ -822,7 +824,7 @@ FileManager.Path = function (path) {
 		return pathParts[pathParts.length - 1];
 	};
 	this.isContainersList = function () {
-		return path.indexOf('/') == -1;
+		return path === Auth.getAccount() + "/";
 	};
 	this.isFilesList = function () {
 		return this.isContainer() || this.isDirectory();
@@ -837,12 +839,10 @@ FileManager.Path = function (path) {
 		return !this.isContainer() && !this.isDirectory();
 	};
 	this.up = function () {
-		var newPathParts = path.split('/');
-
-		if(path === newPathParts[0]){return null;}
+		/*var newPathParts = path.split('/');
 
 		if (newPathParts[newPathParts.length - 1] == '') {
-			newPathParts.splice(-2);
+			newPathParts.splice(0);
 		} else {
 			newPathParts.splice(-1);
 		}
@@ -860,18 +860,18 @@ FileManager.Path = function (path) {
 			return newPathParts.join('/');
 		}
 
-		return newPathParts.join('/') + '/';
+		return newPathParts.join('/') + '/';*/
+
+		var resultPath = path.split('/').filter(function(s){return s;});
+		resultPath.pop();
+		return resultPath.join("/") + "/";
 	};
 	this.add = function (name) {
 
-		if (FileManager.ENABLE_SHARED_CONTAINERS && this.isContainersList() && name.indexOf('/') != -1) {
+		/*if (FileManager.ENABLE_SHARED_CONTAINERS && this.isContainersList() && name.indexOf('/') != -1) {
 			return name;
-		}
-
-		if (path.lastIndexOf('/') == path.length - 1) {
-			return path + name;
-		}
-		return  path + '/' + name;
+		}*/
+		return  path + name;
 	};
 	return this;
 };
@@ -967,7 +967,7 @@ document.addEventListener('DOMContentLoaded', function () {
 	Auth.init(function () {
 
 		if (!location.hash) {
-			location.hash = Auth.getAccount();
+			location.hash = Auth.getAccount() + "/";
 		} else {
 			window.FileManager.files.addFileListContent();
 		}
