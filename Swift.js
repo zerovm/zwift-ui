@@ -829,6 +829,7 @@ var Auth = {};
 		var deleteCount = 0;
 		var newArgs = {};
 		var pathArr = args.path.split('/');
+		var deletedObjs = [];
 		newArgs.format = 'json';
 		newArgs.notExist = args.hasOwnProperty('notExist') ? args.notExist : args.deleted;
 		newArgs.error = args.error;
@@ -853,10 +854,12 @@ var Auth = {};
 		}
 
 		function deleteLevel(level) {
+			var path = args.path;
 			if (level == 0) {
-				SwiftAdvancedFunctionality.delete({
+				if(deletedObjs.indexOf(path) === -1){
+					SwiftAdvancedFunctionality.delete({
 					account: accountId,
-					path: args.path,
+					path: path,
 					deleted: function () {
 						args.progress(files.length, deleteCount, 'deleted');
 						args.deleted();
@@ -870,6 +873,9 @@ var Auth = {};
 						newArgs.notExist();
 					}
 				});
+				}else{
+					window.FileManager.files.addFileListContent();
+				}
 				return;
 			}
 			if (typeof levels[level] === "undefined") {
@@ -879,10 +885,12 @@ var Auth = {};
 
 			var levelAmountLast = levels[level].length;
 
-			for (var  i = 0; i < levels[level].length; i++) {
+			for (var  i = levels[level].length - 1; i >= 0; i--) {
+				var path = levels[level][i];
+				deletedObjs.push(path);
 				SwiftAdvancedFunctionality.delete({
 					account: accountId,
-					path: levels[level][i],
+					path: path,
 					deleted: function () {
 						levelAmountLast--;
 						args.progress(files.length, deleteCount, 'deleted');
