@@ -6,8 +6,7 @@
 document.addEventListener("DOMContentLoaded", function(){
 	"use strict";
 
-	var hiddenClass = "hidden",
-		errorsEl = document.getElementsByClassName("err-msg")[0];
+	var errorsEl = document.getElementsByClassName("err-msg")[0];
 
 	function showError(params){
 		var span = document.createElement("span");
@@ -17,12 +16,12 @@ document.addEventListener("DOMContentLoaded", function(){
 		span = document.createElement("span");
 		params.statusText && (span.textContent = params.statusText);
 		errorsEl.appendChild(span);
-		errorsEl.classList.remove(hiddenClass);
+		errorsEl.classList.remove(window.FileManager.elements.hiddenClass);
 		params.callback && params.callback();
 	}
 
 	function hideError(){
-		errorsEl.classList.add(hiddenClass);
+		errorsEl.classList.add(window.FileManager.elements.hiddenClass);
 	}
 	hideError();
 	if(!window.FileManager){

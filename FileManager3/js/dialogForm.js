@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	var dialogContainer = document.getElementById("CreateDialog"),
 		input = dialogContainer.getElementsByTagName("input")[0],
 		dialogContentWrapper = dialogContainer.getElementsByClassName("dialog-wrapper")[0],
-		hiddenClass = "hidden", inputClass = "input-shown", dialogClass = "dialog-shown",
+		inputClass = "input-shown", dialogClass = "dialog-shown",
 		inputInvalidClass = "invalid-input",
 		form = dialogContainer.getElementsByTagName("form")[0],
 		onconfirm, oncancel;
@@ -17,18 +17,19 @@ document.addEventListener("DOMContentLoaded", function(){
 	function show(params){
 		onconfirm = params.confirm;
 		oncancel = params.decline;
+		document.body.classList.add(window.FileManager.elements.disableToolbarClass);
 		switch(params.type){
 			case "input":
 				input.placeholder = params.placeholder;
 				dialogContainer.classList.add(inputClass);
-				dialogContainer.classList.remove(hiddenClass);
+				dialogContainer.classList.remove(window.FileManager.elements.hiddenClass);
 				input.focus();
 				break;
 			case "dialog":
 				dialogContentWrapper.removeChildren();
 				dialogContentWrapper.appendChild(params.dialogContent);
 				dialogContainer.classList.add(dialogClass);
-				dialogContainer.classList.remove(hiddenClass);
+				dialogContainer.classList.remove(window.FileManager.elements.hiddenClass);
 				break;
 			default: console.log("dialog form: unknown type");
 		}
@@ -39,7 +40,8 @@ document.addEventListener("DOMContentLoaded", function(){
 	}
 
 	function hide(){
-		dialogContainer.classList.add(hiddenClass);
+		document.body.classList.remove(window.FileManager.elements.disableToolbarClass);
+		dialogContainer.classList.add(window.FileManager.elements.hiddenClass);
 		dialogContainer.classList.remove(inputClass);
 		dialogContainer.classList.remove(dialogClass);
 		input.value = "";
@@ -47,6 +49,10 @@ document.addEventListener("DOMContentLoaded", function(){
 		window.FileManager.errorMsgHandler.hide();
 	}
 
+	input.addEventListener("keydown", function(){
+		input.classList.remove(inputInvalidClass);
+		window.FileManager.errorMsgHandler.hide();
+	});
 	document.getElementById("CancelDialog").addEventListener("click", function(){
 		oncancel && oncancel();
 		hide();
@@ -55,7 +61,6 @@ document.addEventListener("DOMContentLoaded", function(){
 		e.stopPropagation();
 		e.preventDefault();
 		onconfirm && onconfirm(input);
-		hide();
 		return false;
 	});
 	window.addEventListener("hashchange", hide);

@@ -166,6 +166,88 @@
 		}
 	}
 
+	function ProgressBar(params){
+		var progressbarEl = document.createElement("div"),
+			progressEl = document.createElement("div"),
+			progressValueEl = document.createElement("div"),
+			buttonWrapper = document.createElement("div"),
+			hideButton = document.createElement("button"),
+			cancelButton = document.createElement("button"),
+			textEl = document.createElement("p"),
+			isRemoved,
+			request = params.request, onEndCallback = params.onEndCallback, wrapper = params.wrapper;
+
+		function setProgress(e){
+			var percentLoaded;
+			if(e.lengthComputable){
+				percentLoaded = Math.round((e.loaded / e.total) * 100);
+				setProgressValue(percentLoaded);
+				if(percentLoaded < 5){
+					setText("Upload started.");
+				}else if(percentLoaded < 98){
+					setText("Uploading...");
+				}else{
+					setText("Finalizing");
+				}
+			}
+		}
+
+		function setText(text){
+			textEl.innerHTML = text;
+		}
+
+		function setProgressValue(percent){
+			progressValueEl.style.width = percent + "%";
+		}
+
+		function remove(e){
+			e && e.stopPropagation();
+			if(!isRemoved){
+				isRemoved = true;
+				onEndCallback && onEndCallback();
+				setTimeout(function(){
+					progressbarEl && progressbarEl.parentNode.removeChild(progressbarEl);
+				}, 100);
+			}
+		}
+
+		function cancel(e){
+			e && e.stopPropagation();
+			request && request.abort();
+			params.onabort && params.onabort();
+			remove();
+		}
+
+		this.cancel = cancel;
+		this.remove = remove;
+		this.setText = setText;
+		this.setProgressValue = setProgressValue;
+
+		request && request.upload.addEventListener("progress", setProgress);
+		request && request.addEventListener("load", remove);
+
+		progressbarEl.className = "progressbar item";
+		progressEl.className = "progress";
+		progressValueEl.className = "progress-value";
+		buttonWrapper.className = "buttons-wrapper";
+		textEl.innerHTML = "Waiting for upload.";
+		progressEl.appendChild(progressValueEl);
+		progressEl.appendChild(textEl);
+		progressbarEl.appendChild(progressEl);
+		cancelButton.addEventListener("click", cancel);
+		cancelButton.innerHTML = "Cancel";
+		cancelButton.className = "btn btn-default";
+		buttonWrapper.appendChild(cancelButton);
+		hideButton.addEventListener("click", remove);
+		hideButton.innerHTML = "Hide";
+		hideButton.className = "btn btn-default";
+		buttonWrapper.appendChild(hideButton);
+		progressbarEl.appendChild(buttonWrapper);
+		wrapper.insertBefore(progressbarEl, wrapper.firstElementChild);
+		wrapper.firstElementChild.scrollIntoView();
+	}
+
+
 	Object.keys(extObj).forEach(function(ext){
 		var obj = extObj[ext],
 			mime = obj.mime;
@@ -189,6 +271,7 @@
 		createLoadMoreButton: createLoadMoreButton,
 		escapeHTML: escapeHTML,
 		makeDatePretty: makeDatePretty,
-		onscrollLoadMore: onscrollLoadMore
+		onscrollLoadMore: onscrollLoadMore,
+		ProgressBar: ProgressBar
 	};
 })();

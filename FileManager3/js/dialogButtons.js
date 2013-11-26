@@ -88,7 +88,6 @@ document.addEventListener("DOMContentLoaded", function(){
 			});
 			return;
 		}
-
 		if(input.length > 256){
 			window.FileManager.errorMsgHandler.show({
 				header: errorMsgMap.nameTooLong,
@@ -96,11 +95,11 @@ document.addEventListener("DOMContentLoaded", function(){
 			});
 			return;
 		}
-
 		if(input.value.match(forbiddenChars)){
 			// TODO: shared containers here.
 		}
 
+		window.FileManager.dialogForm.hide();
 		SwiftV1.createContainer({
 			containerName: input.value,
 			created: function(){
@@ -127,8 +126,8 @@ document.addEventListener("DOMContentLoaded", function(){
 			return;
 		}
 
+		window.FileManager.dialogForm.hide();
 		path = FileManager.CurrentPath().withoutAccount() + inputValue;
-
 		SwiftV1.createFile({
 			path: path,
 			contentType: 'text/plain',
@@ -156,6 +155,8 @@ document.addEventListener("DOMContentLoaded", function(){
 			});
 			return;
 		}
+
+		window.FileManager.dialogForm.hide();
 		dirName = input.value + "/";
 		dirPath = FileManager.CurrentPath().add(dirName);
 		dirPathWithoutAccount = FileManager.Path(dirPath).withoutAccount();

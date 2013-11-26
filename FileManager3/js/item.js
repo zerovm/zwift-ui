@@ -4,7 +4,9 @@
 	var selectedPath = null,
 		previousParent,
 		appearClass = "appear-submenu",
-		submenu = new Submenu();
+		submenu = new Submenu(),
+		loadingHtml,
+		progressObj;
 
 	function onItemClick(itemEl){
 		var name = itemEl.dataset.path;
@@ -18,6 +20,7 @@
 	}
 
 	function ajaxError(status, statusText){
+		window.FileManager.elements.mainProgressBar.classList.remove(window.FileManager.elements.hiddenClass);
 		window.FileManager.errorMsgHandler.show({
 			header: "Ajax error:",
 			status: status,
@@ -27,6 +30,7 @@
 
 	function copy(){
 		var copyTo = document.querySelector('.copy-input').value;
+
 		function ajaxError(status, statusText){
 			window.FileManager.errorMsgHandler.show({
 				header: "Error:",
@@ -84,23 +88,25 @@
 			return;
 		}
 
+		window.FileManager.elements.mainProgressBar.classList.remove(window.FileManager.elements.hiddenClass);
+		//progressObj = new window.FileManager.toolbox.ProgressBar()
 		SwiftAdvancedFunctionality.deleteAll({
 			path: FileManager.Path(itemPath).withoutAccount(),
 			account: FileManager.CurrentPath().account(),
 			deleted: function(){
 				window.FileManager.files.addFileListContent();
+				window.FileManager.elements.mainProgressBar.classList.add(window.FileManager.elements.hiddenClass);
 			},
 			progress: function(totalFiles, deletedFiles, message){
-				var percentComplete = totalFiles / deletedFiles * 100;
+				totalFiles = totalFiles - 1;
+				var percentComplete = deletedFiles / totalFiles * 100;
 				console.log('Deleting... (' + deletedFiles + '/' + totalFiles + ') ' + percentComplete + '% complete.');
 			},
 			error: ajaxError
 		});
-
 	}
 
 	function showLoading(itemEl){
-		var loadingHtml = document.querySelector('#itemLoadingTemplate').innerHTML;
 		itemEl.classList.add('clicked');
 		itemEl.insertAdjacentHTML('afterbegin', loadingHtml);
 	}
@@ -146,7 +152,6 @@
 						a = document.createElement("a");
 					clickEvent.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
 					a.href = window.FileManager.elements.originalPath + FileManager.CurrentPath().get() + previousParent.dataset.path;
-					console.log(a.href)
 					a.download = previousParent.dataset.path;
 					a.dispatchEvent(clickEvent);
 				},
@@ -208,6 +213,10 @@
 			}
 		});
 	}
+
+	document.addEventListener("DOMContentLoaded", function(){
+		loadingHtml = document.querySelector('#itemLoadingTemplate').innerHTML;//TODO: replace this s...
+	});
 
 	if(!window.FileManager){
 		window.FileManager = {};

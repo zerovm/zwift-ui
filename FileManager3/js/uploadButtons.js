@@ -6,8 +6,7 @@
 document.addEventListener("DOMContentLoaded", function(){
 	"use strict";
 
-	var slashAtEndRegex = /\/$/,
-		uploads,
+	var uploads,
 		disableAllClass = "freeze-all",
 		buttonsPointerClass = "progressbar-buttons",
 		requests = [];
@@ -25,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	function clearOnfinish(e){
 		window.removeEventListener("hashchange", clearOnfinish);
 		enableButtons();
-		document.body.classList.remove("disable-toolbar-right");
+		document.body.classList.remove(window.FileManager.elements.disableToolbarClass);
 		if(!e){
 			requests = [];
 			return;
@@ -38,75 +37,8 @@ document.addEventListener("DOMContentLoaded", function(){
 		}
 	}
 
-	function ProgressBar(wrapper, request, onEndCallback){
-		var progressbarEl = document.createElement("div"),
-			progressEl = document.createElement("div"),
-			progressValueEl = document.createElement("div"),
-			buttonWrapper = document.createElement("div"),
-			hideButton = document.createElement("button"),
-			cancelButton = document.createElement("button"),
-			textEl = document.createElement("p"),
-			isRemoved;
-
-		function setProgress(e){
-			var percentLoaded;
-			if(e.lengthComputable){
-				percentLoaded = Math.round((e.loaded / e.total) * 100);
-				progressValueEl.style.width = percentLoaded + "%";
-				if(percentLoaded < 5){
-					textEl.innerHTML = "Upload started.";
-				}else if(percentLoaded < 98){
-					textEl.innerHTML = "Uploading...";
-				}else{
-					textEl.innerHTML = "Finalizing";
-				}
-			}
-		}
-
-		function remove(e){
-			e && e.stopPropagation();
-			if(!isRemoved){
-				isRemoved = true;
-				onEndCallback && onEndCallback();
-				setTimeout(function(){
-					progressbarEl && progressbarEl.parentNode.removeChild(progressbarEl);
-				}, 100);
-			}
-		}
-
-		function cancel(e){
-			e && e.stopPropagation();
-			request.abort();
-			remove();
-		}
-
-		request.upload.addEventListener("progress", setProgress);
-		request.addEventListener("load", remove);
-
-		progressbarEl.className = "progressbar item";
-		progressEl.className = "progress";
-		progressValueEl.className = "progress-value";
-		buttonWrapper.className = "buttons-wrapper";
-		textEl.innerHTML = "Waiting for upload.";
-		progressEl.appendChild(progressValueEl);
-		progressEl.appendChild(textEl);
-		progressbarEl.appendChild(progressEl);
-		cancelButton.addEventListener("click", cancel);
-		cancelButton.innerHTML = "Cancel";
-		cancelButton.className = "btn btn-default";
-		buttonWrapper.appendChild(cancelButton);
-		hideButton.addEventListener("click", remove);
-		hideButton.innerHTML = "Hide";
-		hideButton.className = "btn btn-default";
-		buttonWrapper.appendChild(hideButton);
-		progressbarEl.appendChild(buttonWrapper);
-		wrapper.insertBefore(progressbarEl, wrapper.firstElementChild);
-		wrapper.firstElementChild.scrollIntoView();
-	}
-
 	uploads = new function(){
-		var urlPrefix,
-			uploadingFiles = 0;
+		var uploadingFiles = 0;
 
 		function onloadCallback(){
 			uploadingFiles--;
@@ -122,10 +54,14 @@ document.addEventListener("DOMContentLoaded", function(){
 			_name = file.newName || file.name;
 			_type = file.newType || file.type || window.FileManager.toolbox.getMIMEType(_name);
 
-			url = window.FileManager.elements.originalPath + FileManager.CurrentPath().get() + _name;//TODO: replace hardcode with smth
+			url = window.FileManager.elements.originalPath + FileManager.CurrentPath().get() + _name;
 			uploadRequest = new XMLHttpRequest();
 			requests.push(uploadRequest);
-			new ProgressBar(wrapper ? wrapper : window.FileManager.elements.itemsWrapperEl, uploadRequest, callback);
+			new window.FileManager.toolbox.ProgressBar({
+				wrapper: wrapper ? wrapper : window.FileManager.elements.itemsWrapperEl,
+				request: uploadRequest,
+				onEndCallback: callback
+			});
 			uploadRequest.open('PUT', url, true);
 
 			uploadRequest.setRequestHeader('Content-Type', _type);
@@ -175,11 +111,13 @@ document.addEventListener("DOMContentLoaded", function(){
 		form.appendChild(inputWrapper);
 
 		button = document.createElement("button");
+		button.tabIndex = -1;
 		button.className = "hot-buttons btn btn-primary";
 		button.textContent = "OK";
 		button.type = "submit";
 		buttonWrapper.appendChild(button);
 		button = document.createElement("button");
+		button.tabIndex = -1;
 		button.className = "hot-buttons btn btn-default";
 		button.textContent = "Cancel";
 		button.type = "button";
@@ -201,7 +139,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		return wrapper;
 	}
 
-	function uploadAs(e){
+	function uploadAs(e){//TODO: check hide button for single loaded file
 		var filesCounter = e.target.files.length,
 			wrapper = window.FileManager.elements.itemsWrapperEl,
 			fragment = document.createDocumentFragment(),
@@ -257,7 +195,7 @@ document.addEventListener("DOMContentLoaded", function(){
 				console.log("unkown action: " + e.target.dataset.action);
 				break;
 		}
-		document.body.classList.add("disable-toolbar-right");
+		document.body.classList.add(window.FileManager.elements.disableToolbarClass);
 		window.addEventListener("hashchange", clearOnfinish);
 		return false;
 	}
