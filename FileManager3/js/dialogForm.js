@@ -5,6 +5,13 @@
  */
 (function(){
 	"use strict";
+	var dialogFormArray = [];
+
+	function closeOtherDialogs(){
+		dialogFormArray.forEach(function(dialogForm){
+			dialogForm.hide();
+		})
+	}
 
 	function DialogForm(options){
 		var dialogContainer = document.getElementById(options.wrapperId),
@@ -16,6 +23,7 @@
 			onconfirm, oncancel;
 
 		function show(params){
+			closeOtherDialogs();
 			onconfirm = params.confirm;
 			oncancel = params.decline;
 			document.body.classList.add(window.FileManager.elements.disableToolbarClass);
@@ -43,6 +51,7 @@
 		}
 
 		function hide(){
+			oncancel && oncancel();
 			document.body.classList.remove(window.FileManager.elements.disableToolbarClass);
 			dialogContainer.classList.add(window.FileManager.elements.hiddenClass);
 			dialogContainer.classList.remove(inputClass);
@@ -60,10 +69,7 @@
 			input.classList.remove(inputInvalidClass);
 			window.FileManager.errorMsgHandler.hide();
 		});
-		dialogContainer.querySelector("button[type=\"button\"]").addEventListener("click", function(){
-			oncancel && oncancel();
-			hide();
-		});
+		dialogContainer.querySelector("button[type=\"button\"]").addEventListener("click", hide);
 		form.addEventListener("submit", function(e){
 			e.stopPropagation();
 			e.preventDefault();
@@ -77,9 +83,11 @@
 				hide();
 			}
 		});
+
+		dialogFormArray.push(this);
 	}
 
-
+	DialogForm.closeOtherDialogs = closeOtherDialogs;
 	if(!window.FileManager){
 		window.FileManager = {};
 	}
