@@ -5,6 +5,14 @@
 @color5: #5D5D5D;
 @color6: #FFFFFF;
 @dialogColor: #e0e3e8;
+*, *:before, *:after{
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box
+}
+label::after{
+  display: none;
+}
 html{
   background: url('../img/cloud_left_top.png') left top,
               url('../img/cloud_right_top.png') right top,
@@ -196,6 +204,9 @@ body.wide-content #WideButton{
 }
 .current-dir-label{
   display: inline-block;
+}
+.current-dir-label::after{
+  display: none;
 }
 .current-dir-label a:active,
 .current-dir-label a:visited,

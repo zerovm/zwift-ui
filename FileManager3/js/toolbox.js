@@ -157,7 +157,7 @@
 
 	function onscrollLoadMore(e){//TODO: move it somewhere else
 		e = e.target ? e.target : e;
-		if(Math.abs(e.scrollTop - (e.scrollHeight - e.clientHeight)) < 4){
+		if(Math.abs(e.scrollTop - (e.scrollHeight - e.clientHeight)) === 0){
 			if(FileManager.CurrentPath().isContainersList()){
 				FileManager.Containers.loadMore();
 			}else{
