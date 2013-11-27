@@ -167,6 +167,25 @@
 				onmetadata: function(e){
 				},
 				ontype: function(e){
+					window.FileManager.dialogForm.show({
+						type: "input",
+						placeholder: "New file name",
+						confirm: function(input){
+							input.value && SwiftV1.updateFileMetadata({
+								contentType: input.value,
+								updated: window.FileManager.files.addFileListContent,
+								path: window.FileManager.CurrentPath().withoutAccount() + previousParent.dataset.path,
+								error: ajaxError,
+								notExist: function(){
+									window.FileManager.errorMsgHandler.show({
+										header: "File not exist"
+									});
+								}
+							});
+							window.FileManager.dialogForm.hide();
+						},
+						inputValue: previousParent.dataset.contentType
+					});
 				},
 				ondelete: function(e){
 					window.FileManager.dialogForm.show({
