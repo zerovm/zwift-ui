@@ -6,17 +6,26 @@
 @color6: #FFFFFF;
 @dialogColor: #e0e3e8;
 html{
+  background: url('../img/cloud_left_top.png') left top,
+              url('../img/cloud_right_top.png') right top,
+              url('../img/cloud_left_bottom.png') left bottom,
+              url('../img/cloud_right_bottom.png') 105% bottom, @color1;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   overflow: hidden;
 }
 html, body{
   height: 100%;
 }
 body{
-  background-color: #525252;
   font-family: Arial, sans-serif;
 }
 a{
   font-size: 14px;
+}
+#header {
+  background-color: @color2;
+  padding: 5px;
 }
 .toolbar{
   height: 50px;
@@ -740,7 +749,7 @@ template{
   width: 40px;
   min-width: 40px;
   height: 40px;
-  background: url("../img/file-type-all-gray.png") -97px -104px no-repeat;
+  background: url("../img/file-type-all.png") -97px -104px no-repeat;
 }
 .file-type[class*=text],
 .file-type[class*=text-plain]{

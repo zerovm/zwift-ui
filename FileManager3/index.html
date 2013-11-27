@@ -10,8 +10,6 @@
 		<meta name="description" content="">
 		<meta name="viewport" content="width=device-width">
 
-		<link rel="stylesheet" href="css/bootstrap.min.css">
-		<!--<link rel="stylesheet" href="css/bootstrap-theme.min.css">-->
 		<link rel="stylesheet" href="css/main.css">
 
 		<script src="js/vendor/require.js"></script>
@@ -39,21 +37,14 @@
 
 		<!-- header -->
 		<div class="fixed-top">
-			<div class="navbar navbar-inverse" style="margin-bottom: 0;border-radius: 0; border: 0;">
-				<a class="navbar-brand">File Manager</a>
-
-				<ul class="nav navbar-nav navbar-right">
-					<li class="dropdown">
-						<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-							<span class="glyphicon glyphicon-user"></span> <span id="AccountLabel"></span> <b class="caret"></b>
-						</a>
-						<ul class="dropdown-menu">
-							<li><a id="SignOutButton">Sign Out</a></li>
-						</ul>
-					</li>
-				</ul>
+			<div id="header">
+				<a>File Manager</a>
+				<span style="float: right;">
+					<span id="AccountLabel"></span>
+					<button id="SignOutButton">Sign Out</button>
+				</span>
 			</div>
-			<div class="toolbar navbar-inverse center no-select">
+			<div class="toolbar center no-select">
 			<span class="left">
 				<button id="UpButton" class="toolbar-button" title="Up" disabled></button>
 				<label class="current-dir-label"></label>
@@ -108,7 +99,7 @@
 		<template id="containerTemplate">
 			<div class="item" title="{{title}}"  data-path="{{path}}" data-type="container">
 			<span class="left">
-				<span style="background:url('img/container-gray.png');width: 42px;height: 42px;"></span>
+				<span style="background:url('img/container.png');width: 42px;height: 42px;"></span>
 				<label class="name">{{name}}</label>
 			</span>
 			<span class="right">
@@ -122,7 +113,7 @@
 		<template id="sharedContainerTemplate">
 			<div class="item" title="{{title}}" data-path="{{path}}" data-type="shared">
 			<span class="left">
-				<span style="background:url('img/shared-container-gray.png');width: 42px;height: 42px;"></span>
+				<span style="background:url('img/shared-container.png');width: 42px;height: 42px;"></span>
 				<label class="name">{{name}}</label>
 			</span>
 			<span class="right">
@@ -150,7 +141,7 @@
 		<template id="directoryTemplate">
 			<div class="item" title="{{title}}" data-path="{{path}}" data-type="directory">
 			<span class="left">
-				<img src="img/folder-gray.png">
+				<img src="img/folder.png">
 				<label class="name">{{name}}</label>
 			</span>
 			<span class="right">
