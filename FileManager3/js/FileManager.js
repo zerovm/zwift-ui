@@ -864,7 +864,7 @@ FileManager.Path = function (path) {
 
 		var resultPath = path.split('/').filter(function(s){return s;});
 		resultPath.pop();
-		return resultPath.join("/") + "/";
+		return resultPath.length && resultPath.join("/") + "/";
 	};
 	this.add = function (name) {
 
