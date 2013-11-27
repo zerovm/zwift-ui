@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function(){//TODO: extract into se
 		if(e.target.nodeName === "A"){
 			e.preventDefault();
 			e.stopPropagation();
-			location.hash = location.hash.match(new RegExp(".*" + e.target.dataset.hash + ".")).pop();
+			location.hash = location.hash.match(new RegExp(".*" + e.target.dataset.hash + "\/")).pop();
 		}
 	});
 });
