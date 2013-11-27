@@ -57,7 +57,7 @@
 			input.classList.remove(inputInvalidClass);
 			window.FileManager.errorMsgHandler.hide();
 		});
-		document.getElementById("CancelDialog").addEventListener("click", function(){
+		dialogContainer.querySelector("button[type=\"button\"]").addEventListener("click", function(){
 			oncancel && oncancel();
 			hide();
 		});

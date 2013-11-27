@@ -855,15 +855,18 @@ var Auth = {};
 
 		function deleteLevel(level) {
 			var path = args.path;
+
+			function deleted(){
+				args.progress(files.length, deleteCount, 'deleted');
+				args.deleted();
+			}
+
 			if (level == 0) {
 				if(deletedObjs.indexOf(path) === -1){
 					SwiftAdvancedFunctionality.delete({
 					account: accountId,
 					path: path,
-					deleted: function () {
-						args.progress(files.length, deleteCount, 'deleted');
-						args.deleted();
-					},
+					deleted: deleted,
 					error: function (status, statusText) {
 						args.progress(files.length, deleteCount, 'error occurred');
 						args.error(status, statusText);
@@ -874,7 +877,7 @@ var Auth = {};
 					}
 				});
 				}else{
-					window.FileManager.files.addFileListContent();
+					deleted();
 				}
 				return;
 			}

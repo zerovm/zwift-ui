@@ -197,7 +197,9 @@
 		}
 
 		function setProgressValue(percent){
-			progressValueEl.style.width = percent + "%";
+			if(percent <= 100 && percent >= 0){
+				progressValueEl.style.width = percent + "%";
+			}
 		}
 
 		function remove(e){
@@ -218,10 +220,12 @@
 			remove();
 		}
 
+		this.params = params ? params : {};
 		this.cancel = cancel;
 		this.remove = remove;
 		this.setText = setText;
 		this.setProgressValue = setProgressValue;
+		this.wrapper = progressbarEl;
 
 		request && request.upload.addEventListener("progress", setProgress);
 		request && request.addEventListener("load", remove);
@@ -243,8 +247,10 @@
 		hideButton.className = "btn btn-default";
 		buttonWrapper.appendChild(hideButton);
 		progressbarEl.appendChild(buttonWrapper);
-		wrapper.insertBefore(progressbarEl, wrapper.firstElementChild);
-		wrapper.firstElementChild.scrollIntoView();
+		if(wrapper){
+			wrapper.insertBefore(progressbarEl, wrapper.firstElementChild);
+			wrapper.firstElementChild.scrollIntoView();
+		}
 	}
 
 

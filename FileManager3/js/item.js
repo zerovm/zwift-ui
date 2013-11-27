@@ -6,7 +6,7 @@
 		appearClass = "appear-submenu",
 		submenu = new Submenu(),
 		loadingHtml,
-		progressObj;
+		progressElWrapper;
 
 	function onItemClick(itemEl){
 		var name = itemEl.dataset.path;
@@ -60,7 +60,8 @@
 
 	function deleteItem(el){
 		var name = el.dataset.path,
-			itemPath = FileManager.CurrentPath().add(name);
+			itemPath = FileManager.CurrentPath().add(name),
+			progressObj;
 		if(FileManager.ENABLE_SHARED_CONTAINERS
 			&& FileManager.Shared.isShared(itemPath)
 			&& el.dataset.type === "container"){
@@ -89,20 +90,27 @@
 		}
 
 		window.FileManager.elements.mainProgressBar.classList.remove(window.FileManager.elements.hiddenClass);
-		//progressObj = new window.FileManager.toolbox.ProgressBar()
+		progressObj = new window.FileManager.toolbox.ProgressBar({
+			wrapper: progressElWrapper
+		});
 		SwiftAdvancedFunctionality.deleteAll({
 			path: FileManager.Path(itemPath).withoutAccount(),
 			account: FileManager.CurrentPath().account(),
 			deleted: function(){
-				window.FileManager.files.addFileListContent();
 				window.FileManager.elements.mainProgressBar.classList.add(window.FileManager.elements.hiddenClass);
+				progressObj.remove();
+				window.FileManager.files.addFileListContent();
 			},
 			progress: function(totalFiles, deletedFiles, message){
 				totalFiles = totalFiles - 1;
 				var percentComplete = deletedFiles / totalFiles * 100;
-				console.log('Deleting... (' + deletedFiles + '/' + totalFiles + ') ' + percentComplete + '% complete.');
+				progressObj.setProgressValue(percentComplete);
+				//console.log('Deleting... (' + deletedFiles + '/' + totalFiles + ') ' + percentComplete + '% complete.');
 			},
-			error: ajaxError
+			error: function(s, st){
+				ajaxError(s, st);
+				progressObj.remove();
+			}
 		});
 	}
 
@@ -217,6 +225,7 @@
 
 	document.addEventListener("DOMContentLoaded", function(){
 		loadingHtml = document.querySelector('#itemLoadingTemplate').innerHTML;//TODO: replace this s...
+		progressElWrapper = document.getElementById("progressDialog");
 	});
 
 	if(!window.FileManager){
