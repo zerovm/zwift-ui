@@ -896,7 +896,7 @@ document.addEventListener('click', function (e) {
 		if (FileManager.ENABLE_ZEROVM) {
 			FileManager.ExecuteButton.click();
 		}
-	}else if (el = FileManager.toolbox.getParentByClassName(e.target,'tree-dot')) {
+	}else if (el = FileManager.toolbox.getParentByClassName(e.target,'three-dot')) {
 		FileManager.Item.toggleMenu(el);
 	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'item')) {
 		FileManager.Item.click(el);
