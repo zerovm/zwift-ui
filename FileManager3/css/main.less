@@ -919,8 +919,10 @@ button:not(.btn):hover{
 .disable-toolbar-right .toolbar .right *{
   pointer-events: none;
 }
-.tree-dot{
+.three-dot{
   width: 20px;
+  background: url('../img/three-dot.png') no-repeat 5px 3px;
+  border: none;
 }
 .submenu{
   height: 0;
@@ -937,12 +939,34 @@ button:not(.btn):hover{
   width: 40px;
   height: 40px;
 }
+
+
+#CreateDialog {
+  background-color: @dialogColor;
+  padding: 5px;
+}
+
+#CreateDialog #input_CreateContainerDialog {
+  height: 30px;
+  box-sizing: border-box;
+  width: ~"calc(100% - 220px)";
+  width: ~"-webkit-calc(100% - 220px)";
+  width: ~"-moz-calc(100% - 220px)";
+  padding: 5px;
+  margin: 0;
+  border-radius: 0;
+}
+#CreateDialog #OKDialog,
+#CreateDialog #CancelDialog {
+  height: 30px;
+  width: 100px;
+}
 #CreateDialog #input_CreateContainerDialog,
 #CreateDialog .dialog-wrapper{
   display: none;
 }
 #CreateDialog.input-shown #input_CreateContainerDialog{
-  display: block;
+  display: inline-block;
 }
 #CreateDialog.dialog-shown .dialog-wrapper{
   display: flex;
@@ -969,3 +993,4 @@ button:not(.btn):hover{
   opacity: 0.75;
   pointer-events: none;
 }
+
