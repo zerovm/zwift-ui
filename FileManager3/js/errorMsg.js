@@ -6,7 +6,7 @@
 document.addEventListener("DOMContentLoaded", function(){
 	"use strict";
 
-	var errorsEl = document.getElementsByClassName("err-msg")[0];
+	var errorsEl = document.getElementsByClassName("err-msg")[0].parentNode;
 
 	function showError(params){
 		var span = document.createElement("span");
