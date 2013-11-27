@@ -6,8 +6,8 @@
 (function(){
 	"use strict";
 
-	function DialogForm(params){
-		var dialogContainer = document.getElementById(params.wrapperId),
+	function DialogForm(options){
+		var dialogContainer = document.getElementById(options.wrapperId),
 			input = dialogContainer.getElementsByTagName("input")[0],
 			dialogContentWrapper = dialogContainer.getElementsByClassName("dialog-wrapper")[0],
 			inputClass = "input-shown", dialogClass = "dialog-shown",
@@ -19,9 +19,11 @@
 			onconfirm = params.confirm;
 			oncancel = params.decline;
 			document.body.classList.add(window.FileManager.elements.disableToolbarClass);
+			options.hashchangeHandler = params.hashchangeHandler;
 			switch(params.type){
 				case "input":
 					input.placeholder = params.placeholder;
+					params.inputValue && (input.value = params.inputValue);
 					dialogContainer.classList.add(inputClass);
 					dialogContainer.classList.remove(window.FileManager.elements.hiddenClass);
 					input.focus();
@@ -53,6 +55,7 @@
 		this.hide = hide;
 		this.show = show;
 		this.error = error;
+		this.el = dialogContainer;
 		input.addEventListener("keydown", function(){
 			input.classList.remove(inputInvalidClass);
 			window.FileManager.errorMsgHandler.hide();
@@ -67,7 +70,13 @@
 			onconfirm && onconfirm(input);
 			return false;
 		});
-		window.addEventListener("hashchange", hide);
+		window.addEventListener("hashchange", function(e){
+			if(options.hashchangeHandler){
+				options.hashchangeHandler(e);
+			}else{
+				hide();
+			}
+		});
 	}
 
 

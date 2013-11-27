@@ -6,7 +6,8 @@
 		appearClass = "appear-submenu",
 		submenu = new Submenu(),
 		loadingHtml,
-		progressElWrapper;
+		progressElWrapper,
+		oncopy;
 
 	function onItemClick(itemEl){
 		var name = itemEl.dataset.path;
@@ -28,8 +29,8 @@
 		});
 	}
 
-	function copy(){
-		var copyTo = document.querySelector('.copy-input').value;
+	function copy(sourcePath, newName){
+		var args;
 
 		function ajaxError(status, statusText){
 			window.FileManager.errorMsgHandler.show({
@@ -39,23 +40,20 @@
 			})
 		}
 
-		if(FileManager.ENABLE_SHARED_CONTAINERS && FileManager.Shared.isShared(FileManager.Item.selectedPath)){
-			SharedContainersOnSwift.copy({
-				account: FileManager.Path(copyTo).account(),
-				path: FileManager.Path(copyTo).withoutAccount(),
-				copyFrom: FileManager.Path(FileManager.Item.selectedPath).get(),
-				copied: window.FileManager.files.addFileListContent,
-				error: ajaxError
-			});
-			return;
-		}
-
-		SwiftV1.copyFile({
-			path: FileManager.Path(copyTo).withoutAccount(),
-			copyFrom: FileManager.Path(FileManager.Item.selectedPath).withoutAccount(),
+		args = {
+			path: newName,
+			copyFrom: sourcePath,
 			copied: window.FileManager.files.addFileListContent,
 			error: ajaxError
-		});
+		};
+/*TODO: correct condition
+		if(FileManager.ENABLE_SHARED_CONTAINERS && FileManager.Shared.isShared(window.FileManager.CurrentPath().account())){//TODO: check shared func
+			args.account = FileManager.Path(path).account();
+			SharedContainersOnSwift.copy(args);
+			return;
+		}*/
+
+		SwiftV1.copyFile(args);
 	}
 
 	function deleteItem(el){
@@ -163,7 +161,9 @@
 					a.download = previousParent.dataset.path;
 					a.dispatchEvent(clickEvent);
 				},
-				oncopy: copy,
+				oncopy: function(){
+					oncopy();
+				},
 				onmetadata: function(e){
 				},
 				ontype: function(e){
@@ -222,6 +222,37 @@
 			}
 		});
 	}
+
+	oncopy = function(){
+		var dialogForm = new window.FileManager.DialogForm({
+			wrapperId: "CopyDialog",
+			isAlwaysVisible: true
+		});
+		oncopy = function(){
+			var sourcePath = window.FileManager.CurrentPath().withoutAccount(),
+				sourceName = sourcePath + previousParent.dataset.path,
+				newName = sourcePath;
+			dialogForm.show({
+				type: "input",
+				placeholder: "New file name",
+				confirm: function(input){
+					newName = input.value ? window.FileManager.CurrentPath().withoutAccount() + input.value : window.FileManager.CurrentPath().withoutAccount() + newName;
+					copy(sourceName, newName);
+					dialogForm.hide();
+				},
+				hashchangeHandler: function(e){
+					if(window.FileManager.CurrentPath().isContainersList()){
+						dialogForm.el.classList.add("disabled");
+					}else{
+						dialogForm.el.classList.remove("disabled");
+					}
+				},
+				inputValue: previousParent.dataset.path
+			});
+		};
+		oncopy();
+	};
+
 
 	document.addEventListener("DOMContentLoaded", function(){
 		loadingHtml = document.querySelector('#itemLoadingTemplate').innerHTML;//TODO: replace this s...

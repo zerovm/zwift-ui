@@ -995,7 +995,7 @@ document.addEventListener('DOMContentLoaded', function () {
 //SHARED-CONTAINERS
 FileManager.Shared = {};
 FileManager.Shared.isShared = function (path) {
-	return path.split('/')[0] != Auth.getAccount();
+	return path.split('/')[0] != Auth.getAccount();//TODO: check condition, looks weird
 };
 FileManager.Shared.listSharedContainers = function (sharedContainers, scrollingContentEl) {
 
