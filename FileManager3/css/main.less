@@ -821,6 +821,7 @@ template{
 .item[data-content-type*=powerpoint] .file-type{
   background-position: -17px -53px;
 }
+.item[data-content-type*=gtar] .file-type,
 .item[data-content-type*=x-tar] .file-type,
 .item[data-content-type*=x-rar] .file-type,
 .item[data-content-type*=zip] .file-type{
@@ -964,28 +965,31 @@ button:not(.btn):hover{
   background-image: url('../img/blue-icon.png');
   background-color: transparent;
 }
-.submenu button[data-action="open"] {
-  background-position: -473px -4px;
+.submenu button.share{
+  background-position: -480px -4px;
 }
-.submenu button[data-action="download"] {
+.submenu button.open{
+  background-position: -431px -4px;
+}
+.submenu button.delete{
   background-position: -304px -4px;
 }
-.submenu button[data-action="copy"] {
-  background-position: -386px -4px;
+.submenu button.edit{
+  background-position: -224px -4px;
 }
-.submenu button[data-action="metadata"] {
+.submenu button.type{
   background-position: -52px -3px;
 }
-.submenu button[data-action="type"] {
+.submenu button.execute{
   background-position: -94px -4px;
 }
-.submenu button[data-action="delete"] {
+.submenu button.copy{
   background-position: -344px -4px;
 }
-.submenu button[data-action="execute"] {
-  background-position: -136px -4px
+.submenu button.metadata{
+  background-position: -11px -4px
 }
-.submenu button[data-action="edit"] {
+.submenu button.download{
   background-position: -266px -4px;
 }
 
@@ -1030,13 +1034,18 @@ button:not(.btn):hover{
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+.item.submenu button[data-action="execute"],
 .item:not([data-type="file"]) + .item.submenu button[data-action="edit"],
-.item:not([data-type="file"]) + .item.submenu button[data-action="execute"],
 .item:not([data-type="file"]) + .item.submenu button[data-action="type"],
 .item:not([data-type="file"]) + .item.submenu button[data-action="copy"],
 .item:not([data-type="file"]) + .item.submenu button[data-action="open"],
 .item:not([data-type="file"]) + .item.submenu button[data-action="download"]{
   display: none;
+}
+.item[data-content-type*="json"] + .item.submenu button[data-action="execute"],
+.item[data-content-type*="gtar"] + .item.submenu button[data-action="execute"],
+.item[data-content-type*="x-tar"] + .item.submenu button[data-action="execute"]{
+  display: inline-block;
 }
 #CopyDialog.disabled{
   opacity: 0.75;

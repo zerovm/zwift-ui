@@ -140,6 +140,9 @@
 			metadataObj,
 			oncopy,
 			handlers = {
+				share: function(e){
+
+				},
 				onopen: function(e){
 				},
 				ondownload: function(e){
