@@ -38,10 +38,24 @@ a{
   padding: 5px;
   margin: 10px 0;
   color: white;
+  height: 46px;
 }
 #header a {
   color: white;
 }
+
+#OpenAccountWindow {
+  cursor: pointer;
+}
+
+#AccountWindow {
+  display: none;
+}
+
+#OpenAccountWidow:active #AccountWindow {
+  display: block;
+}
+
 .toolbar{
   height: 50px;
   background-color: @color3;
