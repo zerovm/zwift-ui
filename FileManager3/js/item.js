@@ -122,6 +122,7 @@
 		if(previousParent === parent){
 			submenu.wrapper.classList.toggle(appearClass)
 		}else{
+			window.FileManager.DialogForm.closeOtherDialogs();
 			submenu.wrapper.classList.remove(appearClass);
 			submenu.wrapper.parentNode && removeSubmenu();
 			submenu.setPath(parent.dataset.path);
@@ -254,7 +255,7 @@
 			function createMetaInputRow(meta, value){
 				var metadataWrapper = document.createElement("div"),
 					inputWrapper = document.createElement("div"),
-					input, removeButton;
+					input, button;
 				metadataWrapper.className = rowClassName;
 				inputWrapper.className = inputWrapperClassName;
 
@@ -272,9 +273,10 @@
 
 				metadataWrapper.appendChild(inputWrapper);
 
-				removeButton = document.createElement("button");
-				removeButton.tabIndex = -1;
-				metadataWrapper.appendChild(removeButton);
+				button = document.createElement("button");
+				button.tabIndex = -1;
+				button.type = "button";
+				metadataWrapper.appendChild(button);
 
 				wrapper.appendChild(metadataWrapper);
 			}
@@ -302,6 +304,7 @@
 			}
 
 			function removeRow(row){
+				row.nextSibling.getElementsByTagName("input")[0].focus();
 				row.parentNode.removeChild(row);
 				checkAllErrorInputs();
 			}
@@ -312,7 +315,6 @@
 					var metaKey = encodeURIComponent(inputwrapper.children[0].value);
 					metaKey && (result[metaKey] = encodeURIComponent(inputwrapper.children[1].value));
 				});
-				console.log(result);
 				return result;
 			}
 
@@ -326,7 +328,6 @@
 						removedMeta.push(key);
 					}
 				});
-				console.log(removedMeta);
 				return removedMeta;
 			};
 			this.showMetaData = function(path, type, callback){

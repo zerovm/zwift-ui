@@ -57,16 +57,6 @@ FileManager.CurrentDirLabel = {};
 
 FileManager.CurrentDirLabel.MAX_LENGTH = 40;
 
-document.addEventListener("DOMContentLoaded", function(){//TODO: extract into separated file!!!
-	document.querySelector('.current-dir-label').addEventListener("click", function(e){
-		if(e.target.nodeName === "A"){
-			e.preventDefault();
-			e.stopPropagation();
-			location.hash = location.hash.match(new RegExp(".*" + e.target.dataset.hash + "\/")).pop();
-		}
-	});
-});
-
 FileManager.CurrentDirLabel.setContent = function (content, isArrowsSeparated) {
 	var el = document.querySelector('.current-dir-label'),
 		splittedContent, i, prevValue, joiner = "/";
@@ -473,44 +463,6 @@ FileManager.Metadata.save = function () {
 };
 
 
-FileManager.ContentType = {};
-
-FileManager.ContentType.showLoading = function () {
-	document.querySelector('.content-type-table').removeAttribute('hidden');
-};
-
-FileManager.ContentType.showError = function (status, statusText) {
-	var el = document.querySelector('.content-type-error-ajax');
-	FileManager.AjaxError.show(el, status, statusText);
-};
-
-FileManager.ContentType.load = function (contentType) {
-
-	document.querySelector('.content-type-table .content-type-input').value = contentType;
-	document.querySelector('.content-type-table .loading').setAttribute('hidden', 'hidden');
-	document.querySelector('.content-type-table .input-group-table').removeAttribute('hidden');
-};
-
-FileManager.ContentType.click = function () {
-	document.querySelector('.content-type-table .loading').removeAttribute('hidden');
-	document.querySelector('.content-type-table .input-group-table').setAttribute('hidden', 'hidden');
-	var input = document.querySelector('.content-type-table .content-type-input').value;
-	var path = FileManager.Item.selectedPath;
-
-	SwiftV1.File.post({
-		account: FileManager.CurrentPath().account(),
-		path: FileManager.Path(path).withoutAccount(),
-		contentType: input,
-		metadata: FileManager.Item.metadata,
-		updated: function () {
-			window.FileManager.files.addFileListContent();
-		},
-		error: function (status, statusText) {
-			FileManager.ContentType.showError(status, statusText);
-		}
-	});
-};
-
 
 FileManager.File = {};
 
@@ -905,16 +857,6 @@ document.addEventListener('click', function (e) {
 	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'add-shared-button')) {
 		//SHARED-CONTAINERS
 		FileManager.AddShared.click();
-	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'delete-button')) {
-		FileManager.ConfirmDelete.click(el);
-	} else if (FileManager.toolbox.getParentByClassName(e.target,'metadata-save')) {
-		FileManager.Metadata.save();
-	} else if (FileManager.toolbox.getParentByClassName(e.target,'metadata-discard-changes')) {
-		FileManager.Metadata.discardChanges();
-	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'remove-metadata')) {
-		FileManager.Metadata.remove(el);
-	} else if (FileManager.toolbox.getParentByClassName(e.target,'content-type-button')) {
-		FileManager.ContentType.click();
 	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'execute-close-button')) {
 		FileManager.ExecuteReport.remove();
 	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'execute-full-button')) {
@@ -965,7 +907,6 @@ document.addEventListener('change', function (e) {
 
 document.addEventListener('DOMContentLoaded', function () {
 	Auth.init(function () {
-
 		if (!location.hash) {
 			location.hash = Auth.getAccount() + "/";
 		} else {
@@ -989,6 +930,13 @@ document.addEventListener('DOMContentLoaded', function () {
 		document.getElementById("WideButton").addEventListener("click", function(){
 			document.body.classList.toggle("wide-content");
 		});
+	});
+	document.querySelector('.current-dir-label').addEventListener("click", function(e){
+		if(e.target.nodeName === "A"){
+			e.preventDefault();
+			e.stopPropagation();
+			location.hash = location.hash.match(new RegExp(".*" + e.target.dataset.hash + "\/")).pop();
+		}
 	});
 });
 
