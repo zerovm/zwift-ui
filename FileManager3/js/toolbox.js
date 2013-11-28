@@ -253,6 +253,10 @@
 		}
 	}
 
+	function isLastChildren(el){
+		return el.parentNode.children.indexOf(el) === el.parentNode.children.length - 1;
+	}
+
 
 	Object.keys(extObj).forEach(function(ext){
 		var obj = extObj[ext],
@@ -278,6 +282,7 @@
 		escapeHTML: escapeHTML,
 		makeDatePretty: makeDatePretty,
 		onscrollLoadMore: onscrollLoadMore,
-		ProgressBar: ProgressBar
+		ProgressBar: ProgressBar,
+		isLastChildren: isLastChildren
 	};
 })();

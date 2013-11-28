@@ -28,6 +28,8 @@
 			oncancel = params.decline;
 			document.body.classList.add(window.FileManager.elements.disableToolbarClass);
 			options.hashchangeHandler = params.hashchangeHandler;
+			options.customizationClass = params.customizationClass;
+			options.customizationClass && dialogContainer.classList.add(options.customizationClass);
 			switch(params.type){
 				case "input":
 					input.placeholder = params.placeholder;
@@ -41,6 +43,7 @@
 					dialogContentWrapper.appendChild(params.dialogContent);
 					dialogContainer.classList.add(dialogClass);
 					dialogContainer.classList.remove(window.FileManager.elements.hiddenClass);
+					params.onshow && params.onshow();
 					break;
 				default: console.log("dialog form: unknown type");
 			}
@@ -52,6 +55,7 @@
 
 		function hide(){
 			oncancel && oncancel();
+			options.customizationClass && dialogContainer.classList.remove(options.customizationClass);
 			document.body.classList.remove(window.FileManager.elements.disableToolbarClass);
 			dialogContainer.classList.add(window.FileManager.elements.hiddenClass);
 			dialogContainer.classList.remove(inputClass);

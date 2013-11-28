@@ -46,12 +46,12 @@
 			copied: window.FileManager.files.addFileListContent,
 			error: ajaxError
 		};
-/*TODO: correct condition
-		if(FileManager.ENABLE_SHARED_CONTAINERS && FileManager.Shared.isShared(window.FileManager.CurrentPath().account())){//TODO: check shared func
-			args.account = FileManager.Path(path).account();
-			SharedContainersOnSwift.copy(args);
-			return;
-		}*/
+		/*TODO: correct condition
+		 if(FileManager.ENABLE_SHARED_CONTAINERS && FileManager.Shared.isShared(window.FileManager.CurrentPath().account())){//TODO: check shared func
+		 args.account = FileManager.Path(path).account();
+		 SharedContainersOnSwift.copy(args);
+		 return;
+		 }*/
 
 		SwiftV1.copyFile(args);
 	}
@@ -150,6 +150,7 @@
 		var button, wrapper, path,
 			buttonsClass = "submenu-items",
 			actionPrefix = "on",
+			metadataObj,
 			handlers = {
 				onopen: function(e){
 				},
@@ -165,6 +166,30 @@
 					oncopy();
 				},
 				onmetadata: function(e){
+					var item = previousParent;
+					metadataObj.showMetaData(item.dataset.path, item.dataset.type, function(callback){
+						window.FileManager.dialogForm.show({
+							confirm: function(){
+								SwiftV1.updateFileMetadata({
+									metadata: metadataObj.getMeta(),
+									removeMetadata: metadataObj.getRemovedMeta(),
+									contentType: item.dataset.contentType,
+									updated: window.FileManager.files.addFileListContent,
+									path: window.FileManager.CurrentPath().withoutAccount() + previousParent.dataset.path,
+									error: ajaxError,
+									notExist: function(){
+										window.FileManager.errorMsgHandler.show({
+											header: "File not exist"
+										});
+									}});
+								window.FileManager.dialogForm.hide();
+							},
+							dialogContent: metadataObj.el,
+							onshow: callback,
+							customizationClass: "metadata",
+							type: "dialog"
+						});
+					});
 				},
 				ontype: function(e){
 					window.FileManager.dialogForm.show({
@@ -193,7 +218,7 @@
 							deleteItem(previousParent);
 							window.FileManager.dialogForm.hide();
 						},
-						dialogContent: createDialog(),
+						dialogContent: createDeleteDialog(),
 						type: "dialog"
 					});
 				},
@@ -204,7 +229,7 @@
 				}
 			};
 
-		function createDialog(){
+		function createDeleteDialog(){
 			var textEl = document.createElement("span"),
 				fragment = document.createDocumentFragment();
 			textEl.innerHTML = "Are you sure of deleting&nbsp;";
@@ -213,6 +238,153 @@
 			textEl.textContent = previousParent.dataset.path + "?";
 			fragment.appendChild(textEl);
 			return fragment;
+		}
+
+		function MetadataObj(){
+			var wrapper = document.createElement("div"),
+				containerType = "container",
+				rowClassName = "meta-data-row",
+				metaKeyClassName = "meta-key-input",
+				errorInputClassName = "error-input",
+				inputWrapperClassName = "input-wrapper",
+				originMetadata,
+				originMetadataKeys,
+				lastInput;
+
+			function createMetaInputRow(meta, value){
+				var metadataWrapper = document.createElement("div"),
+					inputWrapper = document.createElement("div"),
+					input, removeButton;
+				metadataWrapper.className = rowClassName;
+				inputWrapper.className = inputWrapperClassName;
+
+				input = document.createElement("input");
+				lastInput = input;
+				input.className = metaKeyClassName;
+				meta && (input.value = decodeURIComponent(meta));
+				input.placeholder = "Meta key";
+				inputWrapper.appendChild(input);
+
+				input = document.createElement("input");
+				value && (input.value = decodeURIComponent(value));
+				input.placeholder = "[Meta value]";
+				inputWrapper.appendChild(input);
+
+				metadataWrapper.appendChild(inputWrapper);
+
+				removeButton = document.createElement("button");
+				removeButton.tabIndex = -1;
+				metadataWrapper.appendChild(removeButton);
+
+				wrapper.appendChild(metadataWrapper);
+			}
+
+			function checkCoincidence(inputs, input){
+				var i, isCoincidence;
+				for(i = inputs.length - 1; i >= 0; i--){
+					if(inputs[i].value === input.value && inputs[i] !== input){
+						isCoincidence = true;
+						break;
+					}
+				}
+				if(isCoincidence){
+					input.classList.add(errorInputClassName);
+				}else{
+					input.classList.remove(errorInputClassName);
+				}
+			}
+
+			function checkAllErrorInputs(){
+				var inputs = wrapper.getElementsByClassName(metaKeyClassName);
+				wrapper.getElementsByClassName(errorInputClassName).forEach(function(input){
+					checkCoincidence(inputs, input);
+				});
+			}
+
+			function removeRow(row){
+				row.parentNode.removeChild(row);
+				checkAllErrorInputs();
+			}
+
+			function getMeta(){
+				var result = {};
+				wrapper.getElementsByClassName(inputWrapperClassName).forEach(function(inputwrapper){
+					var metaKey = encodeURIComponent(inputwrapper.children[0].value);
+					metaKey && (result[metaKey] = encodeURIComponent(inputwrapper.children[1].value));
+				});
+				console.log(result);
+				return result;
+			}
+
+			this.el = wrapper;
+			this.getMeta = getMeta;
+			this.getRemovedMeta = function(){
+				var removedMeta = [],
+					currentMeta = getMeta();
+				originMetadataKeys.forEach(function(key){
+					if(!currentMeta[key]){
+						removedMeta.push(key);
+					}
+				});
+				console.log(removedMeta);
+				return removedMeta;
+			};
+			this.showMetaData = function(path, type, callback){
+				var args = {
+					success: function(metadata){
+						wrapper.removeChildren();
+						originMetadata = metadata;
+						originMetadataKeys = Object.keys(originMetadata);
+						originMetadataKeys.forEach(function(key){
+							createMetaInputRow(key, originMetadata[key]);
+						});
+						createMetaInputRow();
+						callback(function(){
+							lastInput.focus();
+						});
+					},
+					notExist: function(){
+						window.FileManager.errorMsgHandler.show({
+							header: "Item does not exist"
+						});
+					},
+					error: ajaxError
+				};
+				path = window.FileManager.CurrentPath().withoutAccount() + path;
+				window.FileManager.errorMsgHandler.hide();
+				if(type === containerType){
+					args.containerName = path;
+					SwiftV1.Container.head(args);
+				}else{
+					args.path = path;
+					SwiftV1.File.head(args);
+				}
+			};
+			wrapper.className = "meta-data-wrapper";
+			wrapper.addEventListener("click", function(e){
+				var row;
+				if(e.target.tagName === "BUTTON"){
+					row = window.FileManager.toolbox.getParentByClassName(e.target, rowClassName);
+					!window.FileManager.toolbox.isLastChildren(row) && removeRow(row);
+				}
+			});
+			wrapper.addEventListener("input", function(e){
+				var input = e.target,
+					row = window.FileManager.toolbox.getParentByClassName(e.target, rowClassName),
+					isRowLastChildren = window.FileManager.toolbox.isLastChildren(row);
+				if(!input.value){
+					if(!isRowLastChildren){
+						removeRow(row);
+					}
+				}else{
+					if(isRowLastChildren){
+						createMetaInputRow();
+					}
+				}
+				if(input.classList.contains(metaKeyClassName)){
+					checkCoincidence(this.getElementsByClassName(metaKeyClassName), input);
+				}
+			});
 		}
 
 		this.setPath = function(p){
@@ -240,6 +412,7 @@
 				handlers[handler] && handlers[handler]();
 			}
 		});
+		metadataObj = new MetadataObj;
 	}
 
 	oncopy = function(){
@@ -271,7 +444,6 @@
 		};
 		oncopy();
 	};
-
 
 	document.addEventListener("DOMContentLoaded", function(){
 		loadingHtml = document.querySelector('#itemLoadingTemplate').innerHTML;//TODO: replace this s...
