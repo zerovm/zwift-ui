@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			wrongName: "Name cannot contain a slash (/) character.",
 			containerAlreadyExist: "Container is already exists.",
 			dirAlreadyExist: "Directory is already exists.",
-			nameTooLong: "Container name should be less then 256 characters.",
+			nameTooLong: "Container name should be less than 256 characters.",
 			emptyInput: "The name should be bit longer."
 		},
 		rootClass = "location-root";
