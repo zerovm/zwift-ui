@@ -6,8 +6,7 @@
 		appearClass = "appear-submenu",
 		submenu = new Submenu(),
 		loadingHtml,
-		progressElWrapper,
-		oncopy;
+		progressElWrapper;
 
 	function onItemClick(itemEl){
 		var name = itemEl.dataset.path;
@@ -99,7 +98,7 @@
 				progressObj.remove();
 				window.FileManager.files.addFileListContent();
 			},
-			progress: function(totalFiles, deletedFiles, message){
+			progress: function(totalFiles, deletedFiles){
 				totalFiles = totalFiles - 1;
 				var percentComplete = deletedFiles / totalFiles * 100;
 				progressObj.setProgressValue(percentComplete);
@@ -124,9 +123,9 @@
 		}else{
 			window.FileManager.DialogForm.closeOtherDialogs();
 			submenu.wrapper.classList.remove(appearClass);
-			submenu.wrapper.parentNode && removeSubmenu();
+			submenu.wrapper.parentNode && submenu.removeSubmenu();
 			submenu.setPath(parent.dataset.path);
-			appendSubmenu(parent);
+			submenu.appendSubmenu(parent);
 			setTimeout(function(){
 				submenu.wrapper.classList.add(appearClass);
 			}, 0);
@@ -134,24 +133,12 @@
 		previousParent = parent;
 	}
 
-	function appendSubmenu(parentEl){
-		parentEl.parentNode.insertBefore(submenu.wrapper, parentEl.nextSibling);
-		setTimeout(function(){
-			submenu.wrapper.classList.add(appearClass);
-		}, 0);
-	}
-
-	function removeSubmenu(){
-		previousParent = null;
-		submenu.wrapper.classList.remove(appearClass);
-		submenu.wrapper.parentNode.removeChild(submenu.wrapper);
-	}
-
 	function Submenu(){
 		var button, wrapper, path,
 			buttonsClass = "submenu-items",
 			actionPrefix = "on",
 			metadataObj,
+			oncopy,
 			handlers = {
 				onopen: function(e){
 				},
@@ -248,6 +235,8 @@
 				metaKeyClassName = "meta-key-input",
 				errorInputClassName = "error-input",
 				inputWrapperClassName = "input-wrapper",
+				disabledAttribute = "disabled",
+				firstLetterRegex = /./,
 				originMetadata,
 				originMetadataKeys,
 				lastInput;
@@ -281,18 +270,35 @@
 				wrapper.appendChild(metadataWrapper);
 			}
 
+			function makeMetadataStandartView(str){
+				return str.toLowerCase().replace(firstLetterRegex, str[0].toUpperCase());
+			}
+
 			function checkCoincidence(inputs, input){
-				var i, isCoincidence;
+				var i, isCoincidence, comparisonInputValue,
+					inputValue = input.value;
+				if(!inputValue){
+					return;
+				}
+				inputValue = makeMetadataStandartView(inputValue);
 				for(i = inputs.length - 1; i >= 0; i--){
-					if(inputs[i].value === input.value && inputs[i] !== input){
+					comparisonInputValue = inputs[i].value;
+					if(comparisonInputValue){
+						comparisonInputValue = makeMetadataStandartView(comparisonInputValue);
+					}else{
+						continue;
+					}
+					if(comparisonInputValue && comparisonInputValue === inputValue && inputs[i] !== input){
 						isCoincidence = true;
 						break;
 					}
 				}
 				if(isCoincidence){
 					input.classList.add(errorInputClassName);
+					input.nextSibling.setAttribute(disabledAttribute, disabledAttribute);
 				}else{
 					input.classList.remove(errorInputClassName);
+					input.nextSibling.removeAttribute(disabledAttribute);
 				}
 			}
 
@@ -312,8 +318,9 @@
 			function getMeta(){
 				var result = {};
 				wrapper.getElementsByClassName(inputWrapperClassName).forEach(function(inputwrapper){
-					var metaKey = encodeURIComponent(inputwrapper.children[0].value);
-					metaKey && (result[metaKey] = encodeURIComponent(inputwrapper.children[1].value));
+					var metaValue = encodeURIComponent(inputwrapper.children[0].value),
+						metaKey = encodeURIComponent(inputwrapper.children[1].value);
+					metaValue && metaKey && (result[metaValue] = metaKey);
 				});
 				return result;
 			}
@@ -388,13 +395,54 @@
 			});
 		}
 
+		this.appendSubmenu = function(parentEl){
+			parentEl.parentNode.insertBefore(wrapper, parentEl.nextSibling);
+			setTimeout(function(){
+				wrapper.classList.add(appearClass);
+			}, 0);
+		};
+
+		this.removeSubmenu = function(){
+			previousParent = null;
+			submenu.wrapper.classList.remove(appearClass);
+			submenu.wrapper.parentNode.removeChild(submenu.wrapper);
+		};
+
 		this.setPath = function(p){
 			path = p;
 		};
 
 		this.wrapper = wrapper = document.createElement("div");
 		wrapper.className = "item submenu no-hover no-active";
-
+		oncopy = function(){
+			var dialogForm = new window.FileManager.DialogForm({
+				wrapperId: "CopyDialog",
+				isAlwaysVisible: true
+			});
+			oncopy = function(){
+				var sourcePath = window.FileManager.CurrentPath().withoutAccount(),
+					sourceName = sourcePath + previousParent.dataset.path,
+					newName = sourcePath;
+				dialogForm.show({
+					type: "input",
+					placeholder: "New file name",
+					confirm: function(input){
+						newName = input.value ? window.FileManager.CurrentPath().withoutAccount() + input.value : window.FileManager.CurrentPath().withoutAccount() + newName;
+						copy(sourceName, newName);
+						dialogForm.hide();
+					},
+					hashchangeHandler: function(){
+						if(window.FileManager.CurrentPath().isContainersList()){
+							dialogForm.el.classList.add("disabled");
+						}else{
+							dialogForm.el.classList.remove("disabled");
+						}
+					},
+					inputValue: previousParent.dataset.path
+				});
+			};
+			oncopy();
+		};
 		Object.keys(handlers).forEach(function(className){
 			className = className.replace(actionPrefix, "");
 			button = document.createElement("button");
@@ -415,36 +463,6 @@
 		});
 		metadataObj = new MetadataObj;
 	}
-
-	oncopy = function(){
-		var dialogForm = new window.FileManager.DialogForm({
-			wrapperId: "CopyDialog",
-			isAlwaysVisible: true
-		});
-		oncopy = function(){
-			var sourcePath = window.FileManager.CurrentPath().withoutAccount(),
-				sourceName = sourcePath + previousParent.dataset.path,
-				newName = sourcePath;
-			dialogForm.show({
-				type: "input",
-				placeholder: "New file name",
-				confirm: function(input){
-					newName = input.value ? window.FileManager.CurrentPath().withoutAccount() + input.value : window.FileManager.CurrentPath().withoutAccount() + newName;
-					copy(sourceName, newName);
-					dialogForm.hide();
-				},
-				hashchangeHandler: function(e){
-					if(window.FileManager.CurrentPath().isContainersList()){
-						dialogForm.el.classList.add("disabled");
-					}else{
-						dialogForm.el.classList.remove("disabled");
-					}
-				},
-				inputValue: previousParent.dataset.path
-			});
-		};
-		oncopy();
-	};
 
 	document.addEventListener("DOMContentLoaded", function(){
 		loadingHtml = document.querySelector('#itemLoadingTemplate').innerHTML;//TODO: replace this s...
