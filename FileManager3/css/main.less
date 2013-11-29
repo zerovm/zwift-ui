@@ -1033,17 +1033,19 @@ button:not(.btn):hover{
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.item.submenu button[data-action="execute"],
-.item:not([data-type="file"]) + .item.submenu button[data-action="edit"],
-.item:not([data-type="file"]) + .item.submenu button[data-action="type"],
-.item:not([data-type="file"]) + .item.submenu button[data-action="copy"],
-.item:not([data-type="file"]) + .item.submenu button[data-action="open"],
-.item:not([data-type="file"]) + .item.submenu button[data-action="download"]{
+.item.submenu button.share,
+.item.submenu button.execute,
+.item:not([data-type="file"]) + .item.submenu button.edit,
+.item:not([data-type="file"]) + .item.submenu button.type,
+.item:not([data-type="file"]) + .item.submenu button.copy,
+.item:not([data-type="file"]) + .item.submenu button.open,
+.item:not([data-type="file"]) + .item.submenu button.download{
   display: none;
 }
-.item[data-content-type*="json"] + .item.submenu button[data-action="execute"],
-.item[data-content-type*="gtar"] + .item.submenu button[data-action="execute"],
-.item[data-content-type*="x-tar"] + .item.submenu button[data-action="execute"]{
+.item[data-type="container"] + .item.submenu button.share,
+.item[data-content-type*="json"] + .item.submenu button.execute,
+.item[data-content-type*="gtar"] + .item.submenu button.execute,
+.item[data-content-type*="x-tar"] + .item.submenu button.execute{
   display: inline-block;
 }
 #CopyDialog.disabled{

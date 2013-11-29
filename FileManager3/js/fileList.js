@@ -158,12 +158,12 @@
 	function createFile(file){
 		var _name, contentType, name, size, modified, html;
 		_name = FileManager.Path(file.name).name();
-		contentType = (file.content_type && file.content_type !== "undefined" && file.content_type.replace("/", "-").replace(".", "-")) || "file-type";
+		contentType = (file.content_type && file.content_type !== "undefined" && file.content_type) || "file-type";
 		name = window.FileManager.toolbox.makeShortName(_name);
 		size = FileManager.toolbox.shortenSize(file.bytes);
 		modified = window.FileManager.toolbox.makeDatePretty(file.last_modified);
 		html = document.getElementById("fileTemplate").innerHTML;
-		return html.replace("{{file-type}}", FileManager.toolbox.escapeHTML(contentType))
+		return html.replace("{{file-type}}", contentType)
 			.replace("{{name}}", "<span>" + FileManager.toolbox.escapeHTML(name) + "</span>")
 			.replace("{{path}}", FileManager.toolbox.escapeHTML(_name))
 			.replace("{{title}}", FileManager.toolbox.escapeHTML(_name))
