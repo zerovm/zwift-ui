@@ -47,7 +47,11 @@
 		gradeMap = ["B", "KB", "MB", "GB"];
 
 	function getMIME(e){
-		var extension = e.match(extRegex), mime;
+		var extension, mime;
+		if(!e){
+			return null;
+		}
+		extension = e.match(extRegex);
 		if(extension){
 			e = extension.pop();
 		}
@@ -157,6 +161,7 @@
 
 	function onscrollLoadMore(e){//TODO: move it somewhere else
 		e = e.target ? e.target : e;
+		console.log(Math.abs(e.scrollTop - (e.scrollHeight - e.clientHeight)))
 		if(Math.abs(e.scrollTop - (e.scrollHeight - e.clientHeight)) === 0){
 			if(FileManager.CurrentPath().isContainersList()){
 				FileManager.Containers.loadMore();

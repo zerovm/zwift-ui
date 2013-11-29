@@ -477,44 +477,22 @@ FileManager.File.open = function (el, callback) {
 			filename = Current.name(),
 			downloadLink = document.querySelector('.download-link');
 
-		if (isTextFile(contentType)) {
+		if (window.FileManager.toolbox.isEditable(contentType)) {
 			FileManager.File.edit(el);
 		} else {
 			FileManager.File.notTextFile(el);
 		}
 
-		FileManager.OpenButton.show();
+		//FileManager.OpenButton.show();
 
-		if (isExecutable(contentType)) {
-			FileManager.ExecuteButton.show();
+		if (window.FileManager.toolbox.isExecutable(contentType)) {
+			//FileManager.ExecuteButton.show();
 		}
 
 		downloadLink.setAttribute('href', href);
 		downloadLink.download = filename;
 		//document.querySelector('.download-link').setAttribute('download', filename);
-
 		callback();
-
-		function isExecutable(contentType) {
-			return contentType === 'application/json' || contentType === 'application/x-tar' || contentType === 'application/gtar';
-		}
-
-		function isTextFile(contentType) {
-
-			if (!contentType) {
-				return false;
-			}
-
-			contentType = contentType.split(';')[0];
-
-			return (contentType == 'application/javascript'
-				|| contentType == 'application/xml'
-				|| contentType == 'application/x-httpd-php'
-				|| contentType == 'application/json'
-				|| contentType == 'application/php'
-				|| contentType == 'application/x-php'
-				|| contentType.indexOf('text') == 0);
-		}
 	}
 
 	function fileNotExist() {
@@ -833,11 +811,6 @@ FileManager.CurrentPath = function () {
 	return FileManager.Path(location.hash.substr(1));
 };
 
-
-window.addEventListener('hashchange', function () {
-	window.FileManager.files.addFileListContent();
-});
-
 document.addEventListener('click', function (e) {
 	var el;
 
@@ -879,30 +852,10 @@ document.addEventListener('click', function (e) {
 
 document.addEventListener('keyup', function (e) {
 
-	if (e.target.classList.contains('metadata-key') || e.target.classList.contains('metadata-value')) {
-		FileManager.Metadata.keyup(e.target);
-	}
-
 	if (FileManager.ENABLE_SHARED_CONTAINERS) {
 		if (e.target.classList.contains('read-rights-input') || e.target.classList.contains('write-rights-input')) {
 			FileManager.Rights.keyup();
 		}
-	}
-});
-
-document.addEventListener('change', function (e) {
-	if (e.target.parentNode.classList.contains('upload-files')) {
-		FileManager.UploadFiles.change(e.target.files);
-		return;
-	}
-
-	if (e.target.parentNode.classList.contains('upload-as')) {
-		FileManager.UploadAs.change(e.target.files);
-		return;
-	}
-
-	if (e.target.parentNode.classList.contains('upload-execute')) {
-		FileManager.UploadAndExecute.change(e.target.files[0]);
 	}
 });
 
@@ -911,7 +864,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		if (!location.hash) {
 			location.hash = Auth.getAccount() + "/";
 		} else {
-			window.FileManager.files.addFileListContent();
+			window.FileManager.files.refreshItemList();
 		}
 
 		document.body.dispatchEvent(authInit);
@@ -1011,7 +964,7 @@ FileManager.AddShared.click = function () {
 		account: account,
 		container: container,
 		added: function () {
-			window.FileManager.files.addFileListContent();
+			window.FileManager.files.refreshItemList();
 			FileManager.AddShared.clear();
 		},
 		notAuthorized: function () {

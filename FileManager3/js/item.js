@@ -42,7 +42,7 @@
 		args = {
 			path: newName,
 			copyFrom: sourcePath,
-			copied: window.FileManager.files.addFileListContent,
+			copied: window.FileManager.files.refreshItemList,
 			error: ajaxError
 		};
 		/*TODO: correct condition
@@ -66,7 +66,7 @@
 				account: FileManager.Path(name).account(),
 				container: FileManager.Path(name).container(),
 				removed: function(){
-					window.FileManager.files.addFileListContent();
+					window.FileManager.files.refreshItemList();
 				},
 				error: ajaxError
 			});
@@ -76,11 +76,11 @@
 			SwiftAdvancedFunctionality.delete({
 				path: FileManager.Path(itemPath).withoutAccount(),
 				deleted: function(){
-					window.FileManager.files.addFileListContent();
+					window.FileManager.files.refreshItemList();
 				},
 				error: ajaxError,
 				notExist: function(){
-					window.FileManager.files.addFileListContent();
+					window.FileManager.files.refreshItemList();
 				}
 			});
 			return;
@@ -96,7 +96,7 @@
 			deleted: function(){
 				window.FileManager.elements.mainProgressBar.classList.add(window.FileManager.elements.hiddenClass);
 				progressObj.remove();
-				window.FileManager.files.addFileListContent();
+				window.FileManager.files.refreshItemList();
 			},
 			progress: function(totalFiles, deletedFiles){
 				totalFiles = totalFiles - 1;
@@ -165,7 +165,7 @@
 									metadata: metadataObj.getMeta(),
 									removeMetadata: metadataObj.getRemovedMeta(),
 									contentType: item.dataset.contentType,
-									updated: window.FileManager.files.addFileListContent,
+									updated: window.FileManager.files.refreshItemList,
 									path: window.FileManager.CurrentPath().withoutAccount() + previousParent.dataset.path,
 									error: ajaxError,
 									notExist: function(){
@@ -189,7 +189,7 @@
 						confirm: function(input){
 							input.value && SwiftV1.updateFileMetadata({
 								contentType: input.value,
-								updated: window.FileManager.files.addFileListContent,
+								updated: window.FileManager.files.refreshItemList,
 								path: window.FileManager.CurrentPath().withoutAccount() + previousParent.dataset.path,
 								error: ajaxError,
 								notExist: function(){

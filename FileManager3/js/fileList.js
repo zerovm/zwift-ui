@@ -187,10 +187,10 @@
 		return html;
 	}
 
-	function addFileListContent(){
+	function refreshItemList(){
 		var parentEl, newEl, oldEl, template, el, loadingEl;
 
-		function callback(){
+		function animateItemListRefreshing(){
 			oldEl.classList.add("old-scrolling-content");
 			newEl.classList.remove("new-scrolling-content");
 			window.FileManager.elements.itemsWrapperEl.scrollIntoView();
@@ -202,22 +202,15 @@
 		template = document.querySelector("#newScrollingContentTemplate").innerHTML;
 		parentEl.insertAdjacentHTML("afterbegin", template);
 		newEl = document.querySelector(".new-scrolling-content");
-		newEl.style.paddingTop = window.scrollY + "px";
 
 		el = newEl;
 		el.textContent = "Loading...";
 		if(FileManager.CurrentPath().isContainersList()){
-			FileManager.Containers.list(callback);
-
-			FileManager.ExecuteButton.hide();
-			FileManager.OpenButton.hide();
+			FileManager.Containers.list(animateItemListRefreshing);
 		}else if(FileManager.CurrentPath().isFilesList()){
-			list(callback);
-
-			FileManager.ExecuteButton.hide();
-			FileManager.OpenButton.hide();
+			list(animateItemListRefreshing);
 		}else{
-			FileManager.File.open(el, callback);
+			FileManager.File.open(el, animateItemListRefreshing);
 		}
 
 		loadingEl = document.querySelector(".scrolling-content-loading");
@@ -231,7 +224,6 @@
 			el.parentNode.removeChild(el);
 			newEl = window.FileManager.elements.itemsWrapperEl;
 			newEl.classList.add("no-transition");
-			newEl.style.paddingTop = "";
 			newEl.classList.remove("no-transition");
 			document.body.classList.remove("disabled");
 		}
@@ -250,7 +242,7 @@
 
 	document.addEventListener("transitionend", ontransition);
 	document.addEventListener("webkitTransitionEnd", ontransition);
-
+	window.addEventListener('hashchange', refreshItemList);
 	document.addEventListener("DOMContentLoaded", function(){
 		window.FileManager.elements.scrollWrapper.addEventListener('scroll', window.FileManager.toolbox.onscrollLoadMore);
 	});
@@ -263,7 +255,7 @@
 		loadMore: loadMore,
 		notExist: notExist,
 		listHTML: listHTML,
-		addFileListContent: addFileListContent,
+		refreshItemList: refreshItemList,
 		ontransition: ontransition
 	};
 })();
