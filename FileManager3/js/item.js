@@ -435,10 +435,14 @@
 						dialogForm.hide();
 					},
 					hashchangeHandler: function(){
-						if(window.FileManager.CurrentPath().isContainersList()){
+						var currentPath = window.FileManager.CurrentPath();
+						if(currentPath.isContainersList()){
 							dialogForm.el.classList.add("disabled");
 						}else{
 							dialogForm.el.classList.remove("disabled");
+						}
+						if(currentPath.isFile()){
+							dialogForm.hide();
 						}
 					},
 					inputValue: previousParent.dataset.path
