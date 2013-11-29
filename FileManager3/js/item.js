@@ -239,6 +239,7 @@
 				metaValueClassName = "meta-value-input",
 				errorInputClassName = "error-input",
 				inputWrapperClassName = "input-wrapper",
+				metadataRemoveClassName = "metadata-remove",
 				disabledAttribute = "disabled",
 				firstLetterRegex = /./,
 				originMetadata,
@@ -268,6 +269,7 @@
 				metadataWrapper.appendChild(inputWrapper);
 
 				button = document.createElement("button");
+				button.className = metadataRemoveClassName;
 				button.tabIndex = -1;
 				button.type = "button";
 				metadataWrapper.appendChild(button);
