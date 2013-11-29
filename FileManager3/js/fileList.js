@@ -187,6 +187,58 @@
 		return html;
 	}
 
+	function handleFileClick(el, callback){
+		var args;
+
+		function fileExist(metadata, contentType, contentLength, lastModified){
+			var Current = FileManager.CurrentPath(),
+				href = Auth.getStorageUrl() + Current.get(),
+				filename = Current.name(),
+				downloadLink = document.querySelector('.download-link');
+			switch(window.FileManager.item.itemCommandName.pop()){
+				case "open":
+					window.FileManager.item.open();
+					break;
+				case "execute":
+					window.FileManager.item.execute();
+					break;
+				default :
+					downloadLink.setAttribute('href', href);
+					downloadLink.download = filename;
+					if(window.FileManager.toolbox.isEditable(contentType)){
+						FileManager.File.edit(el);
+					}else{
+						FileManager.File.notTextFile(el);
+					}
+					//document.querySelector('.download-link').setAttribute('download', filename);
+			}
+			callback();
+		}
+
+		function fileNotExist(){
+			window.FileManager.elements.upButton.removeAttribute('disabled');
+			el.textContent = "File not found.";
+			callback();
+		}
+
+		function ajaxError(status, statusText){
+			window.FileManager.elements.upButton.removeAttribute('disabled');
+			el.textContent = 'Error: ' + status + ' ' + statusText;
+			callback();
+		}
+
+		args = {
+			path: FileManager.CurrentPath().withoutAccount(),
+			success: fileExist,
+			notExist: fileNotExist,
+			error: ajaxError
+		};
+		if(FileManager.ENABLE_SHARED_CONTAINERS){
+			args.account = FileManager.CurrentPath().account();
+		}
+		SwiftV1.checkFileExist(args);
+	}
+
 	function refreshItemList(){
 		var parentEl, newEl, oldEl, template, el, loadingEl;
 
@@ -210,7 +262,7 @@
 		}else if(FileManager.CurrentPath().isFilesList()){
 			list(animateItemListRefreshing);
 		}else{
-			FileManager.File.open(el, animateItemListRefreshing);
+			handleFileClick(el, animateItemListRefreshing);
 		}
 
 		loadingEl = document.querySelector(".scrolling-content-loading");

@@ -334,58 +334,6 @@ FileManager.File = {};
 
 FileManager.File.contentType = '';
 
-FileManager.File.open = function (el, callback) {
-
-	function fileExist(metadata, contentType, contentLength, lastModified) {
-		var Current = FileManager.CurrentPath(),
-			href = Auth.getStorageUrl() + Current.get(),
-			filename = Current.name(),
-			downloadLink = document.querySelector('.download-link');
-
-		if (window.FileManager.toolbox.isEditable(contentType)) {
-			FileManager.File.edit(el);
-		} else {
-			FileManager.File.notTextFile(el);
-		}
-
-		//FileManager.OpenButton.show();
-
-		if (window.FileManager.toolbox.isExecutable(contentType)) {
-			//FileManager.ExecuteButton.show();
-		}
-
-		downloadLink.setAttribute('href', href);
-		downloadLink.download = filename;
-		//document.querySelector('.download-link').setAttribute('download', filename);
-		callback();
-	}
-
-	function fileNotExist() {
-		window.FileManager.elements.upButton.removeAttribute('disabled');
-		el.textContent = "File not found.";
-		callback();
-	}
-
-	function ajaxError(status, statusText) {
-		window.FileManager.elements.upButton.removeAttribute('disabled');
-		el.textContent = 'Error: ' + status + ' ' + statusText;
-		callback();
-	}
-
-	var args = {
-		path: FileManager.CurrentPath().withoutAccount(),
-		success: fileExist,
-		notExist: fileNotExist,
-		error: ajaxError
-	};
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		args.account = FileManager.CurrentPath().account();
-	}
-
-	SwiftV1.checkFileExist(args);
-};
-
 FileManager.File.getFileXhr = null;
 
 FileManager.File.edit = function (el) {
@@ -688,9 +636,9 @@ document.addEventListener('click', function (e) {
 			FileManager.ExecuteButton.click();
 		}
 	}else if (el = FileManager.toolbox.getParentByClassName(e.target,'three-dot')) {
-		FileManager.Item.toggleMenu(el);
+		FileManager.item.toggleMenu(el);
 	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'item')) {
-		FileManager.Item.click(el);
+		FileManager.item.click(el);
 	} else if (FileManager.toolbox.getParentByClassName(e.target,'load-more-button')) {
 		FileManager.LoadMoreButton.click();
 	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'add-shared-button')) {
@@ -711,7 +659,7 @@ document.addEventListener('click', function (e) {
 			FileManager.Rights.discardChanges();
 		}
 	}
-}, true);
+});
 
 document.addEventListener('keyup', function (e) {
 
@@ -897,7 +845,7 @@ FileManager.Rights.keyup = function () {
 
 FileManager.Rights.save = function () {
 	SharedContainersOnSwift.updateRights({
-		containerName: FileManager.Path(FileManager.Item.selectedPath).container(),
+		containerName: FileManager.Path(FileManager.item.selectedPath).container(),
 		readRights: document.querySelector('.read-rights-input').value,
 		writeRights: document.querySelector('.write-rights-input').value,
 		updated: function () {

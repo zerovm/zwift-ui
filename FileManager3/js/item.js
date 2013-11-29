@@ -6,6 +6,7 @@
 		appearClass = "appear-submenu",
 		submenu = new Submenu(),
 		loadingHtml,
+		itemCommandName,
 		progressElWrapper;
 
 	function onItemClick(itemEl){
@@ -15,8 +16,20 @@
 		}
 		selectedPath = FileManager.CurrentPath().add(name);
 		FileManager.Loading.hide();
-		FileManager.Item.showLoading(itemEl);
+		FileManager.item.showLoading(itemEl);
 		location.hash = selectedPath;
+	}
+
+	function ItemCommandName(){
+		var command;
+		this.set = function(n){
+			command = n;
+		};
+		this.pop = function(){
+			var result = command;
+			command = null;
+			return result;
+		};
 	}
 
 	function ajaxError(status, statusText){
@@ -133,92 +146,19 @@
 		previousParent = parent;
 	}
 
+	function open(){
+	}
+
+	function execute(){
+	}
+
 	function Submenu(){
 		var button, wrapper, path,
 			buttonsClass = "submenu-items",
 			actionPrefix = "on",
 			metadataObj,
 			oncopy,
-			handlers = {
-				share: function(e){
-
-				},
-				onopen: function(e){
-				},
-				ondownload: function(e){
-					var clickEvent = document.createEvent("MouseEvent"),
-						a = document.createElement("a");
-					clickEvent.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-					a.href = window.FileManager.elements.originalPath + FileManager.CurrentPath().get() + previousParent.dataset.path;
-					a.download = previousParent.dataset.path;
-					a.dispatchEvent(clickEvent);
-				},
-				oncopy: function(){
-					oncopy();
-				},
-				onmetadata: function(e){
-					var item = previousParent;
-					metadataObj.showMetaData(item.dataset.path, item.dataset.type, function(callback){
-						window.FileManager.dialogForm.show({
-							confirm: function(){
-								SwiftV1.updateFileMetadata({
-									metadata: metadataObj.getMeta(),
-									removeMetadata: metadataObj.getRemovedMeta(),
-									contentType: item.dataset.contentType,
-									updated: window.FileManager.files.refreshItemList,
-									path: window.FileManager.CurrentPath().withoutAccount() + previousParent.dataset.path,
-									error: ajaxError,
-									notExist: function(){
-										window.FileManager.errorMsgHandler.show({
-											header: "File not exist"
-										});
-									}});
-								window.FileManager.dialogForm.hide();
-							},
-							dialogContent: metadataObj.el,
-							onshow: callback,
-							customizationClass: "metadata",
-							type: "dialog"
-						});
-					});
-				},
-				ontype: function(e){
-					window.FileManager.dialogForm.show({
-						type: "input",
-						placeholder: "New file name",
-						confirm: function(input){
-							input.value && SwiftV1.updateFileMetadata({
-								contentType: input.value,
-								updated: window.FileManager.files.refreshItemList,
-								path: window.FileManager.CurrentPath().withoutAccount() + previousParent.dataset.path,
-								error: ajaxError,
-								notExist: function(){
-									window.FileManager.errorMsgHandler.show({
-										header: "File not exist"
-									});
-								}
-							});
-							window.FileManager.dialogForm.hide();
-						},
-						inputValue: previousParent.dataset.contentType
-					});
-				},
-				ondelete: function(e){
-					window.FileManager.dialogForm.show({
-						confirm: function(){
-							deleteItem(previousParent);
-							window.FileManager.dialogForm.hide();
-						},
-						dialogContent: createDeleteDialog(),
-						type: "dialog"
-					});
-				},
-				onexecute: function(e){
-				},
-				onedit: function(e){
-					onItemClick(previousParent);
-				}
-			};
+			handlers;
 
 		function createDeleteDialog(){
 			var textEl = document.createElement("span"),
@@ -450,6 +390,88 @@
 			};
 			oncopy();
 		};
+		handlers = {
+			share: function(e){
+
+			},
+			onopen: function(){
+				itemCommandName.set("open");
+				onItemClick(previousParent);
+			},
+			ondownload: function(e){
+				var clickEvent = document.createEvent("MouseEvent"),
+					a = document.createElement("a");
+				clickEvent.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+				a.href = window.FileManager.elements.originalPath + FileManager.CurrentPath().get() + previousParent.dataset.path;
+				a.download = previousParent.dataset.path;
+				a.dispatchEvent(clickEvent);
+			},
+			oncopy: oncopy,
+			onmetadata: function(e){
+				var item = previousParent;
+				metadataObj.showMetaData(item.dataset.path, item.dataset.type, function(callback){
+					window.FileManager.dialogForm.show({
+						confirm: function(){
+							SwiftV1.updateFileMetadata({
+								metadata: metadataObj.getMeta(),
+								removeMetadata: metadataObj.getRemovedMeta(),
+								contentType: item.dataset.contentType,
+								updated: window.FileManager.files.refreshItemList,
+								path: window.FileManager.CurrentPath().withoutAccount() + previousParent.dataset.path,
+								error: ajaxError,
+								notExist: function(){
+									window.FileManager.errorMsgHandler.show({
+										header: "File not exist"
+									});
+								}});
+							window.FileManager.dialogForm.hide();
+						},
+						dialogContent: metadataObj.el,
+						onshow: callback,
+						customizationClass: "metadata",
+						type: "dialog"
+					});
+				});
+			},
+			ontype: function(e){
+				window.FileManager.dialogForm.show({
+					type: "input",
+					placeholder: "New file name",
+					confirm: function(input){
+						input.value && SwiftV1.updateFileMetadata({
+							contentType: input.value,
+							updated: window.FileManager.files.refreshItemList,
+							path: window.FileManager.CurrentPath().withoutAccount() + previousParent.dataset.path,
+							error: ajaxError,
+							notExist: function(){
+								window.FileManager.errorMsgHandler.show({
+									header: "File not exist"
+								});
+							}
+						});
+						window.FileManager.dialogForm.hide();
+					},
+					inputValue: previousParent.dataset.contentType
+				});
+			},
+			ondelete: function(e){
+				window.FileManager.dialogForm.show({
+					confirm: function(){
+						deleteItem(previousParent);
+						window.FileManager.dialogForm.hide();
+					},
+					dialogContent: createDeleteDialog(),
+					type: "dialog"
+				});
+			},
+			onexecute: function(){
+				itemCommandName.set("execute");
+				onItemClick(previousParent);
+			},
+			onedit: function(e){
+				onItemClick(previousParent);
+			}
+		};
 		Object.keys(handlers).forEach(function(className){
 			className = className.replace(actionPrefix, "");
 			button = document.createElement("button");
@@ -471,6 +493,7 @@
 		metadataObj = new MetadataObj;
 	}
 
+	itemCommandName = new ItemCommandName();
 	document.addEventListener("DOMContentLoaded", function(){
 		loadingHtml = document.querySelector('#itemLoadingTemplate').innerHTML;//TODO: replace this s...
 		progressElWrapper = document.getElementById("progressDialog");
@@ -479,10 +502,13 @@
 	if(!window.FileManager){
 		window.FileManager = {};
 	}
-	window.FileManager.Item = {
+	window.FileManager.item = {
 		selectedPath: selectedPath,
 		click: onItemClick,
 		showLoading: showLoading,
-		toggleMenu: toggleMenu
+		toggleMenu: toggleMenu,
+		itemCommandName: itemCommandName,
+		open: open,
+		execute: execute
 	};
 })();
