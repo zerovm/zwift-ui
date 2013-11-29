@@ -215,7 +215,6 @@
 
 		loadingEl = document.querySelector(".scrolling-content-loading");
 		loadingEl && loadingEl.parentNode.removeChild(loadingEl);
-
 	}
 
 	function ontransition(e){
