@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		}
 	}
 
-	setRootClass();
+	document.body.addEventListener("authInit", setRootClass);
 	window.addEventListener("hashchange", setRootClass);
 	window.addEventListener("hashchange", cancel);
 	buttons.forEach(function(el){

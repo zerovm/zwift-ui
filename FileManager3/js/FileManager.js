@@ -2,7 +2,8 @@
 
 Auth.useZLitestackDotCom();
 
-var FileManager;
+var FileManager,
+	authInit = new CustomEvent("authInit");
 if(!window.FileManager){
 	FileManager = window.FileManager = {};
 }else{
@@ -913,6 +914,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			window.FileManager.files.addFileListContent();
 		}
 
+		document.body.dispatchEvent(authInit);
 		FileManager.AccountLabel.init();
 		FileManager.reAuth();
 
