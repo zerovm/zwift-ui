@@ -236,6 +236,7 @@
 				containerType = "container",
 				rowClassName = "meta-data-row",
 				metaKeyClassName = "meta-key-input",
+				metaValueClassName = "meta-value-input",
 				errorInputClassName = "error-input",
 				inputWrapperClassName = "input-wrapper",
 				disabledAttribute = "disabled",
@@ -259,6 +260,7 @@
 				inputWrapper.appendChild(input);
 
 				input = document.createElement("input");
+				input.className = metaValueClassName;
 				value && (input.value = decodeURIComponent(value));
 				input.placeholder = "[Meta value]";
 				inputWrapper.appendChild(input);
