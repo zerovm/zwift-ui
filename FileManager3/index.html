@@ -1,55 +1,60 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
-	<head>
-		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-		<title>File Manager</title>
-		<meta name="description" content="">
-		<meta name="viewport" content="width=device-width">
+<!--[if lt IE 7]>
+<html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>
+<html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>
+<html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<title>File Manager</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width">
 
-		<link rel="stylesheet" href="https://eafdbc63c97ce6bec9ef-b0a668e5876bef6fe25684caf71db405.ssl.cf1.rackcdn.com/v1-latest/canon.min.css">
+	<link rel="stylesheet" href="https://eafdbc63c97ce6bec9ef-b0a668e5876bef6fe25684caf71db405.ssl.cf1.rackcdn.com/v1-latest/canon.min.css">
 
-		<link rel="stylesheet" href="css/main.css">
+	<link rel="stylesheet" href="css/main.css">
 
-		<script src="https://eafdbc63c97ce6bec9ef-b0a668e5876bef6fe25684caf71db405.ssl.cf1.rackcdn.com/v1-latest/canon.min.js"></script>
+	<script src="https://eafdbc63c97ce6bec9ef-b0a668e5876bef6fe25684caf71db405.ssl.cf1.rackcdn.com/v1-latest/canon.min.js"></script>
 
-		<script src="js/vendor/require.js"></script>
+	<script src="js/vendor/require.js"></script>
 
-		<script src="js/extendNative.js"></script>
-		<script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+	<script src="js/extendNative.js"></script>
+	<script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
 
-		<script src="js/vendor/ace/ace.js"></script>
+	<script src="js/vendor/ace/ace.js"></script>
 
-		<script src="../Swift.js"></script>
-		<script src="js/toolbox.js"></script>
-		<script src="js/elements.js"></script>
+	<script src="../Swift.js"></script>
+	<script src="js/toolbox.js"></script>
+	<script src="js/elements.js"></script>
 
-		<script src="js/dialogForm.js"></script>
+	<script src="js/dialogForm.js"></script>
 
-		<script src="js/fileList.js"></script>
-		<script src="js/item.js"></script>
-		<script src="js/dialogButtons.js"></script>
-		<script src="js/uploadButtons.js"></script>
-		<script src="js/fileEditor.js"></script>
-		<script src="js/errorMsg.js"></script>
+	<script src="js/fileList.js"></script>
+	<script src="js/item.js"></script>
+	<script src="js/dialogButtons.js"></script>
+	<script src="js/uploadButtons.js"></script>
+	<script src="js/fileEditor.js"></script>
+	<script src="js/errorMsg.js"></script>
 
-		<script src="js/FileManager.js"></script>
+	<script src="js/FileManager.js"></script>
 
-		<link rel="shortcut icon" type="image/x-icon" href="favicon.ico" />
-		<link rel="apple-touch-icon" sizes="57x57" href="apple-touch-icon-57x57-fm.png">
-		<link rel="apple-touch-icon" sizes="76x76" href="apple-touch-icon-72x72-fm.png">
-		<link rel="apple-touch-icon" sizes="114x114" href="apple-touch-icon-114x114-fm.png">
-		<link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon-144x144-fm.png">
-	</head>
-	<body><div class="center main-content-wrapper">
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico"/>
+	<link rel="apple-touch-icon" sizes="57x57" href="apple-touch-icon-57x57-fm.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="apple-touch-icon-72x72-fm.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="apple-touch-icon-114x114-fm.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon-144x144-fm.png">
+</head>
+<body>
+<div class="center main-content-wrapper">
 
-		<!-- header -->
-		<div class="fixed-top">
-			<div id="header">
-				<a>File Manager</a>
+	<!-- header -->
+	<div class="fixed-top">
+		<div id="header">
+			<a>File Manager</a>
 				<span id="OpenAccountWindow" style="float: right;">
 					<img src="img/log-in.png" style="vertical-align: middle;"><span id="AccountLabel"></span>
 					<img src="img/go-down.png">
@@ -57,15 +62,14 @@
 						<button id="SignOutButton">Sign Out</button>
 					</span>
 				</span>
-			</div>
-			<div class="toolbar center no-select">
+		</div>
+		<div class="toolbar center no-select">
 			<span class="left">
 				<button id="UpButton" class="toolbar-button" title="Up" disabled></button>
 				<label class="current-dir-label"></label>
 			</span>
 			<span class="right">
 				<button class="open-button icon-button" title="Open" hidden></button>
-				<label class="execute-label" hidden></label>
 				<button class="execute-button icon-button" title="Execute" hidden></button>
 				<button id="CreateContainerButton" class="toolbar-button dialog-button" title="Create Container" data-action="container" data-placeholder="Create Container"></button>
 				<button id="CreateDirectoryButton" class="toolbar-button dialog-button" title="Create Directory" data-action="directory" data-placeholder="Create Directory"></button>
@@ -75,58 +79,179 @@
 				<span id="UploadAndExecuteButton" class="toolbar-button input-wrapper" title="Upload & Execute"><input class="upload-input" type="file" data-action="exec"/></span>
 				<button id="WideButton" class="toolbar-button" title="Wide"></button>
 			</span>
-			</div>
+		</div>
 
-			<div id="CreateDialog" class="hidden">
-				<form class="input-group">
-					<input id="input_CreateContainerDialog" type="text" class="form-control" >
-					<div class="dialog-wrapper"></div>
+		<div id="CreateDialog" class="hidden">
+			<form class="input-group">
+				<input id="input_CreateContainerDialog" type="text" class="form-control">
+				<div class="dialog-wrapper"></div>
 					<span class="input-group-btn">
 						<button id="OKDialog" class="btn btn-primary" type="submit">OK</button>
 						<button id="CancelDialog" class="btn btn-default" type="button">Cancel</button>
 					</span>
-				</form>
-			</div>
+			</form>
+		</div>
 
-			<div id="CopyDialog" class="hidden">
-				<form class="input-group">
-					<input type="text" class="form-control" >
-					<div class="dialog-wrapper"></div>
+		<div id="CopyDialog" class="hidden">
+			<form class="input-group">
+				<input type="text" class="form-control">
+				<div class="dialog-wrapper"></div>
 					<span class="input-group-btn">
 						<button class="btn btn-primary" type="submit">Copy to current folder</button>
 						<button class="btn btn-default" type="button">Cancel</button>
 					</span>
-				</form>
-			</div>
-			<div id="progressDialog">
-			</div>
+			</form>
+		</div>
+		<div id="progressDialog">
+		</div>
 
-			<div id="mainProgressBar" class="hidden"></div>
+		<div id="mainProgressBar" class="hidden"></div>
 
-			<div class="hidden"><label class="err-msg"></label></div>
-			<div class="menu-file dialog no-select">
-				<button class="undo txt-btn" title="Undo"></button>
-				<button class="redo txt-btn" title="Redo"></button>
-				<button class="save txt-btn" title="Save"></button>
-				<button class="save-as txt-btn" data-action="saveas" title="Save As..."></button>
-				<a href="#" class="download-link" target="_blank">Download</a>
-				<div class="editor-toolbar-error" hidden>Error: <span class="status"></span> <span class="status-text"></span>.</div>
+		<div class="hidden"><label class="err-msg"></label></div>
+		<div class="menu-file dialog no-select">
+			<button class="undo txt-btn" title="Undo"></button>
+			<button class="redo txt-btn" title="Redo"></button>
+			<button class="save txt-btn" title="Save"></button>
+			<button class="save-as txt-btn" data-action="saveas" title="Save As..."></button>
+			<a href="#" class="download-link" target="_blank">Download</a>
+			<div class="editor-toolbar-error" hidden>Error: <span class="status"></span>
+				<span class="status-text"></span>.
 			</div>
 		</div>
-		<!-- content -->
-		<div class="content-wrapper">
-			<div id="content">
-				<div class="scrolling-content"></div>
-			</div>
+	</div>
+	<!-- content -->
+	<div class="content-wrapper">
+		<div id="content">
+			<div class="scrolling-content"></div>
 		</div>
+		<div style="display: none;" id="report">
+			<table>
+				<tr>
+					<td>
+						<table>
+							<thead>
+							<tr>
+								<th colspan="2">Execution Report</th>
+							</tr>
+							</thead>
+							<tbody id="execute-tbody">
+							<tr id="execute-status-tr" hidden>
+								<td class="execute-report-part-name">
+									Status
+								</td>
+							</tr>
+							<tr>
+								<td id="execute-status-val"></td>
+							</tr>
+							<tr id="execute-error-tr" hidden>
+								<td class="execute-report-part-name">
+									Error
+								</td>
+							</tr>
+							<tr>
+								<td id="execute-error-val"></td>
+							</tr>
+							</tbody>
+						</table>
+					</td></tr>
+
+				<tr>
+					<td>
+						<button class="execute-full-button">Show full report</button>
+					</td>
+				</tr>
+				<tr><td>
+					<table class="billing-report-table">
+						<thead>
+						<tr>
+							<th id="billing-report-title">Billing Report</th>
+						</tr>
+						</thead>
+						<tbody id="billing-tbody">
+						<tr id="total-time-tr">
+							<td class="billing-report-part-name">
+								Total time
+							</td>
+						</tr>
+						<tr id="node-number-tr">
+							<td class="billing-report-part-name" style="width: 120px;">
+								Node #
+							</td>
+						</tr>
+						<tr id="node-server-time-tr">
+							<td class="billing-report-part-name">
+								Node server time
+							</td>
+						</tr>
+						<tr id="system-time-tr">
+							<td class="billing-report-part-name">
+								System time
+							</td>
+						</tr>
+						<tr id="user-time-tr">
+							<td class="billing-report-part-name">
+								User time
+							</td>
+						</tr>
+						<tr id="reads-from-disk-tr">
+							<td class="billing-report-part-name">
+								Number of reads from disk
+							</td>
+						</tr>
+						<tr id="bytes-read-from-disk-tr">
+							<td class="billing-report-part-name">
+								Number of bytes read from disk
+							</td>
+						</tr>
+						<tr id="writes-to-disk-tr">
+							<td class="billing-report-part-name">
+								Number of writes to disk
+							</td>
+						</tr>
+						<tr id="bytes-written-to-disk-tr">
+							<td class="billing-report-part-name">
+								Number of bytes written to disk
+							</td>
+						</tr>
+						<tr id="reads-from-network-tr">
+							<td class="billing-report-part-name">
+								Number of reads from network
+							</td>
+						</tr>
+						<tr id="bytes-read-from-network-tr">
+							<td class="billing-report-part-name">
+								Number of bytes read from network
+							</td>
+						</tr>
+						<tr id="writes-to-network-tr">
+							<td class="billing-report-part-name">
+								Number of writes to network
+							</td>
+						</tr>
+						<tr id="bytes-written-to-network-tr">
+							<td class="billing-report-part-name">
+								Number of bytes written to network
+							</td>
+						</tr>
+						</tbody>
+					</table>
+				</td>
+				</tr>
+				<tr>
+					<td>
+						<button class="execute-close-button" style="height: 40px;">Close</button>
+					</td>
+				</tr>
+			</table>
 		</div>
+	</div>
 	<div class="code-editor-wrapper">
 		<div id="codeEditor"></div>
 	</div>
 
-		<!-- templates -->
-		<template id="containerTemplate">
-			<div class="item" title="{{title}}"  data-path="{{path}}" data-type="container">
+	<!-- templates -->
+	<template id="containerTemplate">
+		<div class="item" title="{{title}}" data-path="{{path}}" data-type="container">
 			<span class="left">
 				<span style="background:url('img/container.png');width: 42px;height: 42px;"></span>
 				<label class="name">{{name}}</label>
@@ -136,11 +261,11 @@
 				<label class="files">{{files}}</label>
 			</span>
 			<button class="three-dot btn"></button>
-			</div>
-		</template>
+		</div>
+	</template>
 
-		<template id="sharedContainerTemplate">
-			<div class="item" title="{{title}}" data-path="{{path}}" data-type="shared">
+	<template id="sharedContainerTemplate">
+		<div class="item" title="{{title}}" data-path="{{path}}" data-type="shared">
 			<span class="left">
 				<span style="background:url('img/shared-container.png');width: 42px;height: 42px;"></span>
 				<label class="name">{{name}}</label>
@@ -150,11 +275,11 @@
 				<label class="files">...</label>
 			</span>
 			<button class="three-dot btn"></button>
-			</div>
-		</template>
+		</div>
+	</template>
 
-		<template id="fileTemplate">
-			<div class="item" title="{{title}}" data-path="{{path}}" data-type="file" data-content-type="{{file-type}}">
+	<template id="fileTemplate">
+		<div class="item" title="{{title}}" data-path="{{path}}" data-type="file" data-content-type="{{file-type}}">
 			<span class="left">
 				<span class="file-type"></span>
 				<label class="name">{{name}}</label>
@@ -164,11 +289,11 @@
 				<label class="modified">{{modified}}</label>
 			</span>
 			<button class="three-dot btn"></button>
-			</div>
-		</template>
+		</div>
+	</template>
 
-		<template id="directoryTemplate">
-			<div class="item" title="{{title}}" data-path="{{path}}" data-type="directory">
+	<template id="directoryTemplate">
+		<div class="item" title="{{title}}" data-path="{{path}}" data-type="directory">
 			<span class="left">
 				<img src="img/folder.png">
 				<label class="name">{{name}}</label>
@@ -176,178 +301,235 @@
 			<span class="right">
 			</span>
 			<button class="three-dot btn"></button>
-			</div>
-		</template>
+		</div>
+	</template>
 
-		<template id="newScrollingContentTemplate">
-			<div class="new-scrolling-content scrolling-content"></div>
-		</template>
+	<template id="newScrollingContentTemplate">
+		<div class="new-scrolling-content scrolling-content"></div>
+	</template>
 
-		<template id="itemLoadingTemplate">
-			<span class="item-loading">Loading...</span>
-		</template>
+	<template id="itemLoadingTemplate">
+		<span class="item-loading">Loading...</span>
+	</template>
 
-		<template id="noContainersTemplate">
-			<label class="empty-list">There are no containers.</label>
-		</template>
+	<template id="noContainersTemplate">
+		<label class="empty-list">There are no containers.</label>
+	</template>
 
-		<template id="noFilesTemplate">
-			<label class="empty-list">There are no files.</label>
-		</template>
+	<template id="noFilesTemplate">
+		<label class="empty-list">There are no files.</label>
+	</template>
 
-		<template id="notTextFileTemplate">
-			<label class="empty-list">Not text file.</label>
-		</template>
+	<template id="notTextFileTemplate">
+		<label class="empty-list">Not text file.</label>
+	</template>
 
-		<template id="largeFileTemplate">
-			<label class="empty-list">File is too large.</label>
-		</template>
+	<template id="largeFileTemplate">
+		<label class="empty-list">File is too large.</label>
+	</template>
 
-		<template id="scrollingContentLoadingTemplate">
-			<label class="scrolling-content-loading">Loading...</label>
-		</template>
+	<template id="scrollingContentLoadingTemplate">
+		<label class="scrolling-content-loading">Loading...</label>
+	</template>
+</div>
+</div>
+<!-- templates -->
+<template id="containerTemplate">
+	<div class="item" title="{{title}}" data-path="{{path}}" data-type="container">
+			<span class="left">
+				<span style="background:url('img/container.png');width: 42px;height: 42px;"></span>
+				<label class="name">{{name}}</label>
+			</span>
+			<span class="right">
+				<label class="size">{{size}}</label>
+				<label class="files">{{files}}</label>
+			</span>
+		<button class="three-dot btn"></button>
+	</div>
+</template>
 
-		<template id="errorTemplate">
-			<span class="error">Error occurred. <span class="error-reason">reason</span> <span class="error-status"></span>.</span>
-		</template>
+<template id="sharedContainerTemplate">
+	<div class="item" title="{{title}}" data-path="{{path}}" data-type="shared">
+			<span class="left">
+				<span style="background:url('img/shared-container.png');width: 42px;height: 42px;"></span>
+				<label class="name">{{name}}</label>
+			</span>
+			<span class="right">
+				<label class="size">...</label>
+				<label class="files">...</label>
+			</span>
+		<button class="three-dot btn"></button>
+	</div>
+</template>
 
-		<template id="metadataRowTemplate">
+<template id="fileTemplate">
+	<div class="item" title="{{title}}" data-path="{{path}}" data-type="file" data-content-type="{{file-type}}">
+			<span class="left">
+				<span class="file-type"></span>
+				<label class="name">{{name}}</label>
+			</span>
+			<span class="right">
+				<label class="size">{{size}}</label>
+				<label class="modified">{{modified}}</label>
+			</span>
+		<button class="three-dot btn"></button>
+	</div>
+</template>
+
+<template id="directoryTemplate">
+	<div class="item" title="{{title}}" data-path="{{path}}" data-type="directory">
+			<span class="left">
+				<img src="img/folder.png">
+				<label class="name">{{name}}</label>
+			</span>
+			<span class="right">
+			</span>
+		<button class="three-dot btn"></button>
+	</div>
+</template>
+
+<template id="newScrollingContentTemplate">
+	<div class="new-scrolling-content scrolling-content"></div>
+</template>
+
+<template id="itemLoadingTemplate">
+	<span class="item-loading">Loading...</span>
+</template>
+
+<template id="noContainersTemplate">
+	<label class="empty-list">There are no containers.</label>
+</template>
+
+<template id="noFilesTemplate">
+	<label class="empty-list">There are no files.</label>
+</template>
+
+<template id="notTextFileTemplate">
+	<label class="empty-list">Not text file.</label>
+</template>
+
+<template id="largeFileTemplate">
+	<label class="empty-list">File is too large.</label>
+</template>
+
+<template id="scrollingContentLoadingTemplate">
+	<label class="scrolling-content-loading">Loading...</label>
+</template>
+
+<template id="errorTemplate">
+	<span class="error">Error occurred. <span class="error-reason">reason</span> <span class="error-status"></span>.</span>
+</template>
+
+<template id="itemMenuTemplate">
+	<div class="item-menu">
+		<table class="rights-table" hidden>
+			<thead>
 			<tr>
-				<td><input class="metadata-key" placeholder="Key" value="{{key}}"></td>
-				<td><input class="metadata-value" placeholder="Value" value="{{value}}"></td>
-				<td class="remove-metadata">X</td>
+				<th colspan="3">Rights</th>
 			</tr>
-		</template>
+			<tr class="loading">
+				<td colspan="3">Loading...</td>
+			</tr>
+			<tr class="rights-error-ajax" hidden>
+				<td colspan="3">Error: <span class="status"></span> <span class="status-text"></span>.</td>
+			</tr>
+			</thead>
+			<tbody hidden>
+			<tr>
+				<td style="width: 1px;">Read</td>
+				<td><input class="read-rights-input" placeholder="Read Rights"></td>
+			</tr>
+			<tr style="width: 1px;">
+				<td>Write</td>
+				<td><input class="write-rights-input" placeholder="Write Rights"></td>
+			</tr>
+			</tbody>
+			<tfoot hidden>
+			<tr>
+				<td colspan="2">
+					<button class="rights-save">Save</button>
+					<button class="rights-discard-changes">Discard Changes</button>
+				</td>
+			</tr>
+			</tfoot>
+		</table>
 
-		<template id="reportTemplate">
-			<div id="report">
-				<table>
-					<tr>
-						<td>
-							<table>
-								<thead>
-								<tr>
-									<th colspan="2">Execution Report</th>
-								</tr>
-								</thead>
-								<tbody id="execute-tbody">
-								<tr id="execute-status-tr" hidden>
-									<td class="execute-report-part-name">
-										Status
-									</td>
-								</tr>
-								<tr>
-									<td id="execute-status-val"></td>
-								</tr>
-								<tr id="execute-error-tr" hidden>
-									<td class="execute-report-part-name">
-										Error
-									</td>
-								</tr>
-								<tr>
-									<td id="execute-error-val"></td>
-								</tr>
-								</tbody>
-							</table>
-						</td></tr>
+		<table class="content-type-table" hidden>
+			<thead>
+			<tr>
+				<th colspan="3">Content Type</th>
+			</tr>
+			<tr class="loading">
+				<td colspan="3">Loading...</td>
+			</tr>
+			<tr class="content-type-error-ajax" hidden>
+				<td colspan="3">Error: <span class="status"></span> <span class="status-text"></span>.</td>
+			</tr>
+			</thead>
+			<tbody class="input-group-table" style="background: transparent;" hidden>
+			<tr>
+				<td><img src="img/file_type.png"></td>
+				<td><input class="content-type-input" placeholder="Content Type"></td>
+				<td class="content-type-button">></td>
+			</tr>
+			</tbody>
+		</table>
 
-					<tr>
-						<td>
-							<button class="execute-full-button">Show full report</button>
-						</td>
-					</tr>
-					<tr><td>
-						<table class="billing-report-table">
-							<thead>
-							<tr>
-								<th id="billing-report-title">Billing Report</th>
-							</tr>
-							</thead>
-							<tbody id="billing-tbody">
-							<tr id="total-time-tr">
-								<td class="billing-report-part-name">
-									Total time
-								</td>
-							</tr>
-							<tr id="node-number-tr">
-								<td class="billing-report-part-name" style="width: 120px;">
-									Node #
-								</td>
-							</tr>
-							<tr id="node-server-time-tr">
-								<td class="billing-report-part-name">
-									Node server time
-								</td>
-							</tr>
-							<tr id="system-time-tr">
-								<td class="billing-report-part-name">
-									System time
-								</td>
-							</tr>
-							<tr id="user-time-tr">
-								<td class="billing-report-part-name">
-									User time
-								</td>
-							</tr>
-							<tr id="reads-from-disk-tr">
-								<td class="billing-report-part-name">
-									Number of reads from disk
-								</td>
-							</tr>
-							<tr id="bytes-read-from-disk-tr">
-								<td class="billing-report-part-name">
-									Number of bytes read from disk
-								</td>
-							</tr>
-							<tr id="writes-to-disk-tr">
-								<td class="billing-report-part-name">
-									Number of writes to disk
-								</td>
-							</tr>
-							<tr id="bytes-written-to-disk-tr">
-								<td class="billing-report-part-name">
-									Number of bytes written to disk
-								</td>
-							</tr>
-							<tr id="reads-from-network-tr">
-								<td class="billing-report-part-name">
-									Number of reads from network
-								</td>
-							</tr>
-							<tr id="bytes-read-from-network-tr">
-								<td class="billing-report-part-name">
-									Number of bytes read from network
-								</td>
-							</tr>
-							<tr id="writes-to-network-tr">
-								<td class="billing-report-part-name">
-									Number of writes to network
-								</td>
-							</tr>
-							<tr id="bytes-written-to-network-tr">
-								<td class="billing-report-part-name">
-									Number of bytes written to network
-								</td>
-							</tr>
-							</tbody>
-						</table>
-					</td>
-					</tr>
-					<tr>
-						<td>
-							<button class="execute-close-button" style="height: 40px;">Close</button>
-						</td>
-					</tr>
-				</table>
-			</div>
-		</template>
+		<table class="metadata-table">
+			<thead>
+			<tr>
+				<th colspan="2">Metadata</th>
+				<td></td>
+			</tr>
+			<tr class="metadata-loading">
+				<td colspan="3">Loading...</td>
+			</tr>
+			<tr class="metadata-error-ajax" hidden>
+				<td colspan="3">Error: <span class="status"></span> <span class="status-text"></span>.</td>
+			</tr>
+			</thead>
+			<tbody>
+			</tbody>
+			<tfoot hidden>
+			<tr>
+				<td>
+					<button class="metadata-save">Save</button>
+				</td>
+				<td>
+					<button class="metadata-discard-changes">Discard Changes</button>
+				</td>
+				<td></td>
+			</tr>
+			</tfoot>
+		</table>
 
+		<table class="copy-table" hidden>
+			<thead>
+			<tr>
+				<th colspan="3">Copy</th>
+			</tr>
+			<tr class="copy-loading" hidden="">
+				<td colspan="3">Loading...</td>
+			</tr>
+			<tr class="copy-ok" hidden>
+				<td colspan="3">File is copied successfully.</td>
+			</tr>
+			<tr class="copy-error-ajax" hidden>
+				<td colspan="3">Error: <span class="status"></span> <span class="status-text"></span>.</td>
+			</tr>
+			</thead>
+			<tbody class="input-group-table" style="background: transparent;">
+			<tr>
+				<td><img src="img/copy.png"></td>
+				<td><input class="copy-input" placeholder="Copy to..."></td>
+				<td class="copy-button">+</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+</template>
 
-
-
-
-
-		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
-		<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>')</script>
-	</body>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>')</script>
+</body>
 </html>
