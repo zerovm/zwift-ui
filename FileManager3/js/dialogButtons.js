@@ -99,7 +99,6 @@ document.addEventListener("DOMContentLoaded", function(){
 			// TODO: shared containers here.
 		}
 
-		window.FileManager.dialogForm.hide();
 		SwiftV1.createContainer({
 			containerName: input.value,
 			created: function(){
@@ -114,6 +113,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			},
 			error: ajaxError
 		});
+		window.FileManager.dialogForm.hide();
 	}
 
 	function onfile(input){
