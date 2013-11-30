@@ -36,7 +36,7 @@ a{
 #header {
   background-color: @color2;
   padding: 5px;
-  margin: 10px 0;
+  /*margin: 10px 0;*/
   color: white;
   height: 46px;
 }
@@ -909,35 +909,32 @@ button:not(.btn):hover{
   background-image: url('../img/blue-icon.png');
   background-color: transparent;
 }
-.submenu button.share{
-  background-position: -480px -4px;
-}
-.submenu button.open{
-  background-position: -431px -4px;
-}
-.submenu button.delete{
-  background-position: -304px -4px;
-}
-.submenu button.edit{
-  background-position: -224px -4px;
-}
-.submenu button.type{
-  background-position: -52px -3px;
-}
-.submenu button.execute{
-  background-position: -94px -4px;
-}
-.submenu button.copy{
-  background-position: -344px -4px;
-}
-.submenu button.metadata{
-  background-position: -11px -4px
-}
-.submenu button.download{
-  background-position: -266px -4px;
-}
 .submenu button.share {
   background-position: -221px -3px;
+}
+.submenu button.open{
+  background-position: -473px -3px;
+}
+.submenu button.delete{
+  background-position: -344px -3px;
+}
+.submenu button.edit{
+  background-position: -265px -3px;
+}
+.submenu button.type{
+  background-position: -93px -3px;
+}
+.submenu button.execute{
+  background-position: -134px -3px;
+}
+.submenu button.copy{
+  background-position: -385px -3px;
+}
+.submenu button.metadata{
+  background-position: -51px -3px
+}
+.submenu button.download{
+  background-position: -304px -3px;
 }
 
 #CreateDialog {
@@ -970,8 +967,9 @@ button:not(.btn):hover{
 #CreateDialog.dialog-shown .dialog-wrapper{
   display: flex;
   align-items: center;
-  color: #ffffff;
+  /*color: #ffffff;*/
   height: 33px;//TODO: to hell with bootstrap!!!
+  font-size: large;
 }
 #CreateDialog.dialog-shown .dialog-wrapper strong{
   display: inline-block;
@@ -979,6 +977,12 @@ button:not(.btn):hover{
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+#CreateDialog .input-group-btn {
+  width: 100%;
+  display: inline-block;
+  text-align: center;
+  margin: 5px 5px 5px -15px;
 }
 .item.submenu button.share,
 .item.submenu button.execute,
@@ -1008,11 +1012,35 @@ button:not(.btn):hover{
   width: 100%;
   display: flex;
   flex-direction: column;
-  max-height: 100px;
+  /*max-height: 100px;*/
 }
 #CreateDialog.metadata .input-group{
   display: block;
 }
+.meta-data-row {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
+.meta-data-row .input-wrapper {
+  width: 100%;
+}
+.meta-key-input,
+.meta-value-input {
+  width: 50%;
+  padding: 5px;
+  font-size: small;
+  line-height: 20px;
+}
 .meta-key-input.error-input{
   background: yellow;
+}
+.metadata-remove {
+  width: 32px;
+  background-color: transparent;
+  border: 0;
+  background-image: url('../img/blue-icon.png');
+  background-position: -346px -6px;
 }

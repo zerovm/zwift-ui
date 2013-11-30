@@ -176,8 +176,10 @@
 				containerType = "container",
 				rowClassName = "meta-data-row",
 				metaKeyClassName = "meta-key-input",
+				metaValueClassName = "meta-value-input",
 				errorInputClassName = "error-input",
 				inputWrapperClassName = "input-wrapper",
+				metadataRemoveClassName = "metadata-remove",
 				disabledAttribute = "disabled",
 				firstLetterRegex = /./,
 				originMetadata,
@@ -199,6 +201,7 @@
 				inputWrapper.appendChild(input);
 
 				input = document.createElement("input");
+				input.className = metaValueClassName;
 				value && (input.value = decodeURIComponent(value));
 				input.placeholder = "[Meta value]";
 				inputWrapper.appendChild(input);
@@ -206,6 +209,7 @@
 				metadataWrapper.appendChild(inputWrapper);
 
 				button = document.createElement("button");
+				button.className = metadataRemoveClassName;
 				button.tabIndex = -1;
 				button.type = "button";
 				metadataWrapper.appendChild(button);
