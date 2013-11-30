@@ -130,6 +130,9 @@ body.wide-content .center{
   height: 100%;
   display: -webkit-flex;
   display: flex;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
   -webkit-flex-direction: column;
   flex-direction: column;
   margin: 0 auto;
@@ -254,12 +257,6 @@ body:not(.freeze-all) .current-dir-label a:hover,
   -webkit-transform: rotateZ(360deg);
   margin: 0 2px;
 }
-.execute-button{
-  background: url('../img/execute.png') no-repeat 7px 8px;
-}
-.open-button{
-  background: url('../img/old/arrowright.png') no-repeat 7px 8px;
-}
 
 .content-wrapper{
   -webkit-flex: 1;
@@ -330,6 +327,9 @@ body:not(.freeze-all) .current-dir-label a:hover,
 .item{
   cursor: default;
   display: flex;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
 }
 body:not(.freeze-all) .item:not(.no-hover):hover,
 body:not(.freeze-all) .load-more-button:hover{
@@ -348,6 +348,9 @@ body:not(.freeze-all) .load-more-button:hover{
 }
 .upload-as form{
   display: flex;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
   width: 100%;
   height: 100%;
   align-items: center;
@@ -385,10 +388,16 @@ body:not(.freeze-all) .load-more-button:hover{
 }
 .item .left{
   display: flex;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
   flex: 1;
 }
 .item .right{
   display: flex;
+display: -webkit-flex;
+display: -moz-flex;
+display: -ms-flex;
   align-items: center;
 }
 .item label.name{
@@ -398,6 +407,9 @@ body:not(.freeze-all) .load-more-button:hover{
   flex-grow: 1;
   line-height: normal;
   display: flex;
+display: -webkit-flex;
+display: -moz-flex;
+display: -ms-flex;
   align-items: center;
   padding-left: 5px;
 }
@@ -551,15 +563,15 @@ body:not(.freeze-all) .menu-file button:enabled:hover{
 }
 
 .menu-file button.undo{
-  background-image: url('../img/undo.png');
+  /*background-image: url('../img/undo.png');*/
 }
 
 .menu-file button.redo{
-  background-image: url('../img/redo.png');
+  /*background-image: url('../img/redo.png');*/
 }
 
 .menu-file button.save{
-  background-image: url('../img/save.png');
+  /*background-image: url('../img/save.png');*/
 }
 .menu-file .txt-btn{
   background: #ffff00;
@@ -574,7 +586,7 @@ body:not(.freeze-all) .menu-file button:enabled:hover{
   pointer-events: auto
 }
 .menu-file button.save-as{
-  background-image: url('../img/save.png');
+  /*background-image: url('../img/save.png');*/
 }
 .invalid-input{
   background-color: #ffffe0 !important;
@@ -824,11 +836,17 @@ template{
 }
 .progressbar{
   display: flex;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
   align-items: center;
 }
 .progressbar .progress{
   flex: 1;
   display: flex;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
   align-items: center;
   background: #8f9ba0;
   margin: 0;
@@ -856,6 +874,9 @@ template{
 }
 .progressbar .buttons-wrapper{
   display: flex;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
   align-items: center;
   justify-content: space-between;
   width: 140px;
@@ -965,6 +986,9 @@ button:not(.btn):hover{
 }
 #CreateDialog.dialog-shown .dialog-wrapper{
   display: flex;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
   align-items: center;
   /*color: #ffffff;*/
   height: 33px;//TODO: to hell with bootstrap!!!
@@ -1008,9 +1032,12 @@ button:not(.btn):hover{
 #CreateDialog.metadata .meta-data-wrapper{
   overflow-y: auto;
   height: auto;
-  width: 100%;
+  width: 100%;/*
   display: flex;
-  flex-direction: column;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  flex-direction: column;*/
   /*max-height: 100px;*/
 }
 #CreateDialog.metadata .input-group{
