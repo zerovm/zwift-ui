@@ -276,11 +276,6 @@ FileManager.ExecuteReport.create = function (report) {
 			document.querySelector('#bytes-written-to-network-tr').insertAdjacentHTML('beforeend', td(FileManager.toolbox.shortenSize(report.billing.nodes[i]['bytesWrittenToNetwork']) || '-'));
 		}
 		document.querySelector('#billing-report-title').setAttribute('colspan', String(1+nodesLength));
-		if (nodesLength > 3) {
-			document.querySelector('#billing-tbody').style.fontSize = 'x-small';
-		} else {
-			document.querySelector('#billing-tbody').style.fontSize = 'medium';
-		}
 
 		function td(txt) {
 			return '<td class="auto-created-report-td">' + txt + '</td>';
@@ -474,7 +469,9 @@ FileManager.Containers.list = function (callback) {
 
 FileManager.Containers.loadMore = function () {
 
-	if (document.querySelector('.load-more-button') == null) {
+	document.body.classList.add(FileManager.elements.bodyLoadingClass);
+	if (!document.querySelector('.load-more-button')) {//TODO: change condition
+		document.body.classList.remove(FileManager.elements.bodyLoadingClass);
 		return;
 	}
 	document.querySelector('.load-more-button').textContent = 'Loading...';
@@ -487,7 +484,7 @@ FileManager.Containers.loadMore = function () {
 		format: 'json',
 		limit: FileManager.Containers.LIMIT,
 		success: function (containers) {
-
+			document.body.classList.remove(FileManager.elements.bodyLoadingClass);
 			if (containers.length == 0) {
 				var loadMoreEl = document.querySelector('.load-more-button');
 				loadMoreEl.parentNode.removeChild(loadMoreEl);
@@ -510,6 +507,7 @@ FileManager.Containers.loadMore = function () {
 
 	function error(status, statusText) {
 		var loadingEl = document.querySelector('.load-more-button');
+		document.body.classList.remove(FileManager.elements.bodyLoadingClass);
 		loadingEl.textContent = 'Error: ' + status + ' ' + statusText;
 	}
 };

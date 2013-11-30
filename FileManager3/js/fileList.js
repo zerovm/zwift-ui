@@ -76,10 +76,11 @@
 			lastFile, prefix,
 			filesArgs = {};
 
-		if(!el){
+		if(!el){//TODO: change codition
+			document.body.classList.remove(FileManager.elements.bodyLoadingClass);
 			return;
 		}
-
+		document.body.classList.add(FileManager.elements.bodyLoadingClass);
 		el.textContent = "Loading...";
 		el.setAttribute("disabled", "disabled");
 		filesArgs.containerName = FileManager.CurrentPath().container();
@@ -103,6 +104,7 @@
 
 		filesArgs.success = function(files){
 			var el = document.querySelector(".load-more-button");//TODO: check wether it is needed
+			document.body.classList.remove(FileManager.elements.bodyLoadingClass);
 			if(files.length < LIMIT){
 				if(!el){
 					window.FileManager.elements.itemsWrapperEl.insertAdjacentHTML("beforeend", listHTML(files));
@@ -119,17 +121,17 @@
 		};
 
 		filesArgs.error = function(status, statusText){
+			document.body.classList.remove(FileManager.elements.bodyLoadingClass);
 			var loadingEl = document.querySelector(".load-more-button");
 			loadingEl.textContent = "Error: " + status + " " + statusText;
 		};
-
 		filesArgs.notExist = notExist;
-
 		SwiftV1.listFiles(filesArgs);
 	}
 
 	function notExist(){
 		var scrollingContentEl = document.getElementsByClassName("new-scrolling-content")[0];
+		document.body.classList.add(FileManager.elements.bodyLoadingClass);
 		try{
 			scrollingContentEl.innerHTML = "";
 			if(FileManager.CurrentPath().isContainersList()){

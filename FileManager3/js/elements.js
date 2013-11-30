@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		mainProgressBar: mainProgressBar,
 		hiddenClass: "hidden",
 		disableToolbarClass: "disable-toolbar-right",
+		bodyLoadingClass: "loading-content",
 		get itemsWrapperEl(){return content.firstElementChild}
 	}
 });

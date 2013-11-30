@@ -108,7 +108,7 @@
 		return result + gradeMap[counter - 1];
 	}
 
-	function escapeHTML(str) {
+	function escapeHTML(str){
 		return String(str)
 			.replace('&raquo;', '///')
 			.replace(/&/g, '&amp;')
@@ -119,7 +119,7 @@
 			.replace('///', '&raquo;');
 	}
 
-	function makeShortName(name, len) {
+	function makeShortName(name, len){
 		var ext, filename;
 		len = len || 30;
 		if(name.length <= len){
@@ -141,7 +141,6 @@
 		parent.appendChild(el);
 	}
 
-
 	function makeDatePretty(time){
 		var alternative = new Date(time),
 			pretty,
@@ -157,17 +156,6 @@
 			day_diff < 7 && day_diff + " days ago" ||
 			day_diff < 31 && Math.ceil(day_diff / 7) + " weeks ago";
 		return pretty || alternative.toDateString();
-	}
-
-	function onscrollLoadMore(e){//TODO: move it somewhere else
-		e = e.target ? e.target : e;
-		if(Math.abs(e.scrollTop - (e.scrollHeight - e.clientHeight)) === 0){
-			if(FileManager.CurrentPath().isContainersList()){
-				FileManager.Containers.loadMore();
-			}else{
-				window.FileManager.files.loadMore();
-			}
-		}
 	}
 
 	function ProgressBar(params){
@@ -261,6 +249,18 @@
 		return el.parentNode.children.indexOf(el) === el.parentNode.children.length - 1;
 	}
 
+	function onscrollLoadMore(e){//TODO: move it somewhere else
+		e = e.target ? e.target : e;
+		if(Math.abs(e.scrollTop - (e.scrollHeight - e.clientHeight)) <= 1){
+			if(!document.body.classList.contains(FileManager.elements.bodyLoadingClass)){
+				if(FileManager.CurrentPath().isContainersList()){
+					FileManager.Containers.loadMore();
+				}else{
+					FileManager.files.loadMore();
+				}
+			}
+		}
+	}
 
 	Object.keys(extObj).forEach(function(ext){
 		var obj = extObj[ext],
