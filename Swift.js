@@ -1270,8 +1270,10 @@ var Auth = {};
 		document.querySelector('.cluster-auth').parentNode.removeAttribute('hidden');
 	};
 
+	Auth.ready = [];
+
 	Auth.useZLitestackDotCom = function () {
-		Auth.ready = ZLitestackDotCom.ready;
+		ZLitestackDotCom.ready = Auth.ready;
 		Auth.init = ZLitestackDotCom.init;
 		Auth.getAccount = ZLitestackDotCom.getAccount;
 		Auth.getStorageUrl = ZLitestackDotCom.getStorageUrl;
@@ -1289,7 +1291,7 @@ var Auth = {};
 	};
 
 	Auth.useClusterAuth = function () {
-		Auth.ready = ClusterAuth.ready;
+		ClusterAuth.ready = Auth.ready;
 		Auth.init = ClusterAuth.init;
 		Auth.getAccount = ClusterAuth.getAccount;
 		Auth.getStorageUrl = ClusterAuth.getStorageUrl;
