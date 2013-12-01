@@ -30,25 +30,9 @@ FileManager.Loading.hide = function () {
 };
 
 
-FileManager.SignOutButton = {};
-
-FileManager.SignOutButton.click = function () {
-	Auth.signOut();
-};
-
-
 FileManager.AccountLabel = {};
 
 FileManager.AccountLabel.init = function () {
-
-	if (FileManager.ENABLE_EMAILS) {
-		Auth.getEmail(function (email) {
-			document.getElementById('AccountLabel').textContent = email;
-		});
-		return;
-	}
-
-	document.getElementById('AccountLabel').textContent = Auth.getAccount();
 
 };
 
@@ -572,33 +556,33 @@ document.addEventListener('keyup', function (e) {
 	}
 });
 
-document.addEventListener('DOMContentLoaded', function () {
-	Auth.init(function () {
-		if (!location.hash) {
-			location.hash = Auth.getAccount() + "/";
-		} else {
-			window.FileManager.files.refreshItemList();
-		}
+Auth.ready.push(function () {
+	if (!location.hash) {
+		location.hash = Auth.getAccount() + "/";
+	} else {
+		window.FileManager.files.refreshItemList();
+	}
 
-		document.body.dispatchEvent(authInit);
-		FileManager.AccountLabel.init();
-		FileManager.reAuth();
+	document.body.dispatchEvent(authInit);
+	FileManager.reAuth();
 
-		document.getElementById('SignOutButton').addEventListener('click', FileManager.SignOutButton.click);
-		window.FileManager.elements.upButton.addEventListener('click', function(){
-				var upperLevel = FileManager.CurrentPath().up();
-				if (!FileManager.Loading.visible && upperLevel){//TODO: check and change
-					FileManager.Loading.hide();
-					FileManager.CurrentDirLabel.showLoading();
-					location.hash = upperLevel;
-				}
+	window.FileManager.elements.upButton.addEventListener('click', function(){
+			var upperLevel = FileManager.CurrentPath().up();
+			if (!FileManager.Loading.visible && upperLevel){
+				FileManager.Loading.hide();
+				FileManager.CurrentDirLabel.showLoading();
+				location.hash = upperLevel;
 			}
-		);
+		}
+	);
 
-		document.getElementById("WideButton").addEventListener("click", function(){
-			document.body.classList.toggle("wide-content");
-		});
+	document.getElementById("WideButton").addEventListener("click", function(){
+		document.body.classList.toggle("wide-content");
 	});
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+	Auth.init();
 	document.querySelector('.current-dir-label').addEventListener("click", function(e){
 		if(e.target.nodeName === "A"){
 			e.preventDefault();

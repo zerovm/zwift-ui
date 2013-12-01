@@ -1107,7 +1107,10 @@ var Auth = {};
 		});
 	};
 
-	ZLitestackDotCom.init = function (callback) {
+	ZLitestackDotCom.ready = [];
+
+	ZLitestackDotCom.init = function () {
+
 		var accountId = getUrlParameter('account');
 
 		if (!accountId) {
@@ -1136,8 +1139,8 @@ var Auth = {};
 			}
 		});
 
-		if (arguments.length) {
-			callback();
+		for (var i = 0; i < ZLitestackDotCom.ready.length; i++) {
+			ZLitestackDotCom.ready[i]();
 		}
 
 		function getUrlParameter(name) {
@@ -1219,7 +1222,10 @@ var Auth = {};
 		window.location = 'https://z.litestack.com/login/google/?state=/js&code=logout';
 	};
 
-	ClusterAuth.init = function(callback) {
+	ClusterAuth.ready = [];
+
+	ClusterAuth.init = function() {
+
 		var html = '<div style="position: fixed; width: 100%; height: 100%;left: 0;right: 0;top: 0;bottom: 0;">'
 			+ '<div class="cluster-url">'
 			+ '<label>Storage URL:</label>'
@@ -1244,7 +1250,9 @@ var Auth = {};
 				}
 			});
 
-			callback();
+			for (var i = 0; i < ZLitestackDotCom.ready.length; i++) {
+				ZLitestackDotCom.ready[i]();
+			}
 		});
 	};
 
@@ -1262,7 +1270,10 @@ var Auth = {};
 		document.querySelector('.cluster-auth').parentNode.removeAttribute('hidden');
 	};
 
+	Auth.ready = [];
+
 	Auth.useZLitestackDotCom = function () {
+		ZLitestackDotCom.ready = Auth.ready;
 		Auth.init = ZLitestackDotCom.init;
 		Auth.getAccount = ZLitestackDotCom.getAccount;
 		Auth.getStorageUrl = ZLitestackDotCom.getStorageUrl;
@@ -1280,6 +1291,7 @@ var Auth = {};
 	};
 
 	Auth.useClusterAuth = function () {
+		ClusterAuth.ready = Auth.ready;
 		Auth.init = ClusterAuth.init;
 		Auth.getAccount = ClusterAuth.getAccount;
 		Auth.getStorageUrl = ClusterAuth.getStorageUrl;

@@ -43,11 +43,23 @@ a{
 
 #OpenAccountWindow{
   cursor: pointer;
+  position: relative;
 }
 
 #AccountWindow{
   display: none;
+  width: 200px;
+  height: 100px;
+  position: absolute;
+  left: 0;
+  top: 0;
 }
+
+#OpenAccountWidow:active #AccountWindow,
+#OpenAccountWidow:focus #AccountWindow {
+  display: block;
+}
+
 
 #OpenAccountWidow:active #AccountWindow{
   display: block;
