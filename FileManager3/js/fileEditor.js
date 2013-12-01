@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		function save(account, path, oncreateCallback){
 			var requestArgs = {};
 			requestArgs.path = path;
-			requestArgs.contentType = FileManager.File.contentType;//TODO: change it
+			requestArgs.contentType = window.FileManager.fileEditor.currentFileType;
 			requestArgs.data = editor.getValue();
 
 			if (FileManager.ENABLE_SHARED_CONTAINERS) {
@@ -141,6 +141,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			document.body.classList.remove(showClass);
 		};
 		this.show = function(data, type, name){
+			this.currentFileType = type;
 			this.set(data, type, name);
 			window.addEventListener("hashchange", that.hide);
 			document.body.classList.add(showClass);

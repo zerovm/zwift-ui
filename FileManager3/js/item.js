@@ -18,6 +18,7 @@
 		FileManager.Loading.hide();
 		FileManager.item.showLoading(itemEl);
 		location.hash = selectedPath;
+		FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().withoutAccount(), true);
 	}
 
 	function ItemCommandName(){
@@ -149,7 +150,33 @@
 	function open(){
 	}
 
-	function execute(){
+	function execute(path){
+		var args = {
+			path: path,
+			success: executeData,
+			error: function(status, statusText){
+				window.FileManager.errorMsgHandler({header: "Ajax error:", status: status, statusText: statusText});
+			},
+			notExist: function(){
+				window.FileManager.errorMsgHandler({header: "File does not exist"});
+			},
+			progress: function(loaded){
+				console.log(loaded + " bytes loaded...");
+			}
+		};
+
+		function executeData(data, type){
+			var args = {
+				data: data,
+				contentType: type
+			};
+			window.FileManager.fileExecutor.execute(args);
+		}
+
+		if(FileManager.ENABLE_SHARED_CONTAINERS){
+			args.account = FileManager.CurrentPath().account();
+		}
+		FileManager.File.getFileXhr = SwiftV1.getFile(args);
 	}
 
 	function Submenu(){

@@ -115,7 +115,7 @@ FileManager.OpenButton.click = function () {
 	var options = {
 		path: FileManager.CurrentPath().withoutAccount(),
 		callback: function (message) {
-			FileManager.ExecuteButton.hide();
+			//FileManager.ExecuteButton.hide();
 		}
 	};
 
@@ -134,95 +134,6 @@ FileManager.OpenButton.hide = function () {
 	document.querySelector('.open-button').setAttribute('hidden', 'hidden');
 };
 
-
-FileManager.execute = function (data, contentType) {
-
-	FileManager.Loading.hide();
-	FileManager.ExecuteButton.hide();
-	FileManager.ExecuteTimer.start();
-	FileManager.OpenButton.hide();
-
-	ZeroVmOnSwift.execute({
-		data: data,
-		contentType: contentType,
-		success: function (result, report) {
-			FileManager.ExecuteTimer.stop();
-			FileManager.ExecuteTimer.hide();
-			FileManager.ExecuteReport.create(report);
-			showResult(result);
-			FileManager.Loading.show();
-		},
-		error: function (status, statusText, result) {
-			FileManager.ExecuteTimer.stop();
-			FileManager.ExecuteTimer.hide();
-			showResult(result);
-			FileManager.Loading.show();
-		}
-	});
-
-	function showResult(result) {
-		var el = window.FileManager.elements.itemsWrapperEl;
-	}
-};
-
-
-FileManager.ExecuteButton = {};
-
-FileManager.ExecuteButton.click = function () {
-	//FileManager.execute(FileManager.File.codeMirror.getValue(), 'application/json');
-};
-
-FileManager.ExecuteButton.hide = function () {
-	document.querySelector('.execute-button').setAttribute('hidden', 'hidden');
-};
-
-FileManager.ExecuteButton.show = function () {
-	document.querySelector('.execute-button').removeAttribute('hidden');
-};
-
-
-FileManager.ExecuteTimer = {};
-
-FileManager.ExecuteTimer.secondsCounter = -1;
-
-FileManager.ExecuteTimer.start = function () {
-	FileManager.ExecuteTimer.secondsCounter = 0;
-	FileManager.ExecuteTimer.next();
-	FileManager.ExecuteTimer.show();
-};
-
-FileManager.ExecuteTimer.stop = function () {
-	FileManager.ExecuteTimer.secondsCounter = -1;
-};
-
-FileManager.ExecuteTimer.next = function () {
-	if (FileManager.ExecuteTimer.secondsCounter == -1) {
-		return;
-	}
-	FileManager.ExecuteTimer.secondsCounter++;
-	var minutes = Math.floor(FileManager.ExecuteTimer.secondsCounter / 60);
-	var seconds = FileManager.ExecuteTimer.secondsCounter % 60;
-	FileManager.ExecuteTimer.updateExecutingClock(minutes, seconds);
-	setTimeout(FileManager.ExecuteTimer.next, 1000);
-};
-
-FileManager.ExecuteTimer.show = function () {
-	document.querySelector('.execute-label').removeAttribute('hidden');
-};
-
-FileManager.ExecuteTimer.hide = function () {
-	document.querySelector('.execute-label').setAttribute('hidden', 'hidden');
-};
-
-FileManager.ExecuteTimer.updateExecutingClock = function (minutes, seconds) {
-	var secondsStr = seconds < 10 ? '0' + String(seconds) : String(seconds);
-	var minutesStr = minutes < 10 ? '0' + String(minutes) : String(minutes);
-	FileManager.ExecuteTimer.setContent('Executing... ' + minutesStr + ':' + secondsStr);
-};
-
-FileManager.ExecuteTimer.setContent = function (content) {
-	document.querySelector('.execute-label').textContent = content;
-};
 
 
 FileManager.ExecuteReport = {};
@@ -309,7 +220,7 @@ FileManager.ExecuteReport.showFullReport = function (el) {
 FileManager.UploadAndExecute = {};
 
 FileManager.UploadAndExecute.change = function (file) {
-	FileManager.execute(file, file.type);
+	FileManager.fileExecutor.execute({data:file, contentType: file.type});
 };
 
 
@@ -326,8 +237,6 @@ FileManager.LoadMoreButton.click = function () {
 };
 
 FileManager.File = {};
-
-FileManager.File.contentType = '';
 
 FileManager.File.getFileXhr = null;
 
@@ -366,7 +275,6 @@ FileManager.File.edit = function (el) {
 		el.removeChildren();
 		FileManager.CurrentDirLabel.setContent(fileName);
 
-		FileManager.File.contentType = contentType;
 		window.FileManager.fileEditor.show(data, contentType, fileName);
 		FileManager.File.showMenu();
 		FileManager.File.showTxtButton();
@@ -629,11 +537,7 @@ document.addEventListener('click', function (e) {
 		return;
 	}
 
-	if (FileManager.toolbox.getParentByClassName(e.target,'execute-button')) {
-		if (FileManager.ENABLE_ZEROVM) {
-			FileManager.ExecuteButton.click();
-		}
-	}else if (el = FileManager.toolbox.getParentByClassName(e.target,'three-dot')) {
+	 if (el = FileManager.toolbox.getParentByClassName(e.target,'three-dot')) {
 		FileManager.item.toggleMenu(el);
 	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'item')) {
 		FileManager.item.click(el);
@@ -683,7 +587,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		document.getElementById('SignOutButton').addEventListener('click', FileManager.SignOutButton.click);
 		window.FileManager.elements.upButton.addEventListener('click', function(){
 				var upperLevel = FileManager.CurrentPath().up();
-				if (!FileManager.Loading.visible && upperLevel){
+				if (!FileManager.Loading.visible && upperLevel){//TODO: check and change
 					FileManager.Loading.hide();
 					FileManager.CurrentDirLabel.showLoading();
 					location.hash = upperLevel;
