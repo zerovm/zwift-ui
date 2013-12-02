@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	var content = document.getElementById("content"),
 		scrollWrapper = document.getElementsByClassName("content-wrapper")[0],
 		mainProgressBar = document.getElementById("mainProgressBar"),
+		reportWrapper = document.getElementById("report"),
 		upButton = document.getElementById("UpButton");
 
 	if(!window.FileManager){
@@ -18,6 +19,8 @@ document.addEventListener("DOMContentLoaded", function(){
 		hiddenClass: "hidden",
 		disableToolbarClass: "disable-toolbar-right",
 		bodyLoadingClass: "loading-content",
+		bodyReportClass: "report-shown",
+		reportWrapper: reportWrapper,
 		get itemsWrapperEl(){return content.firstElementChild}
 	}
 });

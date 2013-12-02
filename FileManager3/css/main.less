@@ -14,10 +14,7 @@ label::after{
   display: none;
 }
 html{
-  background: url('../img/cloud_left_top.png') left top,
-              url('../img/cloud_right_top.png') right top,
-              url('../img/cloud_left_bottom.png') left bottom,
-              url('../img/cloud_right_bottom.png') right bottom, @color1;
+  background: url('../img/cloud_left_top.png') left top, url('../img/cloud_right_top.png') right top, url('../img/cloud_left_bottom.png') left bottom, url('../img/cloud_right_bottom.png') right bottom, @color1;
   background-repeat: no-repeat;
   background-attachment: fixed;
   overflow: hidden;
@@ -33,22 +30,26 @@ body{
 a{
   font-size: 14px;
 }
+<<<<<<< HEAD
 #header {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+=======
+#header{
+>>>>>>> 5ad54cec2105a5bdef3900cab3b4d2e10693437e
   background-color: @color2;
   padding: 5px;
-  /*margin: 10px 0;*/
+/*margin: 10px 0;*/
   color: white;
   height: 46px;
 }
-#header a {
+#header a{
   color: white;
 }
 
-#OpenAccountWindow {
+#OpenAccountWindow{
   cursor: pointer;
 }
 
@@ -56,7 +57,14 @@ a{
   position: relative;
 }
 
+<<<<<<< HEAD
 #AccountWindow {
+=======
+#AccountWindow{
+  display: none;
+  width: 200px;
+  height: 100px;
+>>>>>>> 5ad54cec2105a5bdef3900cab3b4d2e10693437e
   position: absolute;
   right: 0;
   top: 40px;
@@ -64,6 +72,7 @@ a{
   background: white;
 }
 
+<<<<<<< HEAD
 #AccountWindow .profile-picture {
   width: 100px;
   vertical-align: top;
@@ -76,6 +85,15 @@ a{
 #AccountWindow .full-name {
   color: black;
   margin: 5px;
+=======
+#OpenAccountWidow:active #AccountWindow,
+#OpenAccountWidow:focus #AccountWindow{
+  display: block;
+}
+
+#OpenAccountWidow:active #AccountWindow{
+  display: block;
+>>>>>>> 5ad54cec2105a5bdef3900cab3b4d2e10693437e
 }
 
 .toolbar{
@@ -186,7 +204,7 @@ body:not(.freeze-all) .toolbar-button:enabled:hover{
   border-width: 1px;
   outline: 0;
 }
-.toolbar-button:disabled {
+.toolbar-button:disabled{
   opacity: 0.3;
 }
 
@@ -251,7 +269,7 @@ body.wide-content #WideButton{
   background: url("../img/white-icon.png") -344px -6px no-repeat;
 }
 .code-editor-is-shown .current-dir-label{
-  pointer-events: none;/*TODO: add download on click in such situation*/
+  pointer-events: none; /*TODO: add download on click in such situation*/
 }
 .current-dir-label{
   display: inline-block;
@@ -293,6 +311,9 @@ body:not(.freeze-all) .current-dir-label a:hover,
   height: 100%;
   position: relative;
   flex: 1;
+}
+body.report-shown #content{
+  display: none;
 }
 
 .scrolling-content{
@@ -417,9 +438,9 @@ body:not(.freeze-all) .load-more-button:hover{
 }
 .item .right{
   display: flex;
-display: -webkit-flex;
-display: -moz-flex;
-display: -ms-flex;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
   align-items: center;
 }
 .item label.name{
@@ -429,9 +450,9 @@ display: -ms-flex;
   flex-grow: 1;
   line-height: normal;
   display: flex;
-display: -webkit-flex;
-display: -moz-flex;
-display: -ms-flex;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
   align-items: center;
   padding-left: 5px;
 }
@@ -506,7 +527,7 @@ body:not(.freeze-all) .error-reason:hover{
   height: 30px;
   padding-left: 23px;
   padding-right: 5px;
-  background: #F3F3F3 no-repeat 5px 7px;
+  background: #F3F3F3 no-repeat 5px 17px;
   border: solid 1px transparent;
   margin: 1px;
 }
@@ -585,15 +606,15 @@ body:not(.freeze-all) .menu-file button:enabled:hover{
 }
 
 .menu-file button.undo{
-  /*background-image: url('../img/undo.png');*/
+/*background-image: url('../img/undo.png');*/
 }
 
 .menu-file button.redo{
-  /*background-image: url('../img/redo.png');*/
+/*background-image: url('../img/redo.png');*/
 }
 
 .menu-file button.save{
-  /*background-image: url('../img/save.png');*/
+/*background-image: url('../img/save.png');*/
 }
 .menu-file .txt-btn{
   background: #ffff00;
@@ -608,7 +629,7 @@ body:not(.freeze-all) .menu-file button:enabled:hover{
   pointer-events: auto
 }
 .menu-file button.save-as{
-  /*background-image: url('../img/save.png');*/
+/*background-image: url('../img/save.png');*/
 }
 .invalid-input{
   background-color: #ffffe0 !important;
@@ -637,36 +658,16 @@ body:not(.freeze-all) .menu-file button:enabled:hover{
   margin: 1px;
   border: 0;
 }
-
 .metadata-save{
   float: right;
 }
-
 .rights-table tfoot td{
   text-align: center;
 }
-
 .err-msg{
   font-size: small;
   text-align: left;
 }
-
-#report{
-  background-color: rgba(220, 220, 220, 0.5);
-}
-
-#report table{
-  width: 100%;
-}
-
-#report button{
-  width: 100%;
-}
-
-#report td{
-  font-size: small;
-}
-
 .execute-full-button{
   height: 40px;
   border: 0;
@@ -675,16 +676,13 @@ body:not(.freeze-all) .menu-file button:enabled:hover{
   cursor: pointer;
   text-decoration: underline;
 }
-
 .download-link{
   color: rgba(0, 0, 0, 0.35);
 }
-
 .rights-table tr td:first-child{
   font-size: small;
   font-weight: bold;
 }
-
 .read-rights-input,
 .write-rights-input{
   width: 98%;
@@ -951,7 +949,7 @@ button:not(.btn):hover{
   background-image: url('../img/blue-icon.png');
   background-color: transparent;
 }
-.submenu button.share {
+.submenu button.share{
   background-position: -221px -3px;
 }
 .submenu button.open{
@@ -979,12 +977,12 @@ button:not(.btn):hover{
   background-position: -304px -3px;
 }
 
-#CreateDialog {
+#CreateDialog{
   background-color: @dialogColor;
   padding: 5px;
 }
 
-#CreateDialog #input_CreateContainerDialog {
+#CreateDialog #input_CreateContainerDialog{
   height: 30px;
   box-sizing: border-box;
   width: 100%;
@@ -993,7 +991,7 @@ button:not(.btn):hover{
   border-radius: 0;
 }
 #CreateDialog #OKDialog,
-#CreateDialog #CancelDialog {
+#CreateDialog #CancelDialog{
   height: 30px;
   width: 100px;
 }
@@ -1010,8 +1008,8 @@ button:not(.btn):hover{
   display: -moz-flex;
   display: -ms-flex;
   align-items: center;
-  /*color: #ffffff;*/
-  height: 33px;//TODO: to hell with bootstrap!!!
+/*color: #ffffff;*/
+  height: 33px; //TODO: to hell with bootstrap!!!
   font-size: large;
 }
 #CreateDialog.dialog-shown .dialog-wrapper strong{
@@ -1021,7 +1019,7 @@ button:not(.btn):hover{
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-#CreateDialog .input-group-btn {
+#CreateDialog .input-group-btn{
   width: 100%;
   display: inline-block;
   text-align: center;
@@ -1052,29 +1050,30 @@ button:not(.btn):hover{
 #CreateDialog.metadata .meta-data-wrapper{
   overflow-y: auto;
   height: auto;
-  width: 100%;/*
+  width: 100%;
+/*
   display: flex;
   display: -webkit-flex;
   display: -moz-flex;
   display: -ms-flex;
   flex-direction: column;*/
-  /*max-height: 100px;*/
+/*max-height: 100px;*/
 }
 #CreateDialog.metadata .input-group{
   display: block;
 }
-.meta-data-row {
+.meta-data-row{
   display: -webkit-box;
   display: -moz-box;
   display: -ms-flexbox;
   display: -webkit-flex;
   display: flex;
 }
-.meta-data-row .input-wrapper {
+.meta-data-row .input-wrapper{
   width: 100%;
 }
 .meta-key-input,
-.meta-value-input {
+.meta-value-input{
   width: 50%;
   padding: 5px;
   font-size: small;
@@ -1083,10 +1082,147 @@ button:not(.btn):hover{
 .meta-key-input.error-input{
   background: yellow;
 }
-.metadata-remove {
+.metadata-remove{
   width: 32px;
   background-color: transparent;
   border: 0;
   background-image: url('../img/blue-icon.png');
   background-position: -346px -6px;
+}
+
+.report-wrapper{
+  display: none;
+}
+body.report-shown .report-wrapper{
+  display: block;
+}
+.timer-wrapper{
+
+}
+#report{
+  background-color: #f5f5f5;
+  padding: 10px 0 10px 10px;
+}
+#report table{
+  width: 100%;
+  border-collapse: collapse;
+}
+#report button{
+  width: 100%;
+}
+#report .execution-report tr:nth-child(even) td,
+#report .execution-report tr:nth-child(even) th,
+#report .side-table-wrapper tr:nth-child(odd) th,
+#report .content-table-wrapper tr:nth-child(even) td{
+  background: white;
+}
+#report td,
+#report .side-table-wrapper th:first-child,
+#report .result-report,
+#report th{
+  font-size: small;
+  border: 1px solid #b0b0b0;
+  background: #e9e9e9;
+  text-align: center;
+  padding: 5px 17px;
+}
+#report .execution-report td{
+  text-align: left;
+  word-break: break-all;
+}
+#report thead th{
+  border-bottom: transparent;
+  border-top: transparent;
+  color: #485b6e;
+}
+#report .side-table-wrapper th{
+  width: 110px;
+  padding-left: 0;
+  padding-right: 0;
+}
+#report .content-table-wrapper td,
+#report .side-table-wrapper tr:not(:first-child) th{
+  line-height: 14px;
+}
+#report .side-table-wrapper tr:first-child th,
+#report thead th{
+  background: #beccd9;
+  border-bottom: none;
+  border-top: none;
+  border-bottom: none;
+}
+#report .side-table-wrapper tr th:first-child,
+#report th:first-child{
+  border-left: transparent;
+  color: #3f3f3f;
+}
+#report .side-table-wrapper th:first-child,
+#report tr td:first-child{
+  border-left: none;
+}
+#report th:last-child,
+#report td:last-child{
+  border-right: transparent;
+}
+#report tr:first-child th,
+#report .side-table-wrapper tr:nth-child(2) th,
+#report tr:first-child td{
+  border-top: transparent;
+}
+#report .side-table-wrapper table tr:last-child th,
+#report table tr:last-child td,
+#report table tr:last-child th{
+  border-bottom: transparent;
+}
+#report .billing-wrapper{
+  display: -webkit-flex;
+  display: flex;
+}
+#report .content-table-wrapper{
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+#report .content-table-wrapper button:active,
+#report .content-table-wrapper button:hover,
+#report .content-table-wrapper button{
+  border: none;
+  outline: none;
+}
+#report .content-table-wrapper button{
+  height: 29px;
+  width: 20px;
+  background: url(../img/scroll_buttons.png);
+  -webkit-background-size: auto 100%;
+  background-size: auto 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+#report .content-table-wrapper button:last-child{
+  left: auto;
+  right: 0;
+  background-position: right top;
+}
+.timer-wrapper{
+  color: #677386;
+  font-weight: bold;
+  font-size: 62px;
+  text-align: center;
+  margin-top: 100px;
+}
+#report h1{
+  margin: 10px 0 8px;
+  font-size: 24px;
+  line-height: normal;
+  color: #7e8691;
+}
+#report h1:first-child{
+  margin-top: 0;
+}
+#report .result-report{
+  padding: 10px 5px;
+  margin-bottom: 10px;
+  border: none;
+  text-align: left;
 }

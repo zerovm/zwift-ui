@@ -189,8 +189,10 @@
 		return html;
 	}
 
-	function handleFileClick(el, callback){
-		var args;
+	function handleFileClick(el, callback){//TODO: remove extra request for file exist
+		var args,
+			currentPath = FileManager.CurrentPath(),
+			path = currentPath.withoutAccount();
 
 		function fileExist(metadata, contentType, contentLength, lastModified){
 			var Current = FileManager.CurrentPath(),
@@ -199,10 +201,10 @@
 				downloadLink = document.querySelector('.download-link');
 			switch(window.FileManager.item.itemCommandName.pop()){
 				case "open":
-					window.FileManager.item.open();
+					window.FileManager.item.open(path);
 					break;
 				case "execute":
-					window.FileManager.item.execute();
+					window.FileManager.item.execute(path);
 					break;
 				default :
 					downloadLink.setAttribute('href', href);
@@ -230,13 +232,13 @@
 		}
 
 		args = {
-			path: FileManager.CurrentPath().withoutAccount(),
+			path: path,
 			success: fileExist,
 			notExist: fileNotExist,
 			error: ajaxError
 		};
 		if(FileManager.ENABLE_SHARED_CONTAINERS){
-			args.account = FileManager.CurrentPath().account();
+			args.account = currentPath.account();
 		}
 		SwiftV1.checkFileExist(args);
 	}
@@ -271,8 +273,8 @@
 		loadingEl && loadingEl.parentNode.removeChild(loadingEl);
 	}
 
-	function ontransition(e){
-		var el = e.target, newEl;
+	function ontransition(e){//TODO: change the way of refreshing!
+		var el = e.target ? e.target : e, newEl;
 		if(el.classList.contains("old-scrolling-content")){
 			el.parentNode.removeChild(el);
 			newEl = window.FileManager.elements.itemsWrapperEl;
