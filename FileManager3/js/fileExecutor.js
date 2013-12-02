@@ -212,7 +212,10 @@
 		billingScroll && billingScroll.destroy();
 		window.removeEventListener(e.type, singleTimeFire);
 		window.FileManager.elements.reportWrapper.removeChildren();
-		window.FileManager.files.ontransition(document.getElementsByClassName("old-scrolling-content")[0])
+		(function(){//TODO: rewrite ontranstion end to get rid of this!!!!!!!!!!!!!!!!!!
+			var oldContent = document.getElementsByClassName("old-scrolling-content")[0];
+			oldContent && window.FileManager.files.ontransition(oldContent);
+		})();
 		document.body.classList.remove(window.FileManager.elements.bodyReportClass);
 		window.FileManager.elements.reportWrapper.classList.add(window.FileManager.elements.hiddenClass);
 	}

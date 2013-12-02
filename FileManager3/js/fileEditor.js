@@ -17,7 +17,8 @@ document.addEventListener("DOMContentLoaded", function(){
 				save: "save",
 				undo: "undo",
 				redo: "redo",
-				saveAs: "save-as"
+				saveAs: "save-as",
+				execute: "execute"
 			};
 
 		function enableButton(className){
@@ -132,6 +133,14 @@ document.addEventListener("DOMContentLoaded", function(){
 			});
 			fileMenuButtonsWrapper.getElementsByClassName(buttonsClasses.save)[0].addEventListener("click", saveFile);
 			fileMenuButtonsWrapper.getElementsByClassName(buttonsClasses.saveAs)[0].addEventListener("click", saveAsFile);
+			fileMenuButtonsWrapper.getElementsByClassName(buttonsClasses.execute)[0].addEventListener("click", function(e){
+				saveFile(e);
+				that.hide();
+				window.FileManager.fileExecutor.execute({
+					contentType: window.FileManager.fileEditor.currentFileType,
+					data: editor.getValue()
+				});
+			});
 		}
 
 		this.id = "codeEditor";
