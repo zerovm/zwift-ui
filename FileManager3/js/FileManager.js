@@ -120,95 +120,6 @@ FileManager.OpenButton.hide = function () {
 
 
 
-FileManager.ExecuteReport = {};
-
-FileManager.ExecuteReport.report = null;
-
-FileManager.ExecuteReport.create = function (report) {
-
-	FileManager.ExecuteReport.report = report;
-
-	var scrollingContentEl = window.FileManager.elements.itemsWrapperEl;
-	scrollingContentEl.innerHTML = document.querySelector('#reportTemplate').innerHTML;
-
-	executionReport();
-	billingReport();
-
-	function executionReport() {
-		if (report.execution.status) {
-			document.querySelector('#execute-status-val').textContent = report.execution.status;
-			document.querySelector('#execute-status-tr').removeAttribute('hidden');
-		}
-
-		if (report.execution.error) {
-			document.querySelector('#execute-error-val').textContent = report.execution.error;
-			document.querySelector('#execute-error-tr').removeAttribute('hidden');
-		}
-	}
-
-	function billingReport() {
-
-		document.querySelector('#total-time-tr').insertAdjacentHTML('beforeend', td(report.billing.totalServerTime));
-
-		var nodesLength = report.billing.nodes.length;
-		for (var i = 0; i < nodesLength; i++) {
-			document.querySelector('#node-number-tr').insertAdjacentHTML('beforeend', td(i+1));
-			document.querySelector('#node-server-time-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['nodeServerTime'] || '-'));
-
-			document.querySelector('#system-time-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['systemTime'] || '-'));
-			document.querySelector('#user-time-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['userTime'] || '-'));
-
-
-			document.querySelector('#reads-from-disk-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['readsFromDisk'] || '-'));
-			document.querySelector('#bytes-read-from-disk-tr').insertAdjacentHTML('beforeend', td(FileManager.toolbox.shortenSize(report.billing.nodes[i]['bytesReadFromDisk']) || '-'));
-
-			document.querySelector('#writes-to-disk-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['writesToDisk'] || '-'));
-			document.querySelector('#bytes-written-to-disk-tr').insertAdjacentHTML('beforeend', td(FileManager.toolbox.shortenSize(report.billing.nodes[i]['bytesWrittenToDisk']) || '-'));
-			document.querySelector('#reads-from-network-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['readsFromNetwork'] || '-'));
-
-			document.querySelector('#bytes-read-from-network-tr').insertAdjacentHTML('beforeend', td(FileManager.toolbox.shortenSize(report.billing.nodes[i]['bytesReadFromNetwork']) || '-'));
-			document.querySelector('#writes-to-network-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['writesToNetwork'] || '-'));
-			document.querySelector('#bytes-written-to-network-tr').insertAdjacentHTML('beforeend', td(FileManager.toolbox.shortenSize(report.billing.nodes[i]['bytesWrittenToNetwork']) || '-'));
-		}
-		document.querySelector('#billing-report-title').setAttribute('colspan', String(1+nodesLength));
-
-		function td(txt) {
-			return '<td class="auto-created-report-td">' + txt + '</td>';
-		}
-	}
-};
-
-FileManager.ExecuteReport.remove = function () {
-	var billingEl = document.querySelector('#report');
-	billingEl.parentNode.removeChild(billingEl);
-};
-
-FileManager.ExecuteReport.showFullReport = function (el) {
-
-	var executionReport = FileManager.ExecuteReport.report.execution;
-
-	el.setAttribute('hidden', 'hidden');
-
-	var html = '';
-	for (var key in executionReport) {
-		if (key != 'status' && key != 'error') {
-			html += '<tr class="execute-report-row"><td class="execute-report-part-name">' + key + '</td></tr><tr><td>' + executionReport[key] + '</td></tr>';
-		}
-	}
-
-	document.querySelector('#execute-tbody').innerHTML += html;
-};
-
-
-
-FileManager.UploadAndExecute = {};
-
-FileManager.UploadAndExecute.change = function (file) {
-	FileManager.fileExecutor.execute({data:file, contentType: file.type});
-};
-
-
-
 
 FileManager.LoadMoreButton = {};
 
@@ -584,10 +495,14 @@ Auth.ready.push(function () {
 document.addEventListener('DOMContentLoaded', function () {
 	Auth.init();
 	document.querySelector('.current-dir-label').addEventListener("click", function(e){
+		var newPath;
 		if(e.target.nodeName === "A"){
 			e.preventDefault();
 			e.stopPropagation();
-			location.hash = location.hash.match(new RegExp(".*" + e.target.dataset.hash + "\/")).pop();
+			newPath = location.hash.match(new RegExp(".*" + e.target.dataset.hash + "\/"));
+			if(newPath){
+				location.hash = newPath[0];
+			}
 		}
 	});
 });

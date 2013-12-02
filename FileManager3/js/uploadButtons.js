@@ -192,7 +192,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		if(type){
 			window.FileManager.item.itemCommandName.set("none");
 			location.hash = FileManager.CurrentPath().add(file.name);
-			FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().withoutAccount(), true);
+			FileManager.CurrentDirLabel.setContent(file.name);
 
 			window.FileManager.fileExecutor.execute({
 				data: file,
