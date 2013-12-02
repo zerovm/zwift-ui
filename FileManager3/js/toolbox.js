@@ -85,7 +85,7 @@
 
 	function checkParentClassName(el, className){
 		var topParentTag = "BODY";
-		while(el.tagName !== topParentTag){
+		while(el && el.tagName !== topParentTag){
 			if(el.classList.contains(className)){
 				return el;
 			}

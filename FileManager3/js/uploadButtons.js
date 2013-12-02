@@ -7,18 +7,17 @@ document.addEventListener("DOMContentLoaded", function(){
 	"use strict";
 
 	var uploads,
-		disableAllClass = "freeze-all",
 		buttonsPointerClass = "progressbar-buttons",
 		requests = [];
 
 	function enableButtons(){
-		document.body.classList.remove(disableAllClass);
+		document.body.classList.remove(window.FileManager.elements.disableAllClass);
 		document.body.classList.remove(buttonsPointerClass);
 	}
 
 	function disableButtons(){
-		document.body.classList.remove(disableAllClass);
-		document.body.classList.remove(buttonsPointerClass);
+		document.body.classList.add(window.FileManager.elements.disableAllClass);
+		document.body.classList.add(buttonsPointerClass);
 	}
 
 	function clearOnfinish(e){
@@ -179,25 +178,52 @@ document.addEventListener("DOMContentLoaded", function(){
 		disableButtons();
 	}
 
+	function onexec(e){
+		var file = e.target.files[0],
+			toolbox = window.FileManager.toolbox,
+			type, computedType;
+		if(toolbox.isExecutable(file.type)){
+			type = file.type;
+		}else{
+			computedType = toolbox.getMIMEType(file.name);
+			type = toolbox.isExecutable(computedType) ? computedType : null;
+		}
+		e.target.value = [];
+		if(type){
+			window.FileManager.item.itemCommandName.set("none");
+			location.hash = FileManager.CurrentPath().add(file.name);
+			FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().withoutAccount(), true);
+
+			window.FileManager.fileExecutor.execute({
+				data: file,
+				contentType: type
+			});
+		}else{
+			window.FileManager.errorMsgHandler.show({header: "Wrong file type"});
+		}
+	}
+
 	function change(e){
 		e.stopPropagation();
 		e.preventDefault();
 		switch(e.target.dataset.action){
 			case "file":
 				uploads.uploadFiles(e);
+				document.body.classList.add(window.FileManager.elements.disableToolbarClass);
+				window.addEventListener("hashchange", clearOnfinish);
 				break;
 			case "as":
 				uploadAs(e);
+				document.body.classList.add(window.FileManager.elements.disableToolbarClass);
+				window.addEventListener("hashchange", clearOnfinish);
 				break;
 			case "exec":
+				onexec(e);
 				break;
 			default:
 				console.log("unkown action: " + e.target.dataset.action);
 				break;
 		}
-		document.body.classList.add(window.FileManager.elements.disableToolbarClass);
-		window.addEventListener("hashchange", clearOnfinish);
-		return false;
 	}
 
 	document.getElementsByClassName("upload-input").forEach(function(input){

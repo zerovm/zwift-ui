@@ -203,7 +203,6 @@
 			header.textContent = "Output Data";
 			fragment.appendChild(header);
 			fragment.appendChild(createResultReport(result));
-			window.FileManager.elements.reportWrapper.removeChildren();
 			window.FileManager.elements.reportWrapper.appendChild(fragment);
 		};
 	}
@@ -223,14 +222,19 @@
 	function execute(args){
 		!timer && (timer = new Timer(document.getElementsByClassName("timer-wrapper")[0]));
 		timer.start();
+		document.body.classList.add(window.FileManager.elements.disableAllClass);
+		window.FileManager.elements.reportWrapper.removeChildren();
 		document.body.classList.add(window.FileManager.elements.bodyReportClass);
-		window.addEventListener("hashchange", singleTimeFire);
+		setTimeout(function(){
+			window.addEventListener("hashchange", singleTimeFire);
+		}, 0);
 		FileManager.ENABLE_ZEROVM && ZeroVmOnSwift.execute({
 			data: args.data,
 			contentType: args.contentType,
 			success: args.success ? args.success : function(result, report){
 				timer.stop();
 				reportObj.createReportEl(result, report);
+				document.body.classList.remove(window.FileManager.elements.disableAllClass);
 				window.FileManager.elements.reportWrapper.classList.remove(window.FileManager.elements.hiddenClass);
 				reportObj.alignTables();
 				setTimeout(function(){

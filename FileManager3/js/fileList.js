@@ -244,7 +244,15 @@
 	}
 
 	function refreshItemList(){
-		var parentEl, newEl, oldEl, template, el, loadingEl;
+		var parentEl, newEl, oldEl, template, el, loadingEl,
+			commandName;
+
+		commandName = window.FileManager.item.itemCommandName.pop();//added to prevent unnessacary request while change event fired on loaded file
+		if(commandName === "none"){
+			return;
+		}else{
+			window.FileManager.item.itemCommandName.set(commandName);
+		}
 
 		function animateItemListRefreshing(){
 			oldEl.classList.add("old-scrolling-content");

@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		mainProgressBar: mainProgressBar,
 		hiddenClass: "hidden",
 		disableToolbarClass: "disable-toolbar-right",
+		disableAllClass: "freeze-all",
 		bodyLoadingClass: "loading-content",
 		bodyReportClass: "report-shown",
 		reportWrapper: reportWrapper,
