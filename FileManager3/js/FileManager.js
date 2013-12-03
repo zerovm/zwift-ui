@@ -468,7 +468,7 @@ document.addEventListener('keyup', function (e) {
 	}
 });
 
-Auth.ready.push(function () {
+window.addEventListener('authReady', function () {
 	if (!location.hash) {
 		location.hash = Auth.getAccount() + "/";
 	} else {

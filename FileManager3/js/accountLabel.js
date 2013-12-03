@@ -1,4 +1,4 @@
-Auth.ready.push(function () {
+window.addEventListener('authReady', function () {
 	'use strict';
 
 	var accountLabel = document.getElementById('AccountLabel'),
