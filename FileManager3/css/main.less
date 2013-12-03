@@ -31,6 +31,10 @@ a{
   font-size: 14px;
 }
 #header{
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   background-color: @color2;
   padding: 5px;
 /*margin: 10px 0;*/
@@ -43,7 +47,6 @@ a{
 
 #OpenAccountWindow{
   cursor: pointer;
-  position: relative;
 }
 
 #AccountWindow{
@@ -51,17 +54,24 @@ a{
   width: 200px;
   height: 100px;
   position: absolute;
-  left: 0;
-  top: 0;
+  right: 0;
+  top: 40px;
+  z-index: 99;
+  background: white;
 }
 
-#OpenAccountWidow:active #AccountWindow,
-#OpenAccountWidow:focus #AccountWindow{
-  display: block;
+#AccountWindow .profile-picture{
+  width: 100px;
+  vertical-align: top;
 }
 
-#OpenAccountWidow:active #AccountWindow{
-  display: block;
+#AccountWindow .sign-out{
+  margin: 5px;
+}
+
+#AccountWindow .full-name{
+  color: black;
+  margin: 5px;
 }
 
 .toolbar{
