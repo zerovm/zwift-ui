@@ -215,6 +215,7 @@
 			var oldContent = document.getElementsByClassName("old-scrolling-content")[0];
 			oldContent && window.FileManager.files.ontransition(oldContent);
 		})();
+		document.body.classList.remove(window.FileManager.elements.disableToolbarClass);
 		document.body.classList.remove(window.FileManager.elements.bodyReportClass);
 		window.FileManager.elements.reportWrapper.classList.add(window.FileManager.elements.hiddenClass);
 	}
@@ -247,6 +248,7 @@
 		!timer && (timer = new Timer(document.getElementsByClassName("timer-wrapper")[0]));
 		timer.start();
 		document.body.classList.add(window.FileManager.elements.disableAllClass);
+		document.body.classList.add(window.FileManager.elements.disableToolbarClass);
 		window.FileManager.elements.reportWrapper.removeChildren();
 		document.body.classList.add(window.FileManager.elements.bodyReportClass);
 		setTimeout(function(){
