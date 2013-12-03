@@ -219,7 +219,31 @@
 		window.FileManager.elements.reportWrapper.classList.add(window.FileManager.elements.hiddenClass);
 	}
 
-	function execute(args){
+	function onsuccess(result, report){
+		timer.stop();
+		reportObj.createReportEl(result, report);
+		document.body.classList.remove(window.FileManager.elements.disableAllClass);
+		window.FileManager.elements.reportWrapper.classList.remove(window.FileManager.elements.hiddenClass);
+		reportObj.alignTables();
+		setTimeout(function(){
+			billingScroll.refresh();
+		}, 1);
+		FileManager.Loading.hide();
+		document.body.classList.remove("disabled");
+	}
+
+	function onerror(status, statusText, result){
+		timer.stop();
+		document.body.classList.remove(window.FileManager.elements.disableAllClass);
+		document.body.classList.remove("disabled");
+		window.FileManager.errorMsgHandler.show({
+			header: "An error occured. Here is what server has said: " + result,
+			status: status,
+			statusText: statusText
+		});
+	}
+
+	function execute(args, action){
 		!timer && (timer = new Timer(document.getElementsByClassName("timer-wrapper")[0]));
 		timer.start();
 		document.body.classList.add(window.FileManager.elements.disableAllClass);
@@ -228,30 +252,24 @@
 		setTimeout(function(){
 			window.addEventListener("hashchange", singleTimeFire);
 		}, 0);
-		FileManager.ENABLE_ZEROVM && ZeroVmOnSwift.execute({
-			data: args.data,
-			contentType: args.contentType,
-			success: args.success ? args.success : function(result, report){
-				timer.stop();
-				reportObj.createReportEl(result, report);
-				document.body.classList.remove(window.FileManager.elements.disableAllClass);
-				window.FileManager.elements.reportWrapper.classList.remove(window.FileManager.elements.hiddenClass);
-				reportObj.alignTables();
-				setTimeout(function(){
-					billingScroll.refresh();
-				}, 1);
-				FileManager.Loading.hide();
-				document.body.classList.remove('disabled');
-			},
-			error: args.error ? args.error : function(status, statusText, result){
-				timer.stop();
-				window.FileManager.errorMsgHandler.show({
-					header: "An error occured. Here is what server has said: " + result,
-					status: status,
-					statusText: statusText
+		switch (action){
+			case "execute":
+				FileManager.ENABLE_ZEROVM && ZeroVmOnSwift.execute({
+					data: args.data,
+					contentType: args.contentType,
+					success: args.success ? args.success : onsuccess,
+					error: args.error ? args.error : onerror
 				});
-			}
-		});
+				break;
+			case "open":
+				FileManager.ENABLE_ZEROVM && ZeroVmOnSwift.open({
+					path: args.path,
+					contentType: args.contentType,
+					success: args.success ? args.success : onsuccess,
+					error: args.error ? args.error : onerror
+				});
+				break;
+		}
 	}
 
 	reportObj = new ReportObj();
@@ -259,6 +277,11 @@
 		window.FileManager = {};
 	}
 	window.FileManager.fileExecutor = {
-		execute: execute
+		execute: function(args){
+			execute(args, "execute");
+		},
+		open: function(args){
+			execute(args, "open");
+		}
 	};
 })();

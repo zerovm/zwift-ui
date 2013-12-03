@@ -147,7 +147,11 @@
 		previousParent = parent;
 	}
 
-	function open(){
+	function open(path){
+		var args = {
+			path: path,
+		};
+		window.FileManager.fileExecutor.open(args);
 	}
 
 	function execute(path){

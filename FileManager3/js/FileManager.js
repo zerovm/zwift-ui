@@ -99,6 +99,7 @@ FileManager.OpenButton.click = function () {
 	var options = {
 		path: FileManager.CurrentPath().withoutAccount(),
 		callback: function (message) {
+			console.log(message);
 			//FileManager.ExecuteButton.hide();
 		}
 	};

@@ -617,29 +617,33 @@ var Auth = {};
 		if (e.target.status == 401) {
 			unauthorized();
 		}else{
-			reader = new FileReader();
-			if (e.target.status == 200) {
-				// result
-				var result = e.target.response;
-				// report
-				headers = parseResponseHeaders(e.target.getAllResponseHeaders());
-				reader.addEventListener('load', function (e) {
-					args.success(e.target.result, makeReportObj(headers));
-				});
-				reader.addEventListener('error', function (message) {
-					args.error(-1, '', 'JavaScript error occurred while reading blob response: ' + message)
-				});
+			if(typeof e.target.response === "string"){
+				args.error(e.target.status, e.target.statusText, "");
 			}else{
-				status = e.target.status;
-				statusText = e.target.statusText;
-				reader.addEventListener('load', function (e) {
-					args.error(status, statusText, e.target.result);
-				});
-				reader.addEventListener('error', function (message) {
-					args.error(status, statusText, 'JavaScript error occurred while reading blob response: ' + message)
-				});
+				reader = new FileReader();
+				if (e.target.status == 200) {
+					// result
+					var result = e.target.response;
+					// report
+					headers = parseResponseHeaders(e.target.getAllResponseHeaders());
+					reader.addEventListener('load', function (e) {
+						args.success(e.target.result, makeReportObj(headers));
+					});
+					reader.addEventListener('error', function (message) {
+						args.error(-1, '', 'JavaScript error occurred while reading blob response: ' + message)
+					});
+				}else{
+					status = e.target.status;
+					statusText = e.target.statusText;
+					reader.addEventListener('load', function (e) {
+						args.error(status, statusText, e.target.result);
+					});
+					reader.addEventListener('error', function (message) {
+						args.error(status, statusText, 'JavaScript error occurred while reading blob response: ' + message)
+					});
+				}
+				reader.readAsText(e.target.response);
 			}
-			reader.readAsText(e.target.response);
 		}
 	}
 
