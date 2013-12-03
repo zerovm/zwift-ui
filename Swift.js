@@ -563,119 +563,108 @@ var Auth = {};
 		return headers;
 	}
 
-	ZeroVmOnSwift.open = function (args) {
-		var accountId = args.hasOwnProperty('account') ? args.account : account;
-		var zwiftUrlPrefix = xStorageUrl.split('/').slice(0, -2).join('/') + '/';
-		var url = zwiftUrlPrefix + 'open/' + accountId + '/' + args.path;
-		window.location = url;
-		/*
-		var xhr = new XMLHttpRequest();
-		xhr.open('GET', url);
-		xhr.addEventListener('load', function (e) {
-			args.callback(e.target.responseText);
-		});
-		xhr.send();*/
-	};
+	function makeReportObj(headers){
+		var report = {}, key, executionReportKey;
+		report.execution = {};
+		for (key in headers) {
+			if (key == 'X-Nexe-Cdr-Line') {
+				report.billing = billingReport(headers[key]);
+			} else if (key.indexOf('X-Nexe') == 0) {
+				executionReportKey = key.substr('X-Nexe-'.length);
+				report.execution[executionReportKey.toLowerCase()] = headers[key];
+			}
+		}
+		return report;
+	}
 
-	ZeroVmOnSwift.execute = function (args) {
-		var xhr = new XMLHttpRequest();
-		var accountId = args.hasOwnProperty('account') ? args.account : account;
-		var url = xStorageUrl + account;
-		xhr.open('POST', url, true);
-		xhr.responseType = 'blob';
-		xhr.setRequestHeader('X-Zerovm-Execute', '1.0');
-		xhr.setRequestHeader('Content-Type', args.contentType);
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status == 200) {
+	function billingReport(xNexeCdrLine){
+		var report = {}, j, i, nodesBillingInfo, nodeCdrResult;
+		report.totalServerTime = xNexeCdrLine.split(',')[0].trim();
+		nodesBillingInfo = xNexeCdrLine.split(',').splice(1);
+		report.nodes = [];
+		j = 0;
+		for (i = 0; i < nodesBillingInfo.length; i++) {
+			if (i % 2 == 0) {
+				report.nodes[j] = {};
+				report.nodes[j].nodeServerTime = nodesBillingInfo[i];
+			} else {
+				nodeCdrResult = nodesBillingInfo[i].trim().split(' ');
+
+				report.nodes[j].systemTime = nodeCdrResult[0];
+				report.nodes[j].userTime = nodeCdrResult[1];
+
+				report.nodes[j].memoryUsed = nodeCdrResult[2];
+				report.nodes[j].SwapUsed = nodeCdrResult[3];
+
+				report.nodes[j].readsFromDisk = nodeCdrResult[2];
+				report.nodes[j].bytesReadFromDisk = nodeCdrResult[3];
+
+				report.nodes[j].writesToDisk = nodeCdrResult[4];
+				report.nodes[j].bytesWrittenToDisk = nodeCdrResult[5];
+				report.nodes[j].readsFromNetwork = nodeCdrResult[6];
+
+				report.nodes[j].bytesReadFromNetwork = nodeCdrResult[7];
+				report.nodes[j].writesToNetwork = nodeCdrResult[8];
+				report.nodes[j].bytesWrittenToNetwork = nodeCdrResult[9];
+				j++;
+			}
+		}
+		return report;
+	}
+
+	function executeHandleResponse(e, args){
+		var reader, status, statusText, headers;
+		if (e.target.status == 401) {
+			unauthorized();
+		}else{
+			reader = new FileReader();
+			if (e.target.status == 200) {
 				// result
 				var result = e.target.response;
 				// report
-				var headersString = e.target.getAllResponseHeaders();
-				var headers = parseResponseHeaders(headersString);
-				var report = makeReportObj(headers);
-
-				var reader = new FileReader();
+				headers = parseResponseHeaders(e.target.getAllResponseHeaders());
 				reader.addEventListener('load', function (e) {
-					args.success(e.target.result, report);
+					args.success(e.target.result, makeReportObj(headers));
 				});
 				reader.addEventListener('error', function (message) {
 					args.error(-1, '', 'JavaScript error occurred while reading blob response: ' + message)
 				});
-				reader.readAsText(e.target.response);
-			} else {
-				var status = e.target.status;
-				var statusText = e.target.statusText;
-				var reader = new FileReader();
+			}else{
+				status = e.target.status;
+				statusText = e.target.statusText;
 				reader.addEventListener('load', function (e) {
 					args.error(status, statusText, e.target.result);
 				});
 				reader.addEventListener('error', function (message) {
 					args.error(status, statusText, 'JavaScript error occurred while reading blob response: ' + message)
 				});
-				reader.readAsText(e.target.response);
 			}
+			reader.readAsText(e.target.response);
+		}
+	}
+
+	ZeroVmOnSwift.open = function (args) {
+		var accountId = args.hasOwnProperty('account') ? args.account : account,
+			zwiftUrlPrefix = xStorageUrl.split('/').slice(0, -2).join('/'),
+			xhr = new XMLHttpRequest();
+		xhr.open('GET', zwiftUrlPrefix + '/open/' + accountId + '/' + args.path);
+		xhr.addEventListener('load', function(e){
+			executeHandleResponse(e, args);
+		});
+		xhr.send();
+	};
+
+	ZeroVmOnSwift.execute = function (args) {
+		var xhr = new XMLHttpRequest(),
+			accountId = args.hasOwnProperty('account') ? args.account : account;
+		xhr.open('POST', xStorageUrl + accountId, true);
+		xhr.responseType = 'blob';
+		xhr.setRequestHeader('X-Zerovm-Execute', '1.0');
+		xhr.setRequestHeader('Content-Type', args.contentType);
+		xhr.addEventListener('load', function(e){
+			executeHandleResponse(e, args);
 		});
 		xhr.send(args.data);
-
-		function makeReportObj(headers) {
-
-			var report = {};
-			report.execution = {};
-
-			for (var key in headers) {
-
-				if (key == 'X-Nexe-Cdr-Line') {
-					report.billing = billingReport(headers[key]);
-
-				} else if (key.indexOf('X-Nexe') == 0) {
-					var executionReportKey = key.substr('X-Nexe-'.length);
-					report.execution[executionReportKey.toLowerCase()] = headers[key];
-				}
-			}
-
-			return report;
-		}
-
-		function billingReport(xNexeCdrLine) {
-
-			var report = {};
-
-			report.totalServerTime = xNexeCdrLine.split(',')[0].trim();
-			var nodesBillingInfo = xNexeCdrLine.split(',').splice(1);
-			report.nodes = [];
-
-			var j = 0;
-			for (var i = 0; i < nodesBillingInfo.length; i++) {
-				if (i % 2 == 0) {
-					report.nodes[j] = {};
-					report.nodes[j].nodeServerTime = nodesBillingInfo[i];
-				} else {
-					var nodeCdrResult = nodesBillingInfo[i].trim().split(' ');
-
-					report.nodes[j].systemTime = nodeCdrResult[0];
-					report.nodes[j].userTime = nodeCdrResult[1];
-
-					report.nodes[j].memoryUsed = nodeCdrResult[2];
-					report.nodes[j].SwapUsed = nodeCdrResult[3];
-
-					report.nodes[j].readsFromDisk = nodeCdrResult[2];
-					report.nodes[j].bytesReadFromDisk = nodeCdrResult[3];
-
-					report.nodes[j].writesToDisk = nodeCdrResult[4];
-					report.nodes[j].bytesWrittenToDisk = nodeCdrResult[5];
-					report.nodes[j].readsFromNetwork = nodeCdrResult[6];
-
-					report.nodes[j].bytesReadFromNetwork = nodeCdrResult[7];
-					report.nodes[j].writesToNetwork = nodeCdrResult[8];
-					report.nodes[j].bytesWrittenToNetwork = nodeCdrResult[9];
-					j++;
-				}
-			}
-
-			return report;
-		}
 	};
 
 
