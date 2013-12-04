@@ -324,9 +324,7 @@ body.report-shown #content{
   border-bottom: 1px solid #E4E4E4;
   font-size: small;
   height: 45px;
-  padding-left: 6px;
-  padding-right: 6px;
-  padding-top: 3px;
+  padding: 3px 6px;
   text-align: center;
   background-color: @color4;
   color: @color5;
@@ -575,14 +573,6 @@ body:not(.freeze-all) .item-confirm-delete button:hover{
 .menu-file button:disabled{
   opacity: 0.3;
 }
-
-body:not(.freeze-all) .menu-file button:enabled:hover{
-  background-color: rgba(0, 0, 0, 0.35);
-}
-.menu-file button:enabled:active{
-  background-color: rgba(0, 0, 0, 0.35);
-}
-
 .menu-file button.undo{
 /*background-image: url('../img/undo.png');*/
 }
@@ -595,7 +585,8 @@ body:not(.freeze-all) .menu-file button:enabled:hover{
 /*background-image: url('../img/save.png');*/
 }
 .menu-file .txt-btn{
-  background: #ffff00;
+  background: url(../img/blue-icon.png);
+  background-size: auto 200%;
   pointer-events: none;
   opacity: 0;
 }
@@ -847,10 +838,47 @@ template{
   display: -moz-flex;
   display: -ms-flex;
   align-items: center;
-  background: #8f9ba0;
+  background: #e0e9ee;
   margin: 0;
   padding-left: 10px;
   position: relative;
+  border: 1px solid #babbb8;
+  border-radius: 3px;
+}
+.progressbar.run-progress-run .progress{
+  background: url('../img/infinite_progress.png') no-repeat, #e0e9ee;
+  -webkit-animation: 1300ms infinite-progressbar 0ms linear infinite;
+  -moz-animation: 1300ms infinite-progressbar 0ms linear infinite;
+  animation: 1300ms infinite-progressbar 0ms linear infinite;
+}
+.wide-content .progressbar.run-progress-run .progress{
+  -webkit-animation-duration: 2600ms;
+  -moz-animation-duration: 2600ms;
+  animation-duration: 2600ms;
+}
+@-webkit-keyframes infinite-progressbar{
+  0%{
+    background-position: -200% 0;
+  }
+  100%{
+    background-position: 200% 0;
+  }
+}
+@-moz-keyframes infinite-progressbar{
+  0%{
+    background-position: 50% 0;
+  }
+  100%{
+    background-position: -150% 0;
+  }
+}
+@keyframes infinite-progressbar{
+  0%{
+    background-position: 0 0;
+  }
+  100%{
+    background-position: -150% 0;
+  }
 }
 .progressbar .progress-value{
   width: 0;
@@ -858,10 +886,10 @@ template{
   position: absolute;
   left: 0;
   top: 0;
-  background: #5c727a;
-  -webkit-transition: 0 width 250ms ease-in-out;
-  -moz-transition: 0 width 250ms ease-in-out;
-  transition: 0 width 250ms ease-in-out;
+  background: url(../img/infinite_progress.png);
+  -webkit-transition: 300ms width 0ms ease-in-out;
+  -moz-transition: 300ms width 0ms ease-in-out;
+  transition: 300ms width 0ms ease-in-out;
 }
 .progressbar p{
   position: relative;
@@ -869,7 +897,12 @@ template{
   font-size: 14px;
   line-height: 14px;
   margin: 0;
-  color: white;
+  color: #e0e9ee;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  align-items: center;
+  height: 29px;
 }
 .progressbar .buttons-wrapper{
   display: flex;
@@ -910,8 +943,9 @@ button:not(.btn):hover{
 }
 .three-dot{
   width: 20px;
-  background: url('../img/three-dot.png') no-repeat 5px 3px;
+  background: url('../img/three-dot.png') center center no-repeat;
   border: none;
+  outline: none;
 }
 .submenu{
   height: 0;

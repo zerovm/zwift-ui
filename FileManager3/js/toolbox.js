@@ -165,6 +165,7 @@
 			buttonWrapper = document.createElement("div"),
 			hideButton = document.createElement("button"),
 			cancelButton = document.createElement("button"),
+			animationClass = "run-progress-run",
 			textEl = document.createElement("p"),
 			isRemoved,
 			request = params.request, onEndCallback = params.onEndCallback, wrapper = params.wrapper;
@@ -181,6 +182,9 @@
 				}else{
 					setText("Finalizing");
 				}
+			}else{
+				setText("Loaded " + e.loaded);
+				!progressbarEl.classList.contains(animationClass) && progressbarEl.classList.add(animationClass);
 			}
 		}
 
@@ -219,7 +223,7 @@
 		this.setProgressValue = setProgressValue;
 		this.wrapper = progressbarEl;
 
-		request && request.upload.addEventListener("progress", setProgress);
+		request && (params.isDownload ? request.addEventListener("progress", setProgress) : request.upload.addEventListener("progress", setProgress));
 		request && request.addEventListener("load", remove);
 
 		progressbarEl.className = "progressbar item";
