@@ -436,7 +436,9 @@
 				a.download = previousParent.dataset.path;
 				a.dispatchEvent(clickEvent);
 			},
-			oncopy: oncopy,
+			oncopy: function(){
+				oncopy();
+			},
 			onmetadata: function(e){
 				var item = previousParent;
 				metadataObj.showMetaData(item.dataset.path, item.dataset.type, function(callback){
