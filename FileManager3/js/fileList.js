@@ -1,7 +1,8 @@
 (function(){
 	"use strict";
 
-	var LIMIT = 20;
+	var LIMIT = 20,
+		notTextFileMsgContent = document.createElement("label");
 
 	function list(callback){
 		var requestArgs = {};
@@ -189,6 +190,54 @@
 		return html;
 	}
 
+	function editFile(el){
+		var args = {
+				path: FileManager.CurrentPath().withoutAccount(),
+				success: handleResponse,
+				error: function(status, statusText){
+					progressbar.cancel();
+					window.FileManager.elements.upButton.removeAttribute('disabled');
+					window.FileManager.errorMsgHandler.show({header: "Ajax error occured", status:status, statusText: statusText});
+				},
+				notExist: function(){
+					window.FileManager.errorMsgHandler.show({header: "File Not Found."});
+					window.FileManager.elements.upButton.removeAttribute('disabled');
+					progressbar.cancel();
+				},
+				progress: function(loaded){
+					if(loaded > 2097152){
+						//xhr.abort();
+						el.innerHTML = 'File is too large (2MB+).';
+						window.FileManager.elements.upButton.removeAttribute('disabled');
+						progressbar.cancel();
+					}
+				}
+			},
+			progressbar,
+			xhr;
+		window.FileManager.elements.upButton.setAttribute('disabled', 'disabled');
+		if(FileManager.ENABLE_SHARED_CONTAINERS){
+			args.account = FileManager.CurrentPath().account();
+		}
+		xhr = SwiftV1.getFile(args);
+		progressbar = new window.FileManager.toolbox.ProgressBar({
+			request: xhr,
+			wrapper: el,
+			isDownload: true
+		});
+		progressbar.setText("Fetching file...");
+
+		function handleResponse(data, contentType){
+			var fileName = FileManager.CurrentPath().name();
+
+			FileManager.CurrentDirLabel.setContent(fileName);
+
+			window.FileManager.fileEditor.show(data, contentType, fileName);
+
+			window.FileManager.elements.upButton.removeAttribute('disabled');
+		}
+	}
+
 	function handleFileClick(el, callback){//TODO: remove extra request for file exist
 		var args,
 			currentPath = FileManager.CurrentPath(),
@@ -210,11 +259,13 @@
 					downloadLink.setAttribute('href', href);
 					downloadLink.download = filename;
 					if(window.FileManager.toolbox.isEditable(contentType)){
-						FileManager.File.edit(el);
+						editFile(el);
 					}else{
-						FileManager.File.notTextFile(el);
+						el.removeChildren();
+						FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().name());
+						el.appendChild(notTextFileMsgContent);
 					}
-					//document.querySelector('.download-link').setAttribute('download', filename);
+				//document.querySelector('.download-link').setAttribute('download', filename);
 			}
 			callback();
 		}
@@ -302,6 +353,9 @@
 			}
 		}
 	}
+
+	notTextFileMsgContent.className = "empty-list";
+	notTextFileMsgContent.textContent = "Not text file.";
 
 	document.addEventListener("transitionend", ontransition);
 	document.addEventListener("webkitTransitionEnd", ontransition);

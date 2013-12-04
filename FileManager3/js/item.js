@@ -16,7 +16,6 @@
 		}
 		selectedPath = FileManager.CurrentPath().add(name);
 		FileManager.Loading.hide();
-		FileManager.item.showLoading(itemEl);
 		location.hash = selectedPath;
 		FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().withoutAccount(), true);
 	}
@@ -125,11 +124,6 @@
 		});
 	}
 
-	function showLoading(itemEl){
-		itemEl.classList.add('clicked');
-		itemEl.insertAdjacentHTML('afterbegin', loadingHtml);
-	}
-
 	function toggleMenu(e){
 		var parent = FileManager.toolbox.getParentByClassName(e, 'item');
 		if(previousParent === parent){
@@ -149,7 +143,7 @@
 
 	function open(path){
 		var args = {
-			path: path,
+			path: path
 		};
 		window.FileManager.fileExecutor.open(args);
 	}
@@ -180,7 +174,8 @@
 		if(FileManager.ENABLE_SHARED_CONTAINERS){
 			args.account = FileManager.CurrentPath().account();
 		}
-		FileManager.File.getFileXhr = SwiftV1.getFile(args);
+		SwiftV1.getFile(args);//TODO: should there be ability of canceling?
+		//FileManager.File.getFileXhr = SwiftV1.getFile(args);
 	}
 
 	function Submenu(){
@@ -540,7 +535,6 @@
 	window.FileManager.item = {
 		selectedPath: selectedPath,
 		click: onItemClick,
-		showLoading: showLoading,
 		toggleMenu: toggleMenu,
 		itemCommandName: itemCommandName,
 		open: open,
