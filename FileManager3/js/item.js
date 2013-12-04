@@ -421,8 +421,9 @@
 			oncopy();
 		};
 		handlers = {
-			share: function(e){
-
+			onshare: function(e){
+				var rightsDialog = document.getElementById('RightsDialog');
+				rightsDialog.classList.remove('hidden');
 			},
 			onopen: function(){
 				itemCommandName.set("open");
