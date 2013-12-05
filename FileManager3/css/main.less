@@ -14,7 +14,7 @@ label::after{
   display: none;
 }
 html{
-  background: url('../img/cloud_left_top.png') left top, url('../img/cloud_right_top.png') right top, url('../img/cloud_left_bottom.png') left bottom, url('../img/cloud_right_bottom.png') right bottom, @color1;
+  background: url(../img/cloud_left_top.png) left top, url(../img/cloud_right_top.png) right top, url(../img/cloud_left_bottom.png) left bottom, url(../img/cloud_right_bottom.png) right bottom, @color1;
   background-repeat: no-repeat;
   background-attachment: fixed;
   overflow: hidden;
@@ -89,7 +89,7 @@ a{
 }
 
 .toolbar{
-  height: 50px;
+  height: 35px;
   background-color: @color3;
   font-size: 0;
 }
@@ -107,7 +107,7 @@ a{
 .toolbar button,
 .toolbar .upload-input,
 .toolbar label{
-  margin: 2px 0;
+  margin: 0;
   vertical-align: middle;
   font-size: 14px;
 }
@@ -161,10 +161,9 @@ body.wide-content .center{
 .main-content-wrapper{
   height: 100%;
   display: -webkit-flex;
-  display: flex;
-  display: -webkit-flex;
   display: -moz-flex;
-  display: -ms-flex;
+  display: -ms-flexbox;
+  display: flex;
   -webkit-flex-direction: column;
   flex-direction: column;
   margin: 0 auto;
@@ -173,17 +172,15 @@ body.wide-content .center{
   box-orient: vertical;
 }
 .fixed-top{
-/*position: fixed;*/
   z-index: 99;
-/*opacity: 0.95;*/
 }
 
 .toolbar-button{
-  border-radius: 0px !important;
+  border-radius: 0;
   padding: 0;
   border: 0 solid @color1;
-  width: 45px;
-  height: 45px;
+  width: 30px;
+  height: 35px;
   background-position: 2px 0px;
   opacity: 0.7;
 }
@@ -201,7 +198,9 @@ body:not(.freeze-all) .toolbar-button:enabled:hover{
 }
 
 #UpButton{
-  background: url("../img/white-icon.png") -398px -2px no-repeat;
+  background: url(../img/white_icon.png) -234px center no-repeat;
+  background-size: auto 35px;
+  margin: 0 2px;
 }
 
 .disabled #UpButton,
@@ -211,21 +210,19 @@ body:not(.freeze-all) .disabled #UpButton:hover,
   border: none !important;
   background-color: transparent !important;
 }
-
 #CreateContainerButton{
-  background: url("../img/white-icon.png") -235px -2px no-repeat;
+  background-position: -144px center;
   display: none;
 }
 .location-root #CreateContainerButton{
   display: inline-block;
 }
-
 #CreateFileButton{
-  background: url("../img/white-icon.png") -143px -2px no-repeat;
+  background-position: -88px center;
 }
 
 #CreateDirectoryButton{
-  background: url("../img/white-icon.png") -189px -2px no-repeat;
+  background-position: -116px center;
 }
 .location-root #UploadAndExecuteButton,
 .location-root #UploadAsButton,
@@ -234,37 +231,34 @@ body:not(.freeze-all) .disabled #UpButton:hover,
 .location-root #CreateDirectoryButton{
   display: none;
 }
-
 #CreateContainerButton.selected,
 #CreateFileButton.selected,
 #CreateDirectoryButton.selected{
   background-color: rgba(255, 255, 255, 0.25);
 }
-
-#UploadFilesButton{
-  background: url("../img/white-icon.png") -4px 2px no-repeat;
+.toolbar .right .toolbar-button{
+  background: url(../img/white_icon.png) -2px center no-repeat;
+  background-size: auto 35px;
 }
-
 #UploadAsButton{
-  background: url("../img/white-icon.png") -53px 2px no-repeat;
+  background-position: -30px center;
 }
-
 #UploadAndExecuteButton{
-  background: url("../img/white-icon.png") -99px -2px no-repeat;
+  background-position: -60px center;
 }
-
 #WideButton{
-  background: url("../img/white-icon.png") -295px -6px no-repeat;
+  background-position: -176px -3px;
 }
-
 body.wide-content #WideButton{
-  background: url("../img/white-icon.png") -344px -6px no-repeat;
+  background-position: -208px -3px;
 }
 .code-editor-is-shown .current-dir-label{
   pointer-events: none; /*TODO: add download on click in such situation*/
 }
-.current-dir-label{
-  display: inline-block;
+.toolbar .current-dir-label{
+  margin-top: 4px;
+  display: inline-flex;
+  align-items: center;
 }
 .current-dir-label::after{
   display: none;
@@ -280,13 +274,9 @@ body:not(.freeze-all) .current-dir-label a:hover,
 .current-dir-label .path-separator{
   display: inline-block;
   width: 13px;
-  height: 30px;
-  vertical-align: middle;
+  height: 23px;
   position: relative;
-  top: -3px;
-  transform: rotateZ(360deg);
-  -moz-transform: rotateZ(360deg);
-  -webkit-transform: rotateZ(360deg);
+  top: -2px;
   margin: 0 2px;
 }
 
@@ -295,6 +285,9 @@ body:not(.freeze-all) .current-dir-label a:hover,
   flex: 1;
   -moz-box-orient: vertical;
   overflow-y: auto;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flexbox;
   display: flex;
   flex-direction: column;
 }
@@ -359,10 +352,10 @@ body.report-shown #content{
 }
 .item{
   cursor: default;
-  display: flex;
   display: -webkit-flex;
   display: -moz-flex;
-  display: -ms-flex;
+  display: -ms-flexbox;
+  display: flex;
 }
 body:not(.freeze-all) .item:not(.no-hover):hover,
 body:not(.freeze-all) .load-more-button:hover{
@@ -380,10 +373,10 @@ body:not(.freeze-all) .load-more-button:hover{
   cursor: default;
 }
 .upload-as form{
-  display: flex;
   display: -webkit-flex;
   display: -moz-flex;
-  display: -ms-flex;
+  display: -ms-flexbox;
+  display: flex;
   width: 100%;
   height: 100%;
   align-items: center;
@@ -391,6 +384,9 @@ body:not(.freeze-all) .load-more-button:hover{
 .upload-as form .input-wrapper{
   flex: 1;
   padding-right: 15px;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flexbox;
   display: flex;
   justify-content: flex-start;
   cursor: default;
@@ -420,17 +416,18 @@ body:not(.freeze-all) .load-more-button:hover{
   padding-top: 3px;
 }
 .item .left{
-  display: flex;
   display: -webkit-flex;
   display: -moz-flex;
-  display: -ms-flex;
+  display: -ms-flexbox;
+  display: flex;
   flex: 1;
+  align-items: center;
 }
 .item .right{
-  display: flex;
   display: -webkit-flex;
   display: -moz-flex;
-  display: -ms-flex;
+  display: -ms-flexbox;
+  display: flex;
   align-items: center;
 }
 .item label.name{
@@ -439,10 +436,10 @@ body:not(.freeze-all) .load-more-button:hover{
   margin: 0;
   flex-grow: 1;
   line-height: normal;
-  display: flex;
   display: -webkit-flex;
   display: -moz-flex;
-  display: -ms-flex;
+  display: -ms-flexbox;
+  display: flex;
   align-items: center;
   padding-left: 5px;
 }
@@ -545,7 +542,7 @@ body:not(.freeze-all) .item-confirm-delete button:hover{
 }
 
 .item-confirm-delete button{
-  background-image: url('../img/delete.png');
+  background-image: url(../img/delete.png);
   background-position: 5px 6px !important;
 }
 
@@ -564,45 +561,48 @@ body:not(.freeze-all) .item-confirm-delete button:hover{
   display: none;
 }
 .code-editor-is-shown .menu-file{
-  display: block;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flexbox;
+  display: flex;
+  align-items: center;
 }
-
 .menu-file button{
-  height: 45px;
-  width: 45px;
-  padding-left: 24px;
-  padding-right: 5px;
+  height: 35px;
+  width: 30px;
   background-repeat: no-repeat;
   background-position: 5px 6px;
-  border: solid 1px transparent;
-  margin: 1px;
-  background-color: transparent;
+  border: none;
+  outline: none;
+  padding: 0;
+  margin: 0 2px;
   vertical-align: middle;
 }
-
-.menu-file .selected{
-  background-color: rgba(0, 0, 0, 0.35);
-}
-
-.menu-file button:disabled{
-  opacity: 0.3;
-}
 .menu-file button.undo{
-/*background-image: url('../img/undo.png');*/
+  background-position: -448px -30px;
 }
-
+.menu-file.undo button.undo{
+  background-position: -448px top;
+}
 .menu-file button.redo{
-/*background-image: url('../img/redo.png');*/
+  background-position: -424px -30px;
 }
-
+.menu-file.redo button.redo{
+  background-position: -424px top;
+}
 .menu-file button.save{
-/*background-image: url('../img/save.png');*/
+  background-position: -164px -30px;
+}
+.menu-file.save button.save{
+  background-position: -164px top;
+}
+.menu-file button.save-as{
+  background-position: -332px top;
 }
 .menu-file .txt-btn{
-  background: url(../img/blue-icon.png);
-  background-size: auto 200%;
+  background: url(../img/submenu_buttons.png) -138px top no-repeat;
+  background-size: auto 70px;
   pointer-events: none;
-  opacity: 0;
 }
 .menu-file .txt-btn.execute,
 .menu-file .txt-btn.save-as,
@@ -613,7 +613,7 @@ body:not(.freeze-all) .item-confirm-delete button:hover{
   pointer-events: auto
 }
 .menu-file button.save-as{
-/*background-image: url('../img/save.png');*/
+/*background-image: url(../img/save.png);*/
 }
 .invalid-input{
   background-color: #ffffe0 !important;
@@ -662,6 +662,7 @@ body:not(.freeze-all) .item-confirm-delete button:hover{
 }
 .download-link{
   color: rgba(0, 0, 0, 0.35);
+  padding-top: 3px;
 }
 .rights-table tr td:first-child{
   font-size: small;
@@ -743,75 +744,97 @@ template{
 }*/
 
 .file-type{
-  width: 40px;
-  min-width: 40px;
+  width: 41px;
   height: 40px;
-  background: url("../img/file-type-all.png") -97px -104px no-repeat;
+  background: url(../img/file-type.png) -746px center no-repeat;
+  background-size: auto 45px;
 }
-.item[data-content-type*=text] .file-type,
-.item[data-content-type*=text-plain] .file-type{
-  background-position: -183px -6px;
+.item[data-content-type*=text] .file-type{
+  background-position: -170px center;
 }
 .item[data-content-type*=spreadsheetml] .file-type,
 .item[data-content-type*=excel] .file-type{
-  background-position: -17px -6px;
+  background-position: -4px center;
 }
 .item[data-content-type*=htm] .file-type,
 .item[data-content-type*=xml] .file-type{
-  background-position: -57px -6px;
+  background-position: -44px center;
 }
 .item[data-content-type*=msword] .file-type,
 .item[data-content-type*=wordprocessingml] .file-type{
-  background-position: -97px -6px;
+  background-position: -84px center;
 }
 .item[data-content-type*=rar] .file-type{
-  background-position: -147px -6px;
+  background-position: -128px center;
 }
 .item[data-content-type*=image] .file-type{
-  background-position: -223px -6px;
+  background-position: -210px center;
 }
 .item[data-content-type*=pdf] .file-type{
-  background-position: -263px -6px;
+  background-position: -250px center;
 }
 .item[data-content-type*=nexe] .file-type{
-  background-position: -307px -6px;
+  background-position: -292px center;
 }
 .item[data-content-type*=presentationml] .file-type,
 .item[data-content-type*=powerpoint] .file-type{
-  background-position: -17px -53px;
+  background-position: -336px center;
+}
+.item[data-content-type*=zip] .file-type{
+  background-position: -376px center;
+}
+.item[data-content-type*=csv] .file-type{
+  background-position: -416px center;
+}
+.item[data-content-type*=php] .file-type{
+  background-position: -460px center;
+}
+.item[data-content-type*=python] .file-type{
+  background-position: -500px center;
+}
+.item[data-content-type*=json] .file-type{
+  background-position: -540px center;
+}
+.item[data-content-type*=lua] .file-type{
+  background-position: -582px center;
+}
+.item[data-content-type*=video] .file-type{
+  background-position: -624px center;
+}
+.item[data-content-type*=css] .file-type{
+  background-position: -666px center;
+}
+.item[data-content-type*=audio] .file-type{
+  background-position: -704px center;
+}
+.item[data-content-type*=x-csrc] .file-type{
+  background-position: -789px center;
 }
 .item[data-content-type*=gtar] .file-type,
 .item[data-content-type*=x-tar] .file-type,
-.item[data-content-type*=x-rar] .file-type,
-.item[data-content-type*=zip] .file-type{
-  background-position: -57px -53px;
+.item[data-content-type*=x-rar] .file-type{
+  background-position: -876px center;
 }
-.item[data-content-type*=csv] .file-type{
-  background-position: -107px -53px;
+.item[data-content-type*=java] .file-type{
+  background-position: -834px center;
 }
-.item[data-content-type*=php] .file-type{
-  background-position: -143px -53px;
+.item[data-content-type*=rtf] .file-type{/*TODO: check real rtf type*/
+  background-position: -918px center;
 }
-.item[data-content-type*=python] .file-type{
-  background-position: -183px -53px;
+.item[data-content-type*=md] .file-type{
+  background-position: -964px center;
 }
-.item[data-content-type*=json] .file-type{
-  background-position: -223px -53px;
+.item[data-content-type*=javascript] .file-type{
+  background-position: -1004px center;
 }
-.item[data-content-type*=lua] .file-type{
-  background-position: -267px -53px;
+.item[data-type=directory] .file-type {
+   background-position: -1054px center;
 }
-.item[data-content-type*=video] .file-type{
-  background-position: -305px -53px;
+.item[data-type=container] .file-type{
+  background-position: -1116px center;
 }
-.item[data-content-type*=css] .file-type{
-  background-position: -17px -104px;
-}
-.item[data-content-type*=audio] .file-type{
-  background-position: -57px -104px;
-}
-.item[data-content-type*=x-csrc] .file-type{
-  background-position: -140px -104px;
+.item[data-type=shared] .file-type{
+  background-position: -1222px center;
 }
 .code-editor-wrapper{
   margin: 0 auto;
@@ -839,18 +862,18 @@ template{
   user-select: none;
 }
 .progressbar{
-  display: flex;
   display: -webkit-flex;
   display: -moz-flex;
-  display: -ms-flex;
+  display: -ms-flexbox;
+  display: flex;
   align-items: center;
 }
 .progressbar .progress{
   flex: 1;
-  display: flex;
   display: -webkit-flex;
   display: -moz-flex;
-  display: -ms-flex;
+  display: -ms-flexbox;
+  display: flex;
   align-items: center;
   background: #e0e9ee;
   margin: 0;
@@ -860,7 +883,7 @@ template{
   border-radius: 3px;
 }
 .progressbar.run-progress-run .progress{
-  background: url('../img/infinite_progress.png') no-repeat, #e0e9ee;
+  background: url(../img/infinite_progress.png) no-repeat, #e0e9ee;
   -webkit-animation: 1300ms infinite-progressbar 0ms linear infinite;
   -moz-animation: 1300ms infinite-progressbar 0ms linear infinite;
   animation: 1300ms infinite-progressbar 0ms linear infinite;
@@ -911,7 +934,7 @@ template{
   font-size: 14px;
   line-height: 14px;
   margin: 0;
-  color: #e0e9ee;
+  color: #8b9cae;
   display: -webkit-flex;
   display: -moz-flex;
   display: flex;
@@ -919,10 +942,10 @@ template{
   height: 29px;
 }
 .progressbar .buttons-wrapper{
-  display: flex;
   display: -webkit-flex;
   display: -moz-flex;
-  display: -ms-flex;
+  display: -ms-flexbox;
+  display: flex;
   align-items: center;
   justify-content: space-between;
   width: 140px;
@@ -957,7 +980,7 @@ button:not(.btn):hover{
 }
 .three-dot{
   width: 20px;
-  background: url('../img/three-dot.png') center center no-repeat;
+  background: url(../img/three-dot.png) center center no-repeat;
   border: none;
   outline: none;
 }
@@ -973,38 +996,38 @@ button:not(.btn):hover{
   height: 45px;
 }
 .submenu button{
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 35px;
   border: none;
-  background-image: url('../img/blue-icon.png');
-  background-color: transparent;
+  background-image: url(../img/submenu_buttons.png);
+  background-size: auto 70px;
 }
 .submenu button.share{
-  background-position: -221px -3px;
+  background-position: -192px 0;
 }
 .submenu button.open{
-  background-position: -473px -3px;
+  background-position: -362px 0;
 }
 .submenu button.delete{
-  background-position: -344px -3px;
+  background-position: -275px 0;
 }
 .submenu button.edit{
-  background-position: -265px -3px;
+  background-position: -222px 0;
 }
 .submenu button.type{
-  background-position: -93px -3px;
+  background-position: -108px 0;
 }
 .submenu button.execute{
-  background-position: -134px -3px;
+  background-position: -136px 0;
 }
 .submenu button.copy{
-  background-position: -385px -3px;
+  background-position: -304px 0;
 }
 .submenu button.metadata{
-  background-position: -51px -3px
+  background-position: -80px 0
 }
 .submenu button.download{
-  background-position: -304px -3px;
+  background-position: -248px 0;
 }
 
 #CreateDialog{
@@ -1033,10 +1056,10 @@ button:not(.btn):hover{
   display: inline-block;
 }
 #CreateDialog.dialog-shown .dialog-wrapper{
-  display: flex;
   display: -webkit-flex;
   display: -moz-flex;
-  display: -ms-flex;
+  display: -ms-flexbox;
+  display: flex;
   align-items: center;
 /*color: #ffffff;*/
   height: 33px; //TODO: to hell with bootstrap!!!
@@ -1081,13 +1104,6 @@ button:not(.btn):hover{
   overflow-y: auto;
   height: auto;
   width: 100%;
-/*
-  display: flex;
-  display: -webkit-flex;
-  display: -moz-flex;
-  display: -ms-flex;
-  flex-direction: column;*/
-/*max-height: 100px;*/
 }
 #CreateDialog.metadata .input-group{
   display: block;
@@ -1116,7 +1132,7 @@ button:not(.btn):hover{
   width: 32px;
   background-color: transparent;
   border: 0;
-  background-image: url('../img/blue-icon.png');
+  background-image: url(../img/blue-icon.png);
   background-position: -346px -6px;
 }
 
@@ -1206,6 +1222,8 @@ body.report-shown .report-wrapper{
 }
 #report .billing-wrapper{
   display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flexbox;
   display: flex;
 }
 #report .content-table-wrapper{

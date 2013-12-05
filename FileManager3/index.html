@@ -136,96 +136,13 @@
 	<div class="code-editor-wrapper">
 		<div id="codeEditor"></div>
 	</div>
-
-	<!-- templates -->
-	<template id="containerTemplate">
-		<div class="item" title="{{title}}" data-path="{{path}}" data-type="container">
-			<span class="left">
-				<span style="background:url('img/container.png');width: 42px;height: 42px;"></span>
-				<label class="name">{{name}}</label>
-			</span>
-			<span class="right">
-				<label class="size">{{size}}</label>
-				<label class="files">{{files}}</label>
-			</span>
-			<button class="three-dot btn"></button>
-		</div>
-	</template>
-
-	<template id="sharedContainerTemplate">
-		<div class="item" title="{{title}}" data-path="{{path}}" data-type="shared">
-			<span class="left">
-				<span style="background:url('img/shared-container.png');width: 42px;height: 42px;"></span>
-				<label class="name">{{name}}</label>
-			</span>
-			<span class="right">
-				<label class="size">...</label>
-				<label class="files">...</label>
-			</span>
-			<button class="three-dot btn"></button>
-		</div>
-	</template>
-
-	<template id="fileTemplate">
-		<div class="item" title="{{title}}" data-path="{{path}}" data-type="file" data-content-type="{{file-type}}">
-			<span class="left">
-				<span class="file-type"></span>
-				<label class="name">{{name}}</label>
-			</span>
-			<span class="right">
-				<label class="size">{{size}}</label>
-				<label class="modified">{{modified}}</label>
-			</span>
-			<button class="three-dot btn"></button>
-		</div>
-	</template>
-
-	<template id="directoryTemplate">
-		<div class="item" title="{{title}}" data-path="{{path}}" data-type="directory">
-			<span class="left">
-				<img src="img/folder.png">
-				<label class="name">{{name}}</label>
-			</span>
-			<span class="right">
-			</span>
-			<button class="three-dot btn"></button>
-		</div>
-	</template>
-
-	<template id="newScrollingContentTemplate">
-		<div class="new-scrolling-content scrolling-content"></div>
-	</template>
-
-	<template id="itemLoadingTemplate">
-		<span class="item-loading">Loading...</span>
-	</template>
-
-	<template id="noContainersTemplate">
-		<label class="empty-list">There are no containers.</label>
-	</template>
-
-	<template id="noFilesTemplate">
-		<label class="empty-list">There are no files.</label>
-	</template>
-
-	<template id="notTextFileTemplate">
-		<label class="empty-list">Not text file.</label>
-	</template>
-
-	<template id="largeFileTemplate">
-		<label class="empty-list">File is too large.</label>
-	</template>
-
-	<template id="scrollingContentLoadingTemplate">
-		<label class="scrolling-content-loading">Loading...</label>
-	</template>
 </div>
 </div>
 <!-- templates -->
 <template id="containerTemplate">
 	<div class="item" title="{{title}}" data-path="{{path}}" data-type="container">
 			<span class="left">
-				<span style="background:url('img/container.png');width: 42px;height: 42px;"></span>
+				<span class="file-type"></span>
 				<label class="name">{{name}}</label>
 			</span>
 			<span class="right">
@@ -239,7 +156,7 @@
 <template id="sharedContainerTemplate">
 	<div class="item" title="{{title}}" data-path="{{path}}" data-type="shared">
 			<span class="left">
-				<span style="background:url('img/shared-container.png');width: 42px;height: 42px;"></span>
+				<span class="file-type"></span>
 				<label class="name">{{name}}</label>
 			</span>
 			<span class="right">
@@ -267,7 +184,7 @@
 <template id="directoryTemplate">
 	<div class="item" title="{{title}}" data-path="{{path}}" data-type="directory">
 			<span class="left">
-				<img src="img/folder.png">
+				<span class="file-type"></span>
 				<label class="name">{{name}}</label>
 			</span>
 			<span class="right">

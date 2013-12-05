@@ -63,7 +63,7 @@
 		return mimeObj[m];
 	}
 
-	function isEditable(m, name){//TODO: rewrite it
+	function isEditable(m, name){//TODO: rewrite it!!!!!
 		var ext = getExt(m), predefMIME;
 		if(ext){
 			return extObj[ext["ext"]].isEditable;

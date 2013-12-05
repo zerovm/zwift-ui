@@ -319,7 +319,7 @@
 		newEl = document.querySelector(".new-scrolling-content");
 
 		el = newEl;
-		el.textContent = "Loading...";
+		//el.textContent = "Loading...";
 		if(FileManager.CurrentPath().isContainersList()){
 			FileManager.Containers.list(animateItemListRefreshing);
 		}else if(FileManager.CurrentPath().isFilesList()){

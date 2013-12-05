@@ -527,7 +527,7 @@
 
 	itemCommandName = new ItemCommandName();
 	document.addEventListener("DOMContentLoaded", function(){
-		loadingHtml = document.querySelector('#itemLoadingTemplate').innerHTML;//TODO: replace this s...
+		//loadingHtml = document.querySelector('#itemLoadingTemplate').innerHTML;//TODO: replace this s...
 		progressElWrapper = document.getElementById("progressDialog");
 	});
 
