@@ -230,45 +230,41 @@ FileManager.Shared = {};
 FileManager.Shared.isShared = function (path) {
 	return path.split('/')[0] != Auth.getAccount();//TODO: check condition, looks weird
 };
-FileManager.Shared.listSharedContainers = function (sharedContainers, scrollingContentEl) {
+FileManager.Shared.listSharedContainers = function(sharedContainers, scrollingContentEl){
+	var html = document.querySelector('#sharedContainerTemplate').innerHTML,
+		el;
 
-	for (var k in sharedContainers) {
-		add(k, sharedContainers[k]);
-		update(k, sharedContainers[k]);
+	for(var k in sharedContainers){
+		el = add(k, sharedContainers[k]);
+		update(k, el);
 	}
 
-	function add(sharedContainer, email) {
-
-		var name = email + '/' + sharedContainer.split('/')[1];
-		name = FileManager.toolbox.makeShortName(name);
-		var html = document.querySelector('#sharedContainerTemplate').innerHTML;
-		html = html.replace('{{name}}', FileManager.toolbox.escapeHTML(name));
-		html = html.replace('{{path}}', FileManager.toolbox.escapeHTML(sharedContainer));
-		html = html.replace('{{title}}', FileManager.toolbox.escapeHTML(sharedContainer));
-		scrollingContentEl.insertAdjacentHTML('afterbegin', html);
+	function add(sharedContainer, email){
+		var name = FileManager.toolbox.makeShortName(email + '/' + sharedContainer.split('/')[1]);
+		scrollingContentEl.insertAdjacentHTML('afterbegin',
+			html.replace('{{name}}', FileManager.toolbox.escapeHTML(name))
+				.replace('{{path}}', FileManager.toolbox.escapeHTML(sharedContainer))
+				.replace('{{title}}', FileManager.toolbox.escapeHTML(sharedContainer))
+		);
+		return scrollingContentEl.firstElementChild;
 	}
 
-	function update(path) {
+	function update(path, el){
+		var curPath = FileManager.Path(path);
 		SharedContainersOnSwift.getContainerSize({
-			account: FileManager.Path(path).account(),
-			container: FileManager.Path(path).container(),
-			success: function (bytes, count) {
-				var size = FileManager.toolbox.shortenSize(bytes);
-
-				var selector = '.item[data-path="' + path + '"]';//owful
-				var el = scrollingContentEl.querySelector(selector);
-
-				el.querySelector('.size').textContent = size;
+			account: curPath.account(),
+			container: curPath.container(),
+			success: function(bytes, count){
+				el.querySelector('.size').textContent = FileManager.toolbox.shortenSize(bytes);
 				el.querySelector('.files').textContent = count;
 			},
-			error: function (status, statusText) {
-				var selector = '.item[data-path="' + path + '"]';
-				var el = scrollingContentEl.querySelector(selector);
+			error: function(status, statusText){
 				el.querySelector('.size').textContent = 'Error: ' + status + ' ' + statusText;
 			}
 		});
 	}
 };
+
 
 //SHARED-CONTAINERS
 FileManager.AddShared = {};
