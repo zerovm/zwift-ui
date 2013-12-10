@@ -38,90 +38,6 @@ FileManager.AccountLabel.init = function () {
 
 
 
-FileManager.CurrentDirLabel = {};
-
-FileManager.CurrentDirLabel.MAX_LENGTH = 40;
-
-FileManager.CurrentDirLabel.setContent = function (content, isArrowsSeparated) {
-	var el = document.querySelector('.current-dir-label'),
-		splittedContent, i, prevValue, joiner = "/";
-	el.classList.add("hidden");
-	el.removeChildren();
-	if(content.length > FileManager.CurrentDirLabel.MAX_LENGTH){
-		splittedContent = content.split("/").filter(function(str){return str;});
-		content = "";
-		i = splittedContent.length - 1;
-		do{
-			prevValue = content;
-			content = "/" + splittedContent[i] + content;
-			i--;
-		}while(content.length < FileManager.CurrentDirLabel.MAX_LENGTH);
-		content = prevValue;
-		if(!content){
-			content = splittedContent[splittedContent.length];
-		}
-	}
-	if(!content){
-		el.innerHTML = content;
-		return;
-	}
-	if(isArrowsSeparated){
-		joiner = "<img class='path-separator' src='img/go.png'/>";
-	}
-	content = content.split("/").map(function(pathPart){
-		return pathPart ? "<a href='#' data-hash='" + pathPart + "'>" + pathPart + "</a>" : "";
-	}).join(joiner);
-	el.innerHTML = content;
-	el.classList.remove("hidden");
-};
-
-FileManager.CurrentDirLabel.root = function () {
-
-	if (FileManager.ENABLE_EMAILS) {
-		Auth.getEmail(function (email) {
-			FileManager.CurrentDirLabel.setContent(email);
-		});
-		return;
-	}
-
-	var account = Auth.getAccount();
-	FileManager.CurrentDirLabel.setContent(account);
-};
-
-FileManager.CurrentDirLabel.showLoading = function () {
-	FileManager.CurrentDirLabel.setContent('Loading...');
-};
-
-FileManager.OpenButton = {};
-
-FileManager.OpenButton.click = function () {
-
-	var options = {
-		path: FileManager.CurrentPath().withoutAccount(),
-		callback: function (message) {
-			console.log(message);
-			//FileManager.ExecuteButton.hide();
-		}
-	};
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		options.account = FileManager.CurrentPath().account();
-	}
-
-	ZeroVmOnSwift.open(options);
-};
-
-FileManager.OpenButton.show = function () {
-	document.querySelector('.open-button').removeAttribute('hidden');
-};
-
-FileManager.OpenButton.hide = function () {
-	document.querySelector('.open-button').setAttribute('hidden', 'hidden');
-};
-
-
-
-
 FileManager.LoadMoreButton = {};
 
 FileManager.LoadMoreButton.click = function () {
@@ -368,12 +284,6 @@ document.addEventListener('click', function (e) {
 	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'add-shared-button')) {
 		//SHARED-CONTAINERS
 		FileManager.AddShared.click();
-	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'execute-close-button')) {
-		FileManager.ExecuteReport.remove();
-	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'execute-full-button')) {
-		FileManager.ExecuteReport.showFullReport(el);
-	} else if (FileManager.toolbox.getParentByClassName(e.target,'open-button')) {
-		FileManager.OpenButton.click();
 	}
 
 	else if (FileManager.ENABLE_SHARED_CONTAINERS) {

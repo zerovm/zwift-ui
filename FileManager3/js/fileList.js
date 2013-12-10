@@ -59,18 +59,16 @@
 
 		requestArgs.error = function error(status, statusText){
 
-			var loadingEl = document.getElementsByClassName("item-loading")[0] || document.getElementsByClassName("scrolling-content-loading")[0] || window.FileManager.elements.itemsWrapperEl;
-			loadingEl.textContent = "Error: " + status + " " + statusText;
-
-			var scrollingContentEl = document.getElementsByClassName(".new-scrolling-content")[0];
-			scrollingContentEl.innerHTML = "Error: " + status + " " + statusText;
+			FileManager.errorMsgHandler.show({
+				header: "Ajax error:",
+				status: status,
+				statusText: statusText
+			});
 			window.FileManager.elements.upButton.removeAttribute("disabled");
 			FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().name());
 			callback();
 		};
-
 		requestArgs.notExist = notExist;
-
 		SwiftV1.listFiles(requestArgs);
 	}
 
