@@ -26,7 +26,7 @@ FileManager.Containers = {};
 FileManager.Containers.LIMIT = 20;
 
 FileManager.Containers.list = function (callback) {
-	var scrollingContentEl = document.querySelector('.new-scrolling-content');
+	var scrollingContentEl = window.FileManager.elements.itemsWrapperEl;
 
 	var xhr = SwiftV1.listContainers({
 		format: 'json',
@@ -223,17 +223,6 @@ window.addEventListener('authReady', function () {
 
 document.addEventListener('DOMContentLoaded', function () {
 	Auth.init();
-	document.querySelector('.current-dir-label').addEventListener("click", function(e){
-		var newPath;
-		if(e.target.nodeName === "A"){
-			e.preventDefault();
-			e.stopPropagation();
-			newPath = location.hash.match(new RegExp(".*" + e.target.dataset.hash + "\/"));
-			if(newPath){
-				location.hash = newPath[0];
-			}
-		}
-	});
 });
 
 //SHARED-CONTAINERS

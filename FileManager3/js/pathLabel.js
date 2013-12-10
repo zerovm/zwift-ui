@@ -56,6 +56,17 @@
 
 	document.addEventListener("DOMContentLoaded", function(){
 		el = document.getElementsByClassName("current-dir-label")[0];
+		el.addEventListener("click", function(e){
+			var newPath;
+			if(e.target.nodeName === "A"){
+				e.preventDefault();
+				e.stopPropagation();
+				newPath = location.hash.match(new RegExp(".*" + e.target.dataset.hash + "\/"));
+				if(newPath){
+					location.hash = newPath[0];
+				}
+			}
+		});
 	});
 	
 	if(!window.FileManager){
