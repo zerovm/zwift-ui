@@ -21,17 +21,6 @@ FileManager.AccountLabel.init = function () {
 };
 
 
-
-FileManager.LoadMoreButton = {};
-
-FileManager.LoadMoreButton.click = function () {
-	if (FileManager.CurrentPath().isContainersList()) {
-		window.FileManager.toolbox.onscrollLoadMore(window.FileManager.elements.scrollWrapper);
-	} else {
-		window.FileManager.files.loadMore();
-	}
-};
-
 FileManager.Containers = {};
 
 FileManager.Containers.LIMIT = 20;
@@ -64,7 +53,6 @@ FileManager.Containers.list = function (callback) {
 	});
 
 	function list(containers) {
-
 		if (containers.length == 0) {
 			noContainers();
 			callback();
@@ -74,12 +62,7 @@ FileManager.Containers.list = function (callback) {
 		window.FileManager.elements.upButton.setAttribute('disabled', 'disabled');
 		FileManager.CurrentDirLabel.root();
 
-
-		for (var i = 0; i < containers.length; i++) {
-			var container = containers[i];
-			var html = FileManager.Containers.create(container);
-			scrollingContentEl.insertAdjacentHTML('beforeend', html);
-		}
+		scrollingContentEl.insertAdjacentHTML('beforeend', FileManager.Containers.create(containers));
 
 		callback();
 
@@ -94,77 +77,30 @@ FileManager.Containers.list = function (callback) {
 		var html = document.querySelector('#noContainersTemplate').innerHTML;
 		scrollingContentEl.insertAdjacentHTML('beforeend', html);
 	}
-
 };
 
-FileManager.Containers.loadMore = function () {
+FileManager.Containers.create = function (containerObjs) {
+	var resulthtml = "",
+		slashStr = "/",
+		dummy = document.querySelector('#containerTemplate').innerHTML,
+		container, title, path;
 
-	document.body.classList.add(FileManager.elements.bodyLoadingClass);
-	if (!document.querySelector('.load-more-button')) {//TODO: change condition
-		document.body.classList.remove(FileManager.elements.bodyLoadingClass);
-		return;
+	for (var i = 0; i < containerObjs.length; i++) {
+		container = containerObjs[i];
+		title = container.name;
+		path = title.indexOf(slashStr) === -1 ? title + slashStr : title;
+		resulthtml += dummy.replace('{{name}}', FileManager.toolbox.escapeHTML(FileManager.toolbox.makeShortName(container.name)))
+			.replace('{{path}}', FileManager.toolbox.escapeHTML(path))
+			.replace('{{title}}', FileManager.toolbox.escapeHTML(title))
+			.replace('{{size}}', FileManager.toolbox.escapeHTML(FileManager.toolbox.shortenSize(container.bytes)))
+			.replace('{{files}}', FileManager.toolbox.escapeHTML(container.count));
 	}
-	document.querySelector('.load-more-button').textContent = 'Loading...';
-	document.querySelector('.load-more-button').setAttribute('disabled', 'disabled');
-
-	var marker = document.querySelector('.item:nth-last-child(2)').dataset.path;
-
-	SwiftV1.listContainers({
-		marker: marker,
-		format: 'json',
-		limit: FileManager.Containers.LIMIT,
-		success: function (containers) {
-			document.body.classList.remove(FileManager.elements.bodyLoadingClass);
-			if (containers.length == 0) {
-				var loadMoreEl = document.querySelector('.load-more-button');
-				loadMoreEl.parentNode.removeChild(loadMoreEl);
-				return;
-			}
-
-			for (var i = 0; i < containers.length; i++) {
-				var container = containers[i];
-				var html = FileManager.Containers.create(container);
-				document.querySelector('.load-more-button').insertAdjacentHTML('beforebegin', html);
-			}
-
-			document.querySelector('.load-more-button').textContent = 'Load more';
-			document.querySelector('.load-more-button').removeAttribute('disabled');
-
-			window.FileManager.toolbox.onscrollLoadMore(window.FileManager.elements.scrollWrapper);
-		},
-		error: error
-	});
-
-	function error(status, statusText) {
-		var loadingEl = document.querySelector('.load-more-button');
-		document.body.classList.remove(FileManager.elements.bodyLoadingClass);
-		loadingEl.textContent = 'Error: ' + status + ' ' + statusText;
-	}
-};
-
-FileManager.Containers.create = function (containerObj) {
-
-	var name = FileManager.toolbox.makeShortName(containerObj.name);
-	var title = containerObj.name;
-	var slashStr = "/";
-	var path = title.indexOf(slashStr) === -1 ? title + slashStr : title;
-	var size = FileManager.toolbox.shortenSize(containerObj.bytes);
-	var files = containerObj.count;
-
-	var html = document.querySelector('#containerTemplate').innerHTML;
-
-	html = html.replace('{{name}}', FileManager.toolbox.escapeHTML(name));
-	html = html.replace('{{path}}', FileManager.toolbox.escapeHTML(path));
-	html = html.replace('{{title}}', FileManager.toolbox.escapeHTML(title));
-	html = html.replace('{{size}}', FileManager.toolbox.escapeHTML(size));
-	html = html.replace('{{files}}', FileManager.toolbox.escapeHTML(files));
-
-	return html;
+	return resulthtml;
 };
 
 
 
-FileManager.AjaxError = {};
+FileManager.AjaxError = {};//TODO: replace it with errrorMsg
 
 FileManager.AjaxError.show = function (el, status, statusText) {
 	el.querySelector('.status').textContent = status;
@@ -211,38 +147,11 @@ FileManager.Path = function (path) {
 		return !this.isContainer() && !this.isDirectory();
 	};
 	this.up = function () {
-		/*var newPathParts = path.split('/');
-
-		if (newPathParts[newPathParts.length - 1] == '') {
-			newPathParts.splice(0);
-		} else {
-			newPathParts.splice(-1);
-		}
-
-		if (newPathParts.length == 1) {
-
-			if (FileManager.ENABLE_SHARED_CONTAINERS && FileManager.Shared.isShared(newPathParts[0])) {
-				return Auth.getAccount();
-			}
-
-			return newPathParts[0];
-		}
-
-		if (newPathParts.length == 2) {
-			return newPathParts.join('/');
-		}
-
-		return newPathParts.join('/') + '/';*/
-
 		var resultPath = path.split('/').filter(function(s){return s;});
 		resultPath.pop();
 		return resultPath.length && resultPath.join("/") + "/";
 	};
 	this.add = function (name) {
-
-		/*if (FileManager.ENABLE_SHARED_CONTAINERS && this.isContainersList() && name.indexOf('/') != -1) {
-			return name;
-		}*/
 		return  path + name;
 	};
 	return this;
@@ -264,8 +173,8 @@ document.addEventListener('click', function (e) {
 	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'item')) {
 		FileManager.item.click(el);
 	} else if (FileManager.toolbox.getParentByClassName(e.target,'load-more-button')) {
-		FileManager.LoadMoreButton.click();
-	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'add-shared-button')) {
+		 window.FileManager.files.loadMore();
+	 } else if (el = FileManager.toolbox.getParentByClassName(e.target,'add-shared-button')) {
 		//SHARED-CONTAINERS
 		FileManager.AddShared.click();
 	}

@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
 	var errorsEl = document.getElementsByClassName("err-msg")[0].parentNode;
 
-	function showError(params){
+	function showError(params){//TODO: add ajax error
 		var span = document.createElement("span");
 		errorsEl.textContent = params.header;
 		params.status && (span.textContent = params.status);

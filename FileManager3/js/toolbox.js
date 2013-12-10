@@ -257,11 +257,7 @@
 		e = e.target ? e.target : e;
 		if(Math.abs(e.scrollTop - (e.scrollHeight - e.clientHeight)) <= 1){
 			if(!document.body.classList.contains(FileManager.elements.bodyLoadingClass)){
-				if(FileManager.CurrentPath().isContainersList()){
-					FileManager.Containers.loadMore();
-				}else{
-					FileManager.files.loadMore();
-				}
+				FileManager.files.loadMore();
 			}
 		}
 	}

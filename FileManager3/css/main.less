@@ -462,11 +462,6 @@ body:not(.freeze-all) .load-more-button:hover{
   white-space: nowrap;
   text-align: left;
 }
-.item label.files{
-  cursor: default;
-  width: 55px;
-}
-
 .item label.size{
   cursor: default;
   width: 100px;
@@ -479,12 +474,17 @@ body:not(.freeze-all) .load-more-button:hover{
 .item:not(.no-hover):hover label.size{
   background: @semiDarkItemElementColor;
 }
+.item label.files,
 .item label.modified{
   cursor: default;
   width: 140px;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.item label.files{
+  cursor: default;
+  width: 55px;
 }
 
 .view-mode .item label.delete{
