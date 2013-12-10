@@ -14,22 +14,6 @@ FileManager.ENABLE_SHARED_CONTAINERS = true;
 FileManager.ENABLE_ZEROVM = true;
 FileManager.ENABLE_EMAILS = true;
 
-
-FileManager.Loading = {};
-
-FileManager.Loading.visible = false;
-
-FileManager.Loading.show = function () {
-	FileManager.Loading.visible = true;
-	document.body.classList.remove('disabled');
-};
-
-FileManager.Loading.hide = function () {
-	FileManager.Loading.visible = false;
-	document.body.classList.add('disabled');
-};
-
-
 FileManager.AccountLabel = {};
 
 FileManager.AccountLabel.init = function () {
@@ -316,8 +300,7 @@ window.addEventListener('authReady', function () {
 
 	window.FileManager.elements.upButton.addEventListener('click', function(){
 			var upperLevel = FileManager.CurrentPath().up();
-			if (!FileManager.Loading.visible && upperLevel){
-				FileManager.Loading.hide();
+			if (upperLevel){
 				FileManager.CurrentDirLabel.showLoading();
 				location.hash = upperLevel;
 			}

@@ -15,7 +15,6 @@
 			return;
 		}
 		selectedPath = FileManager.CurrentPath().add(name);
-		FileManager.Loading.hide();
 		location.hash = selectedPath;
 		FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().withoutAccount(), true);
 	}

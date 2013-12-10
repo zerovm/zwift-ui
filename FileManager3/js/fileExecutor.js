@@ -229,7 +229,6 @@
 		setTimeout(function(){
 			billingScroll.refresh();
 		}, 1);
-		FileManager.Loading.hide();
 		document.body.classList.remove("disabled");
 	}
 
