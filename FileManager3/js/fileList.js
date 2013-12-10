@@ -19,7 +19,7 @@
 		}
 
 		requestArgs.success = function(FILES){
-			var scrollingContentEl = document.querySelector(".new-scrolling-content"),
+			var scrollingContentEl = FileManager.elements.itemsWrapperEl,
 				files = FILES.slice(),
 				html;
 			scrollingContentEl.innerHTML = "";
@@ -34,6 +34,8 @@
 				scrollingContentEl.insertAdjacentHTML("beforeend", html);
 				if(FILES.length === LIMIT){
 					FileManager.toolbox.createLoadMoreButton(scrollingContentEl);
+				}else{
+					scrollingContentEl.insertAdjacentHTML("beforeend", createFile({name: "", size:"", modified:""}).replace("item", "item no-hover no-active dummy"));
 				}
 				checkLoadMore();
 			}

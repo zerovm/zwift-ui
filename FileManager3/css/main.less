@@ -5,6 +5,8 @@
 @color5: #5D5D5D;
 @color6: #FFFFFF;
 @dialogColor: #e0e3e8;
+@darkItemElementColor: #efefef;
+@semiDarkItemElementColor: #f8f8f8;
 *, *:before, *:after{
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -198,8 +200,8 @@ body:not(.freeze-all) .toolbar-button:enabled:hover{
 }
 
 #UpButton{
-  background: url(../img/white_icon.png) -234px center no-repeat;
-  background-size: auto 35px;
+  background: url(../img/white_icon.png) -231px center no-repeat;
+  background-size: 318px 35px;
   margin: 0 2px;
 }
 
@@ -303,13 +305,15 @@ body.report-shown #content{
 
 .scrolling-content{
   width: 100%;
+  height: 100%;
   margin: 0;
   transition: all 0.4s;
   -webkit-transition: all 0.4s;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255,255,255,0.3);
   position: absolute;
   left: 0;
   top: 0;
+  padding: 0;
 }
 .new-scrolling-content,
 .old-scrolling-content{
@@ -330,8 +334,9 @@ body.report-shown #content{
   user-select: none;
   border-bottom: 1px solid #E4E4E4;
   font-size: small;
-  height: 45px;
-  padding: 3px 6px;
+  height: 56px;
+  min-height: 56px;
+  padding: 0 0 0 6px;
   text-align: center;
   background-color: @color4;
   color: @color5;
@@ -356,6 +361,15 @@ body.report-shown #content{
   display: -moz-flex;
   display: -ms-flexbox;
   display: flex;
+  z-index: 10;
+}
+.item.dummy:last-child{
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
 }
 body:not(.freeze-all) .item:not(.no-hover):hover,
 body:not(.freeze-all) .load-more-button:hover{
@@ -428,7 +442,6 @@ body:not(.freeze-all) .load-more-button:hover{
   display: -moz-flex;
   display: -ms-flexbox;
   display: flex;
-  align-items: center;
 }
 .item label.name{
   cursor: default;
@@ -457,11 +470,21 @@ body:not(.freeze-all) .load-more-button:hover{
 .item label.size{
   cursor: default;
   width: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  background: @darkItemElementColor;
 }
-
+.item:not(.no-hover):hover label.size{
+  background: @semiDarkItemElementColor;
+}
 .item label.modified{
   cursor: default;
   width: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .view-mode .item label.delete{
@@ -746,8 +769,8 @@ template{
 .file-type{
   width: 41px;
   height: 42px;
-  background: url(../img/file-type.png) -748px center no-repeat;
-  background-size: auto 45px;
+  background: url(../img/file_type.png) -748px center no-repeat;
+  background-size: 1311px 45px;
 }
 .item[data-content-type*=text] .file-type{
   background-position: -171px center;
@@ -835,6 +858,9 @@ template{
 }
 .item[data-type=shared] .file-type{
   background-position: -1222px center;
+}
+.item.no-hover .file-type{
+  background: none;
 }
 .code-editor-wrapper{
   margin: 0 auto;
@@ -980,26 +1006,41 @@ button:not(.btn):hover{
 }
 .three-dot{
   width: 20px;
-  background: url(../img/three-dot.png) center center no-repeat;
+  background: url(../img/three_dot.png) center center no-repeat, @darkItemElementColor;
   border: none;
   outline: none;
 }
+.no-hover .three-dot{
+  background: @darkItemElementColor;
+}
+.item:not(.no-hover):hover .three-dot{
+  background: url(../img/three_dot.png) center center no-repeat, @semiDarkItemElementColor;
+}
 .submenu{
   height: 0;
-  -webkit-transition: 330ms height 0 ease-in-out;
-  -moz-transition: 330ms height 0 ease-in-out;
-  transition: 330ms height 0 ease-in-out;
+  min-height: 0;
+  -webkit-transition: 330ms all 0 ease-in-out;
+  -moz-transition: 330ms all 0 ease-in-out;
+  transition: 330ms all 0 ease-in-out;
   overflow: hidden;
   border: 0;
+  align-items: center;
+  background: #becad5;
 }
 .submenu.appear-submenu{
-  height: 45px;
+  height: 35px;
+  min-height: 35px;
+  background: #becad5;
+}
+.submenu:last-child,
+.submenu.appear-submenu:last-child{
+  border-bottom: none;
 }
 .submenu button{
   width: 30px;
   height: 35px;
   border: none;
-  background-image: url(../img/submenu_buttons.png);
+  background: url(../img/submenu_buttons.png);
   background-size: auto 70px;
 }
 .submenu button.share{
@@ -1273,4 +1314,7 @@ body.report-shown .report-wrapper{
   margin-bottom: 10px;
   border: none;
   text-align: left;
+}
+.dummy{
+  color: transparent;
 }
