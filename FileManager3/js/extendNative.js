@@ -22,7 +22,7 @@
 
 	attachMethods(NodeList, [{
 		obj: Array,
-		methods: ["forEach"]
+		methods: ["forEach", "filter"]
 	}]);
 	attachMethods(FileList, [{
 		obj: Array,

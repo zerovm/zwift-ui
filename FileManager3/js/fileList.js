@@ -376,7 +376,6 @@
 		window.FileManager = {};
 	}
 	window.FileManager.files = {
-		list: list,
 		loadMore: loadMore,
 		notExist: notExist,
 		listHTML: listHTML,

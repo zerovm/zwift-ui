@@ -622,6 +622,7 @@ body:not(.freeze-all) .item-confirm-delete button:hover{
 .menu-file button.save-as{
   background-position: -332px top;
 }
+.metadata-remove,
 .menu-file .txt-btn{
   background: url(../img/submenu_buttons.png) -138px top no-repeat;
   background-size: auto 70px;
@@ -791,7 +792,7 @@ template{
   background-position: -130px center;
 }
 .item[data-content-type*=image] .file-type{
-  background-position: -212px center;
+  background-position: -211px center;
 }
 .item[data-content-type*=pdf] .file-type{
   background-position: -251px center;
@@ -1036,6 +1037,7 @@ button:not(.btn):hover{
 .submenu.appear-submenu:last-child{
   border-bottom: none;
 }
+.metadata-remove,
 .submenu button{
   width: 30px;
   height: 35px;
@@ -1070,7 +1072,10 @@ button:not(.btn):hover{
 .submenu button.download{
   background-position: -248px 0;
 }
-
+#CreateDialog {
+  background-color: #e0e3e8;
+  padding: 5px;
+}
 #CreateDialog #input_CreateContainerDialog{
   height: 30px;
   box-sizing: border-box;
@@ -1140,9 +1145,22 @@ button:not(.btn):hover{
   overflow-y: auto;
   height: auto;
   width: 100%;
+  max-height: 130px;
 }
 #CreateDialog.metadata .input-group{
   display: block;
+}
+#CreateDialog.metadata .input-group-btn{
+  width: 100%;
+  display: inline-block;
+  text-align: center;
+  margin: 5px 0;
+  padding-right: 25px;
+}
+.metadata .input-group-btn button{
+  width: 80px;
+  height: 22px;
+  margin: 0 3px;
 }
 .meta-data-row{
   display: -webkit-box;
@@ -1151,25 +1169,35 @@ button:not(.btn):hover{
   display: -webkit-flex;
   display: flex;
 }
+.meta-data-row:not(:first-child){
+  margin-top: 5px;
+}
 .meta-data-row .input-wrapper{
   width: 100%;
+  display: inline-flex;
+  cursor: default;
 }
 .meta-key-input,
 .meta-value-input{
-  width: 50%;
+  flex: 1;
+  height: 25px;
   padding: 5px;
   font-size: small;
-  line-height: 20px;
+  line-height: normal;
+  box-shadow: inset 0px 2px 3px 0px rgba(0,0,0,0.3);
+  border-radius: 4px;
+  border: none;
+  margin: 0 4px;
 }
 .meta-key-input.error-input{
-  background: yellow;
+  background: #8b9cae;
+  color: white;
 }
 .metadata-remove{
-  width: 32px;
-  background-color: transparent;
+  width: 25px;
   border: 0;
-  background-image: url(../img/blue-icon.png);
-  background-position: -346px -6px;
+  background-position: -496px -6px;
+  pointer-events: auto;
 }
 
 .report-wrapper{

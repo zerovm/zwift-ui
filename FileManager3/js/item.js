@@ -228,7 +228,7 @@
 				input = document.createElement("input");
 				input.className = metaValueClassName;
 				value && (input.value = decodeURIComponent(value));
-				input.placeholder = "[Meta value]";
+				input.placeholder = "Meta value";
 				inputWrapper.appendChild(input);
 
 				metadataWrapper.appendChild(inputWrapper);
@@ -289,7 +289,9 @@
 
 			function getMeta(){
 				var result = {};
-				wrapper.getElementsByClassName(inputWrapperClassName).forEach(function(inputwrapper){
+				wrapper.getElementsByClassName(inputWrapperClassName).filter(function(el){
+					return !el.firstElementChild.classList.contains(errorInputClassName);
+				}).forEach(function(inputwrapper){
 					var metaValue = encodeURIComponent(inputwrapper.children[0].value),
 						metaKey = encodeURIComponent(inputwrapper.children[1].value);
 					metaValue && metaKey && (result[metaValue] = metaKey);
