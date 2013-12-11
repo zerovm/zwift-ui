@@ -89,9 +89,9 @@
 			<form class="input-group">
 				<input id="input_CreateContainerDialog" type="text" class="form-control">
 				<div class="dialog-wrapper"></div>
-					<span class="input-group-btn">
-						<button id="OKDialog" class="btn btn-primary" type="submit">OK</button>
-						<button id="CancelDialog" class="btn btn-default" type="button">Cancel</button>
+					<span class="input-group-btn dialog-footer">
+						<button id="OKDialog" class="btn btn-primary ok-dialog-button" type="submit">OK</button>
+						<button id="CancelDialog" class="btn btn-default cancel-dialog-button" type="button">Cancel</button>
 					</span>
 			</form>
 		</div>
@@ -99,7 +99,7 @@
 		<div id="RightsDialog" class="hidden">
 			<div><label>Read: </label><input class="read-rights-input"></div>
 			<div><label>Write: </label><input class="write-rights-input"></div>
-			<div><button>Save</button><button>Cancel</button></div>
+			<div class="dialog-footer"><button class="ok-dialog-button">Save</button><button class="cancel-dialog-button">Cancel</button></div>
 		</div>
 
 		<div id="CopyDialog" class="hidden">
