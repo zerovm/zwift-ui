@@ -133,9 +133,6 @@
 			submenu.wrapper.parentNode && submenu.removeSubmenu();
 			submenu.setPath(parent.dataset.path);
 			submenu.appendSubmenu(parent);
-			setTimeout(function(){
-				submenu.wrapper.classList.add(appearClass);
-			}, 0);
 		}
 		previousParent = parent;
 	}
@@ -373,7 +370,7 @@
 			parentEl.parentNode.insertBefore(wrapper, parentEl.nextSibling);
 			setTimeout(function(){
 				wrapper.classList.add(appearClass);
-			}, 0);
+			}, 30);//20 is for firefox slow working
 		};
 
 		this.removeSubmenu = function(){
