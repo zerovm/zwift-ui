@@ -336,7 +336,6 @@ body.report-shown #content{
   font-size: small;
   height: 56px;
   min-height: 56px;
-  padding: 0 0 0 6px;
   text-align: center;
   background-color: @color4;
   color: @color5;
@@ -350,6 +349,9 @@ body.report-shown #content{
   -webkit-transition: all 0.1s;
   cursor: pointer;
   margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .load-more-button::after,
 .load-more-button::before{
@@ -767,6 +769,13 @@ template{
   width: 100px;
 }*/
 
+.file-type,
+.item label.name,
+.item.submenu button{
+  -webkit-transform: translate3d(5px,0,0);//hack to remove twiching in webkit
+  -moz-transform: translate3d(5px,0px,0px);
+  transform: translate3d(5px,0px,0px);
+}
 .file-type{
   width: 41px;
   height: 42px;
