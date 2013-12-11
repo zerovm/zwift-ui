@@ -175,13 +175,13 @@
 			if(e.lengthComputable){
 				percentLoaded = Math.round((e.loaded / e.total) * 100);
 				setProgressValue(percentLoaded);
-				if(percentLoaded < 5){
+				/*if(percentLoaded < 5){
 					setText("Upload started.");
 				}else if(percentLoaded < 98){
 					setText("Uploading...");
 				}else{
 					setText("Finalizing");
-				}
+				}*/
 			}else{
 				setText("Loaded " + e.loaded);
 				!progressbarEl.classList.contains(animationClass) && progressbarEl.classList.add(animationClass);
@@ -262,6 +262,15 @@
 		}
 	}
 
+	function downloadClick(path, filename){
+		var clickEvent = document.createEvent("MouseEvent"),
+			a = document.createElement("a");
+		clickEvent.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+		a.href = path;
+		a.download = filename ? filename : path;
+		a.dispatchEvent(clickEvent);
+	}
+
 	Object.keys(extObj).forEach(function(ext){
 		var obj = extObj[ext],
 			mime = obj.mime;
@@ -287,6 +296,7 @@
 		makeDatePretty: makeDatePretty,
 		onscrollLoadMore: onscrollLoadMore,
 		ProgressBar: ProgressBar,
-		isLastChildren: isLastChildren
+		isLastChildren: isLastChildren,
+		downloadClick: downloadClick
 	};
 })();

@@ -91,8 +91,8 @@ document.addEventListener("DOMContentLoaded", function(){
 		}
 
 		function setMode(editor, type, name){
-			var pathPrefix = "ace/mode/",
-				type = FileManager.toolbox.isEditable(type, name);
+			var pathPrefix = "ace/mode/";
+			type = FileManager.toolbox.isEditable(type, name);
 			window.editor = editor;
 			if(type && type !== "txt"){//TODO: check bug(open single stirng json file with error, it leads to next opened single sting text file will contain same error)
 				editor.getSession().setMode(pathPrefix + type);
@@ -173,6 +173,9 @@ document.addEventListener("DOMContentLoaded", function(){
 			editor.focus();
 			return editor;
 		};
+		this.getValue = function(){
+			return editor && editor.getValue();
+		}
 	}
 
 	if(!window.FileManager){

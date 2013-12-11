@@ -256,10 +256,7 @@
 			path = currentPath.withoutAccount();
 
 		function fileExist(metadata, contentType, contentLength, lastModified){
-			var Current = FileManager.CurrentPath(),
-				href = Auth.getStorageUrl() + Current.get(),
-				filename = Current.name(),
-				downloadLink = document.querySelector('.download-link');
+			var Current = FileManager.CurrentPath();
 			switch(window.FileManager.item.itemCommandName.pop()){
 				case "open":
 					window.FileManager.item.open(path);
@@ -268,8 +265,6 @@
 					window.FileManager.item.execute(path);
 					break;
 				default :
-					downloadLink.setAttribute('href', href);
-					downloadLink.download = filename;
 					if(window.FileManager.toolbox.isEditable(contentType)){
 						editFile(el);
 					}else{
@@ -369,6 +364,13 @@
 	document.addEventListener("webkitTransitionEnd", ontransition);
 	window.addEventListener('hashchange', refreshItemList);
 	document.addEventListener("DOMContentLoaded", function(){
+		document.getElementsByClassName("download-link")[0].addEventListener("click", function(){
+			var current = FileManager.CurrentPath();
+			//window.FileManager.toolbox.downloadClick(Auth.getStorageUrl() + current.get(), current.name());
+			window.FileManager.toolbox.downloadClick(
+				URL.createObjectURL(new Blob([window.FileManager.fileEditor.getValue()], {type: "text/plain"})),
+				current.name());
+		});
 		window.FileManager.elements.scrollWrapper.addEventListener('scroll', window.FileManager.toolbox.onscrollLoadMore);
 	});
 

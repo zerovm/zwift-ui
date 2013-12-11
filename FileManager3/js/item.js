@@ -431,12 +431,7 @@
 				onItemClick(previousParent);
 			},
 			ondownload: function(e){
-				var clickEvent = document.createEvent("MouseEvent"),
-					a = document.createElement("a");
-				clickEvent.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-				a.href = window.FileManager.elements.originalPath + FileManager.CurrentPath().get() + previousParent.dataset.path;
-				a.download = previousParent.dataset.path;
-				a.dispatchEvent(clickEvent);
+				window.FileManager.toolbox.downloadClick(window.FileManager.elements.originalPath + FileManager.CurrentPath().get() + previousParent.dataset.path, previousParent.dataset.path);
 			},
 			oncopy: function(){
 				oncopy();
