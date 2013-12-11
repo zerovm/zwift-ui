@@ -18,7 +18,8 @@ document.addEventListener("DOMContentLoaded", function(){
 				undo: "undo",
 				redo: "redo",
 				saveAs: "save-as",
-				execute: "execute"
+				execute: "execute",
+				download: "download-link"
 			};
 
 		function enableButton(className){
@@ -101,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			}
 		}
 
-		function initEditor(){
+		function initEditor(){//TODO: on exit add save dialog
 			editor = ace.edit(that.id);
 			fileMenuButtonsWrapper = document.getElementsByClassName("menu-file")[0];
 			editor.addEventListener("change", function(){
@@ -140,6 +141,13 @@ document.addEventListener("DOMContentLoaded", function(){
 					contentType: window.FileManager.fileEditor.currentFileType,
 					data: editor.getValue()
 				});
+			});
+			fileMenuButtonsWrapper.getElementsByClassName(buttonsClasses.download)[0].addEventListener("click", function(){
+				var current = FileManager.CurrentPath();
+				//window.FileManager.toolbox.downloadClick(Auth.getStorageUrl() + current.get(), current.name());
+				window.FileManager.toolbox.downloadClick(
+					URL.createObjectURL(new Blob([window.FileManager.fileEditor.getValue()], {type: "text/plain"})),
+					current.name());
 			});
 		}
 
