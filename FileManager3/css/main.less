@@ -1111,8 +1111,8 @@ button:not(.btn):hover{
 }
 .ok-dialog-button,
 .cancel-dialog-button{
-  height: 30px;
-  width: 100px;
+  height: 25px;
+  width: 90px;
 }
 #CreateDialog #input_CreateContainerDialog,
 #CreateDialog .dialog-wrapper{
@@ -1122,22 +1122,12 @@ button:not(.btn):hover{
   display: inline-block;
 }
 #CreateDialog.dialog-shown .dialog-wrapper{
-  display: -webkit-flex;
-  display: -moz-flex;
-  display: -ms-flexbox;
-  display: flex;
-  align-items: center;
-/*color: #ffffff;*/
-  height: 33px; //TODO: to hell with bootstrap!!!
-  font-size: large;
-}
-#CreateDialog.dialog-shown .dialog-wrapper strong{
-  display: inline-block;
-  flex: 1;
+  display: block;
   overflow: hidden;
-  white-space: nowrap;
+  text-align: center;
   text-overflow: ellipsis;
-  text-align: left;
+  white-space: nowrap;
+  font-size: 14px;
 }
 .dialog-footer{
   width: 100%;

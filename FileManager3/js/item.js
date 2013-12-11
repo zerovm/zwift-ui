@@ -183,14 +183,9 @@
 			handlers;
 
 		function createDeleteDialog(){
-			var textEl = document.createElement("span"),
-				fragment = document.createDocumentFragment();
-			textEl.innerHTML = "Are you sure of deleting&nbsp;";
-			fragment.appendChild(textEl);
-			textEl = document.createElement("strong");
-			textEl.textContent = previousParent.dataset.path + "?";
-			fragment.appendChild(textEl);
-			return fragment;
+			var textEl = document.createElement("span");
+			textEl.innerHTML = "Are you sure of deleting <strong>" + previousParent.dataset.path + "</strong> ?";
+			return textEl;
 		}
 
 		function MetadataObj(){
