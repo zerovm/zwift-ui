@@ -97,9 +97,14 @@
 		</div>
 
 		<div id="RightsDialog" class="hidden dialog">
-			<div><label>Read: </label><input class="read-rights-input"></div>
-			<div><label>Write: </label><input class="write-rights-input"></div>
-			<div class="dialog-footer"><button class="ok-dialog-button">Save</button><button class="cancel-dialog-button">Cancel</button></div>
+			<form class="input-group">
+				<div><label>Read: </label><input class="read-rights-input"></div>
+				<div><label>Write: </label><input class="write-rights-input"></div>
+				<div class="dialog-footer">
+					<button class="btn ok-dialog-button" type="submit">Save</button>
+					<button class="btn cancel-dialog-button" type="button">Cancel</button>
+				</div>
+			</form>
 		</div>
 
 		<div id="CopyDialog" class="hidden">

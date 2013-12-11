@@ -421,8 +421,19 @@
 		};
 		handlers = {
 			onshare: function(e){
-				var rightsDialog = document.getElementById('RightsDialog');
-				rightsDialog.classList.remove('hidden');
+				var dialogForm = new window.FileManager.DialogForm({
+					wrapperId: "RightsDialog"
+				});
+				dialogForm.show({
+					type: "input",
+					placeholder: "",
+					confirm: function () {
+
+					},
+					hashchangeHandler: function(){
+
+					}
+				});
 			},
 			onopen: function(){
 				itemCommandName.set("open");
