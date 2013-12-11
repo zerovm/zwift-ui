@@ -45,6 +45,11 @@
 					dialogContainer.classList.remove(window.FileManager.elements.hiddenClass);
 					params.onshow && params.onshow();
 					break;
+				case "simple-dialog":
+					dialogContainer.classList.add(dialogClass);
+					dialogContainer.classList.remove(window.FileManager.elements.hiddenClass);
+					params.onshow && params.onshow();
+					break;
 				default: console.log("dialog form: unknown type");
 			}
 		}

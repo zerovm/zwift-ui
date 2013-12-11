@@ -427,13 +427,44 @@
 					wrapperId: "RightsDialog"
 				});
 				dialogForm.show({
-					type: "input",
-					placeholder: "",
-					confirm: function () {
+					type: "simple-dialog",
+					onshow: function () {
+						var xhr = SwiftV1.Container.head({
+							containerName: previousParent.dataset.path,
+							success: function () {
+								var dialogEl = document.getElementById("RightsDialog");
+								var readRights = dialogEl.getElementsByClassName("read-rights-input")[0];
+								var writeRights = dialogEl.getElementsByClassName("write-rights-input")[0];
+								var rights = SharedContainersOnSwift.getRights(xhr);
+								readRights.value = rights.read;
+								writeRights.value = rights.write;
+								readRights.focus();
+							},
+							notExist: function () {
+								// TODO: Add error.
+							},
+							error: function () {
+								// TODO: Add error.
+							}
+						});
 
 					},
-					hashchangeHandler: function(){
-
+					confirm: function () {
+						var dialogEl = document.getElementById("RightsDialog");
+						var readRights = dialogEl.getElementsByClassName("read-rights-input")[0];
+						var writeRights = dialogEl.getElementsByClassName("write-rights-input")[0];
+						SharedContainersOnSwift.updateRights({
+							containerName: previousParent.dataset.path,
+							readRights: readRights.value,
+							writeRights: writeRights.value,
+							updated: function () {
+								dialogForm.hide();
+							},
+							error: function (status, statusText) {
+								// TODO: Change:
+								alert('error: ' + status + ' ' + statusText);
+							}
+						});
 					}
 				});
 			},

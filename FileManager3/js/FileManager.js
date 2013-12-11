@@ -326,56 +326,6 @@ FileManager.AddShared.clearErrors = function (inputEl1, inputEl2) {
 	}
 };
 
-FileManager.Rights = {};
-
-FileManager.Rights.showLoading = function () {
-	document.querySelector('.rights-table').removeAttribute('hidden');
-};
-
-FileManager.Rights.showError = function (status, statusText) {
-	var el = document.querySelector('.rights-error-ajax');
-	FileManager.AjaxError.show(el, status, statusText);
-};
-
-FileManager.Rights.load = function (rights) {
-	document.querySelector('.read-rights-input').value = rights.read;
-	document.querySelector('.write-rights-input').value = rights.write;
-	document.querySelector('.rights-table .loading').setAttribute('hidden', 'hidden');
-	document.querySelector('.rights-table tbody').removeAttribute('hidden');
-};
-
-FileManager.Rights.sharedContainers = function () {
-	document.querySelector('.rights-table tbody').innerHTML = '<tr><td colspan="3">Cannot show metadata for shared container.</td></tr>';
-	document.querySelector('.rights-table .loading').setAttribute('hidden', 'hidden');
-	document.querySelector('.rights-table tbody').removeAttribute('hidden');
-};
-
-FileManager.Rights.hide = function () {
-	document.querySelector('.rights-table').setAttribute('hidden', 'hidden');
-};
-
-FileManager.Rights.keyup = function () {
-	document.querySelector('.rights-table tfoot').removeAttribute('hidden');
-};
-
-FileManager.Rights.save = function () {
-	SharedContainersOnSwift.updateRights({
-		containerName: FileManager.Path(FileManager.item.selectedPath).container(),
-		readRights: document.querySelector('.read-rights-input').value,
-		writeRights: document.querySelector('.write-rights-input').value,
-		updated: function () {
-			document.querySelector('.clicked').click();
-		},
-		error: function (status, statusText) {
-			FileManager.Rights.showError(status, statusText);
-		}
-	});
-};
-
-FileManager.Rights.discardChanges = function () {
-	document.querySelector('.clicked').click();
-};
-
 FileManager.reAuth = function () {
 	SwiftV1.Account.head({success:function(){},error:function(){}});
 	setTimeout(FileManager.reAuth, 1000 * 60 * 20);
