@@ -1102,16 +1102,16 @@ button:not(.btn):hover{
   padding: 5px;
 }
 #CreateDialog #input_CreateContainerDialog{
-  height: 30px;
+  height: 24px;
   box-sizing: border-box;
   width: 100%;
   padding: 5px;
-  margin: 0;
+  margin: 0 0 5px;
   border-radius: 0;
 }
 .ok-dialog-button,
 .cancel-dialog-button{
-  height: 25px;
+  height: 22px;
   width: 90px;
 }
 #CreateDialog #input_CreateContainerDialog,
@@ -1155,20 +1155,20 @@ button:not(.btn):hover{
   pointer-events: none;
 }
 #CopyDialog .dialog-wrapper,
-#CreateDialog.metadata .dialog-wrapper{
+#CreateDialog .dialog-wrapper{
   height: auto;
 }
-#CreateDialog.metadata .meta-data-wrapper{
+#CreateDialog .meta-data-wrapper{
   overflow-y: auto;
   height: auto;
   width: 100%;
   max-height: 130px;
 }
-#CreateDialog.metadata .input-group{
+#CreateDialog .input-group{
   display: block;
 }
 #CopyDialog .input-group-btn,
-#CreateDialog.metadata .input-group-btn{
+#CreateDialog .input-group-btn{
   width: 100%;
   display: inline-block;
   text-align: center;
@@ -1205,16 +1205,15 @@ button:not(.btn):hover{
   display: inline-flex;
   cursor: default;
 }
-.meta-data-row .input:focus,
+#CreateDialog input:focus,
 #CopyDialog input:focus{
   outline-offset: -1.8181817531585693px;
   outline: 5px auto rgb(229, 151, 0);
   border: none;
   background: white;
 }
-#CopyDialog input,
-.meta-key-input,
-.meta-value-input{
+#CreateDialog input,
+#CopyDialog input{
   flex: 1;
   height: 25px;
   padding: 5px;
@@ -1227,12 +1226,13 @@ button:not(.btn):hover{
   border: none;
   margin: 0 4px;
 }
-.meta-key-input.error-input{
+#CreateDialog .meta-key-input.error-input{
   background: #8b9cae;
   color: white;
+  outline: none;
 }
 .metadata-remove{
-  width: 25px;
+  width: 24px;
   border: 0;
   background-position: -496px -6px;
   pointer-events: auto;
