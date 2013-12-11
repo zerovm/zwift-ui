@@ -109,12 +109,14 @@
 
 		<div id="CopyDialog" class="hidden">
 			<form class="input-group">
-				<input type="text" class="form-control">
+				<div class="input-wrapper">
+					<input type="text" class="form-control">
+				</div>
 				<div class="dialog-wrapper"></div>
-					<span class="input-group-btn">
-						<button class="btn btn-primary" type="submit">Copy to current folder</button>
-						<button class="btn btn-default" type="button">Cancel</button>
-					</span>
+						<span class="input-group-btn">
+							<button class="btn btn-primary" type="submit">Copy to current folder</button>
+							<button class="btn btn-default" type="button">Cancel</button>
+						</span>
 			</form>
 		</div>
 		<div id="progressDialog">
@@ -141,7 +143,9 @@
 			<div class="scrolling-content"></div>
 		</div>
 		<div class="report-wrapper">
-			<div class="timer-wrapper"><span class="pre-text"></span><span class="time-output">00</span>:<span class="time-output">00</span></div>
+			<div class="timer-wrapper">
+				<span class="pre-text"></span><span class="time-output">00</span>:<span class="time-output">00</span>
+			</div>
 			<div id="report" class="hidden"></div>
 		</div>
 	</div>

@@ -6,7 +6,7 @@
 @color6: #FFFFFF;
 @dialogColor: #e0e3e8;
 @darkItemElementColor: #efefef;
-@semiDarkItemElementColor: #f8f8f8;
+@semiDarkItemElementColor: #b1b1b1;
 *, *:before, *:after{
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -309,7 +309,7 @@ body.report-shown #content{
   margin: 0;
   transition: all 0.4s;
   -webkit-transition: all 0.4s;
-  background: rgba(255,255,255,0.3);
+  background: rgba(255, 255, 255, 0.3);
   position: absolute;
   left: 0;
   top: 0;
@@ -332,7 +332,6 @@ body.report-shown #content{
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  border-bottom: 1px solid #E4E4E4;
   font-size: small;
   height: 56px;
   min-height: 56px;
@@ -342,6 +341,21 @@ body.report-shown #content{
   position: relative;
 }
 
+.item::before,
+.submenu.appear-submenu::before,
+.load-more-button::before{//hack to prevent chrom border disappearing
+  content: "";
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-bottom: 1px solid #E4E4E4;
+  -webkit-transform: translate3d(0,-1px,0);
+}
+.item:hover::before,
+.item:hover + .item::before{
+  -webkit-transform: translate3d(0,0,0);
+}
 .load-more-button{
   font-size: 24px;
   padding: 3px 0;
@@ -375,7 +389,7 @@ body.report-shown #content{
 }
 body:not(.freeze-all) .item:not(.no-hover):hover,
 body:not(.freeze-all) .load-more-button:hover{
-  background-color: white;
+  background-color: #cdcdcd;
 }
 
 .item:not(.no-active):active,
@@ -772,9 +786,9 @@ template{
 .file-type,
 .item label.name,
 .item.submenu button{
-  -webkit-transform: translate3d(5px,0,0);//hack to remove twiching in webkit
-  -moz-transform: translate3d(5px,0px,0px);
-  transform: translate3d(5px,0px,0px);
+  -webkit-transform: translate3d(5px, 0, 0); //hack to remove twiching in webkit
+  -moz-transform: translate3d(5px, 0px, 0px);
+  transform: translate3d(5px, 0px, 0px);
 }
 .file-type{
   width: 41px;
@@ -851,7 +865,8 @@ template{
 .item[data-content-type*=x-rar] .file-type{
   background-position: -878px center;
 }
-.item[data-content-type*=rtf] .file-type{/*TODO: check real rtf type*/
+.item[data-content-type*=rtf] .file-type{
+/*TODO: check real rtf type*/
   background-position: -919px center;
 }
 .item[data-content-type*=md] .file-type{
@@ -860,8 +875,8 @@ template{
 .item[data-content-type*=javascript] .file-type{
   background-position: -1006px center;
 }
-.item[data-type=directory] .file-type {
-   background-position: -1104px center;
+.item[data-type=directory] .file-type{
+  background-position: -1104px center;
 }
 .item[data-type=container] .file-type{
   background-position: -1156px -4px;
@@ -1081,7 +1096,8 @@ button:not(.btn):hover{
 .submenu button.download{
   background-position: -248px 0;
 }
-#CreateDialog {
+#CopyDialog,
+#CreateDialog{
   background-color: #e0e3e8;
   padding: 5px;
 }
@@ -1148,6 +1164,7 @@ button:not(.btn):hover{
   opacity: 0.75;
   pointer-events: none;
 }
+#CopyDialog .dialog-wrapper,
 #CreateDialog.metadata .dialog-wrapper{
   height: auto;
 }
@@ -1160,6 +1177,7 @@ button:not(.btn):hover{
 #CreateDialog.metadata .input-group{
   display: block;
 }
+#CopyDialog .input-group-btn,
 #CreateDialog.metadata .input-group-btn{
   width: 100%;
   display: inline-block;
@@ -1167,10 +1185,19 @@ button:not(.btn):hover{
   margin: 5px 0;
   padding-right: 25px;
 }
+#CopyDialog .input-group-btn{
+  width: auto;
+  padding: 0;
+  display: inline-flex;
+}
+#CopyDialog .input-group-btn button,
 .metadata .input-group-btn button{
   width: 80px;
   height: 22px;
   margin: 0 3px;
+}
+#CopyDialog .input-group-btn button.btn-primary{
+  width: auto;
 }
 .meta-data-row{
   display: -webkit-box;
@@ -1182,11 +1209,20 @@ button:not(.btn):hover{
 .meta-data-row:not(:first-child){
   margin-top: 5px;
 }
+#CopyDialog .input-wrapper,
 .meta-data-row .input-wrapper{
   width: 100%;
   display: inline-flex;
   cursor: default;
 }
+.meta-data-row .input:focus,
+#CopyDialog input:focus{
+  outline-offset: -1.8181817531585693px;
+  outline: 5px auto rgb(229, 151, 0);
+  border: none;
+  background: white;
+}
+#CopyDialog input,
 .meta-key-input,
 .meta-value-input{
   flex: 1;
@@ -1194,7 +1230,9 @@ button:not(.btn):hover{
   padding: 5px;
   font-size: small;
   line-height: normal;
-  box-shadow: inset 0px 2px 3px 0px rgba(0,0,0,0.3);
+  -webkit-box-shadow: inset 0px 2px 3px 0px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: inset 0px 2px 3px 0px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0px 2px 3px 0px rgba(0, 0, 0, 0.3);
   border-radius: 4px;
   border: none;
   margin: 0 4px;
@@ -1209,7 +1247,10 @@ button:not(.btn):hover{
   background-position: -496px -6px;
   pointer-events: auto;
 }
-
+#CopyDialog form{
+  display: flex;
+  align-items: center;
+}
 .report-wrapper{
   display: none;
 }
