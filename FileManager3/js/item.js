@@ -10,13 +10,19 @@
 
 	function onItemClick(itemEl){
 		var name = itemEl.dataset.path,
-			curPath = FileManager.CurrentPath();
-		if(!name || curPath.isFile()){
+			fullPath;
+		if(itemEl.dataset.fullPath){
+			fullPath = window.FileManager.Path(name).isFile() ? itemEl.dataset.fullPath : itemEl.dataset.fullPath + "/";
+		}else{
+			fullPath = itemEl.dataset.path;
+		}
+
+		if(!name || fullPath !== FileManager.CurrentPath().withoutAccount() + itemEl.dataset.path){
 			return;
 		}
-		selectedPath = curPath.add(name);
+		selectedPath = FileManager.CurrentPath().add(name);
 		location.hash = selectedPath;
-		FileManager.CurrentDirLabel.setContent(curPath.withoutAccount(), true);
+		FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().withoutAccount(), true);
 	}
 
 	function ItemCommandName(){

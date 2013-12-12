@@ -30,7 +30,7 @@
 			return;
 		}
 		if(isArrowsSeparated){
-			joiner = "<img class='path-separator' src='img/go.png'/>";
+			joiner = "<span class='path-separator'></span>";
 		}
 		content = content.split("/").map(function(pathPart){
 			return pathPart ? "<a href='#' data-hash='" + pathPart + "'>" + pathPart + "</a>" : "";

@@ -2,6 +2,7 @@
 	"use strict";
 
 	var LIMIT = 20,
+		lastSlashRegex = /\/$/,
 		emptynessMsg = new EmptynessMsg();
 
 	function list(callback){
@@ -34,7 +35,7 @@
 				if(FILES.length === LIMIT){
 					FileManager.toolbox.createLoadMoreButton(scrollingContentEl);
 				}else{
-					scrollingContentEl.insertAdjacentHTML("beforeend", createFile({name: "", size: "", modified: ""}).replace("item", "item no-hover no-active dummy"));
+					scrollingContentEl.insertAdjacentHTML("beforeend", createItem({name: "", size: "", modified: ""}).replace("item", "item no-hover no-active dummy"));
 				}
 				checkLoadMore();
 			}
@@ -160,33 +161,38 @@
 		var html = "", i, file;
 		for(i = 0; i < files.length; i++){
 			file = files[i];
-			html += createFile(file);
+			html += createItem(file);
 		}
 		return html;
 	}
 
-	function createFile(file){
-		var _name, contentType, name, size, modified, html;
+	function createItem(file){
+		var _name, contentType, name, size, modified, html, path,
+			curPath = FileManager.CurrentPath().withoutAccount();
 		html = document.getElementById("fileTemplate").innerHTML;
 
 		if(file.hasOwnProperty("subdir")){
-			_name = file.subdir.replace("/", "");
+			path = FileManager.Path(file.subdir).name();
+			_name = file.subdir.replace(lastSlashRegex, "");
 			html = html.replace("data-type=\"file\"", "data-type=\"directory\"");
 		}else{
+			path = FileManager.Path(file.name).name();
 			_name = file.name;
 		}
 
 		_name = FileManager.Path(_name).name();
 		contentType = (file.content_type && file.content_type !== "undefined" && file.content_type) || "file-type";
 		name = window.FileManager.toolbox.makeShortName(_name);
-		size = file.bytes ? FileManager.toolbox.shortenSize(file.bytes) : null;
-		modified = file.last_modified ? window.FileManager.toolbox.makeDatePretty(file.last_modified) : null;
+		_name = FileManager.toolbox.escapeHTML(_name);
+		size = FileManager.toolbox.shortenSize(file.bytes);
+		modified = window.FileManager.toolbox.makeDatePretty(file.last_modified);
 		return html.replace("{{file-type}}", contentType)
 			.replace("{{name}}", "<span>" + FileManager.toolbox.escapeHTML(name) + "</span>")
-			.replace("{{path}}", FileManager.toolbox.escapeHTML(_name))
-			.replace("{{title}}", FileManager.toolbox.escapeHTML(_name))
-			.replace("{{size}}", size ? FileManager.toolbox.escapeHTML(size) : "")
-			.replace("{{modified}}", modified ? FileManager.toolbox.escapeHTML(modified) : "");
+			.replace("{{path}}", FileManager.toolbox.escapeHTML(path))
+			.replace("{{title}}", _name)
+			.replace("{{size}}", isNaN(file.bytes) ? "" : FileManager.toolbox.escapeHTML(size))
+			.replace("{{modified}}", file.last_modified ? FileManager.toolbox.escapeHTML(modified) : "")
+			.replace("data-full-path=\"\"", "data-full-path=\"" + curPath + _name + "\"");
 	}
 
 	function editFile(el){

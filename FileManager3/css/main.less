@@ -109,7 +109,9 @@ a{
 
 .toolbar .right{
   float: right;
-  margin-right: 5px;
+  -webkit-transform: translate3d(-5px,0,0);
+  -moz-transform: translate3d(-5px,0px,0px);
+  transform: translate3d(-5px,0px,0px);
   display: flex;
   justify-content: flex-end;
 }
@@ -283,10 +285,11 @@ body:not(.freeze-all) .current-dir-label a:hover,
 }
 .current-dir-label .path-separator{
   display: inline-block;
-  width: 13px;
+  background: url(../img/go.png) center center;
+  width: 17px;
   height: 23px;
   position: relative;
-  top: -2px;
+  top: -1px;
   margin: 0 2px;
 }
 
@@ -349,25 +352,30 @@ body.report-shown #content{
   position: relative;
 }
 
+.item::after,
+.submenu.appear-submenu::after,
+.load-more-button::after,
 .item::before,
 .submenu.appear-submenu::before,
 .load-more-button::before{//hack to prevent chrom border disappearing
   content: "";
   width: 100%;
+  height: 1px;
   position: absolute;
   left: 0;
-  top: 0;
-  -webkit-transform: translate3d(0,-1px,0);
-}
-.item:nth-last-child(2),
-.item::before,
-.submenu.appear-submenu::before,
-.load-more-button::before{
+  bottom: 0;
+  -webkit-transform: translate3d(0,1px,0);
   border-bottom: 1px solid #E4E4E4;
 }
-.item:hover::before,
-.item:hover + .item::before{
-  -webkit-transform: translate3d(0,0,0);
+.item::after,
+.submenu.appear-submenu::after,
+.load-more-button::after{
+  top:0;
+  -webkit-transform: translate3d(0,-1px,0);
+}
+.item.dummy::before,
+.item.dummy::after{
+  display: none;
 }
 .load-more-button{
   font-size: 1.2em;
@@ -392,13 +400,17 @@ body.report-shown #content{
   display: flex;
   z-index: 10;
 }
-.item.dummy:last-child{
+.disable-item .item{
+  pointer-events: none;
+}
+.item.dummy{
   position: absolute;
   left: 0;
   top: 0;
   z-index: 1;
   width: 100%;
   height: 100%;
+  pointer-events: none;
 }
 body:not(.freeze-all) .item:not(.no-hover):hover,
 body:not(.freeze-all) .load-more-button:hover{
@@ -1436,9 +1448,6 @@ body.report-shown .report-wrapper{
   border: none;
   text-align: left;
   font-size: 0.7em;
-}
-.dummy{
-  color: transparent;
 }
 .err-msg-wrapper{
   font-size: 0.8em;
