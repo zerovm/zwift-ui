@@ -158,7 +158,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
 		dirName = input.value + "/";
 		dirPath = FileManager.CurrentPath().add(dirName);
-		dirPathWithoutAccount = FileManager.Path(dirPath).withoutAccount();
+		dirPathWithoutAccount = new FileManager.Path(dirPath).withoutAccount();
 		requestArgs = {};
 		requestArgs.path = dirPathWithoutAccount;
 		if(FileManager.ENABLE_SHARED_CONTAINERS){

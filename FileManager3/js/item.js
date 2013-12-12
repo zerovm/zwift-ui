@@ -10,17 +10,18 @@
 
 	function onItemClick(itemEl){
 		var name = itemEl.dataset.path,
+			curPath = FileManager.CurrentPath(),
 			fullPath;
 		if(itemEl.dataset.fullPath){
-			fullPath = window.FileManager.Path(name).isFile() ? itemEl.dataset.fullPath : itemEl.dataset.fullPath + "/";
+			fullPath = new window.FileManager.Path(name).isFile() ? itemEl.dataset.fullPath : itemEl.dataset.fullPath + "/";
 		}else{
 			fullPath = itemEl.dataset.path;
 		}
 
-		if(!name || fullPath !== FileManager.CurrentPath().withoutAccount() + itemEl.dataset.path){
+		if(!name || fullPath !== curPath.withoutAccount() + itemEl.dataset.path){
 			return;
 		}
-		selectedPath = FileManager.CurrentPath().add(name);
+		selectedPath = curPath.add(name);
 		location.hash = selectedPath;
 		FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().withoutAccount(), true);
 	}
@@ -81,8 +82,8 @@
 			&& FileManager.Shared.isShared(itemPath)
 			&& el.dataset.type === "container"){
 			SharedContainersOnSwift.removeSharedContainer({
-				account: FileManager.Path(name).account(),
-				container: FileManager.Path(name).container(),
+				account: new FileManager.Path(name).account(),
+				container: new FileManager.Path(name).container(),
 				removed: function(){
 					window.FileManager.files.refreshItemList();
 				},
@@ -92,7 +93,7 @@
 		}
 		if(el.dataset.type === "file"){
 			SwiftAdvancedFunctionality.delete({
-				path: FileManager.Path(itemPath).withoutAccount(),
+				path: new FileManager.Path(itemPath).withoutAccount(),
 				deleted: function(){
 					window.FileManager.files.refreshItemList();
 				},
@@ -109,7 +110,7 @@
 			wrapper: progressElWrapper
 		});
 		SwiftAdvancedFunctionality.deleteAll({
-			path: FileManager.Path(itemPath).withoutAccount(),
+			path: new FileManager.Path(itemPath).withoutAccount(),
 			account: FileManager.CurrentPath().account(),
 			deleted: function(){
 				window.FileManager.elements.mainProgressBar.classList.add(window.FileManager.elements.hiddenClass);

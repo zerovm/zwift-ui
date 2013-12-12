@@ -156,11 +156,10 @@ FileManager.Path = function (path) {
 	this.add = function (name) {
 		return path + name;
 	};
-	return this;
 };
 
 FileManager.CurrentPath = function () {
-	return FileManager.Path(location.hash.substr(1));
+	return new FileManager.Path(location.hash.substr(1));
 };
 
 document.addEventListener('click', function (e) {
@@ -252,7 +251,7 @@ FileManager.Shared.listSharedContainers = function(sharedContainers, scrollingCo
 	}
 
 	function update(path, el){
-		var curPath = FileManager.Path(path);
+		var curPath = new FileManager.Path(path);
 		SharedContainersOnSwift.getContainerSize({
 			account: curPath.account(),
 			container: curPath.container(),

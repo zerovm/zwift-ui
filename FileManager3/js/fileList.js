@@ -172,15 +172,15 @@
 		html = document.getElementById("fileTemplate").innerHTML;
 
 		if(file.hasOwnProperty("subdir")){
-			path = FileManager.Path(file.subdir).name();
+			path = new FileManager.Path(file.subdir).name();
 			_name = file.subdir.replace(lastSlashRegex, "");
 			html = html.replace("data-type=\"file\"", "data-type=\"directory\"");
 		}else{
-			path = FileManager.Path(file.name).name();
+			path = new FileManager.Path(file.name).name();
 			_name = file.name;
 		}
 
-		_name = FileManager.Path(_name).name();
+		_name = new FileManager.Path(_name).name();
 		contentType = (file.content_type && file.content_type !== "undefined" && file.content_type) || "file-type";
 		name = window.FileManager.toolbox.makeShortName(_name);
 		_name = FileManager.toolbox.escapeHTML(_name);
