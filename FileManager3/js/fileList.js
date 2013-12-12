@@ -160,45 +160,33 @@
 		var html = "", i, file;
 		for(i = 0; i < files.length; i++){
 			file = files[i];
-			if(file.hasOwnProperty("subdir") || file.content_type == "application/directory"){
-				html += createDirectory(file);
-			}else{
-				html += createFile(file);
-			}
+			html += createFile(file);
 		}
 		return html;
 	}
 
 	function createFile(file){
 		var _name, contentType, name, size, modified, html;
-		_name = FileManager.Path(file.name).name();
+		html = document.getElementById("fileTemplate").innerHTML;
+
+		if(file.hasOwnProperty("subdir")){
+			_name = file.subdir.replace("/", "");
+			html = html.replace("data-type=\"file\"", "data-type=\"directory\"");
+		}else{
+			_name = file.name;
+		}
+
+		_name = FileManager.Path(_name).name();
 		contentType = (file.content_type && file.content_type !== "undefined" && file.content_type) || "file-type";
 		name = window.FileManager.toolbox.makeShortName(_name);
-		size = FileManager.toolbox.shortenSize(file.bytes);
-		modified = window.FileManager.toolbox.makeDatePretty(file.last_modified);
-		html = document.getElementById("fileTemplate").innerHTML;
+		size = file.bytes ? FileManager.toolbox.shortenSize(file.bytes) : null;
+		modified = file.last_modified ? window.FileManager.toolbox.makeDatePretty(file.last_modified) : null;
 		return html.replace("{{file-type}}", contentType)
 			.replace("{{name}}", "<span>" + FileManager.toolbox.escapeHTML(name) + "</span>")
 			.replace("{{path}}", FileManager.toolbox.escapeHTML(_name))
 			.replace("{{title}}", FileManager.toolbox.escapeHTML(_name))
-			.replace("{{size}}", FileManager.toolbox.escapeHTML(size))
-			.replace("{{modified}}", FileManager.toolbox.escapeHTML(modified));
-	}
-
-	function createDirectory(file){
-		var _name, name, html;
-		if(file.hasOwnProperty("subdir")){
-			_name = file.subdir;
-		}else{
-			_name = file.name;
-		}
-		_name = FileManager.Path(_name).name();
-		name = FileManager.toolbox.makeShortName(_name);
-		html = document.getElementById("directoryTemplate").innerHTML;
-		html = html.replace("{{name}}", FileManager.toolbox.escapeHTML(name));
-		html = html.replace("{{path}}", FileManager.toolbox.escapeHTML(_name));
-		html = html.replace("{{title}}", FileManager.toolbox.escapeHTML(_name));
-		return html;
+			.replace("{{size}}", size ? FileManager.toolbox.escapeHTML(size) : "")
+			.replace("{{modified}}", modified ? FileManager.toolbox.escapeHTML(modified) : "");
 	}
 
 	function editFile(el){
@@ -235,7 +223,7 @@
 			wrapper: el,
 			isDownload: true
 		});
-		progressbar.setText("Fetching file...");
+		//progressbar.setText("Fetching file...");
 
 		function handleResponse(data, contentType){
 			var fileName = FileManager.CurrentPath().name();
