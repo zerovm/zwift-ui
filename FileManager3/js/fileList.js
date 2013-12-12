@@ -218,10 +218,9 @@
 				},
 				progress: function(loaded){
 					if(loaded > 2097152){
-						//xhr.abort();
-						el.innerHTML = 'File is too large (2MB+).';
 						window.FileManager.elements.upButton.removeAttribute('disabled');
 						progressbar.cancel();
+						el.innerHTML = 'File is too large (2MB+).';
 					}
 				}
 			},

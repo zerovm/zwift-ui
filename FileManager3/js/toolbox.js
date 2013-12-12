@@ -204,7 +204,7 @@
 				isRemoved = true;
 				onEndCallback && onEndCallback();
 				setTimeout(function(){
-					progressbarEl && progressbarEl.parentNode.removeChild(progressbarEl);
+					progressbarEl && progressbarEl.parentNode && progressbarEl.parentNode.removeChild(progressbarEl);
 				}, 100);
 			}
 		}
