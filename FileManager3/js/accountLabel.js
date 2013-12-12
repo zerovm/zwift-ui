@@ -4,10 +4,6 @@ window.addEventListener('authReady', function () {
 	var accountLabel = document.getElementById('AccountLabel'),
 		accountWindow = document.getElementById('AccountWindow');
 
-	// TODO: Profile Picture and Full Name
-	accountWindow.getElementsByClassName('profile-picture')[0];
-	accountWindow.getElementsByClassName('full-name')[0];
-
 	document.getElementById('OpenAccountWindow').addEventListener('click', function () {
 		if (accountWindow.classList.contains('hidden')) {
 			accountWindow.classList.remove('hidden');
