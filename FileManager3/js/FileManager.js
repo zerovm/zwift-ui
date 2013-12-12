@@ -66,8 +66,10 @@ FileManager.Containers.list = function (callback) {
 
 		callback();
 
-		if (containers.length == FileManager.Containers.LIMIT) {
+		if (containers.length === FileManager.Containers.LIMIT) {
 			FileManager.toolbox.createLoadMoreButton(scrollingContentEl);
+		}else{
+			scrollingContentEl.insertAdjacentHTML('beforeend', FileManager.Containers.create([{name:""}]).replace("item", "item no-hover no-active dummy"));
 		}
 
 		window.FileManager.toolbox.onscrollLoadMore(window.FileManager.elements.scrollWrapper);
@@ -92,8 +94,8 @@ FileManager.Containers.create = function (containerObjs) {
 		resulthtml += dummy.replace('{{name}}', FileManager.toolbox.escapeHTML(FileManager.toolbox.makeShortName(container.name)))
 			.replace('{{path}}', FileManager.toolbox.escapeHTML(path))
 			.replace('{{title}}', FileManager.toolbox.escapeHTML(title))
-			.replace('{{size}}', FileManager.toolbox.escapeHTML(FileManager.toolbox.shortenSize(container.bytes)))
-			.replace('{{files}}', FileManager.toolbox.escapeHTML(container.count));
+			.replace('{{size}}', container.bytes ? FileManager.toolbox.escapeHTML(FileManager.toolbox.shortenSize(container.bytes)) : "")
+			.replace('{{files}}', container.count ? FileManager.toolbox.escapeHTML(container.count) : "");
 	}
 	return resulthtml;
 };
