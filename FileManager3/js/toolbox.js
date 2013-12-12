@@ -202,7 +202,7 @@
 			e && e.stopPropagation();
 			if(!isRemoved){
 				isRemoved = true;
-				onEndCallback && onEndCallback();
+				onEndCallback && onEndCallback(wrapper);
 				setTimeout(function(){
 					progressbarEl && progressbarEl.parentNode && progressbarEl.parentNode.removeChild(progressbarEl);
 				}, 100);

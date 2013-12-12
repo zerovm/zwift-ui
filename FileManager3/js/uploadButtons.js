@@ -164,8 +164,9 @@ document.addEventListener("DOMContentLoaded", function(){
 			el && el.parentNode.removeChild(el);
 		}
 
-		function onloadedCallback(){
+		function onloadedCallback(item){
 			filesCounter--;
+			item && item.parentNode.removeChild(item);
 			if(!filesCounter){
 				enableButtons();
 				if(wasSmthUploded){
