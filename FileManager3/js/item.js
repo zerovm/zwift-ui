@@ -5,7 +5,6 @@
 		previousParent,
 		appearClass = "appear-submenu",
 		submenu = new Submenu(),
-		loadingHtml,
 		itemCommandName,
 		progressElWrapper;
 
@@ -499,7 +498,8 @@
 			ontype: function(e){
 				window.FileManager.dialogForm.show({
 					type: "input",
-					placeholder: "New file name",
+					placeholder: "New file type",
+					customizationClass: "change-type",
 					confirm: function(input){
 						input.value && SwiftV1.updateFileMetadata({
 							contentType: input.value,

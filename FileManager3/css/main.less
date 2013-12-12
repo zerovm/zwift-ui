@@ -26,11 +26,12 @@ html, body{
   min-width: 0;
 }
 body{
-  font-family: Arial, sans-serif;
+  font-family: "Helvetica Neue", sans-serif;
+  font-size: 20px;
   background: none !important;
 }
 a{
-  font-size: 14px;
+  font-size: 0.7em;
 }
 #header{
   -webkit-user-select: none;
@@ -49,6 +50,7 @@ a{
 
 #OpenAccountWindow{
   cursor: pointer;
+  font-size: 0.6em;
 }
 
 #AccountWindow{
@@ -79,13 +81,14 @@ a{
   border-width: 1px;
   padding: 5px 10px;
   font-weight: bold;
+  font-size: 0.6em;
 }
 
 #AccountWindow .full-name{
   color: #6a93bb;
   margin: 5px;
   font-weight: bold;
-  font-size: large;
+  font-size: 0.9em;
   padding: 5px 0;
   display: inline-block;
 }
@@ -93,17 +96,23 @@ a{
 .toolbar{
   height: 35px;
   background-color: @color3;
-  font-size: 0;
 }
 
 .toolbar .left{
   float: left;
   margin-left: 3px;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flexbox;
+  display: flex;
+  justify-content: flex-start;
 }
 
 .toolbar .right{
   float: right;
   margin-right: 5px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .toolbar button,
@@ -111,7 +120,7 @@ a{
 .toolbar label{
   margin: 0;
   vertical-align: middle;
-  font-size: 14px;
+  font-size: 0.7em;
 }
 
 pre{
@@ -141,8 +150,7 @@ input[type=file]{
   position: relative;
   right: -65px;
   top: 2px;
-  font-size: small;
-  font-family: Courier New, monospace;
+  font-size: 0.6em;
   font-weight: bold;
 }
 .code-editor-wrapper,
@@ -270,6 +278,7 @@ body.wide-content #WideButton{
 body:not(.freeze-all) .current-dir-label a:hover,
 .current-dir-label a{
   font-weight: bold;
+  font-size: 1em;
   color: #ffffff;
   text-decoration: none;
 }
@@ -332,7 +341,7 @@ body.report-shown #content{
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  font-size: small;
+  font-size: 0.6em;
   height: 56px;
   min-height: 56px;
   text-align: center;
@@ -357,7 +366,7 @@ body.report-shown #content{
   -webkit-transform: translate3d(0,0,0);
 }
 .load-more-button{
-  font-size: 24px;
+  font-size: 1.2em;
   padding: 3px 0;
   transition: all 0.1s;
   -webkit-transition: all 0.1s;
@@ -441,7 +450,7 @@ body:not(.freeze-all) .load-more-button:hover{
 .item-loading{
   color: rgba(0, 0, 0, 0.35);
   position: absolute;
-  font-size: 24px;
+  font-size: 1.2em;
   left: 40%;
   padding-top: 3px;
 }
@@ -461,7 +470,7 @@ body:not(.freeze-all) .load-more-button:hover{
 }
 .item label.name{
   cursor: default;
-  font-size: medium;
+  font-size: 1.4em;
   margin: 0;
   flex-grow: 1;
   line-height: normal;
@@ -526,7 +535,7 @@ body:not(.freeze-all) .load-more-button:hover{
 .error{
   line-height: 30px !important;
   padding: 5px !important;
-  font-size: small !important;
+  font-size: 1.2em !important;
   background: lightcoral !important;
 }
 .error-reason{
@@ -690,7 +699,7 @@ body:not(.freeze-all) .item-confirm-delete button:hover{
   text-align: center;
 }
 .err-msg{
-  font-size: small;
+  font-size: 1.2em;
   text-align: left;
 }
 .execute-full-button{
@@ -705,7 +714,7 @@ body:not(.freeze-all) .item-confirm-delete button:hover{
   background-position: -249px 0;
 }
 .rights-table tr td:first-child{
-  font-size: small;
+  font-size: 1.2em;
   font-weight: bold;
 }
 .read-rights-input,
@@ -918,6 +927,8 @@ template{
   display: -ms-flexbox;
   display: flex;
   align-items: center;
+  font-size: 1em;
+  padding: 0 10px;
 }
 .progressbar .progress{
   flex: 1;
@@ -982,7 +993,7 @@ template{
 .progressbar p{
   position: relative;
   z-index: 10;
-  font-size: 14px;
+  font-size: 0.6em;
   line-height: 14px;
   margin: 0;
   color: #8b9cae;
@@ -1003,7 +1014,7 @@ template{
   padding: 0 0 0 10px;
 }
 .progressbar .buttons-wrapper button{
-  font-size: 12px;
+  font-size: 0.6em;
   line-height: 12px;
   width: 60px;
   height: 30px;
@@ -1109,8 +1120,11 @@ button:not(.btn):hover{
   margin: 0 0 5px;
   border-radius: 0;
 }
+.btn-primary,
+.btn-default,
 .ok-dialog-button,
 .cancel-dialog-button{
+  font-size: 0.6em;
   height: 22px;
   width: 90px;
 }
@@ -1121,13 +1135,16 @@ button:not(.btn):hover{
 #CreateDialog.input-shown #input_CreateContainerDialog{
   display: inline-block;
 }
+#CreateDialog.change-type #input_CreateContainerDialog{
+  margin-bottom: 0;
+}
 #CreateDialog.dialog-shown .dialog-wrapper{
   display: block;
   overflow: hidden;
   text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 14px;
+  font-size: 0.7em;
 }
 .dialog-footer{
   width: 100%;
@@ -1175,11 +1192,13 @@ button:not(.btn):hover{
   margin: 5px 0;
   padding-right: 25px;
 }
+#CreateDialog.change-type .input-group-btn,
 #CopyDialog .input-group-btn{
   width: auto;
   padding: 0;
   display: inline-flex;
 }
+#CreateDialog.change-type .input-group-btn button,
 #CopyDialog .input-group-btn button,
 .metadata .input-group-btn button{
   width: 80px;
@@ -1199,6 +1218,7 @@ button:not(.btn):hover{
 .meta-data-row:not(:first-child){
   margin-top: 5px;
 }
+#CreateDialog.change-type .input-wrapper,
 #CopyDialog .input-wrapper,
 .meta-data-row .input-wrapper{
   width: 100%;
@@ -1217,7 +1237,7 @@ button:not(.btn):hover{
   flex: 1;
   height: 25px;
   padding: 5px;
-  font-size: small;
+  font-size: 0.7em;
   line-height: normal;
   -webkit-box-shadow: inset 0px 2px 3px 0px rgba(0, 0, 0, 0.3);
   -moz-box-shadow: inset 0px 2px 3px 0px rgba(0, 0, 0, 0.3);
@@ -1225,6 +1245,9 @@ button:not(.btn):hover{
   border-radius: 4px;
   border: none;
   margin: 0 4px;
+}
+#CreateDialog.metadata input{
+  font-size: 1em;
 }
 #CreateDialog .meta-key-input.error-input{
   background: #8b9cae;
@@ -1237,6 +1260,7 @@ button:not(.btn):hover{
   background-position: -496px -6px;
   pointer-events: auto;
 }
+#CreateDialog.change-type form,
 #CopyDialog form{
   display: flex;
   align-items: center;
@@ -1271,7 +1295,7 @@ body.report-shown .report-wrapper{
 #report .side-table-wrapper th:first-child,
 #report .result-report,
 #report th{
-  font-size: small;
+  font-size: 1em;
   border: 1px solid #b0b0b0;
   background: #e9e9e9;
   text-align: center;
@@ -1360,13 +1384,13 @@ body.report-shown .report-wrapper{
 .timer-wrapper{
   color: #677386;
   font-weight: bold;
-  font-size: 62px;
+  font-size: 3.1em;
   text-align: center;
   margin-top: 100px;
 }
 #report h1{
   margin: 10px 0 8px;
-  font-size: 24px;
+  font-size: 1.2em;
   line-height: normal;
   color: #7e8691;
 }
@@ -1378,7 +1402,11 @@ body.report-shown .report-wrapper{
   margin-bottom: 10px;
   border: none;
   text-align: left;
+  font-size: 0.7em;
 }
 .dummy{
   color: transparent;
+}
+.err-msg-wrapper{
+  font-size: 0.8em;
 }
