@@ -357,8 +357,13 @@ body.report-shown #content{
   position: absolute;
   left: 0;
   top: 0;
-  border-bottom: 1px solid #E4E4E4;
   -webkit-transform: translate3d(0,-1px,0);
+}
+.item:nth-last-child(2),
+.item::before,
+.submenu.appear-submenu::before,
+.load-more-button::before{
+  border-bottom: 1px solid #E4E4E4;
 }
 .item:hover::before,
 .item:hover + .item::before{

@@ -9,13 +9,14 @@
 		progressElWrapper;
 
 	function onItemClick(itemEl){
-		var name = itemEl.dataset.path;
-		if(!name){
+		var name = itemEl.dataset.path,
+			curPath = FileManager.CurrentPath();
+		if(!name || curPath.isFile()){
 			return;
 		}
-		selectedPath = FileManager.CurrentPath().add(name);
+		selectedPath = curPath.add(name);
 		location.hash = selectedPath;
-		FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().withoutAccount(), true);
+		FileManager.CurrentDirLabel.setContent(curPath.withoutAccount(), true);
 	}
 
 	function ItemCommandName(){

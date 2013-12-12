@@ -152,7 +152,7 @@ FileManager.Path = function (path) {
 		return resultPath.length && resultPath.join("/") + "/";
 	};
 	this.add = function (name) {
-		return  path + name;
+		return path + name;
 	};
 	return this;
 };
