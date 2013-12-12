@@ -3,7 +3,6 @@
 @color3: #8B9CAE;
 @color4: #F5F5F5;
 @color5: #5D5D5D;
-@color6: #FFFFFF;
 @dialogColor: #e0e3e8;
 @darkItemElementColor: #efefef;
 @semiDarkItemElementColor: #f8f8f8;
@@ -58,8 +57,8 @@ a{
   right: 0;
   top: 40px;
   z-index: 99;
-  background: #f5f5f5;
-  border: 3px solid #8b9cae;
+  background: @color4;
+  border: 3px solid @color3;
   border-radius: 3px;
   box-shadow: rgb(158, 155, 155) 0px 0px 25px 0px inset;
   max-width: 280px;
@@ -75,7 +74,7 @@ a{
 
 #AccountWindow .sign-out{
   margin: 5px;
-  background: #6a93bb;
+  background: @color2;
   color: white;
   border-radius: 3px;
   border-width: 1px;
@@ -85,7 +84,7 @@ a{
 }
 
 #AccountWindow .full-name{
-  color: #6a93bb;
+  color: @color2;
   margin: 5px;
   font-weight: bold;
   font-size: 0.9em;
@@ -526,12 +525,41 @@ body:not(.freeze-all) .load-more-button:hover{
 }
 
 .empty-list{
+  background: white;
+}
+.empty-list label{
   padding: 0 5px;
   line-height: 30px;
   display: block;
-  background: rgba(255, 255, 255, 0.3);
+  background: @color4;
+  cursor: default;
 }
-
+.empty-list label.large-file-msg,
+.empty-list.large-file label.file-msg,
+.empty-list.empty-folder label.file-msg,
+.empty-list label.folder-msg{
+  display: none;
+}
+.empty-list.large-file label.large-file-msg,
+.empty-list.empty-folder label.folder-msg{
+  display: block;
+}
+.empty-list .wrapper div{
+  background: url(../img/no_files.png) -142px top no-repeat;
+  background-size: 210px 70px;
+  width: 65px;
+  height: 70px;
+  margin: 100px auto 0;
+  pointer-events: none;
+}
+.empty-list.large-file .wrapper div{
+  display: none;
+}
+.empty-list.empty-folder .wrapper div{
+  background-position: -3px 0;
+  cursor: pointer;
+  pointer-events: auto;
+}
 .error{
   line-height: 30px !important;
   padding: 5px !important;
@@ -996,7 +1024,7 @@ template{
   font-size: 0.6em;
   line-height: 14px;
   margin: 0;
-  color: #8b9cae;
+  color: @color3;
   display: -webkit-flex;
   display: -moz-flex;
   display: flex;
@@ -1109,7 +1137,7 @@ button:not(.btn):hover{
 }
 #CopyDialog,
 #CreateDialog{
-  background-color: #e0e3e8;
+  background-color: @dialogColor;
   padding: 5px;
 }
 #CreateDialog #input_CreateContainerDialog{
@@ -1250,7 +1278,7 @@ button:not(.btn):hover{
   font-size: 1em;
 }
 #CreateDialog .meta-key-input.error-input{
-  background: #8b9cae;
+  background: @color3;
   color: white;
   outline: none;
 }
@@ -1275,7 +1303,7 @@ body.report-shown .report-wrapper{
 
 }
 #report{
-  background-color: #f5f5f5;
+  background-color: @color4;
   padding: 10px 0 10px 10px;
 }
 #report table{

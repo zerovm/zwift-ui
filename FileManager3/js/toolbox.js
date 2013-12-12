@@ -230,7 +230,6 @@
 		progressEl.className = "progress";
 		progressValueEl.className = "progress-value";
 		buttonWrapper.className = "buttons-wrapper";
-		textEl.innerHTML = "Waiting for upload.";
 		progressEl.appendChild(progressValueEl);
 		progressEl.appendChild(textEl);
 		progressbarEl.appendChild(progressEl);

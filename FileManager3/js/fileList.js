@@ -2,7 +2,7 @@
 	"use strict";
 
 	var LIMIT = 20,
-		notTextFileMsgContent = document.createElement("label");
+		emptynessMsg = new EmptynessMsg();
 
 	function list(callback){
 		var requestArgs = {};
@@ -27,15 +27,14 @@
 				files.shift();
 			}
 			if(files.length === 0){
-				html = document.querySelector("#noFilesTemplate").innerHTML;
-				scrollingContentEl.insertAdjacentHTML("beforeend", html);
+				emptynessMsg.show(scrollingContentEl, "nofiles");
 			}else{
 				html = listHTML(files);
 				scrollingContentEl.insertAdjacentHTML("beforeend", html);
 				if(FILES.length === LIMIT){
 					FileManager.toolbox.createLoadMoreButton(scrollingContentEl);
 				}else{
-					scrollingContentEl.insertAdjacentHTML("beforeend", createFile({name: "", size:"", modified:""}).replace("item", "item no-hover no-active dummy"));
+					scrollingContentEl.insertAdjacentHTML("beforeend", createFile({name: "", size: "", modified: ""}).replace("item", "item no-hover no-active dummy"));
 				}
 				checkLoadMore();
 			}
@@ -138,7 +137,7 @@
 		window.FileManager.errorMsgHandler.show({
 			header: "Error:",
 			status: status,
-			statusText:statusText
+			statusText: statusText
 		});
 	}
 
@@ -209,7 +208,7 @@
 				error: function(status, statusText){
 					progressbar.cancel();
 					window.FileManager.elements.upButton.removeAttribute('disabled');
-					window.FileManager.errorMsgHandler.show({header: "Ajax error occured", status:status, statusText: statusText});
+					window.FileManager.errorMsgHandler.show({header: "Ajax error occured", status: status, statusText: statusText});
 				},
 				notExist: function(){
 					window.FileManager.errorMsgHandler.show({header: "File Not Found."});
@@ -220,7 +219,7 @@
 					if(loaded > 2097152){
 						window.FileManager.elements.upButton.removeAttribute('disabled');
 						progressbar.cancel();
-						el.innerHTML = 'File is too large (2MB+).';
+						emptynessMsg.show(el, "largefile");
 					}
 				}
 			},
@@ -255,7 +254,6 @@
 			path = currentPath.withoutAccount();
 
 		function fileExist(metadata, contentType, contentLength, lastModified){
-			var Current = FileManager.CurrentPath();
 			switch(window.FileManager.item.itemCommandName.pop()){
 				case "open":
 					window.FileManager.item.open(path);
@@ -269,7 +267,7 @@
 					}else{
 						el.removeChildren();
 						FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().name());
-						el.appendChild(notTextFileMsgContent);
+						emptynessMsg.show(el);
 					}
 				//document.querySelector('.download-link').setAttribute('download', filename);
 			}
@@ -278,7 +276,8 @@
 
 		function fileNotExist(){
 			window.FileManager.elements.upButton.removeAttribute('disabled');
-			el.textContent = "File not found.";
+			el.removeChildren();
+			window.FileManager.errorMsgHandler.show({header: "File Not Found."});
 			callback();
 		}
 
@@ -349,15 +348,52 @@
 		}
 	}
 
+	function EmptynessMsg(){
+		var tempEl, uploadInput,
+			emptynessMsg = document.createElement("div");
+
+		this.show = function(el, incident){
+			el.appendChild(emptynessMsg);
+			el.classList.add("empty-list");
+			switch (incident){
+				case "nofiles":
+					el.classList.add("empty-folder");
+					break;
+				case "largefile":
+					el.classList.add("large-file");
+					break;
+			}
+		};
+
+		emptynessMsg.className = "wrapper";
+		tempEl = document.createElement("label");
+		tempEl.textContent = "It's not a text file.";
+		tempEl.className = "file-msg";
+		emptynessMsg.appendChild(tempEl);
+		tempEl = document.createElement("label");
+		tempEl.textContent = "The folder is empty";
+		tempEl.className = "folder-msg";
+		emptynessMsg.appendChild(tempEl);
+		tempEl = document.createElement("label");
+		tempEl.textContent = "File is too large (2MB+).";
+		tempEl.className = "large-file-msg";
+		emptynessMsg.appendChild(tempEl);
+		tempEl = document.createElement("div");
+		tempEl.addEventListener("click", function(){
+			if(!uploadInput){
+				uploadInput = document.querySelector("#UploadFilesButton input");
+			}
+			uploadInput.click();
+		});
+		emptynessMsg.appendChild(tempEl);
+	}
+
 	function checkLoadMore(){
 		var el = window.FileManager.elements.itemsContainer;
 		if(Math.abs(el.scrollTop - (el.scrollHeight - el.clientHeight)) < 4){
 			window.FileManager.files.loadMore();
 		}
 	}
-
-	notTextFileMsgContent.className = "empty-list";
-	notTextFileMsgContent.textContent = "Not text file.";
 
 	document.addEventListener("transitionend", ontransition);
 	document.addEventListener("webkitTransitionEnd", ontransition);
