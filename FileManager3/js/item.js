@@ -220,12 +220,14 @@
 				input = document.createElement("input");
 				lastInput = input;
 				input.className = metaKeyClassName;
+				input.type = "text";
 				meta && (input.value = decodeURIComponent(meta));
 				input.placeholder = "Meta key";
 				inputWrapper.appendChild(input);
 
 				input = document.createElement("input");
 				input.className = metaValueClassName;
+				input.type = "text";
 				value && (input.value = decodeURIComponent(value));
 				input.placeholder = "Meta value";
 				inputWrapper.appendChild(input);
@@ -322,6 +324,7 @@
 						createMetaInputRow();
 						callback(function(){
 							lastInput.focus();
+							lastInput.scrollIntoView();
 						});
 					},
 					notExist: function(){

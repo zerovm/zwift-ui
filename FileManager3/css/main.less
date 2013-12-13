@@ -1161,7 +1161,7 @@ button:not(.btn):hover{
   width: 100%;
   padding: 5px;
   margin: 0 0 5px;
-  border-radius: 0;
+  border-radius: 4px;
 }
 .btn-primary,
 .btn-default,
@@ -1263,9 +1263,9 @@ button:not(.btn):hover{
   display: -webkit-flex;
   display: flex;
 }
-.meta-data-row:not(:first-child){
+/*.meta-data-row:not(:first-child){
   margin-top: 5px;
-}
+}*/
 #CreateDialog.save-as-dialog .input-wrapper,
 #CreateDialog.change-type .input-wrapper,
 #CopyDialog .input-wrapper,
@@ -1274,13 +1274,15 @@ button:not(.btn):hover{
   display: inline-flex;
   cursor: default;
 }
+.meta-data-row .input-wrapper{
+  padding-top: 4px;
+}
+/*
 #CreateDialog input:focus,
 #CopyDialog input:focus{
   outline-offset: -2px;
-  outline: 5px auto rgb(229, 151, 0);
-  border: 1px solid rgb(229, 151, 0);
   background: white;
-}
+}*/
 #CreateDialog input,
 #CopyDialog input{
   flex: 1;
@@ -1288,11 +1290,11 @@ button:not(.btn):hover{
   padding: 5px;
   font-size: 0.7em;
   line-height: normal;
-  -webkit-box-shadow: inset 0px 2px 3px 0px rgba(0, 0, 0, 0.3);
+  /*-webkit-box-shadow: inset 0px 2px 3px 0px rgba(0, 0, 0, 0.3);
   -moz-box-shadow: inset 0px 2px 3px 0px rgba(0, 0, 0, 0.3);
   box-shadow: inset 0px 2px 3px 0px rgba(0, 0, 0, 0.3);
+  border: none;*/
   border-radius: 4px;
-  border: none;
   margin: 0 4px;
 }
 #CreateDialog.metadata input{

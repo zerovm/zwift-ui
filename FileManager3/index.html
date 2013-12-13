@@ -98,8 +98,8 @@
 
 		<div id="RightsDialog" class="hidden dialog">
 			<form class="input-group">
-				<div class="div-input-label"><label>Read: </label><input class="read-rights-input"></div>
-				<div class="div-input-label"><label>Write: </label><input class="write-rights-input"></div>
+				<div class="div-input-label"><label>Read: </label><input class="read-rights-input" type="text"></div>
+				<div class="div-input-label"><label>Write: </label><input class="write-rights-input" type="text"></div>
 				<div class="dialog-footer">
 					<button class="btn ok-dialog-button" type="submit">Save</button>
 					<button class="btn cancel-dialog-button" type="button">Cancel</button>
@@ -225,11 +225,11 @@
 			<tbody hidden>
 			<tr>
 				<td style="width: 1px;">Read</td>
-				<td><input class="read-rights-input" placeholder="Read Rights"></td>
+				<td><input class="read-rights-input" type="text" placeholder="Read Rights"></td>
 			</tr>
 			<tr style="width: 1px;">
 				<td>Write</td>
-				<td><input class="write-rights-input" placeholder="Write Rights"></td>
+				<td><input class="write-rights-input" type="text" placeholder="Write Rights"></td>
 			</tr>
 			</tbody>
 			<tfoot hidden>
@@ -257,7 +257,7 @@
 			<tbody class="input-group-table" style="background: transparent;" hidden>
 			<tr>
 				<td><img src="img/file_type.png"></td>
-				<td><input class="content-type-input" placeholder="Content Type"></td>
+				<td><input class="content-type-input" type="text" placeholder="Content Type"></td>
 				<td class="content-type-button">></td>
 			</tr>
 			</tbody>
@@ -309,7 +309,7 @@
 			<tbody class="input-group-table" style="background: transparent;">
 			<tr>
 				<td><img src="img/copy.png"></td>
-				<td><input class="copy-input" placeholder="Copy to..."></td>
+				<td><input class="copy-input" type="text" placeholder="Copy to..."></td>
 				<td class="copy-button">+</td>
 			</tr>
 			</tbody>
