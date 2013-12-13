@@ -772,14 +772,6 @@ body:not(.freeze-all) .item-confirm-delete button:hover{
   padding: 5px;
 }
 
-.save-as-dialog{
-  background: rgba(0, 0, 0, 0.14);
-  width: 100%;
-  border-collapse: collapse;
-  height: 25px;
-  margin: 0;
-}
-
 .CodeMirror-gutters{
   background-color: rgba(247, 247, 247, 0.9) !important;
 }
@@ -1186,6 +1178,7 @@ button:not(.btn):hover{
 #CreateDialog.input-shown #input_CreateContainerDialog{
   display: inline-block;
 }
+#CreateDialog.save-as-dialog #input_CreateContainerDialog,
 #CreateDialog.change-type #input_CreateContainerDialog{
   margin-bottom: 0;
 }
@@ -1242,12 +1235,14 @@ button:not(.btn):hover{
   text-align: center;
   margin: 5px 0;
 }
+#CreateDialog.save-as-dialog .input-group-btn,
 #CreateDialog.change-type .input-group-btn,
 #CopyDialog .input-group-btn{
   width: auto;
   padding: 0;
   display: inline-flex;
 }
+#CreateDialog.save-as-dialog .input-group-btn button,
 #CreateDialog.change-type .input-group-btn button,
 #CopyDialog .input-group-btn button,
 .metadata .input-group-btn button{
@@ -1271,6 +1266,7 @@ button:not(.btn):hover{
 .meta-data-row:not(:first-child){
   margin-top: 5px;
 }
+#CreateDialog.save-as-dialog .input-wrapper,
 #CreateDialog.change-type .input-wrapper,
 #CopyDialog .input-wrapper,
 .meta-data-row .input-wrapper{
@@ -1313,6 +1309,7 @@ button:not(.btn):hover{
   background-position: -496px -6px;
   pointer-events: auto;
 }
+#CreateDialog.save-as-dialog form,
 #CreateDialog.change-type form,
 #CopyDialog form{
   display: flex;

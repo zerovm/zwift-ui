@@ -74,6 +74,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			e.stopPropagation();
 			window.FileManager.dialogForm.show({
 				type: "input",
+				customizationClass: "save-as-dialog",
 				placeholder: "New name of file",
 				confirm: saveAsConfirm,
 				decline: null
