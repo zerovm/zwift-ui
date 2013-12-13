@@ -85,17 +85,23 @@ FileManager.Containers.create = function (containerObjs) {
 	var resulthtml = "",
 		slashStr = "/",
 		dummy = document.querySelector('#containerTemplate').innerHTML,
+		tmp,
 		container, title, path;
 
 	for (var i = 0; i < containerObjs.length; i++) {
 		container = containerObjs[i];
 		title = container.name;
 		path = title.indexOf(slashStr) === -1 ? title + slashStr : title;
-		resulthtml += dummy.replace('{{name}}', FileManager.toolbox.escapeHTML(FileManager.toolbox.makeShortName(container.name)))
+		tmp = dummy.replace('{{name}}', FileManager.toolbox.escapeHTML(FileManager.toolbox.makeShortName(container.name)))
 			.replace('{{path}}', FileManager.toolbox.escapeHTML(path))
 			.replace('{{title}}', FileManager.toolbox.escapeHTML(title))
-			.replace('{{size}}', container.bytes ? FileManager.toolbox.escapeHTML(FileManager.toolbox.shortenSize(container.bytes)) : "")
-			.replace('{{files}}', container.count ? FileManager.toolbox.escapeHTML(container.count) : "");
+			.replace('{{size}}', FileManager.toolbox.shortenSize(container.bytes))
+			.replace('{{files}}', container.count);
+		if(container.count){
+			resulthtml += tmp;
+		}else{
+			resulthtml += tmp.replace("item", "item empty-container");
+		}
 	}
 	return resulthtml;
 };
