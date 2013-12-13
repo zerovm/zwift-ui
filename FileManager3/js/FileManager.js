@@ -95,8 +95,8 @@ FileManager.Containers.create = function (containerObjs) {
 		tmp = dummy.replace('{{name}}', FileManager.toolbox.escapeHTML(FileManager.toolbox.makeShortName(container.name)))
 			.replace('{{path}}', FileManager.toolbox.escapeHTML(path))
 			.replace('{{title}}', FileManager.toolbox.escapeHTML(title))
-			.replace('{{size}}', FileManager.toolbox.shortenSize(container.bytes))
-			.replace('{{files}}', container.count);
+			.replace('{{size}}', isNaN(container.bytes) ? "" : FileManager.toolbox.shortenSize(container.bytes))
+			.replace('{{files}}', isNaN(container.count) ? "" : container.count);
 		if(container.count){
 			resulthtml += tmp;
 		}else{

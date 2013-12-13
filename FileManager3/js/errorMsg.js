@@ -6,23 +6,49 @@
 document.addEventListener("DOMContentLoaded", function(){
 	"use strict";
 
-	var errorsEl = document.getElementsByClassName("err-msg")[0].parentNode;
+	var errorsEl = document.getElementsByClassName("err-msg")[0].parentNode,
+		errorClass = "error-is-shown",
+		closeButton;
 
-	function showError(params){//TODO: add ajax error
-		var span = document.createElement("span");
+	function showError(params){
+		var span, strong, br;
 		errorsEl.textContent = params.header;
-		params.status && (span.textContent = params.status);
-		errorsEl.appendChild(span);
-		span = document.createElement("span");
-		params.statusText && (span.textContent = params.statusText);
-		errorsEl.appendChild(span);
+		document.body.classList.add(errorClass);
+		if(params.status){
+			strong = document.createElement("strong");
+			strong.textContent = "Status: ";
+			errorsEl.appendChild(document.createElement("br"));
+			errorsEl.appendChild(strong);
+			span = document.createElement("span");
+			span.textContent = params.status;
+			errorsEl.appendChild(span);
+		}
+		if(params.statusText){
+			strong = document.createElement("strong");
+			strong.textContent = "Status text: ";
+			errorsEl.appendChild(document.createElement("br"));
+			errorsEl.appendChild(strong);
+			span = document.createElement("span");
+			span.textContent = params.statusText;
+			errorsEl.appendChild(span);
+		}
+		errorsEl.appendChild(closeButton);
 		errorsEl.classList.remove(window.FileManager.elements.hiddenClass);
 		params.callback && params.callback();
 	}
 
 	function hideError(){
+		closeButton.parentNode && closeButton.parentNode.removeChild(closeButton);
 		errorsEl.classList.add(window.FileManager.elements.hiddenClass);
+		document.body.classList.remove(errorClass);
 	}
+
+	closeButton = document.createElement("button");
+	closeButton.textContent = "OK";
+	closeButton.className = "btn btn-primary ok-dialog-button";
+	closeButton.addEventListener("click", function(){
+		hideError();
+	});
 	hideError();
 	if(!window.FileManager){
 		window.FileManager = {};

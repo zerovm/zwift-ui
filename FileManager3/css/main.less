@@ -304,6 +304,10 @@ body:not(.freeze-all) .current-dir-label a:hover,
   display: -ms-flexbox;
   display: flex;
   flex-direction: column;
+  -webkit-transition: 300ms background 0 ease-in;
+}
+.error-is-shown .content-wrapper{
+  background: white;
 }
 #content{
   width: 100%;
@@ -645,7 +649,7 @@ body:not(.freeze-all) .item-confirm-delete button:hover{
 .dialog{
   transition: all 0.1s;
   vertical-align: middle;
-  background: rgba(235, 235, 235, 0.8);
+  background: @dialogColor;
   padding: 5px;
   text-align: center;
 }
@@ -1115,6 +1119,7 @@ button:not(.btn):hover{
 .submenu.appear-submenu:last-child{
   border-bottom: none;
 }
+.err-msg-wrapper::before,
 .metadata-remove,
 .submenu button{
   width: 30px;
@@ -1170,6 +1175,17 @@ button:not(.btn):hover{
   font-size: 0.6em;
   height: 22px;
   width: 90px;
+  border: 1px solid #999;
+  border-radius: 4px;
+}
+.btn-primary:focus,
+.btn-default:focus,
+.ok-dialog-button:focus,
+.cancel-dialog-button:focus{
+  -webkit-box-shadow: 0 0 0 2px #1e6ec1,0 1px 3px 0 rgba(0,0,0,.15) inset;
+  -moz-box-shadow: 0 0 0 2px #1e6ec1,0 1px 3px 0 rgba(0,0,0,.15) inset;
+  box-shadow: 0 0 0 2px #1e6ec1,0 1px 3px 0 rgba(0,0,0,.15) inset;
+  outline: 1px solid #1e6ec1;
 }
 #CreateDialog #input_CreateContainerDialog,
 #CreateDialog .dialog-wrapper{
@@ -1235,6 +1251,11 @@ button:not(.btn):hover{
   text-align: center;
   margin: 5px 0;
 }
+#CreateDialog.change-type .input-group-btn,
+#CopyDialog .input-group-btn{
+  margin-left: 10px;
+  margin-right: 10px;
+}
 #CreateDialog.save-as-dialog .input-group-btn,
 #CreateDialog.change-type .input-group-btn,
 #CopyDialog .input-group-btn{
@@ -1254,7 +1275,8 @@ button:not(.btn):hover{
   padding-right: 25px;
 }
 #CopyDialog .input-group-btn button.btn-primary{
-  width: auto;
+  width: 190px;
+  white-space: nowrap;
 }
 .meta-data-row{
   display: -webkit-box;
@@ -1273,6 +1295,8 @@ button:not(.btn):hover{
   width: 100%;
   display: inline-flex;
   cursor: default;
+  min-height: 30px;
+  align-items: center;
 }
 .meta-data-row .input-wrapper{
   padding-top: 4px;
@@ -1308,7 +1332,7 @@ button:not(.btn):hover{
 .metadata-remove{
   width: 24px;
   border: 0;
-  background-position: -496px -6px;
+  background-position: -496px 0;
   pointer-events: auto;
 }
 #CreateDialog.save-as-dialog form,
@@ -1457,9 +1481,24 @@ body.report-shown .report-wrapper{
   font-size: 0.7em;
 }
 .err-msg-wrapper{
+  background: @dialogColor;
   font-size: 0.8em;
+  padding: 15px 15px 15px 35px;
+  position: relative;
+  word-break: break-word;
 }
-
+.err-msg-wrapper::before{
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 6px;
+  background-position: -1138px 0;
+  width: 24px;
+}
+.err-msg-wrapper button{
+  margin: 5px auto 0;
+  display: block;
+}
 
 
 .div-input-label {
