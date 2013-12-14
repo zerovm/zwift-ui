@@ -391,9 +391,9 @@
 
 	document.addEventListener("transitionend", ontransition);
 	document.addEventListener("webkitTransitionEnd", ontransition);
-	window.addEventListener('hashchange', refreshItemList);
+	window.addEventListener("hashchange", refreshItemList);
 	document.addEventListener("DOMContentLoaded", function(){
-		window.FileManager.elements.scrollWrapper.addEventListener('scroll', window.FileManager.toolbox.onscrollLoadMore);
+		window.FileManager.elements.scrollWrapper.addEventListener("scroll", window.FileManager.toolbox.onscrollLoadMore);
 	});
 
 	if(!window.FileManager){

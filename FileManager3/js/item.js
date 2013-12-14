@@ -133,13 +133,10 @@
 	function toggleMenu(e){
 		var parent = FileManager.toolbox.getParentByClassName(e, 'item');
 		if(previousParent === parent){
-			submenu.wrapper.classList.toggle(appearClass)
+			submenu.appear()
 		}else{
 			window.FileManager.DialogForm.closeOtherDialogs();
-			submenu.wrapper.classList.remove(appearClass);
-			submenu.wrapper.parentNode && submenu.removeSubmenu();
-			submenu.setPath(parent.dataset.path);
-			submenu.appendSubmenu(parent);
+			submenu.appear(parent);
 		}
 		previousParent = parent;
 	}
@@ -187,11 +184,50 @@
 			actionPrefix = "on",
 			metadataObj,
 			oncopy,
-			handlers;
+			handlers,
+			transtionHandler = new TransitionHandler();
+
+		function TransitionHandler(){
+			var transitionEnd = {
+					"WebkitTransition": "webkitTransitionEnd",
+					"MozTransition": "transitionend",
+					"OTransition": "oTransitionEnd otransitionend",
+					"msTransition": "MSTransitionEnd",
+					"transition": "transitionend"
+				}[Modernizr.prefixed("transition")],
+				scrollEl, interval,
+				scrollOffsetDx = 5;
+
+			function onTransitionEnd(e){
+				var desiredScroll;
+				wrapper.removeEventListener(e.type, onTransitionEnd);
+				if(this === e.target){
+					desiredScroll = wrapper.offsetTop - scrollEl.clientHeight + this.offsetHeight;
+					interval = setInterval(function(){
+						var spScroppTop = scrollEl.parentNode.scrollTop;
+						if(desiredScroll > spScroppTop){
+							scrollEl.parentNode.scrollTop = spScroppTop + scrollOffsetDx;
+						}else{
+							clearInterval(interval);
+						}
+					}, 16);
+				}
+			}
+
+			this.bind = function(el){
+				scrollEl = window.FileManager.elements.itemsContainer;
+				this.bind = function(el){
+					setTimeout(function(){
+						el.addEventListener(transitionEnd, onTransitionEnd);
+					}, 0);
+				};
+				this.bind(el);
+			}
+		}
 
 		function createDeleteDialog(){
 			var textEl = document.createElement("span");
-			textEl.innerHTML = "Are you sure of deleting <strong>" + previousParent.dataset.path + "</strong> ?";
+			textEl.innerHTML = "Are you sure of deleting <strong>" + previousParent.dataset.path + "</strong>?";
 			return textEl;
 		}
 
@@ -293,10 +329,10 @@
 				wrapper.getElementsByClassName(inputWrapperClassName).filter(function(el){
 					return !el.firstElementChild.classList.contains(errorInputClassName);
 				}).forEach(function(inputwrapper){
-					var metaValue = encodeURIComponent(inputwrapper.children[0].value),
-						metaKey = encodeURIComponent(inputwrapper.children[1].value);
-					metaValue && metaKey && (result[metaValue] = metaKey);
-				});
+						var metaValue = encodeURIComponent(inputwrapper.children[0].value),
+							metaKey = encodeURIComponent(inputwrapper.children[1].value);
+						metaValue && metaKey && (result[metaValue] = metaKey);
+					});
 				return result;
 			}
 
@@ -371,11 +407,19 @@
 			});
 		}
 
-		this.appendSubmenu = function(parentEl){
-			parentEl.parentNode.insertBefore(wrapper, parentEl.nextSibling);
-			setTimeout(function(){
-				wrapper.classList.add(appearClass);
-			}, 30);//20 is for firefox slow working
+		this.appear = function(parentEl){
+			if(parentEl){
+				transtionHandler.bind(wrapper);
+				wrapper.classList.remove(appearClass);
+				wrapper.parentNode && submenu.removeSubmenu();
+				this.setPath(parentEl.dataset.path);
+				parentEl.parentNode.insertBefore(wrapper, parentEl.nextSibling);
+				setTimeout(function(){
+					wrapper.classList.add(appearClass);
+				}, 30);//30 is for firefox slow working
+			}else{
+				wrapper.classList.toggle(appearClass)
+			}
 		};
 
 		this.removeSubmenu = function(){
@@ -430,10 +474,10 @@
 				});
 				dialogForm.show({
 					type: "simple-dialog",
-					onshow: function () {
+					onshow: function(){
 						var xhr = SwiftV1.Container.head({
 							containerName: previousParent.dataset.path,
-							success: function () {
+							success: function(){
 								var dialogEl = document.getElementById("RightsDialog");
 								var readRights = dialogEl.getElementsByClassName("read-rights-input")[0];
 								var writeRights = dialogEl.getElementsByClassName("write-rights-input")[0];
@@ -442,16 +486,16 @@
 								writeRights.value = rights.write;
 								readRights.focus();
 							},
-							notExist: function () {
+							notExist: function(){
 								// TODO: Add error.
 							},
-							error: function () {
+							error: function(){
 								// TODO: Add error.
 							}
 						});
 
 					},
-					confirm: function () {
+					confirm: function(){
 						var dialogEl = document.getElementById("RightsDialog");
 						var readRights = dialogEl.getElementsByClassName("read-rights-input")[0];
 						var writeRights = dialogEl.getElementsByClassName("write-rights-input")[0];
@@ -459,12 +503,12 @@
 							containerName: previousParent.dataset.path,
 							readRights: readRights.value,
 							writeRights: writeRights.value,
-							updated: function () {
+							updated: function(){
 								dialogForm.hide();
 							},
-							error: function (status, statusText) {
+							error: function(status, statusText){
 								// TODO: Change:
-								alert('error: ' + status + ' ' + statusText);
+								alert("error: " + status + " " + statusText);
 							}
 						});
 					}
