@@ -179,23 +179,6 @@ document.addEventListener('click', function (e) {
 		//SHARED-CONTAINERS
 		FileManager.AddShared.click();
 	}
-
-	else if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		if (FileManager.toolbox.getParentByClassName(e.target,'rights-save')) {
-			FileManager.Rights.save();
-		} else if (FileManager.toolbox.getParentByClassName(e.target,'rights-discard-changes')) {
-			FileManager.Rights.discardChanges();
-		}
-	}
-});
-
-document.addEventListener('keyup', function (e) {
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		if (e.target.classList.contains('read-rights-input') || e.target.classList.contains('write-rights-input')) {
-			FileManager.Rights.keyup();
-		}
-	}
 });
 
 window.addEventListener('authReady', function () {
