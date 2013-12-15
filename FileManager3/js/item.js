@@ -442,7 +442,7 @@
 			oncopy = function(){
 				var sourcePath = window.FileManager.CurrentPath().withoutAccount(),
 					sourceName = sourcePath + previousParent.dataset.path,
-					newName = sourcePath;
+					newName = previousParent.dataset.path;
 				dialogForm.show({
 					type: "input",
 					placeholder: "New file name",
