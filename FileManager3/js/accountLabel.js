@@ -4,12 +4,15 @@ window.addEventListener('authReady', function () {
 	var accountLabel = document.getElementById('AccountLabel'),
 		accountWindow = document.getElementById('AccountWindow');
 
+	document.getElementById('header').addEventListener('mousedown', function (e) {
+		e.preventDefault();
+		e.stopPropagation();
+	});
+	window.addEventListener('mousedown', function(){
+		accountWindow.classList.add('hidden');
+	});
 	document.getElementById('OpenAccountWindow').addEventListener('click', function () {
-		if (accountWindow.classList.contains('hidden')) {
-			accountWindow.classList.remove('hidden');
-		} else {
-			accountWindow.classList.add('hidden');
-		}
+		accountWindow.classList.toggle('hidden');
 	});
 
 	if (window.FileManager.ENABLE_EMAILS) {
