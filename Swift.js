@@ -618,7 +618,12 @@ var Auth = {};
 			unauthorized();
 		}else{
 			if(typeof e.target.response === "string"){
-				args.error(e.target.status, e.target.statusText, "");
+				if(e.target.status === 200){
+					headers = parseResponseHeaders(e.target.getAllResponseHeaders());
+					args.success(e.target.result, makeReportObj(headers));
+				}else{
+					args.error(e.target.status, e.target.statusText, "");
+				}
 			}else{
 				reader = new FileReader();
 				if (e.target.status == 200) {
