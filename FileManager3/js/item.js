@@ -409,7 +409,6 @@
 
 		this.appear = function(parentEl){
 			if(parentEl){
-				transtionHandler.bind(wrapper);
 				wrapper.classList.remove(appearClass);
 				wrapper.parentNode && submenu.removeSubmenu();
 				this.setPath(parentEl.dataset.path);
@@ -420,6 +419,7 @@
 			}else{
 				wrapper.classList.toggle(appearClass)
 			}
+			transtionHandler.bind(wrapper);
 		};
 
 		this.removeSubmenu = function(){
