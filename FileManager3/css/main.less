@@ -50,7 +50,7 @@ a{
 
 #OpenAccountWindow{
   cursor: pointer;
-  font-size: 0.6em;
+  font-size: 0.7em;
 }
 
 #AccountWindow{
@@ -81,7 +81,7 @@ a{
   border-width: 1px;
   padding: 5px 10px;
   font-weight: bold;
-  font-size: 0.6em;
+  font-size: 0.7em;
 }
 
 #AccountWindow .full-name{
@@ -152,7 +152,7 @@ input[type=file]{
   position: relative;
   right: -65px;
   top: 2px;
-  font-size: 0.6em;
+  font-size: 0.7em;
   font-weight: bold;
 }
 .code-editor-wrapper,
@@ -490,7 +490,7 @@ body:not(.freeze-all) .load-more-button:hover{
 }
 .item label{
   margin: 0;
-  font-size: 0.6em;
+  font-size: 0.7em;
 }
 .item label.name{
   cursor: default;
@@ -587,7 +587,7 @@ body:not(.freeze-all) .load-more-button:hover{
 .error{
   line-height: 30px !important;
   padding: 5px !important;
-  font-size: 1.2em !important;
+  font-size: 1.4em !important;
   background: lightcoral !important;
 }
 .error-reason{
@@ -751,7 +751,7 @@ body:not(.freeze-all) .item-confirm-delete button:hover{
   text-align: center;
 }
 .err-msg{
-  font-size: 1.2em;
+  font-size: 1.4em;
   text-align: left;
 }
 .execute-full-button{
@@ -766,7 +766,7 @@ body:not(.freeze-all) .item-confirm-delete button:hover{
   background-position: -249px 0;
 }
 .rights-table tr td:first-child{
-  font-size: 1.2em;
+  font-size: 1.4em;
   font-weight: bold;
 }
 .read-rights-input,
@@ -1040,7 +1040,7 @@ template{
 .progressbar p{
   position: relative;
   z-index: 10;
-  font-size: 0.6em;
+  font-size: 0.7em;
   line-height: 14px;
   margin: 0;
   color: @color3;
@@ -1061,7 +1061,7 @@ template{
   padding: 0 0 0 10px;
 }
 .progressbar .buttons-wrapper button{
-  font-size: 0.6em;
+  font-size: 0.7em;
   line-height: 12px;
   width: 60px;
   height: 30px;
@@ -1080,6 +1080,7 @@ button:not(.btn):focus,
 button:not(.btn):hover{
   border: none;
   outline: none;
+  text-align: center;
 }
 .disable-toolbar-right .toolbar .right *{
   pointer-events: none;
@@ -1172,7 +1173,7 @@ button:not(.btn):hover{
 .btn-default,
 .ok-dialog-button,
 .cancel-dialog-button{
-  font-size: 0.6em;
+  font-size: 0.7em;
   height: 22px;
   width: 90px;
   border: 1px solid #999;
@@ -1182,10 +1183,10 @@ button:not(.btn):hover{
 .btn-default:focus,
 .ok-dialog-button:focus,
 .cancel-dialog-button:focus{
-  -webkit-box-shadow: 0 0 0 2px #1e6ec1,0 1px 3px 0 rgba(0,0,0,.15) inset;
-  -moz-box-shadow: 0 0 0 2px #1e6ec1,0 1px 3px 0 rgba(0,0,0,.15) inset;
-  box-shadow: 0 0 0 2px #1e6ec1,0 1px 3px 0 rgba(0,0,0,.15) inset;
-  outline: 1px solid #1e6ec1;
+  -webkit-box-shadow: inset 0 0px 3px 1px rgba(30,110,193,0.7);
+  -moz-box-shadow: inset 0 0px 3px 1px rgba(30,110,193,0.7);
+  box-shadow: inset 0 0px 3px 1px rgba(30,110,193,0.7);
+  outline: 1px solid transparent;
 }
 #CreateDialog #input_CreateContainerDialog,
 #CreateDialog .dialog-wrapper{
@@ -1261,6 +1262,7 @@ button:not(.btn):hover{
 #CopyDialog .input-group-btn{
   width: auto;
   padding: 0;
+  margin: 0;
   display: inline-flex;
 }
 #CreateDialog.save-as-dialog .input-group-btn button,
@@ -1275,7 +1277,7 @@ button:not(.btn):hover{
   padding-right: 25px;
 }
 #CopyDialog .input-group-btn button.btn-primary{
-  width: 190px;
+  /*width: 190px;*/
   white-space: nowrap;
 }
 .meta-data-row{
@@ -1482,7 +1484,7 @@ body.report-shown .report-wrapper{
 }
 .err-msg-wrapper{
   background: @dialogColor;
-  font-size: 0.8em;
+  font-size: 0.7em;
   padding: 15px 15px 15px 35px;
   position: relative;
   word-break: break-word;
@@ -1498,6 +1500,7 @@ body.report-shown .report-wrapper{
 .err-msg-wrapper button{
   margin: 5px auto 0;
   display: block;
+  font-size: 1em;
 }
 
 
