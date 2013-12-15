@@ -47,7 +47,7 @@
 		});
 	}
 
-	function copy(sourcePath, newName){
+	function copy(sourcePath, newName, isReloaded){
 		var args;
 
 		function ajaxError(status, statusText){
@@ -61,9 +61,10 @@
 		args = {
 			path: newName,
 			copyFrom: sourcePath,
-			copied: window.FileManager.files.refreshItemList,
+			copied: isReloaded ? window.FileManager.files.refreshItemList : function(){},
 			error: ajaxError
 		};
+		console.log(args)
 		/*TODO: correct condition
 		 if(FileManager.ENABLE_SHARED_CONTAINERS && FileManager.Shared.isShared(window.FileManager.CurrentPath().account())){//TODO: check shared func
 		 args.account = FileManager.Path(path).account();
@@ -135,7 +136,7 @@
 		if(previousParent === parent){
 			submenu.appear()
 		}else{
-			window.FileManager.DialogForm.closeOtherDialogs();
+			//window.FileManager.DialogForm.closeOtherDialogs();
 			submenu.appear(parent);
 		}
 		previousParent = parent;
@@ -436,34 +437,110 @@
 		wrapper.className = "item submenu no-hover no-active";
 		oncopy = function(){
 			var dialogForm = new window.FileManager.DialogForm({
-				wrapperId: "CopyDialog",
-				isAlwaysVisible: true
-			});
+					wrapperId: "CopyDialog",
+					isAlwaysVisible: true
+				}),
+				wrapper = document.createElement("div");
+
+			function removeForm(e){
+				var parent = e.target ? e.target.parentNode : e;
+				wrapper.removeChild(parent);
+				if(!wrapper.children.length){
+					dialogForm.hide();
+				}
+			}
+
+			function onsubmit(form, isReloaded){
+				var inputValue = form[0].value,
+					newName = inputValue ? window.FileManager.CurrentPath().withoutAccount() + inputValue : window.FileManager.CurrentPath().withoutAccount() + "asdf";
+				console.log("caller:",form.dataset.srcPath, newName)
+				copy(form.dataset.srcPath, newName, isReloaded);
+
+				removeForm(form);
+				//console.log(form.dataset.srcPath, newName);
+			}
+
+			function customSubmit(e){
+				onsubmit(this, true);
+				e.preventDefault();
+				e.stopPropagation();
+				return false;
+			}
+
+			function createCopyItem(sourcePath){
+				var form = document.createElement("form"),
+					input = document.createElement("input"),
+					button,
+					sourceName = sourcePath;
+				form.dataset.srcPath = sourceName;
+				input.placeholder = "New name of file";
+				input.type = "text";
+				input.value = previousParent.dataset.path;
+				form.appendChild(input);
+
+				button = document.createElement("button");
+				button.textContent = "Copy";
+				button.className = "btn btn-primary";
+				button.type = "submit";
+				form.appendChild(button);
+
+				button = document.createElement("button");
+				button.textContent = "Cancel";
+				button.className = "btn btn-default";
+				button.type = "button";
+				button.addEventListener("click", removeForm);
+				form.appendChild(button);
+
+				form.addEventListener("submit", customSubmit);
+				wrapper.appendChild(form);
+			}
+
 			oncopy = function(){
-				var sourcePath = window.FileManager.CurrentPath().withoutAccount(),
-					sourceName = sourcePath + previousParent.dataset.path,
-					newName = previousParent.dataset.path;
-				dialogForm.show({
-					type: "input",
-					placeholder: "New file name",
-					confirm: function(input){
-						newName = input.value ? window.FileManager.CurrentPath().withoutAccount() + input.value : window.FileManager.CurrentPath().withoutAccount() + newName;
-						copy(sourceName, newName);
-						dialogForm.hide();
-					},
-					hashchangeHandler: function(){
-						var currentPath = window.FileManager.CurrentPath();
-						if(currentPath.isContainersList()){
-							dialogForm.el.classList.add("disabled");
-						}else{
-							dialogForm.el.classList.remove("disabled");
-						}
-						if(currentPath.isFile()){
-							dialogForm.hide();
-						}
-					},
-					inputValue: previousParent.dataset.path
+				var sourcePath = previousParent.dataset.fullPath,
+					isCoincidence;
+				wrapper.children.forEach(function(form){
+					if(form.dataset.srcPath === sourcePath){
+						isCoincidence = true;
+					}
 				});
+				if(wrapper.children.length){
+					if(!isCoincidence){
+						createCopyItem(sourcePath);
+					}
+				}else{
+					dialogForm.show({
+						type: "dialog",
+						dialogContent: wrapper,
+						onshow: function(){
+							createCopyItem(sourcePath);
+						},
+						confirm: function(){
+							var arr = wrapper.children,
+								i = arr.length - 1;
+							for (i; i >= 1; i--){
+								onsubmit(arr[i]);
+							}
+							onsubmit(arr[0], true);
+							dialogForm.hide();
+						},
+						decline: function(){
+							wrapper.removeChildren();
+							wrapper.parentNode && wrapper.parentNode.removeChild(wrapper);
+						},
+						hashchangeHandler: function(){
+							var currentPath = window.FileManager.CurrentPath();
+							if(currentPath.isContainersList()){
+								dialogForm.el.classList.add("disabled");
+							}else{
+								dialogForm.el.classList.remove("disabled");
+							}
+							if(currentPath.isFile()){
+								dialogForm.hide();
+							}
+						},
+						inputValue: previousParent.dataset.path
+					});
+				}
 			};
 			oncopy();
 		};
