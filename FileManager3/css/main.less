@@ -11,7 +11,8 @@
 *, *:before, *:after{
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
-  box-sizing: border-box
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 label::after{
   display: none;
@@ -420,11 +421,6 @@ body.report-shown #content{
 body:not(.freeze-all) .item:not(.no-hover):hover,
 body:not(.freeze-all) .load-more-button:hover{
   background-color: white;
-}
-
-.item:not(.no-active):active,
-.load-more-button:active{
-  background: #D3D3D3;
 }
 
 .item.clicked{

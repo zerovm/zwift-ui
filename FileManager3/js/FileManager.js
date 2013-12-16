@@ -330,3 +330,6 @@ window.onload = function () {
 		}
 	}
 };
+document.ontouchmove = function(event){
+	event.preventDefault();
+};
