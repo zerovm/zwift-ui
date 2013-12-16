@@ -3,6 +3,7 @@
 @color3: #8B9CAE;
 @color4: #F5F5F5;
 @color5: #5D5D5D;
+@color5_5: #a0a0a0;
 @color6: #FFFFFF;
 @dialogColor: #e0e3e8;
 @darkItemElementColor: #efefef;
@@ -1169,24 +1170,34 @@ button:not(.btn):hover{
   margin: 0 0 5px;
   border-radius: 4px;
 }
+.btn-primary:focus,
+.btn-default:focus,
+.ok-dialog-button:focus,
+.cancel-dialog-button:focus,
+
 .btn-primary,
 .btn-default,
 .ok-dialog-button,
 .cancel-dialog-button{
   font-size: 0.7em;
-  height: 22px;
+  height: 26px;
   width: 90px;
-  border: 1px solid #999;
+  border: none;
   border-radius: 4px;
-}
-.btn-primary:focus,
-.btn-default:focus,
-.ok-dialog-button:focus,
-.cancel-dialog-button:focus{
-  -webkit-box-shadow: inset 0 0px 3px 1px rgba(30,110,193,0.7);
-  -moz-box-shadow: inset 0 0px 3px 1px rgba(30,110,193,0.7);
-  box-shadow: inset 0 0px 3px 1px rgba(30,110,193,0.7);
+  background: @color2;
+  color: white;
+  -webkit-box-shadow: 0 1px 1px 1px rgba(0,0,0,0.25);
+  box-shadow: 0 1px 1px 1px rgba(0,0,0,0.25);
   outline: 1px solid transparent;
+}
+.btn-primary:active,
+.btn-default:active,
+.ok-dialog-button:active,
+.cancel-dialog-button:active{
+  -webkit-box-shadow: inset 0 1px 1px 2px rgba(0,0,0,0.25);
+  box-shadow: inset 0 1px 1px 2px rgba(0,0,0,0.25);
+  outline: 1px solid transparent;
+  background: @color5_5;
 }
 #CreateDialog #input_CreateContainerDialog,
 #CreateDialog .dialog-wrapper{
