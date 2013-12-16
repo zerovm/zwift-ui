@@ -29,8 +29,7 @@ html, body{
 }
 body{
   font-family: "Helvetica Neue", sans-serif;
-  font-size: 20px;  background-color: blue; /* for the tint */
-  background-image: linear-gradient(to bottom, green 0%, green 100%);
+  font-size: 20px;
 
 }
 a{
@@ -117,6 +116,8 @@ a{
   -webkit-transform: translate3d(-5px, 0, 0);
   -moz-transform: translate3d(-5px, 0px, 0px);
   transform: translate3d(-5px, 0px, 0px);
+  display: -webkit-flex;
+  display: -moz-flex;
   display: flex;
   -webkit-justify-content: flex-end;
   justify-content: flex-end;
@@ -273,6 +274,7 @@ body.wide-content #WideButton{
   pointer-events: none; /*TODO: add download on click in such situation*/
 }
 .toolbar .current-dir-label{
+  display: -webkit-inline-flex;
   display: inline-flex;
   -webkit-align-items: center;
   align-items: center;
@@ -395,6 +397,8 @@ body.report-shown #content{
   -webkit-transition: all 0.1s;
   cursor: pointer;
   margin: 0;
+  display: -webkit-flex;
+  display: -moz-flex;
   display: flex;
   -webkit-align-items: center;
   align-items: center;
@@ -459,6 +463,7 @@ body:not(.freeze-all) .load-more-button:hover{
 }
 .upload-as form .input-wrapper span{
   margin: 0 5px;
+  display: -webkit-inline-flex;
   display: inline-flex;
   -webkit-align-items: center;
   align-items: center;
@@ -526,6 +531,8 @@ body:not(.freeze-all) .load-more-button:hover{
 .item label.size{
   cursor: default;
   width: 100px;
+  display: -webkit-flex;
+  display: -moz-flex;
   display: flex;
   -webkit-align-items: center;
   align-items: center;
@@ -541,6 +548,8 @@ body:not(.freeze-all) .load-more-button:hover{
 .item label.modified{
   cursor: default;
   width: 140px;
+  display: -webkit-flex;
+  display: -moz-flex;
   display: flex;
   -webkit-align-items: center;
   align-items: center;
@@ -1155,7 +1164,7 @@ button:not(.btn):hover{
   background-size: auto 70px;
 }
 .submenu button.share{
-  background-position: -192px 0;
+  background-position: -187px 0;
 }
 .submenu button.open{
   background-position: -362px 0;
@@ -1298,6 +1307,7 @@ button:not(.btn):hover{
   width: auto;
   padding: 0;
   margin: 0;
+  display: -webkit-inline-flex;
   display: inline-flex;
 }
 #CreateDialog.save-as-dialog .input-group-btn button,
@@ -1330,6 +1340,7 @@ button:not(.btn):hover{
 #CopyDialog .input-wrapper,
 .meta-data-row .input-wrapper{
   width: 100%;
+  display: -webkit-inline-flex;
   display: inline-flex;
   cursor: default;
   min-height: 30px;
@@ -1377,6 +1388,8 @@ border: none;*/
 #CreateDialog.save-as-dialog form,
 #CreateDialog.change-type form,
 #CopyDialog form{
+  display: -webkit-flex;
+  display: -moz-flex;
   display: flex;
   -webkit-align-items: center;
   align-items: center;
@@ -1558,6 +1571,8 @@ body.report-shown .report-wrapper{
 }
 
 .div-input-label{
+  display: -webkit-flex;
+  display: -moz-flex;
   display: flex;
   margin: 5px;
 }
