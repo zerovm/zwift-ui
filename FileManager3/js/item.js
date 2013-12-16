@@ -650,10 +650,15 @@
 				});
 			},
 			ondelete: function(e){
-				window.FileManager.dialogForm.show({
+				var dialog = window.FileManager.dialogForm;
+				dialog.show({
 					confirm: function(){
 						deleteItem(previousParent);
 						window.FileManager.dialogForm.hide();
+					},
+					onshow: function(){
+						var button = dialog.el.getElementsByClassName("btn-primary")[0];
+						button && button.focus();
 					},
 					dialogContent: createDeleteDialog(),
 					type: "dialog"
