@@ -29,8 +29,9 @@ html, body{
 }
 body{
   font-family: "Helvetica Neue", sans-serif;
-  font-size: 20px;
-  background: none !important;
+  font-size: 20px;  background-color: blue; /* for the tint */
+  background-image: linear-gradient(to bottom, green 0%, green 100%);
+
 }
 a{
   font-size: 0.7em;
@@ -107,15 +108,17 @@ a{
   display: -moz-flex;
   display: -ms-flexbox;
   display: flex;
+  -webkit-justify-content: flex-start;
   justify-content: flex-start;
 }
 
 .toolbar .right{
   float: right;
-  -webkit-transform: translate3d(-5px,0,0);
-  -moz-transform: translate3d(-5px,0px,0px);
-  transform: translate3d(-5px,0px,0px);
+  -webkit-transform: translate3d(-5px, 0, 0);
+  -moz-transform: translate3d(-5px, 0px, 0px);
+  transform: translate3d(-5px, 0px, 0px);
   display: flex;
+  -webkit-justify-content: flex-end;
   justify-content: flex-end;
 }
 
@@ -271,6 +274,7 @@ body.wide-content #WideButton{
 }
 .toolbar .current-dir-label{
   display: inline-flex;
+  -webkit-align-items: center;
   align-items: center;
 }
 .current-dir-label::after{
@@ -315,6 +319,7 @@ body:not(.freeze-all) .current-dir-label a:hover,
   width: 100%;
   height: 100%;
   position: relative;
+  -webkit-flex: 1;
   flex: 1;
 }
 body.report-shown #content{
@@ -363,21 +368,21 @@ body.report-shown #content{
 .load-more-button::after,
 .item::before,
 .submenu.appear-submenu::before,
-.load-more-button::before{//hack to prevent chrom border disappearing
+.load-more-button::before{ //hack to prevent chrom border disappearing
   content: "";
   width: 100%;
   height: 1px;
   position: absolute;
   left: 0;
   bottom: 0;
-  -webkit-transform: translate3d(0,1px,0);
+  -webkit-transform: translate3d(0, 1px, 0);
   border-bottom: 1px solid #E4E4E4;
 }
 .item::after,
 .submenu.appear-submenu::after,
 .load-more-button::after{
-  top:0;
-  -webkit-transform: translate3d(0,-1px,0);
+  top: 0;
+  -webkit-transform: translate3d(0, -1px, 0);
 }
 .item.dummy::before,
 .item.dummy::after{
@@ -391,7 +396,9 @@ body.report-shown #content{
   cursor: pointer;
   margin: 0;
   display: flex;
+  -webkit-align-items: center;
   align-items: center;
+  -webkit-justify-content: center;
   justify-content: center;
 }
 .load-more-button::after,
@@ -435,24 +442,29 @@ body:not(.freeze-all) .load-more-button:hover{
   display: flex;
   width: 100%;
   height: 100%;
+  -webkit-align-items: center;
   align-items: center;
 }
 .upload-as form .input-wrapper{
+  -webkit-flex: 1;
   flex: 1;
   padding-right: 15px;
   display: -webkit-flex;
   display: -moz-flex;
   display: -ms-flexbox;
   display: flex;
+  -webkit-justify-content: flex-start;
   justify-content: flex-start;
   cursor: default;
 }
 .upload-as form .input-wrapper span{
   margin: 0 5px;
   display: inline-flex;
+  -webkit-align-items: center;
   align-items: center;
 }
 .upload-as form .input-wrapper input{
+  -webkit-flex: 1;
   flex: 1;
   min-width: 100px;
   height: 26px;
@@ -462,6 +474,7 @@ body:not(.freeze-all) .load-more-button:hover{
   margin: 0 5px;
 }
 .upload-as .progressbar.item{
+  -webkit-flex: 1;
   flex: 1;
 }
 .item-loading{
@@ -476,7 +489,9 @@ body:not(.freeze-all) .load-more-button:hover{
   display: -moz-flex;
   display: -ms-flexbox;
   display: flex;
+  -webkit-flex: 1;
   flex: 1;
+  -webkit-align-items: center;
   align-items: center;
 }
 .item .right{
@@ -498,6 +513,7 @@ body:not(.freeze-all) .load-more-button:hover{
   display: -moz-flex;
   display: -ms-flexbox;
   display: flex;
+  -webkit-align-items: center;
   align-items: center;
   padding-left: 5px;
 }
@@ -511,7 +527,9 @@ body:not(.freeze-all) .load-more-button:hover{
   cursor: default;
   width: 100px;
   display: flex;
+  -webkit-align-items: center;
   align-items: center;
+  -webkit-justify-content: center;
   justify-content: center;
   margin: 0;
   background: @darkItemElementColor;
@@ -524,7 +542,9 @@ body:not(.freeze-all) .load-more-button:hover{
   cursor: default;
   width: 140px;
   display: flex;
+  -webkit-align-items: center;
   align-items: center;
+  -webkit-justify-content: center;
   justify-content: center;
 }
 .item label.files{
@@ -662,6 +682,7 @@ body:not(.freeze-all) .item-confirm-delete button:hover{
   display: -moz-flex;
   display: -ms-flexbox;
   display: flex;
+  -webkit-align-items: center;
   align-items: center;
 }
 .menu-file button{
@@ -970,16 +991,19 @@ template{
   display: -moz-flex;
   display: -ms-flexbox;
   display: flex;
+  -webkit-align-items: center;
   align-items: center;
   font-size: 1em;
   padding: 0 10px;
 }
 .progressbar .progress{
+  -webkit-flex: 1;
   flex: 1;
   display: -webkit-flex;
   display: -moz-flex;
   display: -ms-flexbox;
   display: flex;
+  -webkit-align-items: center;
   align-items: center;
   background: #e0e9ee;
   margin: 0;
@@ -1044,6 +1068,7 @@ template{
   display: -webkit-flex;
   display: -moz-flex;
   display: flex;
+  -webkit-align-items: center;
   align-items: center;
   height: 29px;
 }
@@ -1052,7 +1077,9 @@ template{
   display: -moz-flex;
   display: -ms-flexbox;
   display: flex;
+  -webkit-align-items: center;
   align-items: center;
+  -webkit-justify-content: space-between;
   justify-content: space-between;
   width: 140px;
   padding: 0 0 0 10px;
@@ -1105,6 +1132,7 @@ button:not(.btn):hover{
   transition: 330ms all 0ms ease-in-out;
   overflow: hidden;
   border: 0;
+  -webkit-align-items: center;
   align-items: center;
   background: #becad5;
 }
@@ -1170,7 +1198,6 @@ button:not(.btn):hover{
 .btn-default:focus,
 .ok-dialog-button:focus,
 .cancel-dialog-button:focus,
-
 .btn-primary,
 .btn-default,
 .ok-dialog-button,
@@ -1182,16 +1209,16 @@ button:not(.btn):hover{
   border-radius: 4px;
   background: @color2;
   color: white;
-  -webkit-box-shadow: 0 1px 1px 1px rgba(0,0,0,0.25);
-  box-shadow: 0 1px 1px 1px rgba(0,0,0,0.25);
+  -webkit-box-shadow: 0 1px 1px 1px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 1px 1px 1px rgba(0, 0, 0, 0.25);
   outline: 1px solid transparent;
 }
 .btn-primary:active,
 .btn-default:active,
 .ok-dialog-button:active,
 .cancel-dialog-button:active{
-  -webkit-box-shadow: inset 0 1px 1px 2px rgba(0,0,0,0.25);
-  box-shadow: inset 0 1px 1px 2px rgba(0,0,0,0.25);
+  -webkit-box-shadow: inset 0 1px 1px 2px rgba(0, 0, 0, 0.25);
+  box-shadow: inset 0 1px 1px 2px rgba(0, 0, 0, 0.25);
   outline: 1px solid transparent;
   background: @color5_5;
 }
@@ -1285,7 +1312,7 @@ button:not(.btn):hover{
   padding-right: 25px;
 }
 #CopyDialog .input-group-btn button.btn-primary{
-  /*width: 190px;*/
+/*width: 190px;*/
   white-space: nowrap;
 }
 .meta-data-row{
@@ -1306,6 +1333,7 @@ button:not(.btn):hover{
   display: inline-flex;
   cursor: default;
   min-height: 30px;
+  -webkit-align-items: center;
   align-items: center;
 }
 .meta-data-row .input-wrapper{
@@ -1319,15 +1347,16 @@ button:not(.btn):hover{
 }*/
 #CreateDialog input,
 #CopyDialog input{
+  -webkit-flex: 1;
   flex: 1;
   height: 25px;
   padding: 5px;
   font-size: 0.7em;
   line-height: normal;
-  /*-webkit-box-shadow: inset 0px 2px 3px 0px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: inset 0px 2px 3px 0px rgba(0, 0, 0, 0.3);
-  box-shadow: inset 0px 2px 3px 0px rgba(0, 0, 0, 0.3);
-  border: none;*/
+/*-webkit-box-shadow: inset 0px 2px 3px 0px rgba(0, 0, 0, 0.3);
+-moz-box-shadow: inset 0px 2px 3px 0px rgba(0, 0, 0, 0.3);
+box-shadow: inset 0px 2px 3px 0px rgba(0, 0, 0, 0.3);
+border: none;*/
   border-radius: 4px;
   margin: 0 4px;
 }
@@ -1349,6 +1378,7 @@ button:not(.btn):hover{
 #CreateDialog.change-type form,
 #CopyDialog form{
   display: flex;
+  -webkit-align-items: center;
   align-items: center;
 }
 #CopyDialog .input-group{
@@ -1457,6 +1487,7 @@ body.report-shown .report-wrapper{
   display: flex;
 }
 #report .content-table-wrapper{
+  -webkit-flex: 1;
   flex: 1;
   overflow: hidden;
   position: relative;
@@ -1526,16 +1557,15 @@ body.report-shown .report-wrapper{
   font-size: 1em;
 }
 
-
-.div-input-label {
+.div-input-label{
   display: flex;
   margin: 5px;
 }
 
-.div-input-label input {
+.div-input-label input{
 }
 
-.div-input-label label {
+.div-input-label label{
   margin: 2px;
   padding: 1px;
 }

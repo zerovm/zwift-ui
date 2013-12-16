@@ -329,7 +329,7 @@ window.onload = function () {
 			document.body.innerHTML = '<h1 style="margin:5% auto; text-align: center;font-family: arial; color: #8b0000;">Internet Explorer is not supported. Please open in other browser.</h1>';
 		}
 	}
-};
+};/*
 document.ontouchmove = function(event){
 	event.preventDefault();
-};
+};*/
