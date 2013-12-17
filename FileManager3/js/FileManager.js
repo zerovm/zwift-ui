@@ -77,7 +77,15 @@ FileManager.Containers.list = function (callback) {
 	}
 
 	function noContainers() {
-		window.FileManager.errorMsgHandler.show({header: "There are no containers."});
+		//window.FileManager.errorMsgHandler.show({header: "There are no containers."});
+		window.FileManager.toolbox.emptynessMsg.show({
+			wrapper: FileManager.elements.itemsWrapperEl,
+			className: "empty-container-list",
+			text: "There are no containers. Wanna create some?",
+			clickHandler: function(){
+				document.getElementById("CreateContainerButton").click();
+			}
+		});
 	}
 };
 

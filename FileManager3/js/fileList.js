@@ -3,7 +3,8 @@
 
 	var LIMIT = 20,
 		lastSlashRegex = /\/$/,
-		emptynessMsg = new EmptynessMsg();
+		uploadInput,
+		emptynessMsg = window.FileManager.toolbox.emptynessMsg;
 
 	function list(callback){
 		var requestArgs = {};
@@ -28,7 +29,17 @@
 				files.shift();
 			}
 			if(files.length === 0){
-				emptynessMsg.show(scrollingContentEl, "nofiles");
+				emptynessMsg.show({
+					wrapper: scrollingContentEl,
+					className: "empty-folder",
+					text: "The folder is empty",
+					clickHandler: function(){
+						if(!uploadInput){
+							uploadInput = document.querySelector("#UploadFilesButton input");
+						}
+						uploadInput.click();
+					}
+				});
 			}else{
 				html = listHTML(files);
 				scrollingContentEl.insertAdjacentHTML("beforeend", html);
@@ -213,7 +224,11 @@
 					if(loaded > 2097152){
 						window.FileManager.elements.upButton.removeAttribute('disabled');
 						progressbar.cancel();
-						emptynessMsg.show(el, "largefile");
+						emptynessMsg.show({
+							wrapper: el,
+							className: "large-file",
+							text: "File is too large (2MB+)."
+						})
 					}
 				}
 			},
@@ -261,7 +276,11 @@
 					}else{
 						el.removeChildren();
 						FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().name());
-						emptynessMsg.show(el);
+						emptynessMsg.show({
+							wrapper: el,
+							className: "empty",
+							text: "It's not a text file."
+						});
 					}
 				//document.querySelector('.download-link').setAttribute('download', filename);
 			}
@@ -318,7 +337,7 @@
 		newEl = document.querySelector(".new-scrolling-content");
 
 		el = newEl;
-		//el.textContent = "Loading...";
+		FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().withoutAccount(), true);
 		if(FileManager.CurrentPath().isContainersList()){
 			FileManager.Containers.list(animateItemListRefreshing);
 		}else if(FileManager.CurrentPath().isFilesList()){
@@ -340,46 +359,6 @@
 			newEl.classList.remove("no-transition");
 			document.body.classList.remove("disabled");
 		}
-	}
-
-	function EmptynessMsg(){
-		var tempEl, uploadInput,
-			emptynessMsg = document.createElement("div");
-
-		this.show = function(el, incident){
-			el.appendChild(emptynessMsg);
-			el.classList.add("empty-list");
-			switch (incident){
-				case "nofiles":
-					el.classList.add("empty-folder");
-					break;
-				case "largefile":
-					el.classList.add("large-file");
-					break;
-			}
-		};
-
-		emptynessMsg.className = "wrapper";
-		tempEl = document.createElement("label");
-		tempEl.textContent = "It's not a text file.";
-		tempEl.className = "file-msg";
-		emptynessMsg.appendChild(tempEl);
-		tempEl = document.createElement("label");
-		tempEl.textContent = "The folder is empty";
-		tempEl.className = "folder-msg";
-		emptynessMsg.appendChild(tempEl);
-		tempEl = document.createElement("label");
-		tempEl.textContent = "File is too large (2MB+).";
-		tempEl.className = "large-file-msg";
-		emptynessMsg.appendChild(tempEl);
-		tempEl = document.createElement("div");
-		tempEl.addEventListener("click", function(){
-			if(!uploadInput){
-				uploadInput = document.querySelector("#UploadFilesButton input");
-			}
-			uploadInput.click();
-		});
-		emptynessMsg.appendChild(tempEl);
 	}
 
 	function checkLoadMore(){

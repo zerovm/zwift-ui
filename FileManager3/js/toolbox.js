@@ -270,6 +270,28 @@
 		a.dispatchEvent(clickEvent);
 	}
 
+	function EmptynessMsg(){
+		var clickHandler,
+			button = document.createElement("button"),
+			emptynessMsg = document.createElement("div"),
+			label = document.createElement("label");
+
+		this.show = function(params){
+			params.wrapper.appendChild(emptynessMsg);
+			params.wrapper.classList.add("empty-list");
+			params.wrapper.classList.add(params.className);
+			label.textContent = params.text;
+			clickHandler = params.clickHandler;
+		};
+
+		emptynessMsg.className = "wrapper";
+		emptynessMsg.appendChild(label);
+		button.addEventListener("click", function(){
+			clickHandler && clickHandler();
+		});
+		emptynessMsg.appendChild(button);
+	}
+
 	Object.keys(extObj).forEach(function(ext){
 		var obj = extObj[ext],
 			mime = obj.mime;
@@ -296,6 +318,7 @@
 		onscrollLoadMore: onscrollLoadMore,
 		ProgressBar: ProgressBar,
 		isLastChildren: isLastChildren,
-		downloadClick: downloadClick
+		downloadClick: downloadClick,
+		emptynessMsg: new EmptynessMsg()
 	};
 })();

@@ -595,29 +595,34 @@ body:not(.freeze-all) .load-more-button:hover{
   display: block;
   background: @color4;
   cursor: default;
-}
-.empty-list label.large-file-msg,
-.empty-list.large-file label.file-msg,
-.empty-list.empty-folder label.file-msg,
-.empty-list label.folder-msg{
   display: none;
 }
-.empty-list.large-file label.large-file-msg,
-.empty-list.empty-folder label.folder-msg{
+.empty-list.empty label,
+.empty-list.empty-container-list label,
+.empty-list.large-file label,
+.empty-list.empty-folder label{
   display: block;
 }
-.empty-list .wrapper div{
+.empty-list .wrapper button{
   background: url(../img/no_files.png) -142px top no-repeat;
   background-size: 210px 70px;
   width: 65px;
   height: 70px;
   margin: 100px auto 0;
+  display: block;
+  outline: none;
+  border: none;
   pointer-events: none;
 }
-.empty-list.large-file .wrapper div{
+.empty-list.large-file .wrapper button{
   display: none;
 }
-.empty-list.empty-folder .wrapper div{
+.empty-list.empty-folder .wrapper button{
+  background-position: -3px 0;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.empty-list.empty-container-list .wrapper button{
   background-position: -3px 0;
   cursor: pointer;
   pointer-events: auto;
