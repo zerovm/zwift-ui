@@ -137,6 +137,13 @@ document.addEventListener("DOMContentLoaded", function(){
 			});
 			return;
 		}
+		if(inputValue.match(forbiddenChars)){
+			window.FileManager.errorMsgHandler.show({
+				header: errorMsgMap.wrongName,
+				callback: window.FileManager.dialogForm.onerror
+			});
+			return;
+		}
 
 		window.FileManager.dialogForm.hide();
 		path = FileManager.CurrentPath().withoutAccount() + inputValue;

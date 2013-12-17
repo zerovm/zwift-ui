@@ -76,8 +76,7 @@ FileManager.Containers.list = function (callback) {
 	}
 
 	function noContainers() {
-		var html = document.querySelector('#noContainersTemplate').innerHTML;
-		scrollingContentEl.insertAdjacentHTML('beforeend', html);
+		window.FileManager.errorMsgHandler.show({header: "There are no containers."});
 	}
 };
 
