@@ -37,6 +37,7 @@ FileManager.Containers.list = function (callback) {
 			if (FileManager.ENABLE_SHARED_CONTAINERS) {
 				var sharedContainers = SharedContainersOnSwift.getFromXhr(xhr);
 				if (containers.length == 0 && Object.keys(sharedContainers).length == 0) {
+					FileManager.CurrentDirLabel.root();
 					noContainers();
 					callback();
 					return;
@@ -53,6 +54,7 @@ FileManager.Containers.list = function (callback) {
 	});
 
 	function list(containers) {
+		FileManager.CurrentDirLabel.root();
 		if (containers.length == 0) {
 			noContainers();
 			callback();
@@ -60,7 +62,6 @@ FileManager.Containers.list = function (callback) {
 		}
 
 		window.FileManager.elements.upButton.setAttribute('disabled', 'disabled');
-		FileManager.CurrentDirLabel.root();
 
 		scrollingContentEl.insertAdjacentHTML('beforeend', FileManager.Containers.create(containers));
 

@@ -40,14 +40,21 @@ a{
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  background-color: @color2;
+  background-color: #6a93bb;
   padding: 5px;
-/*margin: 10px 0;*/
   color: white;
   height: 46px;
-}
-#header a{
-  color: white;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  a{
+    color: white;
+    width: 125px;
+    height: 46px;
+    display: inline-flex;
+    align-items: center;
+  }
 }
 
 #OpenAccountWindow{
@@ -303,6 +310,11 @@ body:not(.freeze-all) .current-dir-label a:hover,
 }
 
 .content-wrapper{
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
   -webkit-flex: 1;
   flex: 1;
   -moz-box-orient: vertical;
@@ -1583,4 +1595,9 @@ body.report-shown .report-wrapper{
 .div-input-label label{
   margin: 2px;
   padding: 1px;
+}
+input[type=text]:focus{
+  -webkit-box-shadow: inset 0 0 6px rgba(30, 110, 193, 0.9);
+  box-shadow: inset 0 0 6px rgba(30, 110, 193, 0.9);
+  background: white;
 }
