@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		window.FileManager = {}
 	}
 	window.FileManager.elements = {
-		originalPath: "https://z.litestack.com/v1/",//TODO: replace hardcode with smth
+		originalPath: "https://zvm.rackspace.com/v1/",//TODO: replace hardcode with smth
 		scrollWrapper: scrollWrapper,
 		itemsContainer: content,
 		upButton: upButton,

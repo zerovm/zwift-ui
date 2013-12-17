@@ -1123,15 +1123,15 @@ var Auth = {};
 		}
 
 		function loginRedirect() {
-			var urlPrefix = 'https://z.litestack.com/login/google/?state=';
+			var urlPrefix = 'https://zvm.rackspace.com/login/google/?state=';
 			var stateEncoded = encodeURIComponent(location.pathname);
 			window.location = urlPrefix + stateEncoded;
 		}
 		SwiftV1.setAuthData({
 			account: accountId,
-			xStorageUrl: 'https://z.litestack.com/v1',
+			xStorageUrl: 'https://zvm.rackspace.com/v1',
 			unauthorized: function () {
-				var urlPrefix = 'https://z.litestack.com/login/google/?state=';
+				var urlPrefix = 'https://zvm.rackspace.com/login/google/?state=';
 				var stateEncoded = encodeURIComponent(location.pathname);
 				window.location = urlPrefix + stateEncoded;
 			}
@@ -1215,7 +1215,7 @@ var Auth = {};
 	};
 
 	ZLitestackDotCom.signOut = function () {
-		window.location = 'https://z.litestack.com/login/google/?state=/js&code=logout';
+		window.location = 'https://zvm.rackspace.com/login/google/?state=/js&code=logout';
 	};
 
 	ClusterAuth.init = function() {
