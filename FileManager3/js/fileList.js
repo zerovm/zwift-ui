@@ -242,7 +242,10 @@
 		progressbar = new window.FileManager.toolbox.ProgressBar({
 			request: xhr,
 			wrapper: el,
-			isDownload: true
+			isDownload: true,
+			onEndCallback: function(){
+				window.FileManager.elements.upButton.removeAttribute('disabled');
+			}
 		});
 		//progressbar.setText("Fetching file...");
 
