@@ -23,7 +23,6 @@
 		}
 		selectedPath = curPath.add(name);
 		location.hash = selectedPath;
-		FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().withoutAccount(), true);
 	}
 
 	function ItemCommandName(){

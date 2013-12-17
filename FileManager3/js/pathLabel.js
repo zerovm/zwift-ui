@@ -22,7 +22,7 @@
 			}while(content.length < MAX_LENGTH);
 			content = prevValue;
 			if(!content){
-				content = splittedContent[splittedContent.length];
+				content = splittedContent[splittedContent.length - 1];
 			}
 		}
 		if(!content){
