@@ -32,6 +32,15 @@ window.addEventListener('authReady', function () {
 		accountLabel.textContent = Auth.getAccount();
 	}
 
+	SwiftV1.Account.head({
+		success: function (metadata, containersCount, bytesUsed) {
+			accountWindow.getElementsByClassName('bytes-used')[0].textContent = bytesUsed;
+		},
+		error: function () {
+			accountWindow.getElementsByClassName('bytes-used')[0].textContent = 'Error';
+		}
+	});
+
 	// Sign Out Button
 	accountWindow.getElementsByClassName('sign-out')[0].addEventListener('click', function () {
 		Auth.signOut();
