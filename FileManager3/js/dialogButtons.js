@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			SharedContainersOnSwift.addSharedContainer({
 				account: input.value.split('/')[0],
 				container: input.value.split('/')[1],
-				success: function () {
+				added: function () {
 					window.FileManager.files.refreshItemList();
 					cancel();
 				},
