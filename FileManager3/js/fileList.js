@@ -154,17 +154,11 @@
 	}
 
 	function notExist(){
-		var scrollingContentEl = document.getElementsByClassName("new-scrolling-content")[0];
-		document.body.classList.add(FileManager.elements.bodyLoadingClass);
-		try{
-			scrollingContentEl.innerHTML = "";
-			if(FileManager.CurrentPath().isContainersList()){
-				scrollingContentEl.innerHTML = "Container not exist.";
-			}else{
-				scrollingContentEl.innerHTML = "Directory not exist.";
-			}
-		}catch(e){//TODO: solve scollingContentEl existance
-			console.log(e);
+		//document.body.classList.add(FileManager.elements.bodyLoadingClass);
+		if(FileManager.CurrentPath().isContainersList()){
+			window.FileManager.errorMsgHandler.show({header: "There is no such container."})
+		}else{
+			window.FileManager.errorMsgHandler.show({header: "There is no such folder."})
 		}
 	}
 
@@ -228,7 +222,7 @@
 							wrapper: el,
 							className: "large-file",
 							text: "File is too large (2MB+)."
-						})
+						});
 					}
 				}
 			},
