@@ -95,6 +95,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		inputWrapper.appendChild(textEl);
 		inputElement = document.createElement("input");
 		inputElement.className = "form-control";
+		inputElement.type = "text";
 		inputElement.placeholder = textEl.textContent;
 		inputElement.value = file.name;
 		inputWrapper.appendChild(inputElement);
@@ -104,6 +105,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		inputWrapper.appendChild(textEl);
 		inputElement = document.createElement("input");
 		inputElement.className = "form-control";
+		inputElement.type = "text";
 		inputElement.placeholder = textEl.textContent;
 		file.type && (inputElement.value = file.type);
 		inputWrapper.appendChild(inputElement);
