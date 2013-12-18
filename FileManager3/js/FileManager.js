@@ -263,67 +263,6 @@ FileManager.Shared.listSharedContainers = function(sharedContainers, scrollingCo
 	}
 };
 
-
-//SHARED-CONTAINERS
-FileManager.AddShared = {};
-
-//SHARED-CONTAINERS
-FileManager.AddShared.click = function () {
-
-	var sharedAccountEl = document.querySelector('.add-shared-input-account');
-	var sharedContainerEl = document.querySelector('.add-shared-input-container');
-	if (!sharedAccountEl.value) {
-		sharedAccountEl.classList.add('invalid-input');
-		return;
-	}
-	if (!sharedContainerEl.value) {
-		sharedContainerEl.classList.add('invalid-input');
-		return;
-	}
-
-	var account = sharedAccountEl.value;
-	var container =  sharedContainerEl.value;
-
-	SharedContainersOnSwift.addSharedContainer({
-		account: account,
-		container: container,
-		added: function () {
-			window.FileManager.files.refreshItemList();
-			FileManager.AddShared.clear();
-		},
-		notAuthorized: function () {
-			sharedContainerEl.classList.add('invalid-input');
-			document.querySelector('#shared-container-error').removeAttribute('hidden');
-		},
-		error: function (status, statusText) {
-			var el = document.querySelector('.add-shared-error-ajax');
-			FileManager.AjaxError.show(el, status, statusText);
-		}
-	});
-};
-
-//SHARED-CONTAINERS
-FileManager.AddShared.clear = function () {
-	var inputAccountEl = document.querySelector('.add-shared-input-account');
-	var inputContainerEl = document.querySelector('.add-shared-input-container');
-	inputAccountEl.value = '';
-	inputContainerEl.value = '';
-	FileManager.AddShared.clearErrors(inputAccountEl, inputContainerEl);
-};
-
-//SHARED-CONTAINERS
-FileManager.AddShared.clearErrors = function (inputEl1, inputEl2) {
-	inputEl1.classList.remove('invalid-input');
-	if (inputEl2) {
-		inputEl2.classList.remove('invalid-input');
-	}
-
-	var errElArr = document.querySelectorAll('.add-shared .err-msg');
-	for (var i = 0; i < errElArr.length; i++) {
-		errElArr[i].setAttribute('hidden', 'hidden');
-	}
-};
-
 FileManager.reAuth = function () {
 	SwiftV1.Account.head({success:function(){},error:function(){}});
 	setTimeout(FileManager.reAuth, 1000 * 60 * 20);
