@@ -226,6 +226,7 @@ body:not(.freeze-all) .toolbar-button:enabled:hover{
   border-width: 1px;
   outline: 0;
 }
+.location-root #UpButton,
 .toolbar-button:disabled{
   opacity: 0.3;
 }
@@ -1000,7 +1001,7 @@ template{
 }
 .code-editor-wrapper{
   margin: 0 auto;
-  height: 500px;
+  height: 900px;
   display: none;
 }
 .code-editor-is-shown .code-editor-wrapper::after {
@@ -1605,6 +1606,9 @@ body.report-shown .report-wrapper{
 .err-msg-wrapper button{
   margin: 5px auto 0;
   display: block;
+  font-size: 1em;
+}
+.err-msg-wrapper button:focus{
   font-size: 1em;
 }
 

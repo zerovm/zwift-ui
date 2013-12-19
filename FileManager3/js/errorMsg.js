@@ -8,12 +8,14 @@ document.addEventListener("DOMContentLoaded", function(){
 
 	var errorsEl = document.getElementsByClassName("err-msg")[0].parentNode,
 		errorClass = "error-is-shown",
-		closeButton;
+		closeButton,
+		onclose;
 
 	function showError(params){
 		var span, strong, br;
 		errorsEl.textContent = params.header;
 		document.body.classList.add(errorClass);
+		onclose = params.onclose;
 		if(params.status){
 			strong = document.createElement("strong");
 			strong.textContent = "Status: ";
@@ -48,6 +50,7 @@ document.addEventListener("DOMContentLoaded", function(){
 	closeButton.className = "btn btn-primary ok-dialog-button";
 	closeButton.addEventListener("click", function(){
 		hideError();
+		onclose && onclose();
 	});
 	hideError();
 	if(!window.FileManager){

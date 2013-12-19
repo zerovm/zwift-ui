@@ -173,7 +173,11 @@ FileManager.Path = function (path) {
 };
 
 FileManager.CurrentPath = function () {
-	return new FileManager.Path(location.hash.substr(1));
+	var path = new FileManager.Path(location.hash.substr(1));
+	path.root = function(){
+		return path.account() + "/";
+	};
+	return path;
 };
 
 document.addEventListener('click', function (e) {

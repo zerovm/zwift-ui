@@ -154,11 +154,18 @@
 	}
 
 	function notExist(){
-		//document.body.classList.add(FileManager.elements.bodyLoadingClass);
-		if(FileManager.CurrentPath().isContainersList()){
-			window.FileManager.errorMsgHandler.show({header: "There is no such container."})
+		var curPath = window.FileManager.CurrentPath(),
+			params = {
+				onclose: function(){
+					location.hash = curPath.root();
+				}
+	};
+
+		//refreshItemList();
+		if(curPath.isContainersList()){
+			params.header = "There is no such container."
 		}else{
-			window.FileManager.errorMsgHandler.show({header: "There is no such folder."})
+			params.header = "There is no such folder."
 		}
 	}
 
@@ -210,7 +217,7 @@
 					window.FileManager.errorMsgHandler.show({header: "Ajax error occured", status: status, statusText: statusText});
 				},
 				notExist: function(){
-					window.FileManager.errorMsgHandler.show({header: "File Not Found."});
+					window.FileManager.errorMsgHandler.show({header: "File was not found."});
 					window.FileManager.elements.upButton.removeAttribute('disabled');
 					progressbar.cancel();
 				},
@@ -287,7 +294,12 @@
 		function fileNotExist(){
 			window.FileManager.elements.upButton.removeAttribute('disabled');
 			el.removeChildren();
-			window.FileManager.errorMsgHandler.show({header: "File Not Found."});
+			window.FileManager.errorMsgHandler.show({
+				header: "File was not found.",
+				onclose: function(){
+					location.hash = window.FileManager.CurrentPath().up();
+				}
+			});
 			callback();
 		}
 
@@ -313,7 +325,7 @@
 		var parentEl, newEl, oldEl, template, el, loadingEl,
 			commandName;
 
-		commandName = window.FileManager.item.itemCommandName.pop();//added to prevent unnessacary request while change event fired on loaded file
+		commandName = window.FileManager.item.itemCommandName.pop();//added to prevent unnecessary request while change event fired on loaded file
 		if(commandName === "none"){
 			return;
 		}else{
