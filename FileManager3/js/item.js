@@ -79,8 +79,8 @@
 			itemPath = FileManager.CurrentPath().add(name),
 			progressObj;
 		if(FileManager.ENABLE_SHARED_CONTAINERS
-			&& FileManager.Shared.isShared(itemPath)
-			&& el.dataset.type === "container"){
+			&& FileManager.Shared.isShared(name)
+			&& el.dataset.type === "shared"){
 			SharedContainersOnSwift.removeSharedContainer({
 				account: new FileManager.Path(name).account(),
 				container: new FileManager.Path(name).container(),
