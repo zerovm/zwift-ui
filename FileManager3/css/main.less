@@ -40,7 +40,7 @@ a{
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  background-color: #6a93bb;
+  background-color: @color2;
   padding: 5px;
   color: white;
   height: 46px;
@@ -71,6 +71,7 @@ a{
   position: absolute;
   right: 0;
   top: 40px;
+  padding: 7px;
   z-index: 99;
   background: @color4;
   border: 3px solid @color3;
@@ -80,7 +81,8 @@ a{
 }
 
 #AccountWindow .profile-picture{
-  width: 100px;
+  width: 75px;
+  border: 2px solid @color2;
   vertical-align: top;
   margin: 5px;
   border-radius: 3px;
@@ -88,26 +90,25 @@ a{
 }
 
 #AccountWindow .sign-out{
-  margin: 5px;
-  background: @color2;
-  color: white;
-  border-radius: 3px;
-  border-width: 1px;
-  padding: 5px 10px;
-  font-weight: bold;
-  font-size: 0.7em;
-  position: absolute;
-  right: 0;
-  bottom: 0;
+  margin-top: 15px;
+  float: right;
 }
 
 #AccountWindow .full-name{
   color: @color2;
-  margin: 5px;
   font-weight: bold;
   font-size: 0.9em;
   padding: 5px 0;
   display: inline-block;
+}
+
+#AccountWindow .bytes-used {
+  color: black;
+  font-size: small;
+  display: block;
+}
+#AccountWindow .bytes-used:before {
+  content: 'Bytes used: ';
 }
 
 .toolbar{
