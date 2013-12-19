@@ -1002,6 +1002,16 @@ template{
   height: 500px;
   display: none;
 }
+.code-editor-is-shown .code-editor-wrapper::after {
+  content: "";
+  width: 100%;
+  height: 100%;
+  background: white;
+  position: absolute;
+  left: 0;
+  top: 100%;
+  border-top: 1px solid #f0f0f0;
+}
 .code-editor-is-shown .main-content-wrapper{
   height: auto;
 }
