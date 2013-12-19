@@ -207,7 +207,6 @@ body.wide-content .center{
 .fixed-top{
   z-index: 99;
 }
-
 .toolbar-button{
   border-radius: 0;
   padding: 0;
@@ -317,7 +316,7 @@ body:not(.freeze-all) .current-dir-label a:hover,
   margin: 0 2px;
   cursor: default;
 }
-
+.code-editor-wrapper,
 .content-wrapper{
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -334,6 +333,9 @@ body:not(.freeze-all) .current-dir-label a:hover,
   display: flex;
   flex-direction: column;
   -webkit-transition: 300ms background 0 ease-in;
+}
+.code-editor-is-shown .content-wrapper{
+  display: none;
 }
 .error-is-shown .content-wrapper{
   background: white;
@@ -710,18 +712,17 @@ body:not(.freeze-all) .item-confirm-delete button:hover{
 }
 
 .menu-file{
-  text-align: left;
   padding: 0;
   height: 50px;
+  -webkit-align-items: center;
+  align-items: center;
   display: none;
 }
-.code-editor-is-shown .menu-file{
+ .code-editor-is-shown .menu-file{
   display: -webkit-flex;
   display: -moz-flex;
   display: -ms-flexbox;
   display: flex;
-  -webkit-align-items: center;
-  align-items: center;
 }
 .menu-file button{
   height: 35px;
@@ -1000,25 +1001,14 @@ template{
   background: none;
 }
 .code-editor-wrapper{
-  margin: 0 auto;
-  height: 900px;
   display: none;
 }
-.code-editor-is-shown .code-editor-wrapper::after {
-  content: "";
-  width: 100%;
-  height: 100%;
-  background: white;
-  position: absolute;
-  left: 0;
-  top: 100%;
-  border-top: 1px solid #f0f0f0;
-}
-.code-editor-is-shown .main-content-wrapper{
-  height: auto;
-}
+
 .code-editor-is-shown .code-editor-wrapper{
-  display: block;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
 }
 .code-editor-is-shown .toolbar .dialog-button,
 .code-editor-is-shown .toolbar .input-wrapper{
@@ -1027,6 +1017,8 @@ template{
 #codeEditor{
   width: 100%;
   height: 100%;
+  -webkit-flex: 1;
+  flex: 1;
 }
 .no-select{
   -webkit-user-select: none;
