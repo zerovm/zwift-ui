@@ -84,7 +84,7 @@
 			</span>
 			<span class="right">
 				<button id="CreateContainerButton" class="show-create-container-dialog toolbar-button" title="Create Container"></button>
-				<button id="CreateDirectoryButton" class="toolbar-button dialog-button" title="Create Directory" data-action="directory" data-placeholder="Create Directory"></button>
+				<button id="CreateDirectoryButton" class="show-create-directory-dialog toolbar-button" title="Create Directory"></button>
 				<button id="CreateFileButton" class="toolbar-button dialog-button" title="Create File" data-action="file" data-placeholder="Create File"></button>
 				<span id="UploadFilesButton" class="toolbar-button input-wrapper" title="Upload Files"><input class="upload-input" type="file" multiple="multiple" data-action="file"/></span>
 				<span id="UploadAsButton" class="toolbar-button input-wrapper" title="Upload As..."><input class="upload-input" type="file" multiple="multiple" data-action="as"/></span>
@@ -100,7 +100,18 @@
 			<div class="err-invalid-character err hidden">Container name cannot contain a forward slash '/' character.</div>
 			<div class="err-ajax err hidden"></div>
 			<div class="err-already-exists err hidden">Container already exists.</div>
-			<button type="submit" class="btn btn-primary">OK</button>
+			<button type="submit" class="btn btn-primary">Create</button>
+			<button type="button" class="btn-cancel btn btn-primary">Cancel</button>
+		</form>
+
+		<form id="CreateDirectoryDialog" class="dialog hidden">
+			<input placeholder="Directory Name">
+			<div class="err-empty err hidden">Please type directory name.</div>
+			<div class="err-size-limit err hidden">Directory name must be less than 1024 bytes.</div>
+			<div class="err-invalid-character err hidden">Directory name cannot contain a forward slash '/' character.</div>
+			<div class="err-ajax err hidden"></div>
+			<div class="err-already-exists err hidden">Directory already exists.</div>
+			<button type="submit" class="btn btn-primary">Create</button>
 			<button type="button" class="btn-cancel btn btn-primary">Cancel</button>
 		</form>
 
@@ -335,6 +346,7 @@
 </template>
 
 <script src="js/CreateContainerDialog.js"></script>
+<script src="js/CreateDirectoryDialog.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>')</script>
 </body>

@@ -53,9 +53,9 @@ document.addEventListener("DOMContentLoaded", function(){
 				case "file":
 					callback = onfile;
 					break;
-				case "directory":
-					callback = ondirectory;
-					break;
+				//case "directory":
+				//	callback = ondirectory;
+				//	break;
 				//case "container":
 				//	callback = oncontainer;
 				//	break;
