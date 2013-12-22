@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			containerAlreadyExist: "Container is already exists.",
 			dirAlreadyExist: "Directory is already exists.",
 			nameTooLong: "Container name should be less than 256 characters.",
-			emptyInput: "The name should be bit longer."
+			emptyInput: "The name should be longer."
 		},
 		rootClass = "location-root";
 
@@ -56,9 +56,9 @@ document.addEventListener("DOMContentLoaded", function(){
 				case "directory":
 					callback = ondirectory;
 					break;
-				case "container":
-					callback = oncontainer;
-					break;
+				//case "container":
+				//	callback = oncontainer;
+				//	break;
 				default:
 					console.log("unkown action: " + action);
 					return;

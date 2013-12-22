@@ -246,7 +246,7 @@ body:not(.freeze-all) .disabled #UpButton:hover,
   background-color: transparent !important;
 }
 #CreateContainerButton{
-  background-position: -144px center;
+  background-position: -143px center;
   display: none;
 }
 .location-root #CreateContainerButton{
@@ -700,14 +700,6 @@ body:not(.freeze-all) .item-confirm-delete button:hover{
 .item-confirm-delete button{
   background-image: url(../img/delete.png);
   background-position: 5px 6px !important;
-}
-
-.dialog{
-  transition: all 0.1s;
-  vertical-align: middle;
-  background: @dialogColor;
-  padding: 5px;
-  text-align: center;
 }
 
 .menu-file{
@@ -1235,7 +1227,7 @@ button:not(.btn):hover{
   background-color: @dialogColor;
   padding: 5px;
 }
-#CreateDialog #input_CreateContainerDialog{
+#CreateDialog input{
   height: 24px;
   box-sizing: border-box;
   width: 100%;
@@ -1271,15 +1263,15 @@ button:not(.btn):hover{
   outline: 1px solid transparent;
   background: @color5_5;
 }
-#CreateDialog #input_CreateContainerDialog,
+#CreateDialog input,
 #CreateDialog .dialog-wrapper{
   display: none;
 }
-#CreateDialog.input-shown #input_CreateContainerDialog{
+#CreateDialog.input-shown input{
   display: inline-block;
 }
-#CreateDialog.save-as-dialog #input_CreateContainerDialog,
-#CreateDialog.change-type #input_CreateContainerDialog{
+#CreateDialog.save-as-dialog input,
+#CreateDialog.change-type input{
   margin-bottom: 0;
 }
 #CreateDialog.dialog-shown .dialog-wrapper{
@@ -1326,7 +1318,8 @@ button:not(.btn):hover{
   width: 100%;
   max-height: 130px;
 }
-#CreateDialog .input-group{
+#CreateDialog .input-group,
+.dialog form{
   display: block;
 }
 #CopyDialog .input-group-btn,
@@ -1635,4 +1628,52 @@ input[type=text]:focus{
 
 @media screen and (max-width: 960px) {
 
+}
+
+
+
+.dialog {
+  transition: all 0.1s;
+  vertical-align: middle;
+  background: #e0e3e8;
+  padding: 5px 5px 15px 5px;
+  text-align: center;
+}
+
+.dialog input {
+  height: 24px;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 5px;
+  margin: 0 0 5px;
+  border-radius: 4px;
+  border: 1px solid #999;
+  font-size: .7em;
+}
+
+.dialog input:focus {
+  -webkit-box-shadow: inset 0 0 6px rgba(30,110,193,0.9);
+  box-shadow: inset 0 0 6px rgba(30,110,193,0.9);
+  background: white;
+  outline: 0;
+}
+
+.dialog .err {
+  text-align: left;
+  height: 35px;
+  margin-left: 25px;
+  line-height: 35px;
+  font-size: medium;
+}
+
+.dialog .err::before {
+  height: 35px;
+  border: none;
+  background: url(../img/submenu_buttons.png);
+  background-size: auto 70px;
+  content: "";
+  position: absolute;
+  left: 4px;
+  background-position: -1138px 0;
+  width: 24px;
 }

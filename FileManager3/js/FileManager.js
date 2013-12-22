@@ -81,7 +81,7 @@ FileManager.Containers.list = function (callback) {
 		window.FileManager.toolbox.emptynessMsg.show({
 			wrapper: FileManager.elements.itemsWrapperEl,
 			className: "empty-container-list",
-			text: "There are no containers. Wanna create some?",
+			text: "There are no containers.",
 			clickHandler: function(){
 				document.getElementById("CreateContainerButton").click();
 			}

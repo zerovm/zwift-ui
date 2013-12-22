@@ -83,7 +83,7 @@
 				<label class="current-dir-label"></label>
 			</span>
 			<span class="right">
-				<button id="CreateContainerButton" class="toolbar-button dialog-button" title="Create Container" data-action="container" data-placeholder="Create Container"></button>
+				<button id="CreateContainerButton" class="show-create-container-dialog toolbar-button" title="Create Container"></button>
 				<button id="CreateDirectoryButton" class="toolbar-button dialog-button" title="Create Directory" data-action="directory" data-placeholder="Create Directory"></button>
 				<button id="CreateFileButton" class="toolbar-button dialog-button" title="Create File" data-action="file" data-placeholder="Create File"></button>
 				<span id="UploadFilesButton" class="toolbar-button input-wrapper" title="Upload Files"><input class="upload-input" type="file" multiple="multiple" data-action="file"/></span>
@@ -93,10 +93,22 @@
 			</span>
 		</div>
 
+		<form id="CreateContainerDialog" class="dialog hidden">
+			<input placeholder="Container Name">
+			<div class="err-empty err hidden">Please type container name.</div>
+			<div class="err-size-limit err hidden">Container name must be less than 256 bytes.</div>
+			<div class="err-invalid-character err hidden">Container name cannot contain a forward slash '/' character.</div>
+			<div class="err-ajax err hidden"></div>
+			<div class="err-already-exists err hidden">Container already exists.</div>
+			<button type="submit" class="btn btn-primary">OK</button>
+			<button type="button" class="btn-cancel btn btn-primary">Cancel</button>
+		</form>
+
 		<div id="CreateDialog" class="hidden dialog">
 			<form class="input-group">
-				<input id="input_CreateContainerDialog" type="text" class="form-control">
+				<input type="text" class="form-control">
 				<div class="dialog-wrapper"></div>
+				<div class="error hidden">The name should be longer.</div>
 				<span class="input-group-btn dialog-footer">
 					<button id="OKDialog" class="btn btn-primary ok-dialog-button" type="submit">OK</button>
 					<button id="CancelDialog" class="btn btn-default cancel-dialog-button" type="button">Cancel</button>
@@ -322,6 +334,7 @@
 	</div>
 </template>
 
+<script src="js/CreateContainerDialog.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>')</script>
 </body>
