@@ -11,7 +11,7 @@
 		if (inputEl.value.length == 0) {
 			err('err-empty');
 			return;
-		} else if (inputEl.value.length > 255) {
+		} else if (inputEl.value.length > 256) {
 			err('err-size-limit');
 			return;
 		}
