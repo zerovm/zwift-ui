@@ -41,6 +41,7 @@
 			created: function () {
 				window.FileManager.files.refreshItemList();
 				CreateContainerDialog.classList.add('hidden');
+				document.getElementById('CreateContainerButton').classList.remove('selected');
 			},
 			alreadyExisted: function () {
 				err('err-already-exists');
@@ -59,8 +60,9 @@
 	}
 
 	function errAjax(status, statusText) {
-		var errAjaxEl = CreateContainerDialog.getElementsByClassName('err-ajax');
+		var errAjaxEl = CreateContainerDialog.getElementsByClassName('err-ajax')[0];
 		errAjaxEl.textContent = 'Ajax Error: ' + statusText + '(' + status + ').';
+		errAjaxEl.classList.remove('hidden');
 		inputEl.removeAttribute('disabled');
 		inputEl.onkeydown = function () {
 			errAjaxEl.classList.add('hidden');
@@ -69,17 +71,27 @@
 
 	CreateContainerDialog.getElementsByClassName('btn-cancel')[0].onclick = function () {
 		CreateContainerDialog.classList.add('hidden');
+		document.getElementById('CreateContainerButton').classList.remove('selected');
 	} ;
 
-	document.getElementsByClassName('show-create-container-dialog').forEach(function (el) {
-		el.onclick = function () {
-			CreateContainerDialog.getElementsByClassName('err').forEach(function (errEl) {
-				errEl.classList.add('hidden');
-			});
-			inputEl.value = '';
-			CreateContainerDialog.classList.remove('hidden');
-			inputEl.removeAttribute('disabled');
-			inputEl.focus();
-		};
-	});
+	document.getElementById('CreateContainerButton').onclick = function () {
+		document.getElementsByClassName('toolbar-button').forEach(function (btn) {
+			if (btn.id == 'CreateContainerButton') {
+				btn.classList.add('selected');
+			} else {
+				btn.classList.remove('selected');
+			}
+		});
+		var dialogs = document.getElementsByClassName('dialog');
+		for (var i = 0; i < dialogs.length; i++) {
+			dialogs[i].classList.add('hidden');
+		}
+		CreateContainerDialog.getElementsByClassName('err').forEach(function (errEl) {
+			errEl.classList.add('hidden');
+		});
+		inputEl.value = '';
+		CreateContainerDialog.classList.remove('hidden');
+		inputEl.removeAttribute('disabled');
+		inputEl.focus();
+	};
 })();

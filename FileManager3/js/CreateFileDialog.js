@@ -1,10 +1,10 @@
 (function () {
 	'use strict';
 
-	var CreateDirectoryDialog = document.getElementById('CreateDirectoryDialog');
-	var inputEl = CreateDirectoryDialog.getElementsByTagName('input')[0];
+	var CreateFileDialog = document.getElementById('CreateFileDialog');
+	var inputEl = CreateFileDialog.getElementsByTagName('input')[0];
 
-	CreateDirectoryDialog.onsubmit = function (e) {
+	CreateFileDialog.onsubmit = function (e) {
 		e.preventDefault();
 		inputEl.setAttribute('disabled', 'disabled');
 
@@ -19,38 +19,37 @@
 			return;
 		}
 
-		var dirName = inputEl.value + "/";
-		var dirPath = FileManager.CurrentPath().add(dirName);
-		var dirPathWithoutAccount = new FileManager.Path(dirPath).withoutAccount();
+		var path = FileManager.CurrentPath().withoutAccount() + inputEl.value;
 		var requestArgs = {};
-		requestArgs.path = dirPathWithoutAccount;
+		requestArgs.path = path;
 
-		if(FileManager.ENABLE_SHARED_CONTAINERS){
+		if (FileManager.ENABLE_SHARED_CONTAINERS) {
 			requestArgs.account = FileManager.CurrentPath().account();
 		}
 
-		requestArgs.success = function(){
+		requestArgs.success = function () {
 			err('err-already-exists');
 		};
 
-		requestArgs.notExist = function(){
-			SwiftV1.createDirectory({
-				path: dirPathWithoutAccount,
-				created: function(){
-					window.FileManager.files.refreshItemList();
-					CreateDirectoryDialog.classList.add('hidden');
-					document.getElementById('CreateDirectoryButton').classList.remove('selected');
+		requestArgs.notExist = function () {
+			SwiftV1.createFile({
+				path: path,
+				contentType: 'text/plain',
+				created: function () {
+					location.hash = location.hash + inputEl.value;
+					CreateFileDialog.classList.add('hidden');
+					document.getElementById('CreateFileButton').classList.remove('selected');
 				},
 				error: errAjax
 			});
 		};
 		requestArgs.error = errAjax;
-		SwiftV1.checkDirectoryExist(requestArgs);
+		SwiftV1.checkFileExist(requestArgs);
 		window.FileManager.dialogForm.hide();
 	};
 
 	function err(className) {
-		var errEl = CreateDirectoryDialog.getElementsByClassName(className)[0];
+		var errEl = CreateFileDialog.getElementsByClassName(className)[0];
 		errEl.classList.remove('hidden');
 		inputEl.removeAttribute('disabled');
 		inputEl.onkeydown = function () {
@@ -59,7 +58,7 @@
 	}
 
 	function errAjax(status, statusText) {
-		var errAjaxEl = CreateDirectoryDialog.getElementsByClassName('err-ajax')[0];
+		var errAjaxEl = CreateFileDialog.getElementsByClassName('err-ajax')[0];
 		errAjaxEl.textContent = 'Ajax Error: ' + statusText + '(' + status + ').';
 		errAjaxEl.classList.remove('hidden');
 		inputEl.removeAttribute('disabled');
@@ -68,14 +67,14 @@
 		};
 	}
 
-	CreateDirectoryDialog.getElementsByClassName('btn-cancel')[0].onclick = function () {
-		CreateDirectoryDialog.classList.add('hidden');
-		document.getElementById('CreateDirectoryButton').classList.remove('selected');
+	CreateFileDialog.getElementsByClassName('btn-cancel')[0].onclick = function () {
+		CreateFileDialog.classList.add('hidden');
+		document.getElementById('CreateFileButton').classList.remove('selected');
 	};
 
-	document.getElementById('CreateDirectoryButton').onclick = function () {
+	document.getElementById('CreateFileButton').onclick = function () {
 		document.getElementsByClassName('toolbar-button').forEach(function (btn) {
-			if (btn.id == 'CreateDirectoryButton') {
+			if (btn.id == 'CreateFileButton') {
 				btn.classList.add('selected');
 			} else {
 				btn.classList.remove('selected');
@@ -85,11 +84,11 @@
 		for (var i = 0; i < dialogs.length; i++) {
 			dialogs[i].classList.add('hidden');
 		}
-		CreateDirectoryDialog.getElementsByClassName('err').forEach(function (errEl) {
+		CreateFileDialog.getElementsByClassName('err').forEach(function (errEl) {
 			errEl.classList.add('hidden');
 		});
 		inputEl.value = '';
-		CreateDirectoryDialog.classList.remove('hidden');
+		CreateFileDialog.classList.remove('hidden');
 		inputEl.removeAttribute('disabled');
 		inputEl.focus();
 	};

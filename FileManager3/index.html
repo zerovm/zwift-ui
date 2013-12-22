@@ -41,7 +41,6 @@
 
 	<script src="js/fileList.js"></script>
 	<script src="js/item.js"></script>
-	<script src="js/dialogButtons.js"></script>
 	<script src="js/uploadButtons.js"></script>
 	<script src="js/fileEditor.js"></script>
 	<script src="js/errorMsg.js"></script>
@@ -83,9 +82,9 @@
 				<label class="current-dir-label"></label>
 			</span>
 			<span class="right">
-				<button id="CreateContainerButton" class="show-create-container-dialog toolbar-button" title="Create Container"></button>
-				<button id="CreateDirectoryButton" class="show-create-directory-dialog toolbar-button" title="Create Directory"></button>
-				<button id="CreateFileButton" class="toolbar-button dialog-button" title="Create File" data-action="file" data-placeholder="Create File"></button>
+				<button id="CreateContainerButton" class="toolbar-button" title="Create Container"></button>
+				<button id="CreateDirectoryButton" class="toolbar-button" title="Create Directory"></button>
+				<button id="CreateFileButton" class="toolbar-button" title="Create File"></button>
 				<span id="UploadFilesButton" class="toolbar-button input-wrapper" title="Upload Files"><input class="upload-input" type="file" multiple="multiple" data-action="file"/></span>
 				<span id="UploadAsButton" class="toolbar-button input-wrapper" title="Upload As..."><input class="upload-input" type="file" multiple="multiple" data-action="as"/></span>
 				<span id="UploadAndExecuteButton" class="toolbar-button input-wrapper" title="Upload & Execute"><input class="upload-input" type="file" data-action="exec"/></span>
@@ -111,6 +110,17 @@
 			<div class="err-invalid-character err hidden">Directory name cannot contain a forward slash '/' character.</div>
 			<div class="err-ajax err hidden"></div>
 			<div class="err-already-exists err hidden">Directory already exists.</div>
+			<button type="submit" class="btn btn-primary">Create</button>
+			<button type="button" class="btn-cancel btn btn-primary">Cancel</button>
+		</form>
+
+		<form id="CreateFileDialog" class="dialog hidden">
+			<input placeholder="File Name">
+			<div class="err-empty err hidden">Please type file name.</div>
+			<div class="err-size-limit err hidden">File name must be less than 1024 bytes.</div>
+			<div class="err-invalid-character err hidden">File name cannot contain a forward slash '/' character.</div>
+			<div class="err-ajax err hidden"></div>
+			<div class="err-already-exists err hidden">File already exists.</div>
 			<button type="submit" class="btn btn-primary">Create</button>
 			<button type="button" class="btn-cancel btn btn-primary">Cancel</button>
 		</form>
@@ -345,8 +355,11 @@
 	</div>
 </template>
 
+<script src="js/Toolbar.js"></script>
 <script src="js/CreateContainerDialog.js"></script>
 <script src="js/CreateDirectoryDialog.js"></script>
+<script src="js/CreateFileDialog.js"></script>
+
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>')</script>
 </body>
