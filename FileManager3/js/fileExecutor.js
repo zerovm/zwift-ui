@@ -239,7 +239,11 @@
 		window.FileManager.errorMsgHandler.show({
 			header: "An error occured. Here is what server has said: " + result,
 			status: status,
-			statusText: statusText
+			statusText: statusText,
+			onclose: function(){
+				var curPath = window.FileManager.CurrentPath();
+				curPath.isFile() && (location.hash = curPath.up());
+			}
 		});
 	}
 

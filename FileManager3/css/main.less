@@ -40,7 +40,7 @@ a{
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  background-color: @color2;
+  background-color: #6a93bb;
   padding: 5px;
   color: white;
   height: 46px;
@@ -208,7 +208,6 @@ body.wide-content .center{
 .fixed-top{
   z-index: 99;
 }
-
 .toolbar-button{
   border-radius: 0;
   padding: 0;
@@ -318,7 +317,7 @@ body:not(.freeze-all) .current-dir-label a:hover,
   margin: 0 2px;
   cursor: default;
 }
-
+.code-editor-wrapper,
 .content-wrapper{
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -335,6 +334,9 @@ body:not(.freeze-all) .current-dir-label a:hover,
   display: flex;
   flex-direction: column;
   -webkit-transition: 300ms background 0 ease-in;
+}
+.code-editor-is-shown .content-wrapper{
+  display: none;
 }
 .error-is-shown .content-wrapper{
   background: white;
@@ -702,19 +704,26 @@ body:not(.freeze-all) .item-confirm-delete button:hover{
   background-position: 5px 6px !important;
 }
 
+.dialog{
+  transition: all 0.1s;
+  vertical-align: middle;
+  background: @dialogColor;
+  padding: 5px;
+  text-align: center;
+}
+
 .menu-file{
-  text-align: left;
   padding: 0;
   height: 50px;
+  -webkit-align-items: center;
+  align-items: center;
   display: none;
 }
-.code-editor-is-shown .menu-file{
+ .code-editor-is-shown .menu-file{
   display: -webkit-flex;
   display: -moz-flex;
   display: -ms-flexbox;
   display: flex;
-  -webkit-align-items: center;
-  align-items: center;
 }
 .menu-file button{
   height: 35px;
@@ -993,25 +1002,14 @@ template{
   background: none;
 }
 .code-editor-wrapper{
-  margin: 0 auto;
-  height: 900px;
   display: none;
 }
-.code-editor-is-shown .code-editor-wrapper::after {
-  content: "";
-  width: 100%;
-  height: 100%;
-  background: white;
-  position: absolute;
-  left: 0;
-  top: 100%;
-  border-top: 1px solid #f0f0f0;
-}
-.code-editor-is-shown .main-content-wrapper{
-  height: auto;
-}
+
 .code-editor-is-shown .code-editor-wrapper{
-  display: block;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
 }
 .code-editor-is-shown .toolbar .dialog-button,
 .code-editor-is-shown .toolbar .input-wrapper{
@@ -1020,6 +1018,8 @@ template{
 #codeEditor{
   width: 100%;
   height: 100%;
+  -webkit-flex: 1;
+  flex: 1;
 }
 .no-select{
   -webkit-user-select: none;
@@ -1227,7 +1227,7 @@ button:not(.btn):hover{
   background-color: @dialogColor;
   padding: 5px;
 }
-#CreateDialog input{
+#CreateDialog #input_CreateContainerDialog{
   height: 24px;
   box-sizing: border-box;
   width: 100%;
@@ -1263,15 +1263,15 @@ button:not(.btn):hover{
   outline: 1px solid transparent;
   background: @color5_5;
 }
-#CreateDialog input,
+#CreateDialog #input_CreateContainerDialog,
 #CreateDialog .dialog-wrapper{
   display: none;
 }
-#CreateDialog.input-shown input{
+#CreateDialog.input-shown #input_CreateContainerDialog{
   display: inline-block;
 }
-#CreateDialog.save-as-dialog input,
-#CreateDialog.change-type input{
+#CreateDialog.save-as-dialog #input_CreateContainerDialog,
+#CreateDialog.change-type #input_CreateContainerDialog{
   margin-bottom: 0;
 }
 #CreateDialog.dialog-shown .dialog-wrapper{
@@ -1318,8 +1318,7 @@ button:not(.btn):hover{
   width: 100%;
   max-height: 130px;
 }
-#CreateDialog .input-group,
-.dialog form{
+#CreateDialog .input-group{
   display: block;
 }
 #CopyDialog .input-group-btn,
@@ -1632,7 +1631,7 @@ input[type=text]:focus{
 
 
 
-.dialog {
+.form {
   transition: all 0.1s;
   vertical-align: middle;
   background: #e0e3e8;
@@ -1640,7 +1639,7 @@ input[type=text]:focus{
   text-align: center;
 }
 
-.dialog input {
+.form input {
   height: 24px;
   box-sizing: border-box;
   width: 100%;
@@ -1651,14 +1650,14 @@ input[type=text]:focus{
   font-size: .7em;
 }
 
-.dialog input:focus {
+.form input:focus {
   -webkit-box-shadow: inset 0 0 6px rgba(30,110,193,0.9);
   box-shadow: inset 0 0 6px rgba(30,110,193,0.9);
   background: white;
   outline: 0;
 }
 
-.dialog .err {
+.form .err {
   text-align: left;
   height: 35px;
   margin-left: 25px;
@@ -1666,7 +1665,7 @@ input[type=text]:focus{
   font-size: medium;
 }
 
-.dialog .err::before {
+.form .err::before {
   height: 35px;
   border: none;
   background: url(../img/submenu_buttons.png);
@@ -1676,4 +1675,34 @@ input[type=text]:focus{
   left: 4px;
   background-position: -1138px 0;
   width: 24px;
+}
+
+.form-two-inputs input {
+  -webkit-flex: 1;
+  flex: 1;
+  height: 25px;
+  padding: 5px;
+  font-size: 0.7em;
+  line-height: normal;
+  border-radius: 4px;
+  margin: 0 4px;
+}
+
+.form-two-inputs footer {
+  width: 100%;
+  display: inline-block;
+  text-align: center;
+  margin: 5px 5px 5px -20px;
+}
+
+.form-two-inputs footer button,
+.form-two-inputs footer button:active,
+.form-two-inputs footer button:focus {
+  width: 80px;
+  height: 22px;
+  margin: 0 3px;
+}
+
+.template {
+  display: none;
 }

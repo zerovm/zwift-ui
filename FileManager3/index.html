@@ -41,6 +41,7 @@
 
 	<script src="js/fileList.js"></script>
 	<script src="js/item.js"></script>
+	<!--<script src="js/dialogButtons.js"></script>-->
 	<script src="js/uploadButtons.js"></script>
 	<script src="js/fileEditor.js"></script>
 	<script src="js/errorMsg.js"></script>
@@ -82,9 +83,9 @@
 				<label class="current-dir-label"></label>
 			</span>
 			<span class="right">
-				<button id="CreateContainerButton" class="toolbar-button" title="Create Container"></button>
-				<button id="CreateDirectoryButton" class="toolbar-button" title="Create Directory"></button>
-				<button id="CreateFileButton" class="toolbar-button" title="Create File"></button>
+				<button id="CreateContainerButton" class="toolbar-button dialog-button" title="Create Container" data-action="container" data-placeholder="Create Container"></button>
+				<button id="CreateDirectoryButton" class="toolbar-button dialog-button" title="Create Directory" data-action="directory" data-placeholder="Create Directory"></button>
+				<button id="CreateFileButton" class="toolbar-button dialog-button" title="Create File" data-action="file" data-placeholder="Create File"></button>
 				<span id="UploadFilesButton" class="toolbar-button input-wrapper" title="Upload Files"><input class="upload-input" type="file" multiple="multiple" data-action="file"/></span>
 				<span id="UploadAsButton" class="toolbar-button input-wrapper" title="Upload As..."><input class="upload-input" type="file" multiple="multiple" data-action="as"/></span>
 				<span id="UploadAndExecuteButton" class="toolbar-button input-wrapper" title="Upload & Execute"><input class="upload-input" type="file" data-action="exec"/></span>
@@ -92,7 +93,7 @@
 			</span>
 		</div>
 
-		<form id="CreateContainerDialog" class="dialog hidden">
+		<form id="CreateContainerDialog" class="form dialog hidden">
 			<input placeholder="Container Name">
 			<div class="err-empty err hidden">Please type container name.</div>
 			<div class="err-size-limit err hidden">Container name must be less than 256 bytes.</div>
@@ -103,7 +104,7 @@
 			<button type="button" class="btn-cancel btn btn-primary">Cancel</button>
 		</form>
 
-		<form id="CreateDirectoryDialog" class="dialog hidden">
+		<form id="CreateDirectoryDialog" class="form dialog hidden">
 			<input placeholder="Directory Name">
 			<div class="err-empty err hidden">Please type directory name.</div>
 			<div class="err-size-limit err hidden">Directory name must be less than 1024 bytes.</div>
@@ -114,7 +115,7 @@
 			<button type="button" class="btn-cancel btn btn-primary">Cancel</button>
 		</form>
 
-		<form id="CreateFileDialog" class="dialog hidden">
+		<form id="CreateFileDialog" class="form dialog hidden">
 			<input placeholder="File Name">
 			<div class="err-empty err hidden">Please type file name.</div>
 			<div class="err-size-limit err hidden">File name must be less than 1024 bytes.</div>
@@ -127,9 +128,8 @@
 
 		<div id="CreateDialog" class="hidden dialog">
 			<form class="input-group">
-				<input type="text" class="form-control">
+				<input id="input_CreateContainerDialog" type="text" class="form-control">
 				<div class="dialog-wrapper"></div>
-				<div class="error hidden">The name should be longer.</div>
 				<span class="input-group-btn dialog-footer">
 					<button id="OKDialog" class="btn btn-primary ok-dialog-button" type="submit">OK</button>
 					<button id="CancelDialog" class="btn btn-default cancel-dialog-button" type="button">Cancel</button>
@@ -354,6 +354,8 @@
 		</table>
 	</div>
 </template>
+
+
 
 <script src="js/Toolbar.js"></script>
 <script src="js/CreateContainer.js"></script>

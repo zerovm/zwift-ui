@@ -600,7 +600,7 @@
 			oncopy: function(){
 				oncopy();
 			},
-			onmetadata: function(e){
+			/*onmetadata: function(e){
 				var item = previousParent;
 				metadataObj.showMetaData(item.dataset.path, item.dataset.type, function(callback){
 					window.FileManager.dialogForm.show({
@@ -625,7 +625,7 @@
 						type: "dialog"
 					});
 				});
-			},
+			},*/
 			ontype: function(e){
 				window.FileManager.dialogForm.show({
 					type: "input",
