@@ -1096,7 +1096,7 @@ var Auth = {};
 		});
 		SwiftAdvancedFunctionality.deleteAll({
 			path: '.gui/' + appPath + '/',
-			success: callback,
+			deleted: callback,
 			error: function () {
 				//TODO: error treatment.
 			},
