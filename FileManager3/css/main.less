@@ -71,6 +71,7 @@ a{
   position: absolute;
   right: 0;
   top: 40px;
+  padding: 7px;
   z-index: 99;
   background: @color4;
   border: 3px solid @color3;
@@ -80,7 +81,8 @@ a{
 }
 
 #AccountWindow .profile-picture{
-  width: 100px;
+  width: 75px;
+  border: 2px solid @color2;
   vertical-align: top;
   margin: 5px;
   border-radius: 3px;
@@ -88,26 +90,25 @@ a{
 }
 
 #AccountWindow .sign-out{
-  margin: 5px;
-  background: @color2;
-  color: white;
-  border-radius: 3px;
-  border-width: 1px;
-  padding: 5px 10px;
-  font-weight: bold;
-  font-size: 0.7em;
-  position: absolute;
-  right: 0;
-  bottom: 0;
+  margin-top: 15px;
+  float: right;
 }
 
 #AccountWindow .full-name{
   color: @color2;
-  margin: 5px;
   font-weight: bold;
   font-size: 0.9em;
   padding: 5px 0;
   display: inline-block;
+}
+
+#AccountWindow .bytes-used {
+  color: black;
+  font-size: small;
+  display: block;
+}
+#AccountWindow .bytes-used:before {
+  content: 'Bytes used: ';
 }
 
 .toolbar{
@@ -244,7 +245,7 @@ body:not(.freeze-all) .disabled #UpButton:hover,
   background-color: transparent !important;
 }
 #CreateContainerButton{
-  background-position: -144px center;
+  background-position: -143px center;
   display: none;
 }
 .location-root #CreateContainerButton{
@@ -1626,4 +1627,82 @@ input[type=text]:focus{
 
 @media screen and (max-width: 960px) {
 
+}
+
+
+
+.form {
+  transition: all 0.1s;
+  vertical-align: middle;
+  background: #e0e3e8;
+  padding: 5px 5px 15px 5px;
+  text-align: center;
+}
+
+.form input {
+  height: 24px;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 5px;
+  margin: 0 0 5px;
+  border-radius: 4px;
+  border: 1px solid #999;
+  font-size: .7em;
+}
+
+.form input:focus {
+  -webkit-box-shadow: inset 0 0 6px rgba(30,110,193,0.9);
+  box-shadow: inset 0 0 6px rgba(30,110,193,0.9);
+  background: white;
+  outline: 0;
+}
+
+.form .err {
+  text-align: left;
+  height: 35px;
+  margin-left: 25px;
+  line-height: 35px;
+  font-size: medium;
+}
+
+.form .err::before {
+  height: 35px;
+  border: none;
+  background: url(../img/submenu_buttons.png);
+  background-size: auto 70px;
+  content: "";
+  position: absolute;
+  left: 4px;
+  background-position: -1138px 0;
+  width: 24px;
+}
+
+.form-two-inputs input {
+  -webkit-flex: 1;
+  flex: 1;
+  height: 25px;
+  padding: 5px;
+  font-size: 0.7em;
+  line-height: normal;
+  border-radius: 4px;
+  margin: 0 4px;
+}
+
+.form-two-inputs footer {
+  width: 100%;
+  display: inline-block;
+  text-align: center;
+  margin: 5px 5px 5px -20px;
+}
+
+.form-two-inputs footer button,
+.form-two-inputs footer button:active,
+.form-two-inputs footer button:focus {
+  width: 80px;
+  height: 22px;
+  margin: 0 3px;
+}
+
+.template {
+  display: none;
 }

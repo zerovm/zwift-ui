@@ -2,10 +2,16 @@
     Layout
 */
 
+html {
+	background: url(img/cloud_left_top.png) left top, url(img/cloud_right_top.png) right top, url(img/cloud_left_bottom.png) left bottom, url(img/cloud_right_bottom.png) right bottom, #92AEC8;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+}
+
 body {
 	margin: 0;
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-	background-image: url('img/background.png');
+	/*background-image: url('img/background.png');*/
 }
 
 .center {
@@ -18,8 +24,7 @@ body {
 .header {
 	position: fixed !important;
 	height: 50px;
-	background-color: white;
-	opacity: 0.9;
+	background-color: rgba(106, 147, 187, 0.7);
 	z-index: 99;
 }
 
@@ -146,6 +151,7 @@ button:disabled:active {
 	border-radius: 10px;
 	box-shadow: 5px 5px 15px rgb(148, 148, 148);
 	border: none;
+	background-size: 100px;
 }
 .app:enabled:active {
 	box-shadow: 0 0 0;
