@@ -563,119 +563,117 @@ var Auth = {};
 		return headers;
 	}
 
+	function makeReportObj(headers){
+		var report = {}, key, executionReportKey;
+		report.execution = {};
+		for (key in headers) {
+			if (key == 'X-Nexe-Cdr-Line') {
+				report.billing = billingReport(headers[key]);
+			} else if (key.indexOf('X-Nexe') == 0) {
+				executionReportKey = key.substr('X-Nexe-'.length);
+				report.execution[executionReportKey.toLowerCase()] = headers[key];
+			}
+		}
+		return report;
+	}
+
+	function billingReport(xNexeCdrLine){
+		var report = {}, j, i, nodesBillingInfo, nodeCdrResult;
+		report.totalServerTime = xNexeCdrLine.split(',')[0].trim();
+		nodesBillingInfo = xNexeCdrLine.split(',').splice(1);
+		report.nodes = [];
+		j = 0;
+		for (i = 0; i < nodesBillingInfo.length; i++) {
+			if (i % 2 == 0) {
+				report.nodes[j] = {};
+				report.nodes[j].nodeServerTime = nodesBillingInfo[i];
+			} else {
+				nodeCdrResult = nodesBillingInfo[i].trim().split(' ');
+
+				report.nodes[j].systemTime = nodeCdrResult[0];
+				report.nodes[j].userTime = nodeCdrResult[1];
+
+				report.nodes[j].memoryUsed = nodeCdrResult[2];
+				report.nodes[j].SwapUsed = nodeCdrResult[3];
+
+				report.nodes[j].readsFromDisk = nodeCdrResult[2];
+				report.nodes[j].bytesReadFromDisk = nodeCdrResult[3];
+
+				report.nodes[j].writesToDisk = nodeCdrResult[4];
+				report.nodes[j].bytesWrittenToDisk = nodeCdrResult[5];
+				report.nodes[j].readsFromNetwork = nodeCdrResult[6];
+
+				report.nodes[j].bytesReadFromNetwork = nodeCdrResult[7];
+				report.nodes[j].writesToNetwork = nodeCdrResult[8];
+				report.nodes[j].bytesWrittenToNetwork = nodeCdrResult[9];
+				j++;
+			}
+		}
+		return report;
+	}
+
+	function executeHandleResponse(e, args){
+		var reader, status, statusText, headers;
+		if (e.target.status == 401) {
+			unauthorized();
+		}else{
+			if(typeof e.target.response === "string"){
+				if(e.target.status === 200){
+					headers = parseResponseHeaders(e.target.getAllResponseHeaders());
+					args.success(e.target.result, makeReportObj(headers));
+				}else{
+					args.error(e.target.status, e.target.statusText, "");
+				}
+			}else{
+				reader = new FileReader();
+				if (e.target.status == 200) {
+					// result
+					var result = e.target.response;
+					// report
+					headers = parseResponseHeaders(e.target.getAllResponseHeaders());
+					reader.addEventListener('load', function (e) {
+						args.success(e.target.result, makeReportObj(headers));
+					});
+					reader.addEventListener('error', function (message) {
+						args.error(-1, '', 'JavaScript error occurred while reading blob response: ' + message)
+					});
+				}else{
+					status = e.target.status;
+					statusText = e.target.statusText;
+					reader.addEventListener('load', function (e) {
+						args.error(status, statusText, e.target.result);
+					});
+					reader.addEventListener('error', function (message) {
+						args.error(status, statusText, 'JavaScript error occurred while reading blob response: ' + message)
+					});
+				}
+				reader.readAsText(e.target.response);
+			}
+		}
+	}
+
 	ZeroVmOnSwift.open = function (args) {
-		var accountId = args.hasOwnProperty('account') ? args.account : account;
-		var zwiftUrlPrefix = xStorageUrl.split('/').slice(0, -2).join('/') + '/';
-		var url = zwiftUrlPrefix + 'open/' + accountId + '/' + args.path;
-		window.location = url;
-		/*
-		var xhr = new XMLHttpRequest();
-		xhr.open('GET', url);
-		xhr.addEventListener('load', function (e) {
-			args.callback(e.target.responseText);
+		var accountId = args.hasOwnProperty('account') ? args.account : account,
+			zwiftUrlPrefix = xStorageUrl.split('/').slice(0, -2).join('/'),
+			xhr = new XMLHttpRequest();
+		xhr.open('GET', zwiftUrlPrefix + '/open/' + accountId + '/' + args.path);
+		xhr.addEventListener('load', function(e){
+			executeHandleResponse(e, args);
 		});
-		xhr.send();*/
+		xhr.send();
 	};
 
 	ZeroVmOnSwift.execute = function (args) {
-		var xhr = new XMLHttpRequest();
-		var accountId = args.hasOwnProperty('account') ? args.account : account;
-		var url = xStorageUrl + account;
-		xhr.open('POST', url, true);
+		var xhr = new XMLHttpRequest(),
+			accountId = args.hasOwnProperty('account') ? args.account : account;
+		xhr.open('POST', xStorageUrl + accountId, true);
 		xhr.responseType = 'blob';
 		xhr.setRequestHeader('X-Zerovm-Execute', '1.0');
 		xhr.setRequestHeader('Content-Type', args.contentType);
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status == 200) {
-				// result
-				var result = e.target.response;
-				// report
-				var headersString = e.target.getAllResponseHeaders();
-				var headers = parseResponseHeaders(headersString);
-				var report = makeReportObj(headers);
-
-				var reader = new FileReader();
-				reader.addEventListener('load', function (e) {
-					args.success(e.target.result, report);
-				});
-				reader.addEventListener('error', function (message) {
-					args.error(-1, '', 'JavaScript error occurred while reading blob response: ' + message)
-				});
-				reader.readAsText(e.target.response);
-			} else {
-				var status = e.target.status;
-				var statusText = e.target.statusText;
-				var reader = new FileReader();
-				reader.addEventListener('load', function (e) {
-					args.error(status, statusText, e.target.result);
-				});
-				reader.addEventListener('error', function (message) {
-					args.error(status, statusText, 'JavaScript error occurred while reading blob response: ' + message)
-				});
-				reader.readAsText(e.target.response);
-			}
+		xhr.addEventListener('load', function(e){
+			executeHandleResponse(e, args);
 		});
 		xhr.send(args.data);
-
-		function makeReportObj(headers) {
-
-			var report = {};
-			report.execution = {};
-
-			for (var key in headers) {
-
-				if (key == 'X-Nexe-Cdr-Line') {
-					report.billing = billingReport(headers[key]);
-
-				} else if (key.indexOf('X-Nexe') == 0) {
-					var executionReportKey = key.substr('X-Nexe-'.length);
-					report.execution[executionReportKey.toLowerCase()] = headers[key];
-				}
-			}
-
-			return report;
-		}
-
-		function billingReport(xNexeCdrLine) {
-
-			var report = {};
-
-			report.totalServerTime = xNexeCdrLine.split(',')[0].trim();
-			var nodesBillingInfo = xNexeCdrLine.split(',').splice(1);
-			report.nodes = [];
-
-			var j = 0;
-			for (var i = 0; i < nodesBillingInfo.length; i++) {
-				if (i % 2 == 0) {
-					report.nodes[j] = {};
-					report.nodes[j].nodeServerTime = nodesBillingInfo[i];
-				} else {
-					var nodeCdrResult = nodesBillingInfo[i].trim().split(' ');
-
-					report.nodes[j].systemTime = nodeCdrResult[0];
-					report.nodes[j].userTime = nodeCdrResult[1];
-
-					report.nodes[j].memoryUsed = nodeCdrResult[2];
-					report.nodes[j].SwapUsed = nodeCdrResult[3];
-
-					report.nodes[j].readsFromDisk = nodeCdrResult[2];
-					report.nodes[j].bytesReadFromDisk = nodeCdrResult[3];
-
-					report.nodes[j].writesToDisk = nodeCdrResult[4];
-					report.nodes[j].bytesWrittenToDisk = nodeCdrResult[5];
-					report.nodes[j].readsFromNetwork = nodeCdrResult[6];
-
-					report.nodes[j].bytesReadFromNetwork = nodeCdrResult[7];
-					report.nodes[j].writesToNetwork = nodeCdrResult[8];
-					report.nodes[j].bytesWrittenToNetwork = nodeCdrResult[9];
-					j++;
-				}
-			}
-
-			return report;
-		}
 	};
 
 
@@ -829,6 +827,7 @@ var Auth = {};
 		var deleteCount = 0;
 		var newArgs = {};
 		var pathArr = args.path.split('/');
+		var deletedObjs = [];
 		newArgs.format = 'json';
 		newArgs.notExist = args.hasOwnProperty('notExist') ? args.notExist : args.deleted;
 		newArgs.error = args.error;
@@ -853,14 +852,19 @@ var Auth = {};
 		}
 
 		function deleteLevel(level) {
+			var path = args.path;
+
+			function deleted(){
+				args.progress(files.length, deleteCount, 'deleted');
+				args.deleted();
+			}
+
 			if (level == 0) {
-				SwiftAdvancedFunctionality.delete({
+				if(deletedObjs.indexOf(path) === -1){
+					SwiftAdvancedFunctionality.delete({
 					account: accountId,
-					path: args.path,
-					deleted: function () {
-						args.progress(files.length, deleteCount, 'deleted');
-						args.deleted();
-					},
+					path: path,
+					deleted: deleted,
 					error: function (status, statusText) {
 						args.progress(files.length, deleteCount, 'error occurred');
 						args.error(status, statusText);
@@ -870,6 +874,9 @@ var Auth = {};
 						newArgs.notExist();
 					}
 				});
+				}else{
+					deleted();
+				}
 				return;
 			}
 			if (typeof levels[level] === "undefined") {
@@ -879,10 +886,12 @@ var Auth = {};
 
 			var levelAmountLast = levels[level].length;
 
-			for (var  i = 0; i < levels[level].length; i++) {
+			for (var  i = levels[level].length - 1; i >= 0; i--) {
+				var path = levels[level][i];
+				deletedObjs.push(path);
 				SwiftAdvancedFunctionality.delete({
 					account: accountId,
-					path: levels[level][i],
+					path: path,
 					deleted: function () {
 						levelAmountLast--;
 						args.progress(files.length, deleteCount, 'deleted');
@@ -1087,7 +1096,7 @@ var Auth = {};
 		});
 		SwiftAdvancedFunctionality.deleteAll({
 			path: '.gui/' + appPath + '/',
-			success: callback,
+			deleted: callback,
 			error: function () {
 				//TODO: error treatment.
 			},
@@ -1096,7 +1105,10 @@ var Auth = {};
 		});
 	};
 
-	ZLitestackDotCom.init = function (callback) {
+	Auth.ready = new CustomEvent('authReady', {});
+
+	ZLitestackDotCom.init = function () {
+
 		var accountId = getUrlParameter('account');
 
 		if (!accountId) {
@@ -1111,23 +1123,21 @@ var Auth = {};
 		}
 
 		function loginRedirect() {
-			var urlPrefix = 'https://z.litestack.com/login/google/?state=';
+			var urlPrefix = 'https://zvm.rackspace.com/login/google/?state=';
 			var stateEncoded = encodeURIComponent(location.pathname);
 			window.location = urlPrefix + stateEncoded;
 		}
 		SwiftV1.setAuthData({
 			account: accountId,
-			xStorageUrl: 'https://z.litestack.com/v1',
+			xStorageUrl: 'https://zvm.rackspace.com/v1',
 			unauthorized: function () {
-				var urlPrefix = 'https://z.litestack.com/login/google/?state=';
+				var urlPrefix = 'https://zvm.rackspace.com/login/google/?state=';
 				var stateEncoded = encodeURIComponent(location.pathname);
 				window.location = urlPrefix + stateEncoded;
 			}
 		});
 
-		if (arguments.length) {
-			callback();
-		}
+		window.dispatchEvent(Auth.ready);
 
 		function getUrlParameter(name) {
 			name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
@@ -1205,10 +1215,11 @@ var Auth = {};
 	};
 
 	ZLitestackDotCom.signOut = function () {
-		window.location = 'https://z.litestack.com/login/google/?state=/js&code=logout';
+		window.location = 'https://zvm.rackspace.com/login/google/?state=/js&code=logout';
 	};
 
-	ClusterAuth.init = function(callback) {
+	ClusterAuth.init = function() {
+
 		var html = '<div style="position: fixed; width: 100%; height: 100%;left: 0;right: 0;top: 0;bottom: 0;">'
 			+ '<div class="cluster-url">'
 			+ '<label>Storage URL:</label>'
@@ -1233,7 +1244,7 @@ var Auth = {};
 				}
 			});
 
-			callback();
+			window.dispatchEvent(Auth.ready);
 		});
 	};
 
