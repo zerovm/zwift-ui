@@ -1,6 +1,6 @@
 'use strict';
 
-Auth.useZLitestackDotCom();
+Auth.useClusterAuth();
 
 var FileManager,
 	authInit = new CustomEvent("authInit");
