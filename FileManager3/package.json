@@ -1,8 +1,0 @@
-{
-  "name": "file_manager",
-  "version": "0.1.0",
-  "devDependencies": {
-    "grunt": "~0.4.1",
-    "grunt-contrib-less": "~0.8.1"
-  }
-}
