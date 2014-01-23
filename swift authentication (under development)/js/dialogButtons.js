@@ -94,21 +94,6 @@ document.addEventListener("DOMContentLoaded", function(){
 			});
 			return;
 		}
-		if(input.value.indexOf('/') != -1){
-			SharedContainersOnSwift.addSharedContainer({
-				account: input.value.split('/')[0],
-				container: input.value.split('/')[1],
-				added: function () {
-					window.FileManager.files.refreshItemList();
-					cancel();
-				},
-				error: function () {
-					// TODO: error message
-					alert('error ' + arguments[0] + ' ' + arguments[1]);
-				}
-			});
-			return;
-		}
 
 		SwiftV1.createContainer({
 			containerName: input.value,

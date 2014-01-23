@@ -790,9 +790,7 @@ body:not(.freeze-all) .item-confirm-delete button:hover{
 }
 
 .metadata-save,
-.metadata-discard-changes,
-.rights-save,
-.rights-discard-changes{
+.metadata-discard-changes{
   width: 120px;
   height: 30px;
   padding: 5px;
@@ -804,9 +802,6 @@ body:not(.freeze-all) .item-confirm-delete button:hover{
 }
 .metadata-save{
   float: right;
-}
-.rights-table tfoot td{
-  text-align: center;
 }
 .err-msg{
   font-size: 1.4em;
@@ -823,17 +818,6 @@ body:not(.freeze-all) .item-confirm-delete button:hover{
 .menu-file .txt-btn.download-link{
   background-position: -250px 0;
 }
-.rights-table tr td:first-child{
-  font-size: 1.4em;
-  font-weight: bold;
-}
-.read-rights-input,
-.write-rights-input{
-  width: 98%;
-  border: 0;
-  padding: 5px;
-}
-
 .CodeMirror-gutters{
   background-color: rgba(247, 247, 247, 0.9) !important;
 }
@@ -995,9 +979,6 @@ template{
 .item.empty-container[data-type=container] .file-type{
   background-position: -1207px -4px;
 }
-.item[data-type=shared] .file-type{
-  background-position: -1262px center;
-}
 .item.no-hover .file-type{
   background: none;
 }
@@ -1139,13 +1120,6 @@ template{
 .freeze-all .hot-buttons,
 .freeze-all.progressbar-buttons .progressbar button{
   pointer-events: auto;
-}
-button:not(.btn):active,
-button:not(.btn):focus,
-button:not(.btn):hover{
-  border: none;
-  outline: none;
-  text-align: center;
 }
 .disable-toolbar-right .toolbar .right *{
   pointer-events: none;

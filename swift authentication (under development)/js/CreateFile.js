@@ -23,10 +23,6 @@
 		var requestArgs = {};
 		requestArgs.path = path;
 
-		//if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		//	requestArgs.account = FileManager.CurrentPath().account();
-		//}
-
 		requestArgs.success = function () {
 			err('err-already-exists');
 		};

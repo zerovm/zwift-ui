@@ -16,21 +16,6 @@
 			return;
 		}
 
-		if (FileManager.ENABLE_SHARED_CONTAINERS) {
-			if (inputEl.value.indexOf('/') != -1) {
-				SharedContainersOnSwift.addSharedContainer({
-					account: inputEl.value.split('/')[0],
-					container: inputEl.value.split('/')[1],
-					added: function () {
-						window.FileManager.files.refreshItemList();
-						CreateContainerDialog.classList.add('hidden');
-					},
-					error: errAjax
-				});
-				return;
-			}
-		}
-
 		if (inputEl.value.indexOf('/') != -1) {
 			err('err-invalid-character');
 			return;

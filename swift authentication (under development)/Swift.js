@@ -4,18 +4,14 @@
 */
 var SwiftV1 = {};
 var ZeroVmOnSwift = {};
-var SharedContainersOnSwift = {};
-var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
-var ZeroAppsOnSwift = {};
+var recursiveDeleteOnSwift;
 
 (function () {
 	'use strict';
 
 	var xAuthToken = null;
+	var xStorageUrl = null;
 	var unauthorized = function () {};
-
-	SwiftV1.account = null;
-	SwiftV1.xStorageUrl = null;
 
 	var METADATA_PREFIX = {
 		ACCOUNT: 'X-Account-Meta-',
@@ -59,7 +55,8 @@ var ZeroAppsOnSwift = {};
 		xhr.setRequestHeader('X-Auth-Key', args.xAuthKey);
 		xhr.addEventListener('load', function (e) {
 			if (e.target.status >= 200 && e.target.status <= 299) {
-				SwiftV1.xStorageUrl = e.target.getResponseHeader('X-Storage-Url');
+				xStorageUrl = e.target.getResponseHeader('X-Storage-Url');
+				SwiftV1.xStorageUrl = xStorageUrl;
 				xAuthToken = e.target.getResponseHeader('X-Auth-Token');
 				SwiftV1.xAuthToken = xAuthToken;
 				args.ok();
@@ -74,7 +71,7 @@ var ZeroAppsOnSwift = {};
 
 	SwiftV1.Account.head = function (args) {
 		var xhr = new XMLHttpRequest();
-		xhr.open('HEAD', SwiftV1.xStorageUrl);
+		xhr.open('HEAD', xStorageUrl);
 		if (xAuthToken !== null) {
 			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
 		}
@@ -116,9 +113,9 @@ var ZeroAppsOnSwift = {};
 		var url;
 		if (queryUrlArr.length) {
 			var queryUrl = '?' + queryUrlArr.join('&');
-			url = SwiftV1.xStorageUrl + queryUrl;
+			url = xStorageUrl + queryUrl;
 		} else {
-			url = SwiftV1.xStorageUrl;
+			url = xStorageUrl;
 		}
 		xhr.open('GET', url);
 		if (xAuthToken !== null) {
@@ -144,7 +141,7 @@ var ZeroAppsOnSwift = {};
 
 	SwiftV1.Account.post = function (args) {
 		var xhr = new XMLHttpRequest();
-		xhr.open('POST', SwiftV1.xStorageUrl);
+		xhr.open('POST', xStorageUrl);
 		if (xAuthToken !== null) {
 			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
 		}
@@ -171,7 +168,7 @@ var ZeroAppsOnSwift = {};
 	SwiftV1.Container.head = function (args) {
 		
 		var xhr = new XMLHttpRequest();
-		var url = SwiftV1.xStorageUrl + '/' + args.containerName;
+		var url = xStorageUrl + '/' + args.containerName;
 		xhr.open('HEAD', url);
 		if (xAuthToken !== null) {
 			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
@@ -227,9 +224,9 @@ var ZeroAppsOnSwift = {};
 		
 		if (queryUrlArr.length) {
 			var queryUrl = '?' + queryUrlArr.join('&');
-			url = SwiftV1.xStorageUrl + '/' + args.containerName + queryUrl;
+			url = xStorageUrl + '/' + args.containerName + queryUrl;
 		} else {
-			url = SwiftV1.xStorageUrl + '/' + args.containerName;
+			url = xStorageUrl + '/' + args.containerName;
 		}
 		xhr.open('GET', url);
 		if (xAuthToken !== null) {
@@ -255,7 +252,7 @@ var ZeroAppsOnSwift = {};
 
 	SwiftV1.Container.post = function (args) {
 		var xhr = new XMLHttpRequest();
-		var url = SwiftV1.xStorageUrl + '/' + args.containerName;
+		var url = xStorageUrl + '/' + args.containerName;
 		xhr.open('POST', url);
 		if (xAuthToken !== null) {
 			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
@@ -283,7 +280,7 @@ var ZeroAppsOnSwift = {};
 
 	SwiftV1.Container.put = function (args) {
 		var xhr = new XMLHttpRequest();
-		var url = SwiftV1.xStorageUrl + '/' + args.containerName;
+		var url = xStorageUrl + '/' + args.containerName;
 		xhr.open('PUT', url);
 		if (xAuthToken !== null) {
 			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
@@ -311,7 +308,7 @@ var ZeroAppsOnSwift = {};
 
 	SwiftV1.Container.delete = function (args) {
 		var xhr = new XMLHttpRequest();
-		var url = SwiftV1.xStorageUrl + '/' + args.containerName;
+		var url = xStorageUrl + '/' + args.containerName;
 		xhr.open('DELETE', url);
 		if (xAuthToken !== null) {
 			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
@@ -335,7 +332,7 @@ var ZeroAppsOnSwift = {};
 	SwiftV1.File.head = function (args) {
 		var xhr = new XMLHttpRequest();
 		
-		var url = SwiftV1.xStorageUrl + '/' + args.path;
+		var url = xStorageUrl + '/' + args.path;
 		xhr.open('HEAD', url);
 		if (xAuthToken !== null) {
 			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
@@ -362,7 +359,7 @@ var ZeroAppsOnSwift = {};
 	SwiftV1.File.get = function (args) {
 		var xhr = new XMLHttpRequest();
 		
-		var url = SwiftV1.xStorageUrl + '/' + args.path;
+		var url = xStorageUrl + '/' + args.path;
 		if (args.hasOwnProperty('ifMatch')) {
 			xhr.setRequestHeader('If-Match', args.ifMatch);
 		}
@@ -405,7 +402,7 @@ var ZeroAppsOnSwift = {};
 	SwiftV1.File.post = function (args) {
 		var xhr = new XMLHttpRequest();
 		
-		var url = SwiftV1.xStorageUrl + '/' + args.path;
+		var url = xStorageUrl + '/' + args.path;
 		xhr.open('POST', url);
 		if (xAuthToken !== null) {
 			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
@@ -433,7 +430,7 @@ var ZeroAppsOnSwift = {};
 
 	SwiftV1.File.put = function (args) {
 		var xhr = new XMLHttpRequest();
-		var url = SwiftV1.xStorageUrl + '/' + args.path;
+		var url = xStorageUrl + '/' + args.path;
 		xhr.open('PUT', url, true);
 		if (xAuthToken !== null) {
 			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
@@ -469,7 +466,7 @@ var ZeroAppsOnSwift = {};
 
 	SwiftV1.File.delete = function (args) {
 		var xhr = new XMLHttpRequest();
-		var url = SwiftV1.xStorageUrl + '/' + args.path;
+		var url = xStorageUrl + '/' + args.path;
 		xhr.open('DELETE', url);
 		if (xAuthToken !== null) {
 			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
@@ -491,7 +488,7 @@ var ZeroAppsOnSwift = {};
 	SwiftV1.File.copy = function (args) {
 		var xhr = new XMLHttpRequest();
 		
-		var url = SwiftV1.xStorageUrl + '/' + args.path;
+		var url = xStorageUrl + '/' + args.path;
 		xhr.open('PUT', url);
 		if (xAuthToken !== null) {
 			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
@@ -649,7 +646,7 @@ var ZeroAppsOnSwift = {};
 	}
 
 	ZeroVmOnSwift.open = function (args) {
-		var zwiftUrlPrefix = SwiftV1.xStorageUrl.split('/').slice(0, -2).join('/'),
+		var zwiftUrlPrefix = xStorageUrl.split('/').slice(0, -2).join('/'),
 			xhr = new XMLHttpRequest();
 		xhr.open('GET', zwiftUrlPrefix + '/open/' + args.path);
 		xhr.addEventListener('load', function(e){
@@ -660,7 +657,7 @@ var ZeroAppsOnSwift = {};
 
 	ZeroVmOnSwift.execute = function (args) {
 		var xhr = new XMLHttpRequest();
-		xhr.open('POST', SwiftV1.xStorageUrl, true);
+		xhr.open('POST', xStorageUrl, true);
 		xhr.responseType = 'blob';
 		xhr.setRequestHeader('X-Zerovm-Execute', '1.0');
 		xhr.setRequestHeader('Content-Type', args.contentType);
@@ -670,131 +667,7 @@ var ZeroAppsOnSwift = {};
 		xhr.send(args.data);
 	};
 
-
-	SharedContainersOnSwift.updateRights = function (args) {
-		var xhr = new XMLHttpRequest();
-		var url = SwiftV1.xStorageUrl + '/' + args.containerName;
-		xhr.open('POST', url);
-		xhr.setRequestHeader('X-Container-Read', args.readRights);
-		xhr.setRequestHeader('X-Container-Write', args.writeRights);
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status >= 200 && e.target.status <= 299) {
-				args.updated();
-			} else {
-				args.error(e.target.status, e.target.statusText);
-			}
-		});
-		xhr.send();
-	};
-
-	SharedContainersOnSwift.getRights = function (xhr) {
-		return {
-			read: xhr.getResponseHeader('X-Container-Read') || '',
-			write: xhr.getResponseHeader('X-Container-Write') || ''
-		};
-	};
-
-	SharedContainersOnSwift.addSharedContainer = function (args) {
-		var xhr = new XMLHttpRequest();
-		var sharedUrlPrefix = SwiftV1.xStorageUrl.split('/').slice(0, -2).join('/');
-		var url = sharedUrlPrefix + '/load-share/' + args.account + '/' + args.container;
-		xhr.open('GET', url);
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status == 200) {
-				args.added();
-			} else if (e.target.status == 403) {
-				args.notAuthorized();
-			} else {
-				args.error(e.target.status, e.target.statusText);
-			}
-		});
-		xhr.send();
-	};
-
-	SharedContainersOnSwift.removeSharedContainer = function (args) {
-		var xhr = new XMLHttpRequest();
-		var sharedUrlPrefix = SwiftV1.xStorageUrl.split('/').slice(0, -2).join('/');
-		var url = sharedUrlPrefix + '/drop-share/' + args.account + '/' + args.container;
-		xhr.open('GET', url);
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status == 200) {
-				args.removed();
-			} else if (e.target.status == 403) {
-				unauthorized();
-			} else {
-				args.error(e.target.status, e.target.statusText);
-			}
-		});
-		xhr.send();
-	};
-
-	SharedContainersOnSwift.getFromXhr = function (xhr) {
-		var allContainers = {};
-
-		var i = 0;
-		var headerKey = 'X-Account-Meta-Shared' + i;
-		var headerVal = xhr.getResponseHeader(headerKey);
-
-		while (headerVal) {
-			var obj = JSON.parse(headerVal);
-			for (var attrname in obj) {
-				allContainers[attrname] = obj[attrname];
-			}
-
-			i++;
-			headerKey = 'X-Account-Meta-Shared' + i;
-			headerVal = xhr.getResponseHeader(headerKey);
-		}
-
-		return allContainers;
-	};
-
-	SharedContainersOnSwift.getContainerSize = function (args) {
-		var xhr = new XMLHttpRequest();
-		var url = SwiftV1.xStorageUrl + args.account + '/' + args.container;
-		xhr.open('HEAD', url);
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status >= 200 && e.target.status <= 299) {
-				var bytes = xhr.getResponseHeader('X-Container-Bytes-Used');
-				var count = xhr.getResponseHeader('X-Container-Object-Count');
-				args.success(bytes, count);
-			} else {
-				args.error(e.target.status, e.target.statusText);
-			}
-		});
-		xhr.send();
-	};
-
-	SharedContainersOnSwift.copy = function (args) {
-		var xhr = new XMLHttpRequest();
-		
-		var url = SwiftV1.xStorageUrl + '/' + args.path;
-		xhr.open('PUT', url);
-		if (xAuthToken !== null) {
-			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
-		}
-		xhr.setRequestHeader('X-Copy-From-Account', args.copyFrom);
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status == 201) {
-				args.copied();
-			} else {
-				args.error(e.target.status, e.target.statusText);
-			}
-		});
-		xhr.send();
-	};
-
-	SwiftAdvancedFunctionality.delete = function (args) {
+	SwiftV1.delete = function (args) {
 		if (args.path.split('/').length == 1) {
 			SwiftV1.deleteContainer({
 				containerName: args.path,
@@ -803,7 +676,6 @@ var ZeroAppsOnSwift = {};
 				notExist: args.notExist
 			});
 		} else {
-			
 			SwiftV1.deleteFile({
 				path: args.path,
 				deleted: args.deleted,
@@ -813,8 +685,7 @@ var ZeroAppsOnSwift = {};
 		}
 	};
 
-	SwiftAdvancedFunctionality.deleteAll = function (args) {
-		
+	recursiveDeleteOnSwift = function (args) {
 		var levels = [];
 		var files;
 		var deleteCount = 0;
@@ -854,7 +725,7 @@ var ZeroAppsOnSwift = {};
 
 			if (level == 0) {
 				if(deletedObjs.indexOf(path) === -1){
-					SwiftAdvancedFunctionality.delete({
+					SwiftV1.delete({
 					path: path,
 					deleted: deleted,
 					error: function (status, statusText) {
@@ -881,7 +752,7 @@ var ZeroAppsOnSwift = {};
 			for (var  i = levels[level].length - 1; i >= 0; i--) {
 				var path = levels[level][i];
 				deletedObjs.push(path);
-				SwiftAdvancedFunctionality.delete({
+				SwiftV1.delete({
 					path: path,
 					deleted: function () {
 						levelAmountLast--;
@@ -910,190 +781,6 @@ var ZeroAppsOnSwift = {};
 				});
 			}
 		}
-	};
-
-	SwiftAdvancedFunctionality.checkPathHasFiles = function (args) {
-		var newArgs = {};
-		newArgs.containerName = args.containerName;
-		if (args.hasOwnProperty('path') && args.path) {
-			newArgs.path = args.path;
-		}
-		newArgs.limit = 2;
-		newArgs.notExist = args.notExist;
-		newArgs.format = 'json';
-		newArgs.success = function (responseText) {
-
-			var max = args.hasOwnProperty('path') && args.path ? 1 : 0;
-
-			if (JSON.parse(responseText).length <= max) {
-				args.hasNotFiles();
-				return;
-			}
-
-			args.hasFiles();
-		};
-		newArgs.error = args.error;
-		SwiftV1.listFiles(newArgs);
-	};
-
-	SwiftAdvancedFunctionality.move = function () {
-
-	};
-
-	SwiftAdvancedFunctionality.rename = SwiftAdvancedFunctionality.move;
-
-
-	ZeroAppsOnSwift.createAppLocations = function () {
-
-	};
-
-	ZeroAppsOnSwift.getAppLocations = function (args) {
-		SwiftV1.getFile({
-			path: '.gui/app-locations',
-			success: function (fileData) {
-				var appLocations = JSON.parse(fileData);
-				args.success(appLocations);
-			},
-			notExist: function () {
-				ZeroAppsOnSwift.createAppLocations();
-			},
-			error: function (message) {
-				args.error(message);
-			}
-		});
-	};
-
-	ZeroAppsOnSwift.openApp = function (args) {
-		window.location = SwiftV1.xStorageUrl + '/.gui/' + args.appLocation + '/' + args.defaultPage + location.search;
-	};
-
-	ZeroAppsOnSwift.getAppIconUrl = function (args) {
-		return SwiftV1.xStorageUrl + '/.gui/' + args.appLocation + '/' + args.appIcon;
-	};
-
-	ZeroAppsOnSwift.createAppDir = function (args) {
-		var path = '.gui/'+ args.appAuthor +'/'+ args.appName +'/'+ args.appVersion + '/';
-		SwiftV1.createDirectory({
-			path: path,
-			created: args.created,
-			error: args.error
-		});
-	};
-
-	ZeroAppsOnSwift.addAppLocation = function (args) {
-		ZeroAppsOnSwift.getAppLocations({
-			success: function (appLocations) {
-				if (appLocations.indexOf(args.appLocation) != -1) {
-					return;
-				}
-				appLocations.push(args.appLocation);
-				SwiftV1.createFile({
-					path: '.gui/app-locations',
-					contentType: 'application/json',
-					data: JSON.stringify(appLocations),
-					created: function () {
-
-					},
-					error: function () {
-
-					}
-				});
-			},
-			error: function (message) {
-				console.log(message);
-			}
-		});
-	};
-
-	ZeroAppsOnSwift.removeAppLocation = function (args) {
-		ZeroAppsOnSwift.getAppLocations({
-			success: function (appLocations) {
-				var index = appLocations.indexOf(args.appLocation);
-				if (index == -1) {
-					return;
-				}
-				appLocations.splice(index, 1);
-				SwiftV1.createFile({
-					path: '.gui/app-locations',
-					contentType: 'application/json',
-					data: JSON.stringify(appLocations),
-					created: function () {
-
-					},
-					error: function () {
-
-					}
-				});
-			},
-			error: function (message) {
-				console.log(message);
-			}
-		});
-	};
-
-	ZeroAppsOnSwift.checkAppExist = function (args) {
-
-		var xhr = new XMLHttpRequest();
-		var url = SwiftV1.xStorageUrl + '/.gui/' + args.appLocation;
-
-		xhr.open('HEAD', url);
-
-		xhr.addEventListener('load', function (e) {
-			var status = e.target.status;
-
-			if (status == 401) {
-				unauthorized();
-			}
-			if (status == 404) {
-				args.notExist();
-				return;
-			}
-			if (status >= 200 && status <= 299) {
-				args.exist();
-			}
-			args.error();
-		});
-
-		xhr.send();
-	};
-
-	ZeroAppsOnSwift.uploadAppFile = function (args) {
-		var xhr = new XMLHttpRequest();
-		var url = SwiftV1.xStorageUrl + '/.gui/' + args.filePath;
-		xhr.open('PUT', url);
-		xhr.setRequestHeader('Content-Type', args.contentType);
-		xhr.addEventListener('load', args.callback);
-		xhr.send(args.fileData);
-	};
-
-	ZeroAppsOnSwift.getManifest = function (args) {
-		var xhr = new XMLHttpRequest();
-		var manifestUrl = SwiftV1.xStorageUrl + '/.gui/' + args.appPath + '/manifest.json';
-		xhr.open('GET', manifestUrl);
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 404) {
-				args.callback(null);
-				return;
-			}
-			var manifest = JSON.parse(e.currentTarget.response);
-			args.callback(manifest);
-		});
-		xhr.send();
-	};
-
-	ZeroAppsOnSwift.removeApp = function (appPath, callback, progress) {
-		ZeroAppsOnSwift.removeAppLocation({
-			appLocation: appPath
-		});
-		SwiftAdvancedFunctionality.deleteAll({
-			path: '.gui/' + appPath + '/',
-			deleted: callback,
-			error: function () {
-				//TODO: error treatment.
-			},
-			progress: progress,
-			notExist: callback
-		});
 	};
 
 })();

@@ -42,10 +42,6 @@ document.addEventListener("DOMContentLoaded", function(){
 			requestArgs.contentType = window.FileManager.fileEditor.currentFileType;
 			requestArgs.data = editor.getValue();
 
-			if (FileManager.ENABLE_SHARED_CONTAINERS) {
-				requestArgs.account = account;
-			}
-
 			requestArgs.created = function () {
 				setButtonState(false, buttonsClasses.save);
 				oncreateCallback && oncreateCallback();

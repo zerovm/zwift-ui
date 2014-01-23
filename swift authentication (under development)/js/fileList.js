@@ -1,4 +1,4 @@
-(function(){
+function fileList() {
 	"use strict";
 
 	var LIMIT = 20,
@@ -15,9 +15,6 @@
 		requestArgs.delimiter = "/";
 		if(FileManager.CurrentPath().isDirectory()){
 			requestArgs.prefix = FileManager.CurrentPath().prefix();
-		}
-		if(FileManager.ENABLE_SHARED_CONTAINERS){
-			requestArgs.account = FileManager.CurrentPath().account();
 		}
 
 		requestArgs.success = function(FILES){
@@ -136,9 +133,6 @@
 				filesArgs.marker = prefix + filesArgs.marker;
 				filesArgs.prefix = prefix;
 			}
-			if(FileManager.ENABLE_SHARED_CONTAINERS){
-				filesArgs.account = currPath.account();
-			}
 			filesArgs.notExist = notExist;
 			SwiftV1.listFiles(filesArgs);
 		}
@@ -159,7 +153,7 @@
 				onclose: function(){
 					location.hash = curPath.root();
 				}
-	};
+			};
 
 		//refreshItemList();
 		if(curPath.isContainersList()){
@@ -236,9 +230,6 @@
 			progressbar,
 			xhr;
 		window.FileManager.elements.upButton.setAttribute('disabled', 'disabled');
-		if(FileManager.ENABLE_SHARED_CONTAINERS){
-			args.account = FileManager.CurrentPath().account();
-		}
 		xhr = SwiftV1.getFile(args);
 		progressbar = new window.FileManager.toolbox.ProgressBar({
 			request: xhr,
@@ -315,9 +306,6 @@
 			notExist: fileNotExist,
 			error: ajaxError
 		};
-		if(FileManager.ENABLE_SHARED_CONTAINERS){
-			args.account = currentPath.account();
-		}
 		SwiftV1.checkFileExist(args);
 	}
 
@@ -394,4 +382,4 @@
 		refreshItemList: refreshItemList,
 		ontransition: ontransition
 	};
-})();
+}

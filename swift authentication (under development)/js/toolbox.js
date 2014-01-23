@@ -3,7 +3,7 @@
  * Date: 06.11.13
  * Time: 19:12
  */
-(function(){
+function toolbox() {
 	"use strict";
 
 	var mimeObj = {},
@@ -176,12 +176,12 @@
 				percentLoaded = Math.round((e.loaded / e.total) * 100);
 				setProgressValue(percentLoaded);
 				/*if(percentLoaded < 5){
-					setText("Upload started.");
-				}else if(percentLoaded < 98){
-					setText("Uploading...");
-				}else{
-					setText("Finalizing");
-				}*/
+				 setText("Upload started.");
+				 }else if(percentLoaded < 98){
+				 setText("Uploading...");
+				 }else{
+				 setText("Finalizing");
+				 }*/
 			}else{
 				setText("Loaded " + e.loaded);
 				!progressbarEl.classList.contains(animationClass) && progressbarEl.classList.add(animationClass);
@@ -321,4 +321,4 @@
 		downloadClick: downloadClick,
 		emptynessMsg: new EmptynessMsg()
 	};
-})();
+}

@@ -63,13 +63,6 @@
 			copied: isReloaded ? window.FileManager.files.refreshItemList : function(){},
 			error: ajaxError
 		};
-		console.log(args)
-		/*TODO: correct condition
-		 if(FileManager.ENABLE_SHARED_CONTAINERS && FileManager.Shared.isShared(window.FileManager.CurrentPath().account())){//TODO: check shared func
-		 args.account = FileManager.Path(path).account();
-		 SharedContainersOnSwift.copy(args);
-		 return;
-		 }*/
 
 		SwiftV1.copyFile(args);
 	}
@@ -92,7 +85,7 @@
 			return;
 		}
 		if(el.dataset.type === "file"){
-			SwiftAdvancedFunctionality.delete({
+			SwiftV1.delete({
 				path: new FileManager.Path(itemPath).withoutAccount(),
 				deleted: function(){
 					window.FileManager.files.refreshItemList();
@@ -109,7 +102,7 @@
 		progressObj = new window.FileManager.toolbox.ProgressBar({
 			wrapper: progressElWrapper
 		});
-		SwiftAdvancedFunctionality.deleteAll({
+		recursiveDeleteOnSwift({
 			path: new FileManager.Path(itemPath).withoutAccount(),
 			account: FileManager.CurrentPath().account(),
 			deleted: function(){
@@ -544,52 +537,6 @@
 			oncopy();
 		};
 		handlers = {
-			onshare: function(e){
-				var dialogForm = new window.FileManager.DialogForm({
-					wrapperId: "RightsDialog"
-				});
-				dialogForm.show({
-					type: "simple-dialog",
-					onshow: function(){
-						var xhr = SwiftV1.Container.head({
-							containerName: previousParent.dataset.path,
-							success: function(){
-								var dialogEl = document.getElementById("RightsDialog");
-								var readRights = dialogEl.getElementsByClassName("read-rights-input")[0];
-								var writeRights = dialogEl.getElementsByClassName("write-rights-input")[0];
-								var rights = SharedContainersOnSwift.getRights(xhr);
-								readRights.value = rights.read;
-								writeRights.value = rights.write;
-								readRights.focus();
-							},
-							notExist: function(){
-								// TODO: Add error.
-							},
-							error: function(){
-								// TODO: Add error.
-							}
-						});
-
-					},
-					confirm: function(){
-						var dialogEl = document.getElementById("RightsDialog");
-						var readRights = dialogEl.getElementsByClassName("read-rights-input")[0];
-						var writeRights = dialogEl.getElementsByClassName("write-rights-input")[0];
-						SharedContainersOnSwift.updateRights({
-							containerName: previousParent.dataset.path,
-							readRights: readRights.value,
-							writeRights: writeRights.value,
-							updated: function(){
-								dialogForm.hide();
-							},
-							error: function(status, statusText){
-								// TODO: Change:
-								alert("error: " + status + " " + statusText);
-							}
-						});
-					}
-				});
-			},
 			onopen: function(){
 				itemCommandName.set("open");
 				onItemClick(previousParent);

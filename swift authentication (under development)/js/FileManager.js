@@ -1,8 +1,9 @@
 'use strict';
 
-var FileManager = {};
+if (!FileManager) {
+	FileManager = {};
+}
 
-FileManager.ENABLE_SHARED_CONTAINERS = false;
 FileManager.ENABLE_ZEROVM = true;
 
 FileManager.Containers = {};
@@ -17,17 +18,6 @@ FileManager.Containers.list = function (callback) {
 		limit: FileManager.Containers.LIMIT,
 		success: function (containers) {
 			scrollingContentEl.innerHTML = '';
-
-			if (FileManager.ENABLE_SHARED_CONTAINERS) {
-				var sharedContainers = SharedContainersOnSwift.getFromXhr(xhr);
-				if (containers.length == 0 && Object.keys(sharedContainers).length == 0) {
-					FileManager.CurrentDirLabel.root();
-					noContainers();
-					callback();
-					return;
-				}
-				FileManager.Shared.listSharedContainers(sharedContainers, scrollingContentEl);
-			}
 
 			list(containers);
 		},
@@ -164,25 +154,6 @@ FileManager.CurrentPath = function () {
 	return path;
 };
 
-document.addEventListener('click', function (e) {
-	var el;
-
-	if (document.body.classList.contains('disabled')) {
-		return;
-	}
-
-	 if (el = FileManager.toolbox.getParentByClassName(e.target,'three-dot')) {
-		FileManager.item.toggleMenu(el);
-	} else if (el = FileManager.toolbox.getParentByClassName(e.target,'item')) {
-		FileManager.item.click(el);
-	} else if (FileManager.toolbox.getParentByClassName(e.target,'load-more-button')) {
-		 window.FileManager.files.loadMore();
-	 } else if (el = FileManager.toolbox.getParentByClassName(e.target,'add-shared-button')) {
-		//SHARED-CONTAINERS
-		FileManager.AddShared.click();
-	}
-});
-
 function initPage() {
 	location.hash = SwiftV1.account + "/";
 	window.FileManager.files.refreshItemList();
@@ -202,46 +173,6 @@ function initPage() {
 		document.body.classList.toggle("wide-content");
 	});
 }
-
-//SHARED-CONTAINERS
-FileManager.Shared = {};
-FileManager.Shared.isShared = function (path) {
-	return path.split('/')[0] != SwiftV1.account;
-};
-FileManager.Shared.listSharedContainers = function(sharedContainers, scrollingContentEl){
-	var html = document.querySelector('#sharedContainerTemplate').innerHTML,
-		el;
-
-	for(var k in sharedContainers){
-		el = add(k, sharedContainers[k]);
-		update(k, el);
-	}
-
-	function add(sharedContainer, email){
-		var name = FileManager.toolbox.makeShortName(email + '/' + sharedContainer.split('/')[1]);
-		scrollingContentEl.insertAdjacentHTML('afterbegin',
-			html.replace('{{name}}', FileManager.toolbox.escapeHTML(name))
-				.replace('{{path}}', FileManager.toolbox.escapeHTML(sharedContainer))
-				.replace('{{title}}', FileManager.toolbox.escapeHTML(sharedContainer))
-		);
-		return scrollingContentEl.firstElementChild;
-	}
-
-	function update(path, el){
-		var curPath = new FileManager.Path(path);
-		SharedContainersOnSwift.getContainerSize({
-			account: curPath.account(),
-			container: curPath.container(),
-			success: function(bytes, count){
-				el.querySelector('.size').textContent = FileManager.toolbox.shortenSize(bytes);
-				el.querySelector('.files').textContent = count;
-			},
-			error: function(status, statusText){
-				el.querySelector('.size').textContent = 'Error: ' + status + ' ' + statusText;
-			}
-		});
-	}
-};
 
 FileManager.reAuth = function () {
 	SwiftV1.Account.head({success:function(){},error:function(){}});
