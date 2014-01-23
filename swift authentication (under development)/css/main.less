@@ -26,6 +26,7 @@ html, body{
   background-attachment: fixed;
   height: 100%;
   min-width: 0;
+  margin: 0;
 }
 body{
   font-family: "Helvetica Neue", sans-serif;
@@ -39,11 +40,9 @@ a{
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
-  user-select: none;
   background-color: #6a93bb;
   padding: 5px;
   color: white;
-  height: 46px;
   display: -webkit-flex;
   display: flex;
   -webkit-justify-content: space-between;
@@ -51,9 +50,11 @@ a{
   a{
     color: white;
     width: 125px;
-    height: 46px;
     display: inline-flex;
     align-items: center;
+  }
+  label{
+    font-size: medium;
   }
 }
 

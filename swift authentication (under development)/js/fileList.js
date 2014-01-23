@@ -350,7 +350,7 @@ function fileList() {
 	function ontransition(e){//TODO: change the way of refreshing!
 		var el = e.target ? e.target : e, newEl;
 		if(el.classList.contains("old-scrolling-content")){
-			el.parentNode.removeChild(el);
+			//el.parentNode.removeChild(el);
 			newEl = window.FileManager.elements.itemsWrapperEl;
 			newEl.classList.add("no-transition");
 			newEl.classList.remove("no-transition");

@@ -290,7 +290,8 @@
 				document.getElementById('AccountId').textContent = SwiftV1.account;
 
 				document.getElementById('SignOut').onclick = function () {
-					document.getElementById('v1AuthForm').removeAttribute('hidden');
+					window.location.reload(true);
+					//document.getElementById('v1AuthForm').removeAttribute('hidden');
 				};
 
 				initPage();
