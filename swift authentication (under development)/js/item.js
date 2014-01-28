@@ -181,14 +181,7 @@
 			transtionHandler = new TransitionHandler();
 
 		function TransitionHandler(){
-			var transitionEnd = {
-					"WebkitTransition": "webkitTransitionEnd",
-					"MozTransition": "transitionend",
-					"OTransition": "oTransitionEnd otransitionend",
-					"msTransition": "MSTransitionEnd",
-					"transition": "transitionend"
-				}[Modernizr.prefixed("transition")],
-				scrollEl, interval,
+			var scrollEl, interval,
 				scrollOffsetDx = 5;
 
 			function onTransitionEnd(e){
@@ -211,7 +204,10 @@
 				scrollEl = window.FileManager.elements.itemsContainer;
 				this.bind = function(el){
 					setTimeout(function(){
-						el.addEventListener(transitionEnd, onTransitionEnd);
+						el.addEventListener('webkitTransitionEnd', onTransitionEnd);
+						el.addEventListener('transitionend', onTransitionEnd);
+						el.addEventListener('oTransitionEnd otransitionend', onTransitionEnd);
+						el.addEventListener('MSTransitionEnd', onTransitionEnd);
 					}, 0);
 				};
 				this.bind(el);

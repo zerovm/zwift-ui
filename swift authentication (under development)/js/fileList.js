@@ -26,6 +26,9 @@ function fileList() {
 				files.shift();
 			}
 			if(files.length === 0){
+
+
+
 				emptynessMsg.show({
 					wrapper: scrollingContentEl,
 					className: "empty-folder",
@@ -347,10 +350,10 @@ function fileList() {
 		loadingEl && loadingEl.parentNode.removeChild(loadingEl);
 	}
 
-	function ontransition(e){//TODO: change the way of refreshing!
+	function ontransition(e){
 		var el = e.target ? e.target : e, newEl;
 		if(el.classList.contains("old-scrolling-content")){
-			//el.parentNode.removeChild(el);
+			el.parentNode.removeChild(el);
 			newEl = window.FileManager.elements.itemsWrapperEl;
 			newEl.classList.add("no-transition");
 			newEl.classList.remove("no-transition");
