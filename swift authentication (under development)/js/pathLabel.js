@@ -48,7 +48,7 @@
 	}
 
 	document.addEventListener("DOMContentLoaded", function(){
-		el = document.getElementsByClassName("current-dir-label")[0];
+		el = document.getElementById('CurrentPath');
 		el.addEventListener("click", function(e){
 			var newPath;
 			if(e.target.nodeName === "A"){

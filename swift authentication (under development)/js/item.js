@@ -216,7 +216,7 @@
 
 		function createDeleteDialog(){
 			var textEl = document.createElement("span");
-			textEl.innerHTML = "Are you sure of deleting <strong>" + previousParent.dataset.path + "</strong>?";
+			textEl.innerHTML = "Are you sure you want to delete <strong>" + previousParent.dataset.path + "</strong>?";
 			return textEl;
 		}
 

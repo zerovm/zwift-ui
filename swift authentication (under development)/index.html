@@ -17,46 +17,54 @@
 	<link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon-144x144-fm.png">
 
 	<link rel="stylesheet" href="css/main.css">
-	<link rel="stylesheet/less" type="text/css" href="css/main.less" />
-
-	<script src="Swift.js"></script>
-
-	<script src="js/vendor/require.js"></script>
-	<script src="js/vendor/ace/ace.js"></script>
-	<script src="js/vendor/iscroll.js"></script>
-
-	<script src="js/extendNative.js"></script>
-	<script src="js/toolbox.js"></script>
-	<script src="js/elements.js"></script>
-	<script src="js/dialogForm.js"></script>
-	<script src="js/fileList.js"></script>
-	<script src="js/item.js"></script>
-	<script src="js/uploadButtons.js"></script>
-	<script src="js/fileEditor.js"></script>
-	<script src="js/errorMsg.js"></script>
-	<script src="js/fileExecutor.js"></script>
-	<script src="js/pathLabel.js"></script>
-	<script src="js/FileManager.js"></script>
 </head>
 <body>
-<div class="center main-content-wrapper">
 
-	<div class="fixed-top">
+<!--
 
-		<div id="header">
-			<a>File Manager</a>
-			<span>
+1. Page
+1.1. Header
+1.1.1. Row1
+1.1.1.1. Logo
+1.1.1.2. Account
+1.1.1.2.1. AccountId
+1.1.1.2.2. SignOutButton
+1.1.2. Row2
+1.1.2.1. Navigation
+1.1.2.1.1. UpButton
+1.1.2.1.2. CurrentPath
+1.1.2.2. Toolbar
+1.1.2.2.1. CreateContainer
+1.1.2.2.2. CreateDirectory
+1.1.2.2.3. CreateFile
+1.1.2.2.4. UploadFiles
+1.1.2.2.5. UploadAs
+1.1.2.2.6. Wide
+1.1.3. Row3
+1.1.3.1. CreateContainerForm
+1.1.3.2. CreateDirectoryForm
+1.1.3.3. CreateFileForm
+1.2. ContainersList
+1.3. FilesList
+1.4. FileEditor
+
+-->
+
+<div id="Page">
+	<div id="Header">
+		<div id="Row1">
+			<h1 id="Logo">File Manager</h1>
+			<div id="Account">
 				<label id="AccountId"></label>
 				<button id="SignOut">Sign Out</button>
-			</span>
+			</div>
 		</div>
-
-		<div id="toolbar" class="toolbar center no-select">
-			<span class="left">
+		<div id="Row2">
+			<div id="Navigation">
 				<button id="UpButton" class="toolbar-button" title="Up"></button>
-				<label class="current-dir-label"></label>
-			</span>
-			<span class="right">
+				<label id="CurrentPath"></label>
+			</div>
+			<div id="Toolbar">
 				<button id="CreateContainerButton" class="toolbar-button dialog-button" title="Create Container" data-action="container" data-placeholder="Create Container"></button>
 				<button id="CreateDirectoryButton" class="toolbar-button dialog-button" title="Create Directory" data-action="directory" data-placeholder="Create Directory"></button>
 				<button id="CreateFileButton" class="toolbar-button dialog-button" title="Create File" data-action="file" data-placeholder="Create File"></button>
@@ -64,83 +72,83 @@
 				<span id="UploadAsButton" class="toolbar-button input-wrapper" title="Upload As..."><input class="upload-input" type="file" multiple="multiple" data-action="as"/></span>
 				<span id="UploadAndExecuteButton" class="toolbar-button input-wrapper" title="Upload & Execute"><input class="upload-input" type="file" data-action="exec"/></span>
 				<button id="WideButton" class="toolbar-button always-enabled" title="Wide"></button>
-			</span>
+			</div>
 		</div>
+		<div id="Row3">
+			<form id="CreateContainerDialog" class="form dialog hidden">
+				<input placeholder="Container Name">
+				<div class="err-empty err hidden">Please type container name.</div>
+				<div class="err-size-limit err hidden">Container name must be less than 256 bytes.</div>
+				<div class="err-invalid-character err hidden">Container name cannot contain a forward slash '/' character.</div>
+				<div class="err-ajax err hidden"></div>
+				<div class="err-already-exists err hidden">Container already exists.</div>
+				<button type="submit" class="btn btn-primary">Create</button>
+				<button type="button" class="btn-cancel btn btn-primary">Cancel</button>
+			</form>
+			<form id="CreateDirectoryDialog" class="form dialog hidden">
+				<input placeholder="Directory Name">
+				<div class="err-empty err hidden">Please type directory name.</div>
+				<div class="err-size-limit err hidden">Directory name must be less than 1024 bytes.</div>
+				<div class="err-invalid-character err hidden">Directory name cannot contain a forward slash '/' character.</div>
+				<div class="err-ajax err hidden"></div>
+				<div class="err-already-exists err hidden">Directory already exists.</div>
+				<button type="submit" class="btn btn-primary">Create</button>
+				<button type="button" class="btn-cancel btn btn-primary">Cancel</button>
+			</form>
+			<form id="CreateFileDialog" class="form dialog hidden">
+				<input placeholder="File Name">
+				<div class="err-empty err hidden">Please type file name.</div>
+				<div class="err-size-limit err hidden">File name must be less than 1024 bytes.</div>
+				<div class="err-invalid-character err hidden">File name cannot contain a forward slash '/' character.</div>
+				<div class="err-ajax err hidden"></div>
+				<div class="err-already-exists err hidden">File already exists.</div>
+				<button type="submit" class="btn btn-primary">Create</button>
+				<button type="button" class="btn-cancel btn btn-primary">Cancel</button>
+			</form>
 
-		<form id="CreateContainerDialog" class="form dialog hidden">
-			<input placeholder="Container Name">
-			<div class="err-empty err hidden">Please type container name.</div>
-			<div class="err-size-limit err hidden">Container name must be less than 256 bytes.</div>
-			<div class="err-invalid-character err hidden">Container name cannot contain a forward slash '/' character.</div>
-			<div class="err-ajax err hidden"></div>
-			<div class="err-already-exists err hidden">Container already exists.</div>
-			<button type="submit" class="btn btn-primary">Create</button>
-			<button type="button" class="btn-cancel btn btn-primary">Cancel</button>
-		</form>
-
-		<form id="CreateDirectoryDialog" class="form dialog hidden">
-			<input placeholder="Directory Name">
-			<div class="err-empty err hidden">Please type directory name.</div>
-			<div class="err-size-limit err hidden">Directory name must be less than 1024 bytes.</div>
-			<div class="err-invalid-character err hidden">Directory name cannot contain a forward slash '/' character.</div>
-			<div class="err-ajax err hidden"></div>
-			<div class="err-already-exists err hidden">Directory already exists.</div>
-			<button type="submit" class="btn btn-primary">Create</button>
-			<button type="button" class="btn-cancel btn btn-primary">Cancel</button>
-		</form>
-
-		<form id="CreateFileDialog" class="form dialog hidden">
-			<input placeholder="File Name">
-			<div class="err-empty err hidden">Please type file name.</div>
-			<div class="err-size-limit err hidden">File name must be less than 1024 bytes.</div>
-			<div class="err-invalid-character err hidden">File name cannot contain a forward slash '/' character.</div>
-			<div class="err-ajax err hidden"></div>
-			<div class="err-already-exists err hidden">File already exists.</div>
-			<button type="submit" class="btn btn-primary">Create</button>
-			<button type="button" class="btn-cancel btn btn-primary">Cancel</button>
-		</form>
-
-		<div id="CreateDialog" class="hidden dialog">
-			<form class="input-group">
-				<input id="input_CreateContainerDialog" type="text" class="form-control">
-				<div class="dialog-wrapper"></div>
+			<div id="CreateDialog" class="hidden dialog">
+				<form class="input-group">
+					<input id="input_CreateContainerDialog" type="text" class="form-control">
+					<div class="dialog-wrapper"></div>
 				<span class="input-group-btn dialog-footer">
 					<button id="OKDialog" class="btn btn-primary ok-dialog-button" type="submit">OK</button>
 					<button id="CancelDialog" class="btn btn-default cancel-dialog-button" type="button">Cancel</button>
 				</span>
-			</form>
-		</div>
+				</form>
+			</div>
 
-		<div id="CopyDialog" class="hidden">
-			<form class="input-group">
-				<div class="input-wrapper hidden">
-					<input type="text" class="form-control">
-				</div>
-				<div class="dialog-wrapper"></div>
+			<div id="CopyDialog" class="hidden">
+				<form class="input-group">
+					<div class="input-wrapper hidden">
+						<input type="text" class="form-control">
+					</div>
+					<div class="dialog-wrapper"></div>
 				<span class="input-group-btn">
 					<button class="btn btn-primary" type="submit">Copy all</button>
 					<button class="btn btn-default" type="button">Cancel</button>
 				</span>
-			</form>
-		</div>
-		<div id="progressDialog">
-		</div>
+				</form>
+			</div>
+			<div id="progressDialog">
+			</div>
 
-		<div id="mainProgressBar" class="hidden"></div>
+			<div id="mainProgressBar" class="hidden"></div>
 
-		<div class="hidden err-msg-wrapper"><label class="err-msg"></label></div>
-		<div class="menu-file dialog no-select">
-			<button class="undo txt-btn" title="Undo"></button>
-			<button class="redo txt-btn" title="Redo"></button>
-			<button class="save txt-btn" title="Save"></button>
-			<button class="save-as txt-btn" data-action="saveas" title="Save As..."></button>
-			<button class="execute txt-btn" data-action="execute" title="Execute"></button>
-			<button class="download-link txt-btn"></button>
-			<div class="editor-toolbar-error" hidden>Error: <span class="status"></span>
-				<span class="status-text"></span>.
+			<div class="hidden err-msg-wrapper"><label class="err-msg"></label></div>
+			<div class="menu-file dialog no-select">
+				<button class="undo txt-btn" title="Undo"></button>
+				<button class="redo txt-btn" title="Redo"></button>
+				<button class="save txt-btn" title="Save"></button>
+				<button class="save-as txt-btn" data-action="saveas" title="Save As..."></button>
+				<button class="execute txt-btn" data-action="execute" title="Execute"></button>
+				<button class="download-link txt-btn"></button>
+				<div class="editor-toolbar-error" hidden>Error: <span class="status"></span>
+					<span class="status-text"></span>.
+				</div>
 			</div>
 		</div>
 	</div>
+
 	<!-- content -->
 	<div class="content-wrapper">
 		<div id="content">
@@ -157,7 +165,7 @@
 		<div id="codeEditor"></div>
 	</div>
 </div>
-</div>
+
 <!-- templates -->
 <template id="containerTemplate">
 	<div class="item" title="{{title}}" data-path="{{path}}" data-type="container">
@@ -256,6 +264,26 @@
 	</div>
 </form>
 
+
+<script src="Swift.js"></script>
+
+<script src="js/vendor/require.js"></script>
+<script src="js/vendor/ace/ace.js"></script>
+<script src="js/vendor/iscroll.js"></script>
+
+<script src="js/extendNative.js"></script>
+<script src="js/toolbox.js"></script>
+<script src="js/elements.js"></script>
+<script src="js/dialogForm.js"></script>
+<script src="js/fileList.js"></script>
+<script src="js/item.js"></script>
+<script src="js/uploadButtons.js"></script>
+<script src="js/fileEditor.js"></script>
+<script src="js/errorMsg.js"></script>
+<script src="js/fileExecutor.js"></script>
+<script src="js/pathLabel.js"></script>
+<script src="js/FileManager.js"></script>
+
 <script>
 	document.getElementById('v1AuthForm').onsubmit = function (e) {
 		e.preventDefault();
@@ -317,6 +345,5 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>')</script>
 
-<!--<script src="js/vendor/less.js"></script>-->
 </body>
 </html>
