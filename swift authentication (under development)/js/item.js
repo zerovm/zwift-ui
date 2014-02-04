@@ -201,7 +201,7 @@
 			}
 
 			this.bind = function(el){
-				scrollEl = window.FileManager.elements.itemsContainer;
+				scrollEl = document.getElementById('List');
 				this.bind = function(el){
 					setTimeout(function(){
 						el.addEventListener('webkitTransitionEnd', onTransitionEnd);

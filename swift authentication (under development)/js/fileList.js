@@ -6,7 +6,7 @@ function fileList() {
 		uploadInput,
 		emptynessMsg = window.FileManager.toolbox.emptynessMsg;
 
-	function list(callback){
+	function list(callback) {
 		var requestArgs = {};
 
 		requestArgs.containerName = FileManager.CurrentPath().container();
@@ -54,13 +54,13 @@ function fileList() {
 			FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().withoutAccount(), true);
 			callback();
 
-			function checkFirstFile(files){
+			function checkFirstFile(files) {
 				var prefix = FileManager.CurrentPath().prefix(),
 					file, nameInFiles;
-				if(files.length > 0 && prefix){
+				if(files.length > 0 && prefix) {
 					file = files[0];
 					nameInFiles = file.hasOwnProperty("subdir") ? file.subdir : file.name;
-					if(prefix == nameInFiles){
+					if(prefix == nameInFiles) {
 						return true;
 					}
 				}
@@ -68,8 +68,7 @@ function fileList() {
 			}
 		};
 
-		requestArgs.error = function error(status, statusText){
-
+		requestArgs.error = function error(status, statusText) {
 			FileManager.errorMsgHandler.show({
 				header: "Ajax error:",
 				status: status,
@@ -362,7 +361,7 @@ function fileList() {
 	}
 
 	function checkLoadMore(){
-		var el = window.FileManager.elements.itemsContainer;
+		var el = document.getElementById('List');
 		if(Math.abs(el.scrollTop - (el.scrollHeight - el.clientHeight)) < 4){
 			window.FileManager.files.loadMore();
 		}
@@ -372,7 +371,7 @@ function fileList() {
 	document.addEventListener("webkitTransitionEnd", ontransition);
 	window.addEventListener("hashchange", refreshItemList);
 	document.addEventListener("DOMContentLoaded", function(){
-		window.FileManager.elements.scrollWrapper.addEventListener("scroll", window.FileManager.toolbox.onscrollLoadMore);
+		document.getElementById('List').onscroll = window.FileManager.toolbox.onscrollLoadMore;
 	});
 
 	if(!window.FileManager){

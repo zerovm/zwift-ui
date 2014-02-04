@@ -47,7 +47,7 @@ FileManager.Containers.list = function (callback) {
 			scrollingContentEl.insertAdjacentHTML('beforeend', FileManager.Containers.create([{name:""}]).replace("item", "item no-hover no-active dummy"));
 		}
 
-		window.FileManager.toolbox.onscrollLoadMore(window.FileManager.elements.scrollWrapper);
+		window.FileManager.toolbox.onscrollLoadMore(document.getElementById('List'));
 	}
 
 	function noContainers() {
