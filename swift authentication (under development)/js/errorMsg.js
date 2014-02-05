@@ -35,13 +35,13 @@ document.addEventListener("DOMContentLoaded", function(){
 			errorsEl.appendChild(span);
 		}
 		errorsEl.appendChild(closeButton);
-		errorsEl.classList.remove(window.FileManager.elements.hiddenClass);
+		errorsEl.classList.remove('hidden');
 		params.callback && params.callback();
 	}
 
 	function hideError(){
 		closeButton.parentNode && closeButton.parentNode.removeChild(closeButton);
-		errorsEl.classList.add(window.FileManager.elements.hiddenClass);
+		errorsEl.classList.add('hidden');
 		document.body.classList.remove(errorClass);
 	}
 

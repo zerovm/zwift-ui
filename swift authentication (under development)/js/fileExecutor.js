@@ -32,12 +32,12 @@
 			time = [0, 0];
 			time.forEach(outputTime);
 			this.stop();
-			el.classList.remove(window.FileManager.elements.hiddenClass);
+			el.classList.remove('hidden');
 			interval = setInterval(tock, 1000);
 		};
 		this.stop = function(){
 			if(interval){
-				el.classList.add(window.FileManager.elements.hiddenClass);
+				el.classList.add('hidden');
 				clearInterval(interval);
 				interval = null;
 			}
@@ -217,14 +217,14 @@
 		})();
 		document.body.classList.remove(window.FileManager.elements.disableToolbarClass);
 		document.body.classList.remove(window.FileManager.elements.bodyReportClass);
-		window.FileManager.elements.reportWrapper.classList.add(window.FileManager.elements.hiddenClass);
+		window.FileManager.elements.reportWrapper.classList.add('hidden');
 	}
 
 	function onsuccess(result, report){
 		timer.stop();
 		reportObj.createReportEl(result, report);
 		document.body.classList.remove(window.FileManager.elements.disableAllClass);
-		window.FileManager.elements.reportWrapper.classList.remove(window.FileManager.elements.hiddenClass);
+		window.FileManager.elements.reportWrapper.classList.remove('hidden');
 		reportObj.alignTables();
 		setTimeout(function(){
 			billingScroll.refresh();

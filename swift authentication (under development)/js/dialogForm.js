@@ -35,19 +35,19 @@
 					input.placeholder = params.placeholder;
 					params.inputValue && (input.value = params.inputValue);
 					dialogContainer.classList.add(inputClass);
-					dialogContainer.classList.remove(window.FileManager.elements.hiddenClass);
+					dialogContainer.classList.remove('hidden');
 					input.focus();
 					break;
 				case "dialog":
 					dialogContentWrapper.removeChildren();
 					dialogContentWrapper.appendChild(params.dialogContent);
 					dialogContainer.classList.add(dialogClass);
-					dialogContainer.classList.remove(window.FileManager.elements.hiddenClass);
+					dialogContainer.classList.remove('hidden');
 					params.onshow && params.onshow();
 					break;
 				case "simple-dialog":
 					dialogContainer.classList.add(dialogClass);
-					dialogContainer.classList.remove(window.FileManager.elements.hiddenClass);
+					dialogContainer.classList.remove('hidden');
 					params.onshow && params.onshow();
 					break;
 				default: console.log("dialog form: unknown type");
@@ -62,7 +62,7 @@
 			oncancel && oncancel();
 			options.customizationClass && dialogContainer.classList.remove(options.customizationClass);
 			document.body.classList.remove(window.FileManager.elements.disableToolbarClass);
-			dialogContainer.classList.add(window.FileManager.elements.hiddenClass);
+			dialogContainer.classList.add('hidden');
 			dialogContainer.classList.remove(inputClass);
 			dialogContainer.classList.remove(dialogClass);
 			input.value = "";
