@@ -45,6 +45,8 @@
 1.1.3.2. CreateDirectoryForm
 1.1.3.3. CreateFileForm
 1.2. List
+1.2.1. NoContainers
+1.2.2. NoFiles
 1.3. Editor
 2. Authentication
 -->
@@ -148,6 +150,9 @@
 		</div>
 	</div>
 	<div id="List">
+		<div id="NoContainers" class="hidden">There are no containers.</div>
+		<div id="NoFiles" class="hidden">There are no files.</div>
+
 		<div class="scrolling-content"></div>
 		<div class="report-wrapper">
 			<div class="timer-wrapper">
@@ -270,7 +275,7 @@
 <script src="js/toolbox.js"></script>
 <script src="js/elements.js"></script>
 <script src="js/dialogForm.js"></script>
-<script src="js/fileList.js"></script>
+<script src="js/listFiles.js"></script>
 <script src="js/item.js"></script>
 <script src="js/uploadButtons.js"></script>
 <script src="js/fileEditor.js"></script>

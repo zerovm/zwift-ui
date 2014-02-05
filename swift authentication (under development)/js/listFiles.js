@@ -1,10 +1,9 @@
-function fileList() {
+function listFiles() {
 	"use strict";
 
-	var LIMIT = 20,
-		lastSlashRegex = /\/$/,
-		uploadInput,
-		emptynessMsg = window.FileManager.toolbox.emptynessMsg;
+	var LIMIT = 20;
+	var lastSlashRegex = /\/$/;
+	var emptynessMsg = window.FileManager.toolbox.emptynessMsg;
 
 	function list(callback) {
 		var requestArgs = {};
@@ -13,34 +12,27 @@ function fileList() {
 		requestArgs.format = "json";
 		requestArgs.limit = LIMIT;
 		requestArgs.delimiter = "/";
-		if(FileManager.CurrentPath().isDirectory()){
+
+		if(FileManager.CurrentPath().isDirectory()) {
 			requestArgs.prefix = FileManager.CurrentPath().prefix();
 		}
 
-		requestArgs.success = function(FILES){
-			var scrollingContentEl = FileManager.elements.itemsWrapperEl,
-				files = FILES.slice(),
-				html;
+		requestArgs.success = function (FILES) {
+			var scrollingContentEl = document.getElementById('List').firstElementChild;
+			var files = FILES.slice();
+			var html;
+
 			scrollingContentEl.innerHTML = "";
-			if(checkFirstFile(files)){
+			document.getElementById('NoContainers').classList.add('hidden');
+			document.getElementById('NoFiles').classList.add('hidden');
+
+			if (checkFirstFile(files)) {
 				files.shift();
 			}
-			if(files.length === 0){
 
-
-
-				emptynessMsg.show({
-					wrapper: scrollingContentEl,
-					className: "empty-folder",
-					text: "The folder is empty",
-					clickHandler: function(){
-						if(!uploadInput){
-							uploadInput = document.querySelector("#UploadFilesButton input");
-						}
-						uploadInput.click();
-					}
-				});
-			}else{
+			if (files.length === 0) {
+				document.getElementById('NoFiles').classList.remove('hidden');
+			} else {
 				html = listHTML(files);
 				scrollingContentEl.insertAdjacentHTML("beforeend", html);
 				if(FILES.length === LIMIT){
@@ -82,7 +74,7 @@ function fileList() {
 		SwiftV1.listFiles(requestArgs);
 	}
 
-	function loadMore(){
+	function loadMore() {
 		var el = document.getElementsByClassName("load-more-button")[0],
 			prefix,
 			filesArgs = {},
@@ -337,11 +329,12 @@ function fileList() {
 
 		el = newEl;
 		FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().withoutAccount(), true);
-		if(FileManager.CurrentPath().isContainersList()){
+
+		if (FileManager.CurrentPath().isContainersList()) {
 			FileManager.Containers.list(animateItemListRefreshing);
-		}else if(FileManager.CurrentPath().isFilesList()){
+		} else if (FileManager.CurrentPath().isFilesList()) {
 			list(animateItemListRefreshing);
-		}else{
+		} else {
 			handleFileClick(el, animateItemListRefreshing);
 		}
 

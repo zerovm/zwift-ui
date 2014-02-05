@@ -29,11 +29,14 @@ FileManager.Containers.list = function (callback) {
 
 	function list(containers) {
 		FileManager.CurrentDirLabel.root();
+
 		if (containers.length == 0) {
-			noContainers();
+			document.getElementById('NoContainers').classList.remove('hidden');
 			callback();
 			return;
 		}
+		document.getElementById('NoContainers').classList.add('hidden');
+		document.getElementById('NoFiles').classList.add('hidden');
 
 		window.FileManager.elements.upButton.setAttribute('disabled', 'disabled');
 
@@ -48,18 +51,6 @@ FileManager.Containers.list = function (callback) {
 		}
 
 		window.FileManager.toolbox.onscrollLoadMore(document.getElementById('List'));
-	}
-
-	function noContainers() {
-		//window.FileManager.errorMsgHandler.show({header: "There are no containers."});
-		window.FileManager.toolbox.emptynessMsg.show({
-			wrapper: FileManager.elements.itemsWrapperEl,
-			className: "empty-container-list",
-			text: "There are no containers.",
-			clickHandler: function(){
-				document.getElementById("CreateContainerButton").click();
-			}
-		});
 	}
 };
 
