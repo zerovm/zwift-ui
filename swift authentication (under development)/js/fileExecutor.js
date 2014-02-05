@@ -241,7 +241,7 @@
 			status: status,
 			statusText: statusText,
 			onclose: function(){
-				var curPath = window.FileManager.CurrentPath();
+				var curPath = window.CurrentPath();
 				curPath.isFile() && (location.hash = curPath.up());
 			}
 		});

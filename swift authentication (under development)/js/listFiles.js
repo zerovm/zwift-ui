@@ -8,13 +8,13 @@ function listFiles() {
 	function list(callback) {
 		var requestArgs = {};
 
-		requestArgs.containerName = FileManager.CurrentPath().container();
+		requestArgs.containerName = CurrentPath().container();
 		requestArgs.format = "json";
 		requestArgs.limit = LIMIT;
 		requestArgs.delimiter = "/";
 
-		if(FileManager.CurrentPath().isDirectory()) {
-			requestArgs.prefix = FileManager.CurrentPath().prefix();
+		if(CurrentPath().isDirectory()) {
+			requestArgs.prefix = CurrentPath().prefix();
 		}
 
 		requestArgs.success = function (FILES) {
@@ -42,12 +42,12 @@ function listFiles() {
 				}
 				checkLoadMore();
 			}
-			window.FileManager.elements.upButton.removeAttribute("disabled");
-			FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().withoutAccount(), true);
+			document.getElementById('UpButton').removeAttribute("disabled");
+			NavigationBar.setContent(CurrentPath().withoutAccount(), true);
 			callback();
 
 			function checkFirstFile(files) {
-				var prefix = FileManager.CurrentPath().prefix(),
+				var prefix = CurrentPath().prefix(),
 					file, nameInFiles;
 				if(files.length > 0 && prefix) {
 					file = files[0];
@@ -66,8 +66,8 @@ function listFiles() {
 				status: status,
 				statusText: statusText
 			});
-			window.FileManager.elements.upButton.removeAttribute("disabled");
-			FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().name());
+			document.getElementById('UpButton').removeAttribute("disabled");
+			NavigationBar.setContent(CurrentPath().name());
 			callback();
 		};
 		requestArgs.notExist = notExist;
@@ -78,7 +78,7 @@ function listFiles() {
 		var el = document.getElementsByClassName("load-more-button")[0],
 			prefix,
 			filesArgs = {},
-			currPath = FileManager.CurrentPath(),
+			currPath = CurrentPath(),
 			isContainer = currPath.isContainersList();
 
 		if(!el){//TODO: change condition
@@ -142,7 +142,7 @@ function listFiles() {
 	}
 
 	function notExist(){
-		var curPath = window.FileManager.CurrentPath(),
+		var curPath = window.CurrentPath(),
 			params = {
 				onclose: function(){
 					location.hash = curPath.root();
@@ -168,19 +168,19 @@ function listFiles() {
 
 	function createItem(file){
 		var _name, contentType, name, size, modified, html, path,
-			curPath = FileManager.CurrentPath().withoutAccount();
+			curPath = CurrentPath().withoutAccount();
 		html = document.getElementById("fileTemplate").innerHTML;
 
 		if(file.hasOwnProperty("subdir")){
-			path = new FileManager.Path(file.subdir).name();
+			path = new Path(file.subdir).name();
 			_name = file.subdir.replace(lastSlashRegex, "");
 			html = html.replace("data-type=\"file\"", "data-type=\"directory\"");
 		}else{
-			path = new FileManager.Path(file.name).name();
+			path = new Path(file.name).name();
 			_name = file.name;
 		}
 
-		_name = new FileManager.Path(_name).name();
+		_name = new Path(_name).name();
 		contentType = (file.content_type && file.content_type !== "undefined" && file.content_type) || "file-type";
 		name = window.FileManager.toolbox.makeShortName(_name);
 		_name = FileManager.toolbox.escapeHTML(_name);
@@ -197,21 +197,21 @@ function listFiles() {
 
 	function editFile(el){
 		var args = {
-				path: FileManager.CurrentPath().withoutAccount(),
+				path: CurrentPath().withoutAccount(),
 				success: handleResponse,
-				error: function(status, statusText){
+				error: function(status, statusText) {
 					progressbar.cancel();
-					window.FileManager.elements.upButton.removeAttribute('disabled');
+					document.getElementById('UpButton').removeAttribute('disabled');
 					window.FileManager.errorMsgHandler.show({header: "Ajax error occured", status: status, statusText: statusText});
 				},
-				notExist: function(){
+				notExist: function() {
 					window.FileManager.errorMsgHandler.show({header: "File was not found."});
-					window.FileManager.elements.upButton.removeAttribute('disabled');
+					document.getElementById('UpButton').removeAttribute('disabled');
 					progressbar.cancel();
 				},
-				progress: function(loaded){
-					if(loaded > 2097152){
-						window.FileManager.elements.upButton.removeAttribute('disabled');
+				progress: function (loaded) {
+					if (loaded > 2097152) {
+						document.getElementById('UpButton').removeAttribute('disabled');
 						progressbar.cancel();
 						emptynessMsg.show({
 							wrapper: el,
@@ -223,32 +223,32 @@ function listFiles() {
 			},
 			progressbar,
 			xhr;
-		window.FileManager.elements.upButton.setAttribute('disabled', 'disabled');
+		document.getElementById('UpButton').setAttribute('disabled', 'disabled');
 		xhr = SwiftV1.getFile(args);
 		progressbar = new window.FileManager.toolbox.ProgressBar({
 			request: xhr,
 			wrapper: el,
 			isDownload: true,
 			onEndCallback: function(){
-				window.FileManager.elements.upButton.removeAttribute('disabled');
+				document.getElementById('UpButton').removeAttribute('disabled');
 			}
 		});
 		//progressbar.setText("Fetching file...");
 
 		function handleResponse(data, contentType){
-			var fileName = FileManager.CurrentPath().name();
+			var fileName = CurrentPath().name();
 
-			FileManager.CurrentDirLabel.setContent(fileName);
+			NavigationBar.setContent(fileName);
 
 			window.FileManager.fileEditor.show(data, contentType, fileName);
 
-			window.FileManager.elements.upButton.removeAttribute('disabled');
+			document.getElementById('UpButton').removeAttribute('disabled');
 		}
 	}
 
 	function handleFileClick(el, callback){//TODO: remove extra request for file exist
 		var args,
-			currentPath = FileManager.CurrentPath(),
+			currentPath = CurrentPath(),
 			path = currentPath.withoutAccount();
 
 		function fileExist(metadata, contentType, contentLength, lastModified){
@@ -264,7 +264,7 @@ function listFiles() {
 						editFile(el);
 					}else{
 						el.removeChildren();
-						FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().name());
+						NavigationBar.setContent(CurrentPath().name());
 						emptynessMsg.show({
 							wrapper: el,
 							className: "empty",
@@ -277,19 +277,19 @@ function listFiles() {
 		}
 
 		function fileNotExist(){
-			window.FileManager.elements.upButton.removeAttribute('disabled');
+			document.getElementById('UpButton').removeAttribute('disabled');
 			el.removeChildren();
 			window.FileManager.errorMsgHandler.show({
 				header: "File was not found.",
 				onclose: function(){
-					location.hash = window.FileManager.CurrentPath().up();
+					location.hash = window.CurrentPath().up();
 				}
 			});
 			callback();
 		}
 
 		function ajaxError(status, statusText){
-			window.FileManager.elements.upButton.removeAttribute('disabled');
+			document.getElementById('UpButton').removeAttribute('disabled');
 			el.textContent = 'Error: ' + status + ' ' + statusText;
 			callback();
 		}
@@ -328,11 +328,11 @@ function listFiles() {
 		newEl = document.querySelector(".new-scrolling-content");
 
 		el = newEl;
-		FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().withoutAccount(), true);
+		NavigationBar.setContent(CurrentPath().withoutAccount(), true);
 
-		if (FileManager.CurrentPath().isContainersList()) {
+		if (CurrentPath().isContainersList()) {
 			FileManager.Containers.list(animateItemListRefreshing);
-		} else if (FileManager.CurrentPath().isFilesList()) {
+		} else if (CurrentPath().isFilesList()) {
 			list(animateItemListRefreshing);
 		} else {
 			handleFileClick(el, animateItemListRefreshing);

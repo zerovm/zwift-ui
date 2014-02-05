@@ -10,10 +10,10 @@
 
 	function onItemClick(itemEl){
 		var name = itemEl.dataset.path,
-			curPath = FileManager.CurrentPath(),
+			curPath = CurrentPath(),
 			fullPath;
 		if(itemEl.dataset.fullPath){
-			fullPath = new window.FileManager.Path(name).isFile() ? itemEl.dataset.fullPath : itemEl.dataset.fullPath + "/";
+			fullPath = new window.Path(name).isFile() ? itemEl.dataset.fullPath : itemEl.dataset.fullPath + "/";
 		}else{
 			fullPath = itemEl.dataset.path;
 		}
@@ -69,14 +69,14 @@
 
 	function deleteItem(el){
 		var name = el.dataset.path,
-			itemPath = FileManager.CurrentPath().add(name),
+			itemPath = CurrentPath().add(name),
 			progressObj;
 		if(FileManager.ENABLE_SHARED_CONTAINERS
 			&& FileManager.Shared.isShared(name)
 			&& el.dataset.type === "shared"){
 			SharedContainersOnSwift.removeSharedContainer({
-				account: new FileManager.Path(name).account(),
-				container: new FileManager.Path(name).container(),
+				account: new Path(name).account(),
+				container: new Path(name).container(),
 				removed: function(){
 					window.FileManager.files.refreshItemList();
 				},
@@ -86,7 +86,7 @@
 		}
 		if(el.dataset.type === "file"){
 			SwiftV1.delete({
-				path: new FileManager.Path(itemPath).withoutAccount(),
+				path: new Path(itemPath).withoutAccount(),
 				deleted: function(){
 					window.FileManager.files.refreshItemList();
 				},
@@ -103,8 +103,8 @@
 			wrapper: progressElWrapper
 		});
 		recursiveDeleteOnSwift({
-			path: new FileManager.Path(itemPath).withoutAccount(),
-			account: FileManager.CurrentPath().account(),
+			path: new Path(itemPath).withoutAccount(),
+			account: CurrentPath().account(),
 			deleted: function(){
 				window.FileManager.elements.mainProgressBar.classList.add(window.FileManager.elements.hiddenClass);
 				progressObj.remove();
@@ -165,7 +165,7 @@
 		}
 
 		if(FileManager.ENABLE_SHARED_CONTAINERS){
-			args.account = FileManager.CurrentPath().account();
+			args.account = CurrentPath().account();
 		}
 		SwiftV1.getFile(args);//TODO: should there be ability of canceling?
 		//FileManager.File.getFileXhr = SwiftV1.getFile(args);
@@ -359,7 +359,7 @@
 					},
 					error: ajaxError
 				};
-				path = window.FileManager.CurrentPath().withoutAccount() + path;
+				path = window.CurrentPath().withoutAccount() + path;
 				window.FileManager.errorMsgHandler.hide();
 				if(type === containerType){
 					args.containerName = path;
@@ -440,7 +440,7 @@
 
 			function onsubmit(form, isReloaded){
 				var inputValue = form[0].value,
-					newName = inputValue ? window.FileManager.CurrentPath().withoutAccount() + inputValue : window.FileManager.CurrentPath().withoutAccount() + "asdf";
+					newName = inputValue ? window.CurrentPath().withoutAccount() + inputValue : window.CurrentPath().withoutAccount() + "asdf";
 				console.log("caller:",form.dataset.srcPath, newName)
 				copy(form.dataset.srcPath, newName, isReloaded);
 
@@ -516,7 +516,7 @@
 							wrapper.parentNode && wrapper.parentNode.removeChild(wrapper);
 						},
 						hashchangeHandler: function(){
-							var currentPath = window.FileManager.CurrentPath();
+							var currentPath = window.CurrentPath();
 							if(currentPath.isContainersList()){
 								dialogForm.el.classList.add("disabled");
 							}else{
@@ -538,7 +538,7 @@
 				onItemClick(previousParent);
 			},
 			ondownload: function(e){
-				window.FileManager.toolbox.downloadClick(window.FileManager.elements.originalPath + FileManager.CurrentPath().get() + previousParent.dataset.path, previousParent.dataset.path);
+				window.FileManager.toolbox.downloadClick(window.FileManager.elements.originalPath + CurrentPath().get() + previousParent.dataset.path, previousParent.dataset.path);
 			},
 			oncopy: function(){
 				oncopy();
@@ -553,7 +553,7 @@
 								removeMetadata: metadataObj.getRemovedMeta(),
 								contentType: item.dataset.contentType,
 								updated: window.FileManager.files.refreshItemList,
-								path: window.FileManager.CurrentPath().withoutAccount() + previousParent.dataset.path,
+								path: window.CurrentPath().withoutAccount() + previousParent.dataset.path,
 								error: ajaxError,
 								notExist: function(){
 									window.FileManager.errorMsgHandler.show({
@@ -578,7 +578,7 @@
 						input.value && SwiftV1.updateFileMetadata({
 							contentType: input.value,
 							updated: window.FileManager.files.refreshItemList,
-							path: window.FileManager.CurrentPath().withoutAccount() + previousParent.dataset.path,
+							path: window.CurrentPath().withoutAccount() + previousParent.dataset.path,
 							error: ajaxError,
 							notExist: function(){
 								window.FileManager.errorMsgHandler.show({

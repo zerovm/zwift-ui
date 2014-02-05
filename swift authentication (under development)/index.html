@@ -32,7 +32,7 @@
 1.1.2. Row2
 1.1.2.1. Navigation
 1.1.2.1.1. UpButton
-1.1.2.1.2. CurrentPath
+1.1.2.1.2. NavigationBar
 1.1.2.2. Toolbar
 1.1.2.2.1. CreateContainer
 1.1.2.2.2. CreateDirectory
@@ -63,7 +63,7 @@
 		<div id="Row2">
 			<div id="Navigation">
 				<button id="UpButton" class="toolbar-button" title="Up"></button>
-				<label id="CurrentPath"></label>
+				<label id="NavigationBar"></label>
 			</div>
 			<div id="Toolbar">
 				<button id="CreateContainerButton" class="toolbar-button dialog-button" title="Create Container" data-action="container" data-placeholder="Create Container"></button>
@@ -271,6 +271,7 @@
 <script src="js/vendor/ace/ace.js"></script>
 <script src="js/vendor/iscroll.js"></script>
 
+<script src="js/Navigation.js"></script>
 <script src="js/extendNative.js"></script>
 <script src="js/toolbox.js"></script>
 <script src="js/elements.js"></script>
@@ -281,7 +282,6 @@
 <script src="js/fileEditor.js"></script>
 <script src="js/errorMsg.js"></script>
 <script src="js/fileExecutor.js"></script>
-<script src="js/pathLabel.js"></script>
 <script src="js/FileManager.js"></script>
 
 <script>
@@ -302,7 +302,7 @@
 			ok: function () {
 
 				toolbox();
-				fileList();
+				listFiles();
 
 				document.getElementById('v1AuthForm').setAttribute('hidden', 'hidden');
 

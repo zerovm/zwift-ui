@@ -20,8 +20,8 @@
 		}
 
 		var dirName = inputEl.value + "/";
-		var dirPath = FileManager.CurrentPath().add(dirName);
-		var dirPathWithoutAccount = new FileManager.Path(dirPath).withoutAccount();
+		var dirPath = CurrentPath().add(dirName);
+		var dirPathWithoutAccount = new Path(dirPath).withoutAccount();
 		var requestArgs = {};
 		requestArgs.path = dirPathWithoutAccount;
 

@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		rootClass = "location-root";
 
 	function setRootClass(){
-		if(window.FileManager.CurrentPath().isContainersList()){
+		if(window.CurrentPath().isContainersList()){
 			document.body.classList.add(rootClass);
 		}else{
 			document.body.classList.remove(rootClass);
@@ -130,7 +130,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		}
 
 		window.FileManager.dialogForm.hide();
-		path = FileManager.CurrentPath().withoutAccount() + inputValue;
+		path = CurrentPath().withoutAccount() + inputValue;
 		SwiftV1.createFile({
 			path: path,
 			contentType: 'text/plain',
@@ -160,12 +160,12 @@ document.addEventListener("DOMContentLoaded", function(){
 		}
 
 		dirName = input.value + "/";
-		dirPath = FileManager.CurrentPath().add(dirName);
-		dirPathWithoutAccount = new FileManager.Path(dirPath).withoutAccount();
+		dirPath = CurrentPath().add(dirName);
+		dirPathWithoutAccount = new Path(dirPath).withoutAccount();
 		requestArgs = {};
 		requestArgs.path = dirPathWithoutAccount;
 		if(FileManager.ENABLE_SHARED_CONTAINERS){
-			requestArgs.account = FileManager.CurrentPath().account();
+			requestArgs.account = CurrentPath().account();
 		}
 		requestArgs.success = function(){
 			window.FileManager.errorMsgHandler.show({

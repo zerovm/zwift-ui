@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		}
 
 		function saveFile(e){
-			var pathObj = FileManager.CurrentPath(),
+			var pathObj = CurrentPath(),
 				path = pathObj.withoutAccount(),
 				account = pathObj.account();
 			e.stopPropagation();
@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		}
 
 		function saveAsConfirm(input){
-			var pathObj = FileManager.CurrentPath(),
+			var pathObj = CurrentPath(),
 				inputValue = input.value,
 				pathPrefix = pathObj.up().replace(pathObj.account() + "/", ""),
 				account = pathObj.account();
@@ -140,7 +140,7 @@ document.addEventListener("DOMContentLoaded", function(){
 				});
 			});
 			fileMenuButtonsWrapper.getElementsByClassName(buttonsClasses.download)[0].addEventListener("click", function(){
-				var current = FileManager.CurrentPath();
+				var current = CurrentPath();
 				//window.FileManager.toolbox.downloadClick(Auth.getStorageUrl() + current.get(), current.name());
 				window.FileManager.toolbox.downloadClick(
 					URL.createObjectURL(new Blob([window.FileManager.fileEditor.getValue()], {type: "text/plain"})),

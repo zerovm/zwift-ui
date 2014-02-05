@@ -19,7 +19,7 @@
 			return;
 		}
 
-		var path = FileManager.CurrentPath().withoutAccount() + inputEl.value;
+		var path = CurrentPath().withoutAccount() + inputEl.value;
 		var requestArgs = {};
 		requestArgs.path = path;
 

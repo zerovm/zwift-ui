@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			_name = file.newName || file.name;
 			_type = file.newType || file.type || window.FileManager.toolbox.getMIMEType(_name);
 
-			url = SwiftV1.xStorageUrl + '/' + FileManager.CurrentPath().withoutAccount() + _name;
+			url = SwiftV1.xStorageUrl + '/' + CurrentPath().withoutAccount() + _name;
 			uploadRequest = new XMLHttpRequest();
 			requests.push(uploadRequest);
 			new window.FileManager.toolbox.ProgressBar({
@@ -194,8 +194,8 @@ document.addEventListener("DOMContentLoaded", function(){
 		e.target.value = [];
 		if(type){
 			window.FileManager.item.itemCommandName.set("none");
-			location.hash = FileManager.CurrentPath().add(file.name);
-			FileManager.CurrentDirLabel.setContent(file.name);
+			location.hash = CurrentPath().add(file.name);
+			NavigationBar.setContent(file.name);
 
 			window.FileManager.fileExecutor.execute({
 				data: file,
