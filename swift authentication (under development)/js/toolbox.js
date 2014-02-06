@@ -255,7 +255,7 @@ function toolbox() {
 	function onscrollLoadMore(e){//TODO: move it somewhere else
 		e = e.target ? e.target : e;
 		if(Math.abs(e.scrollTop - (e.scrollHeight - e.clientHeight)) <= 1){
-			if(!document.body.classList.contains(FileManager.elements.bodyLoadingClass)){
+			if(!document.body.classList.contains('loading-content')){
 				FileManager.files.loadMore();
 			}
 		}

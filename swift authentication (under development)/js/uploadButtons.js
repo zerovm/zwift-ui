@@ -11,19 +11,19 @@ document.addEventListener("DOMContentLoaded", function(){
 		requests = [];
 
 	function enableButtons(){
-		document.body.classList.remove(window.FileManager.elements.disableAllClass);
+		document.body.classList.remove('freeze-all');
 		document.body.classList.remove(buttonsPointerClass);
 	}
 
 	function disableButtons(){
-		document.body.classList.add(window.FileManager.elements.disableAllClass);
+		document.body.classList.add('freeze-all');
 		document.body.classList.add(buttonsPointerClass);
 	}
 
 	function clearOnfinish(e){
 		window.removeEventListener("hashchange", clearOnfinish);
 		enableButtons();
-		document.body.classList.remove(window.FileManager.elements.disableToolbarClass);
+		document.body.classList.remove('disable-toolbar-right');
 		if(!e){
 			requests = [];
 			return;
@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			uploadRequest = new XMLHttpRequest();
 			requests.push(uploadRequest);
 			new window.FileManager.toolbox.ProgressBar({
-				wrapper: wrapper ? wrapper : window.FileManager.elements.itemsWrapperEl,
+				wrapper: wrapper ? wrapper : document.getElementById('List').firstElementChild,
 				request: uploadRequest,
 				onEndCallback: callback
 			});
@@ -142,7 +142,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
 	function uploadAs(e){//TODO: check hide button for single loaded file
 		var filesCounter = e.target.files.length,
-			wrapper = window.FileManager.elements.itemsWrapperEl,
+			wrapper = document.getElementById('List').firstElementChild,
 			fragment = document.createDocumentFragment(),
 			wasSmthUploded;
 
@@ -212,12 +212,12 @@ document.addEventListener("DOMContentLoaded", function(){
 		switch(e.target.dataset.action){
 			case "file":
 				uploads.uploadFiles(e);
-				document.body.classList.add(window.FileManager.elements.disableToolbarClass);
+				document.body.classList.add('disable-toolbar-right');
 				window.addEventListener("hashchange", clearOnfinish);
 				break;
 			case "as":
 				uploadAs(e);
-				document.body.classList.add(window.FileManager.elements.disableToolbarClass);
+				document.body.classList.add('disable-toolbar-right');
 				window.addEventListener("hashchange", clearOnfinish);
 				break;
 			case "exec":

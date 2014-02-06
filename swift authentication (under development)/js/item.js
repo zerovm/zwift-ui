@@ -38,7 +38,7 @@
 	}
 
 	function ajaxError(status, statusText){
-		window.FileManager.elements.mainProgressBar.classList.remove('hidden');
+		document.getElementById('mainProgressBar').classList.remove('hidden');
 		window.FileManager.errorMsgHandler.show({
 			header: "Ajax error:",
 			status: status,
@@ -98,7 +98,7 @@
 			return;
 		}
 
-		window.FileManager.elements.mainProgressBar.classList.remove('hidden');
+		document.getElementById('mainProgressBar').classList.remove('hidden');
 		progressObj = new window.FileManager.toolbox.ProgressBar({
 			wrapper: progressElWrapper
 		});
@@ -106,7 +106,7 @@
 			path: new Path(itemPath).withoutAccount(),
 			account: CurrentPath().account(),
 			deleted: function(){
-				window.FileManager.elements.mainProgressBar.classList.add('hidden');
+				document.getElementById('mainProgressBar').classList.add('hidden');
 				progressObj.remove();
 				window.FileManager.files.refreshItemList();
 			},

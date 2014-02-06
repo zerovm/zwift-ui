@@ -26,7 +26,7 @@
 			closeOtherDialogs();
 			onconfirm = params.confirm;
 			oncancel = params.decline;
-			document.body.classList.add(window.FileManager.elements.disableToolbarClass);
+			document.body.classList.add('disable-toolbar-right');
 			options.hashchangeHandler = params.hashchangeHandler;
 			options.customizationClass = params.customizationClass;
 			options.customizationClass && dialogContainer.classList.add(options.customizationClass);
@@ -61,7 +61,7 @@
 		function hide(){
 			oncancel && oncancel();
 			options.customizationClass && dialogContainer.classList.remove(options.customizationClass);
-			document.body.classList.remove(window.FileManager.elements.disableToolbarClass);
+			document.body.classList.remove('disable-toolbar-right');
 			dialogContainer.classList.add('hidden');
 			dialogContainer.classList.remove(inputClass);
 			dialogContainer.classList.remove(dialogClass);

@@ -82,10 +82,10 @@ function listFiles() {
 			isContainer = currPath.isContainersList();
 
 		if(!el){//TODO: change condition
-			document.body.classList.remove(FileManager.elements.bodyLoadingClass);
+			document.body.classList.remove('loading-content');
 			return;
 		}
-		document.body.classList.add(FileManager.elements.bodyLoadingClass);
+		document.body.classList.add('loading-content');
 		el.textContent = "Loading...";
 		el.setAttribute("disabled", "disabled");
 		filesArgs.error = loadMoreError;
@@ -95,7 +95,7 @@ function listFiles() {
 		filesArgs.marker = el.previousElementSibling.dataset.path;
 		filesArgs.success = function(items){
 			var el = document.getElementsByClassName("load-more-button")[0];//TODO: check wether it is needed
-			document.body.classList.remove(FileManager.elements.bodyLoadingClass);
+			document.body.classList.remove('loading-content');
 			if(isContainer){
 				el.insertAdjacentHTML('beforebegin', FileManager.Containers.create(items));
 			}else{
@@ -107,7 +107,7 @@ function listFiles() {
 				/*
 				 if(!el){
 				 console.log("asdfsadfdsafdsaffdfds");
-				 window.FileManager.elements.itemsWrapperEl.insertAdjacentHTML("beforeend", listHTML(files));
+				 document.getElementById('List').firstElementChild.insertAdjacentHTML("beforeend", listHTML(files));
 				 }else{
 				 el.insertAdjacentHTML("beforebegin", listHTML(files));
 				 el.parentNode.removeChild(el);
@@ -133,7 +133,7 @@ function listFiles() {
 	}
 
 	function loadMoreError(status, statusText){
-		document.body.classList.remove(FileManager.elements.bodyLoadingClass);
+		document.body.classList.remove('loading-content');
 		window.FileManager.errorMsgHandler.show({
 			header: "Error:",
 			status: status,
@@ -317,10 +317,10 @@ function listFiles() {
 		function animateItemListRefreshing(){
 			oldEl.classList.add("old-scrolling-content");
 			newEl.classList.remove("new-scrolling-content");
-			window.FileManager.elements.itemsWrapperEl.scrollIntoView();
+			document.getElementById('List').firstElementChild.scrollIntoView();
 		}
 
-		oldEl = window.FileManager.elements.itemsWrapperEl;
+		oldEl = document.getElementById('List').firstElementChild;
 		parentEl = oldEl.parentNode;
 
 		template = document.querySelector("#newScrollingContentTemplate").innerHTML;
@@ -346,7 +346,7 @@ function listFiles() {
 		var el = e.target ? e.target : e, newEl;
 		if(el.classList.contains("old-scrolling-content")){
 			el.parentNode.removeChild(el);
-			newEl = window.FileManager.elements.itemsWrapperEl;
+			newEl = document.getElementById('List').firstElementChild;
 			newEl.classList.add("no-transition");
 			newEl.classList.remove("no-transition");
 			document.body.classList.remove("disabled");

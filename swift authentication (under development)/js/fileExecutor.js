@@ -203,28 +203,28 @@
 			header.textContent = "Output Data";
 			fragment.appendChild(header);
 			fragment.appendChild(createResultReport(result));
-			window.FileManager.elements.reportWrapper.appendChild(fragment);
+			document.getElementById('report').appendChild(fragment);
 		};
 	}
 
 	function singleTimeFire(e){
 		billingScroll && billingScroll.destroy();
 		window.removeEventListener(e.type, singleTimeFire);
-		window.FileManager.elements.reportWrapper.removeChildren();
+		document.getElementById('report').removeChildren();
 		(function(){//TODO: rewrite ontranstion end to get rid of this!!!!!!!!!!!!!!!!!!
 			var oldContent = document.getElementsByClassName("old-scrolling-content")[0];
 			oldContent && window.FileManager.files.ontransition(oldContent);
 		})();
-		document.body.classList.remove(window.FileManager.elements.disableToolbarClass);
-		document.body.classList.remove(window.FileManager.elements.bodyReportClass);
-		window.FileManager.elements.reportWrapper.classList.add('hidden');
+		document.body.classList.remove('disable-toolbar-right');
+		document.body.classList.remove('report-shown');
+		document.getElementById('report').classList.add('hidden');
 	}
 
 	function onsuccess(result, report){
 		timer.stop();
 		reportObj.createReportEl(result, report);
-		document.body.classList.remove(window.FileManager.elements.disableAllClass);
-		window.FileManager.elements.reportWrapper.classList.remove('hidden');
+		document.body.classList.remove('freeze-all');
+		document.getElementById('report').classList.remove('hidden');
 		reportObj.alignTables();
 		setTimeout(function(){
 			billingScroll.refresh();
@@ -234,7 +234,7 @@
 
 	function onerror(status, statusText, result){
 		timer.stop();
-		document.body.classList.remove(window.FileManager.elements.disableAllClass);
+		document.body.classList.remove('freeze-all');
 		document.body.classList.remove("disabled");
 		window.FileManager.errorMsgHandler.show({
 			header: "An error occured. Here is what server has said: " + result,
@@ -250,10 +250,10 @@
 	function execute(args, action){
 		!timer && (timer = new Timer(document.getElementsByClassName("timer-wrapper")[0]));
 		timer.start();
-		document.body.classList.add(window.FileManager.elements.disableAllClass);
-		document.body.classList.add(window.FileManager.elements.disableToolbarClass);
-		window.FileManager.elements.reportWrapper.removeChildren();
-		document.body.classList.add(window.FileManager.elements.bodyReportClass);
+		document.body.classList.add('freeze-all');
+		document.body.classList.add('disable-toolbar-right');
+		document.getElementById('report').removeChildren();
+		document.body.classList.add('report-shown');
 		setTimeout(function(){
 			window.addEventListener("hashchange", singleTimeFire);
 		}, 0);

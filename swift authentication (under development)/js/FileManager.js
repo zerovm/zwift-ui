@@ -11,7 +11,7 @@ FileManager.Containers = {};
 FileManager.Containers.LIMIT = 20;
 
 FileManager.Containers.list = function (callback) {
-	var scrollingContentEl = window.FileManager.elements.itemsWrapperEl;
+	var scrollingContentEl = document.getElementById('List').firstElementChild;
 
 	var xhr = SwiftV1.listContainers({
 		format: 'json',

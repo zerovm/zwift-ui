@@ -153,14 +153,14 @@ document.addEventListener("DOMContentLoaded", function(){
 		this.hide = function(){
 			window.removeEventListener("hashchange", that.hide);
 			document.body.classList.remove(showClass);
-			document.body.classList.remove(window.FileManager.elements.disableToolbarClass);
+			document.body.classList.remove('disable-toolbar-right');
 		};
 		this.show = function(data, type, name){
 			this.currentFileType = type;
 			this.set(data, type, name);
 			window.addEventListener("hashchange", that.hide);
 			document.body.classList.add(showClass);
-			document.body.classList.add(window.FileManager.elements.disableToolbarClass);
+			document.body.classList.add('disable-toolbar-right');
 		};
 		this.set = function(data, type, name){
 			var session;
