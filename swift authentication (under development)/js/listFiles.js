@@ -31,14 +31,14 @@ function listFiles() {
 			noFiles();
 		} else {
 			fillList(files);
-			_loadMore(filesArr);
+			checkLoadMore(filesArr);
 		}
 		reset_UI_after(callback);
 	}
 
 	function UI_ERROR(status, statusText, callback) {
 		reset_UI_before();
-		FileManager.errorMsgHandler.show({
+		FileManager.errorMsgHandler.show({ // LEON TODO: remove this...  use HTML instead.
 			header: "Ajax error:",
 			status: status,
 			statusText: statusText
@@ -47,20 +47,28 @@ function listFiles() {
 	}
 
 	function fillList(files) {
-		var html = listHTML(files);
+		var html = createFilesListHTML(files);
 		var transitionDiv = document.getElementById('List').firstElementChild;
-		transitionDiv.innerHTML = ''; // TODO: Check out why this row is needed.
+		transitionDiv.innerHTML = ''; // LEON TODO: Check out why this row is needed.
 		transitionDiv.insertAdjacentHTML("beforeend", html);
 	}
 
-	function _loadMore(filesArr) {
+	function checkLoadMore(filesArr) {
 		if (filesArr.length === LIMIT) {
 			FileManager.toolbox.createLoadMoreButton(transitionDiv);
 		}
+
+		// LEON TODO: remove... :
+
 		//else { // if !(filesArr.length === LIMIT)
 		//	transitionDiv.insertAdjacentHTML("beforeend", createItem({name: "", size: "", modified: ""}).replace("item", "item no-hover no-active dummy"));
 		//}
-		checkLoadMore();
+
+
+		var el = document.getElementById('List');
+		if (Math.abs(el.scrollTop - (el.scrollHeight - el.clientHeight)) < 4) {
+			window.FileManager.files.loadMore();
+		}
 	}
 
 	function reset_UI_before() {
@@ -98,44 +106,46 @@ function listFiles() {
 	}
 
 	function loadMore() {
-		var el = document.getElementsByClassName("load-more-button")[0],
-			prefix,
-			filesArgs = {},
-			currPath = CurrentPath(),
-			isContainer = currPath.isContainersList();
+		var el = document.getElementsByClassName("load-more-button")[0];
+		var prefix;
+		var currPath = CurrentPath();
+		var isContainer = currPath.isContainersList();
 
-		if(!el){//TODO: change condition
+		if (!el) {
 			document.body.classList.remove('loading-content');
 			return;
 		}
+
 		document.body.classList.add('loading-content');
 		el.textContent = "Loading...";
 		el.setAttribute("disabled", "disabled");
+
+		var filesArgs = {};
 		filesArgs.error = loadMoreError;
 		filesArgs.delimiter = "/";
 		filesArgs.limit = LIMIT;
 		filesArgs.format = "json";
 		filesArgs.marker = el.previousElementSibling.dataset.path;
 		filesArgs.success = function(items){
-			var el = document.getElementsByClassName("load-more-button")[0];//TODO: check wether it is needed
+			var el = document.getElementsByClassName("load-more-button")[0];
 			document.body.classList.remove('loading-content');
-			if(isContainer){
+			if (isContainer) {
 				el.insertAdjacentHTML('beforebegin', FileManager.Containers.create(items));
-			}else{
-				el.insertAdjacentHTML("beforebegin", listHTML(items));
+			} else {
+				el.insertAdjacentHTML("beforebegin", createFilesListHTML(items));
 			}
 
-			if(items.length < LIMIT){
+			if (items.length < LIMIT) {
 				el.parentNode.removeChild(el);
 				/*
 				 if(!el){
 				 console.log("asdfsadfdsafdsaffdfds");
-				 document.getElementById('List').firstElementChild.insertAdjacentHTML("beforeend", listHTML(files));
+				 document.getElementById('List').firstElementChild.insertAdjacentHTML("beforeend", createFilesListHTML(files));
 				 }else{
-				 el.insertAdjacentHTML("beforebegin", listHTML(files));
+				 el.insertAdjacentHTML("beforebegin", createFilesListHTML(files));
 				 el.parentNode.removeChild(el);
 				 }*/
-			}else{
+			} else {
 				el.textContent = "Load more";
 				el.removeAttribute("disabled");
 			}
@@ -163,7 +173,7 @@ function listFiles() {
 		});
 	}
 
-	function listHTML(files){
+	function createFilesListHTML(files){
 		var html = '', i, file;
 		for (i = 0; i < files.length; i++) {
 			file = files[i];
@@ -258,13 +268,6 @@ function listFiles() {
 		}
 	}
 
-	function checkLoadMore() {
-		var el = document.getElementById('List');
-		if (Math.abs(el.scrollTop - (el.scrollHeight - el.clientHeight)) < 4) {
-			window.FileManager.files.loadMore();
-		}
-	}
-
 	document.addEventListener("transitionend", ontransition);
 	document.addEventListener("webkitTransitionEnd", ontransition);
 	window.addEventListener("hashchange", refreshItemList);
@@ -278,7 +281,7 @@ function listFiles() {
 
 	window.FileManager.files = {
 		loadMore: loadMore,
-		listHTML: listHTML,
+		listHTML: createFilesListHTML,
 		refreshItemList: refreshItemList,
 		ontransition: ontransition
 	};
