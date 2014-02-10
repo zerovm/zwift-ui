@@ -212,7 +212,7 @@
 		window.removeEventListener(e.type, singleTimeFire);
 		document.getElementById('report').removeChildren();
 		(function(){//TODO: rewrite ontranstion end to get rid of this!!!!!!!!!!!!!!!!!!
-			var oldContent = document.getElementsByClassName("old-scrolling-content")[0];
+			var oldContent = document.getElementsByClassName("old-transition-div")[0];
 			oldContent && window.FileManager.files.ontransition(oldContent);
 		})();
 		document.body.classList.remove('disable-toolbar-right');

@@ -11,18 +11,18 @@ FileManager.Containers = {};
 FileManager.Containers.LIMIT = 20;
 
 FileManager.Containers.list = function (callback) {
-	var scrollingContentEl = document.getElementById('List').firstElementChild;
+	var transitionDiv = document.getElementById('List').firstElementChild;
 
 	var xhr = SwiftV1.listContainers({
 		format: 'json',
 		limit: FileManager.Containers.LIMIT,
 		success: function (containers) {
-			scrollingContentEl.innerHTML = '';
+			transitionDiv.innerHTML = '';
 
 			list(containers);
 		},
 		error: function (status, statusText) {
-			scrollingContentEl.innerHTML = 'Error occurred: ' + status + ' ' + statusText;
+			transitionDiv.innerHTML = 'Error occurred: ' + status + ' ' + statusText;
 			callback();
 		}
 	});
@@ -40,14 +40,14 @@ FileManager.Containers.list = function (callback) {
 
 		document.getElementById('UpButton').setAttribute('disabled', 'disabled');
 
-		scrollingContentEl.insertAdjacentHTML('beforeend', FileManager.Containers.create(containers));
+		transitionDiv.insertAdjacentHTML('beforeend', FileManager.Containers.create(containers));
 
 		callback();
 
 		if (containers.length === FileManager.Containers.LIMIT) {
-			FileManager.toolbox.createLoadMoreButton(scrollingContentEl);
+			FileManager.toolbox.createLoadMoreButton(transitionDiv);
 		} else {
-			scrollingContentEl.insertAdjacentHTML('beforeend', FileManager.Containers.create([{name:""}]).replace("item", "item no-hover no-active dummy"));
+			transitionDiv.insertAdjacentHTML('beforeend', FileManager.Containers.create([{name:""}]).replace("item", "item no-hover no-active dummy"));
 		}
 
 		window.FileManager.toolbox.onscrollLoadMore(document.getElementById('List'));

@@ -2,76 +2,99 @@ function listFiles() {
 	"use strict";
 
 	var LIMIT = 20;
-	var lastSlashRegex = /\/$/;
-	var emptynessMsg = window.FileManager.toolbox.emptynessMsg;
 
-	function list(callback) {
+	function XHR(callback) {
 		var requestArgs = {};
-
 		requestArgs.containerName = CurrentPath().container();
 		requestArgs.format = "json";
 		requestArgs.limit = LIMIT;
 		requestArgs.delimiter = "/";
-
-		if(CurrentPath().isDirectory()) {
+		if (CurrentPath().isDirectory()) {
 			requestArgs.prefix = CurrentPath().prefix();
 		}
-
-		requestArgs.success = function (FILES) {
-			var scrollingContentEl = document.getElementById('List').firstElementChild;
-			var files = FILES.slice();
-			var html;
-
-			scrollingContentEl.innerHTML = "";
-			document.getElementById('NoContainers').classList.add('hidden');
-			document.getElementById('NoFiles').classList.add('hidden');
-
-			if (checkFirstFile(files)) {
-				files.shift();
-			}
-
-			if (files.length === 0) {
-				document.getElementById('NoFiles').classList.remove('hidden');
-			} else {
-				html = listHTML(files);
-				scrollingContentEl.insertAdjacentHTML("beforeend", html);
-				if(FILES.length === LIMIT){
-					FileManager.toolbox.createLoadMoreButton(scrollingContentEl);
-				}else{
-					scrollingContentEl.insertAdjacentHTML("beforeend", createItem({name: "", size: "", modified: ""}).replace("item", "item no-hover no-active dummy"));
-				}
-				checkLoadMore();
-			}
-			document.getElementById('UpButton').removeAttribute("disabled");
-			NavigationBar.setContent(CurrentPath().withoutAccount(), true);
-			callback();
-
-			function checkFirstFile(files) {
-				var prefix = CurrentPath().prefix(),
-					file, nameInFiles;
-				if(files.length > 0 && prefix) {
-					file = files[0];
-					nameInFiles = file.hasOwnProperty("subdir") ? file.subdir : file.name;
-					if(prefix == nameInFiles) {
-						return true;
-					}
-				}
-				return false;
-			}
+		requestArgs.success = function (filesArr) {
+			UI_OK(filesArr, callback);
 		};
-
-		requestArgs.error = function error(status, statusText) {
-			FileManager.errorMsgHandler.show({
-				header: "Ajax error:",
-				status: status,
-				statusText: statusText
-			});
-			document.getElementById('UpButton').removeAttribute("disabled");
-			NavigationBar.setContent(CurrentPath().name());
-			callback();
+		requestArgs.error = function (status, statusText) {
+			UI_ERROR(status, statusText, callback);
 		};
-		requestArgs.notExist = notExist;
 		SwiftV1.listFiles(requestArgs);
+	}
+
+	function UI_OK(filesArr, callback) {
+		// Clone filesArr parameter before modifying it:
+		var files = filesArr.slice();
+		removeFirstFileInSomeCases(files);
+		// UI:
+		reset_UI_before();
+		if (files.length == 0) {
+			noFiles();
+		} else {
+			fillList(files);
+			_loadMore(filesArr);
+		}
+		reset_UI_after(callback);
+	}
+
+	function UI_ERROR(status, statusText, callback) {
+		reset_UI_before();
+		FileManager.errorMsgHandler.show({
+			header: "Ajax error:",
+			status: status,
+			statusText: statusText
+		});
+		reset_UI_after(callback);
+	}
+
+	function fillList(files) {
+		var html = listHTML(files);
+		var transitionDiv = document.getElementById('List').firstElementChild;
+		transitionDiv.innerHTML = ''; // TODO: Check out why this row is needed.
+		transitionDiv.insertAdjacentHTML("beforeend", html);
+	}
+
+	function _loadMore(filesArr) {
+		if (filesArr.length === LIMIT) {
+			FileManager.toolbox.createLoadMoreButton(transitionDiv);
+		}
+		//else { // if !(filesArr.length === LIMIT)
+		//	transitionDiv.insertAdjacentHTML("beforeend", createItem({name: "", size: "", modified: ""}).replace("item", "item no-hover no-active dummy"));
+		//}
+		checkLoadMore();
+	}
+
+	function reset_UI_before() {
+		document.getElementById('NoContainers').classList.add('hidden');
+		document.getElementById('NoFiles').classList.add('hidden');
+	}
+
+	function reset_UI_after(callback) {
+		document.getElementById('UpButton').removeAttribute("disabled");
+		NavigationBar.setContent(CurrentPath().withoutAccount(), true);
+		callback();
+	}
+
+	function removeFirstFileInSomeCases(files) {
+		if (checkFirstFile(files)) {
+			files.shift();
+		}
+
+		function checkFirstFile(files) {
+			var prefix = CurrentPath().prefix(),
+				file, nameInFiles;
+			if (files.length > 0 && prefix) {
+				file = files[0];
+				nameInFiles = file.hasOwnProperty("subdir") ? file.subdir : file.name;
+				if (prefix == nameInFiles) {
+					return true;
+				}
+			}
+			return false;
+		}
+	}
+
+	function noFiles() {
+		document.getElementById('NoFiles').classList.remove('hidden');
 	}
 
 	function loadMore() {
@@ -127,7 +150,6 @@ function listFiles() {
 				filesArgs.marker = prefix + filesArgs.marker;
 				filesArgs.prefix = prefix;
 			}
-			filesArgs.notExist = notExist;
 			SwiftV1.listFiles(filesArgs);
 		}
 	}
@@ -141,25 +163,9 @@ function listFiles() {
 		});
 	}
 
-	function notExist(){
-		var curPath = window.CurrentPath(),
-			params = {
-				onclose: function(){
-					location.hash = curPath.root();
-				}
-			};
-
-		//refreshItemList();
-		if(curPath.isContainersList()){
-			params.header = "There is no such container."
-		}else{
-			params.header = "There is no such folder."
-		}
-	}
-
 	function listHTML(files){
-		var html = "", i, file;
-		for(i = 0; i < files.length; i++){
+		var html = '', i, file;
+		for (i = 0; i < files.length; i++) {
 			file = files[i];
 			html += createItem(file);
 		}
@@ -173,6 +179,7 @@ function listFiles() {
 
 		if(file.hasOwnProperty("subdir")){
 			path = new Path(file.subdir).name();
+			var lastSlashRegex = /\/$/;
 			_name = file.subdir.replace(lastSlashRegex, "");
 			html = html.replace("data-type=\"file\"", "data-type=\"directory\"");
 		}else{
@@ -195,115 +202,7 @@ function listFiles() {
 			.replace("data-full-path=\"\"", "data-full-path=\"" + curPath + _name + "\"");
 	}
 
-	function editFile(el){
-		var args = {
-				path: CurrentPath().withoutAccount(),
-				success: handleResponse,
-				error: function(status, statusText) {
-					progressbar.cancel();
-					document.getElementById('UpButton').removeAttribute('disabled');
-					window.FileManager.errorMsgHandler.show({header: "Ajax error occured", status: status, statusText: statusText});
-				},
-				notExist: function() {
-					window.FileManager.errorMsgHandler.show({header: "File was not found."});
-					document.getElementById('UpButton').removeAttribute('disabled');
-					progressbar.cancel();
-				},
-				progress: function (loaded) {
-					if (loaded > 2097152) {
-						document.getElementById('UpButton').removeAttribute('disabled');
-						progressbar.cancel();
-						emptynessMsg.show({
-							wrapper: el,
-							className: "large-file",
-							text: "File is too large (2MB+)."
-						});
-					}
-				}
-			},
-			progressbar,
-			xhr;
-		document.getElementById('UpButton').setAttribute('disabled', 'disabled');
-		xhr = SwiftV1.getFile(args);
-		progressbar = new window.FileManager.toolbox.ProgressBar({
-			request: xhr,
-			wrapper: el,
-			isDownload: true,
-			onEndCallback: function(){
-				document.getElementById('UpButton').removeAttribute('disabled');
-			}
-		});
-		//progressbar.setText("Fetching file...");
-
-		function handleResponse(data, contentType){
-			var fileName = CurrentPath().name();
-
-			NavigationBar.setContent(fileName);
-
-			window.FileManager.fileEditor.show(data, contentType, fileName);
-
-			document.getElementById('UpButton').removeAttribute('disabled');
-		}
-	}
-
-	function handleFileClick(el, callback){//TODO: remove extra request for file exist
-		var args,
-			currentPath = CurrentPath(),
-			path = currentPath.withoutAccount();
-
-		function fileExist(metadata, contentType, contentLength, lastModified){
-			switch(window.FileManager.item.itemCommandName.pop()){
-				case "open":
-					window.FileManager.item.open(path);
-					break;
-				case "execute":
-					window.FileManager.item.execute(path);
-					break;
-				default :
-					if(window.FileManager.toolbox.isEditable(contentType)){
-						editFile(el);
-					}else{
-						el.removeChildren();
-						NavigationBar.setContent(CurrentPath().name());
-						emptynessMsg.show({
-							wrapper: el,
-							className: "empty",
-							text: "It's not a text file."
-						});
-					}
-				//document.querySelector('.download-link').setAttribute('download', filename);
-			}
-			callback();
-		}
-
-		function fileNotExist(){
-			document.getElementById('UpButton').removeAttribute('disabled');
-			el.removeChildren();
-			window.FileManager.errorMsgHandler.show({
-				header: "File was not found.",
-				onclose: function(){
-					location.hash = window.CurrentPath().up();
-				}
-			});
-			callback();
-		}
-
-		function ajaxError(status, statusText){
-			document.getElementById('UpButton').removeAttribute('disabled');
-			el.textContent = 'Error: ' + status + ' ' + statusText;
-			callback();
-		}
-
-		args = {
-			path: path,
-			success: fileExist,
-			notExist: fileNotExist,
-			error: ajaxError
-		};
-		SwiftV1.checkFileExist(args);
-	}
-
-	function refreshItemList(){
+	function refreshItemList() {
 		var parentEl, newEl, oldEl, template, el, loadingEl,
 			commandName;
 
@@ -315,17 +214,17 @@ function listFiles() {
 		}
 
 		function animateItemListRefreshing(){
-			oldEl.classList.add("old-scrolling-content");
-			newEl.classList.remove("new-scrolling-content");
+			oldEl.classList.add("old-transition-div");
+			newEl.classList.remove("new-transition-div");
 			document.getElementById('List').firstElementChild.scrollIntoView();
 		}
 
 		oldEl = document.getElementById('List').firstElementChild;
 		parentEl = oldEl.parentNode;
 
-		template = document.querySelector("#newScrollingContentTemplate").innerHTML;
+		template = document.querySelector("#newTransitionDivTemplate").innerHTML;
 		parentEl.insertAdjacentHTML("afterbegin", template);
-		newEl = document.querySelector(".new-scrolling-content");
+		newEl = document.querySelector(".new-transition-div");
 
 		el = newEl;
 		NavigationBar.setContent(CurrentPath().withoutAccount(), true);
@@ -338,13 +237,19 @@ function listFiles() {
 			handleFileClick(el, animateItemListRefreshing);
 		}
 
-		loadingEl = document.querySelector(".scrolling-content-loading");
+		loadingEl = document.querySelector(".transition-div-loading");
 		loadingEl && loadingEl.parentNode.removeChild(loadingEl);
+
+
+
+		function list(callback) {
+			XHR(callback);
+		}
 	}
 
-	function ontransition(e){
+	function ontransition(e) {
 		var el = e.target ? e.target : e, newEl;
-		if(el.classList.contains("old-scrolling-content")){
+		if (el.classList.contains("old-transition-div")) {
 			el.parentNode.removeChild(el);
 			newEl = document.getElementById('List').firstElementChild;
 			newEl.classList.add("no-transition");
@@ -353,9 +258,9 @@ function listFiles() {
 		}
 	}
 
-	function checkLoadMore(){
+	function checkLoadMore() {
 		var el = document.getElementById('List');
-		if(Math.abs(el.scrollTop - (el.scrollHeight - el.clientHeight)) < 4){
+		if (Math.abs(el.scrollTop - (el.scrollHeight - el.clientHeight)) < 4) {
 			window.FileManager.files.loadMore();
 		}
 	}
@@ -363,16 +268,16 @@ function listFiles() {
 	document.addEventListener("transitionend", ontransition);
 	document.addEventListener("webkitTransitionEnd", ontransition);
 	window.addEventListener("hashchange", refreshItemList);
-	document.addEventListener("DOMContentLoaded", function(){
+	document.addEventListener("DOMContentLoaded", function() {
 		document.getElementById('List').onscroll = window.FileManager.toolbox.onscrollLoadMore;
 	});
 
-	if(!window.FileManager){
+	if(!window.FileManager) {
 		window.FileManager = {};
 	}
+
 	window.FileManager.files = {
 		loadMore: loadMore,
-		notExist: notExist,
 		listHTML: listHTML,
 		refreshItemList: refreshItemList,
 		ontransition: ontransition

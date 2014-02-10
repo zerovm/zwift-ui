@@ -302,13 +302,13 @@ input[type=file]{
   font-weight: bold;
 }
 .code-editor-wrapper,
-.scrolling-content,
+.transition-div,
 .center{
   width: 100%;
   max-width: 800px;
 }
 body.wide-content .code-editor-wrapper,
-body.wide-content .scrolling-content,
+body.wide-content .transition-div,
 body.wide-content .center{
   max-width: none;
 }
@@ -317,7 +317,7 @@ body.wide-content .center{
   margin: 0 auto;
 }
 
-.scrolling-content{
+.transition-div{
   width: 100%;
   height: 100%;
   margin: 0;
@@ -329,9 +329,11 @@ body.wide-content .center{
   top: 0;
   padding: 0;
 }
-.new-scrolling-content,
-.old-scrolling-content{
+.new-transition-div,
+.old-transition-div{
   opacity: 0;
+  -webkit-transition: all 0.1s;
+  transition: all 0.1s;
 }
 
 .no-transition{

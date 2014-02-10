@@ -149,11 +149,11 @@
 			</div>
 		</div>
 	</div>
+	<div id="NoContainers" class="hidden">There are no containers.</div>
+	<div id="NoFiles" class="hidden">There are no files.</div>
 	<div id="List">
-		<div id="NoContainers" class="hidden">There are no containers.</div>
-		<div id="NoFiles" class="hidden">There are no files.</div>
 
-		<div class="scrolling-content"></div>
+		<div class="transition-div"></div>
 		<div class="report-wrapper">
 			<div class="timer-wrapper">
 				<span class="pre-text"></span><span class="time-output">00</span>:<span class="time-output">00</span>
@@ -195,12 +195,12 @@
 	</div>
 </template>
 
-<template id="newScrollingContentTemplate">
-	<div class="new-scrolling-content scrolling-content"></div>
+<template id="newTransitionDivTemplate">
+	<div class="new-transition-div transition-div"></div>
 </template>
 
-<template id="scrollingContentLoadingTemplate">
-	<label class="scrolling-content-loading">Loading...</label>
+<template id="transitionDivLoadingTemplate">
+	<label class="transition-div-loading">Loading...</label>
 </template>
 
 
@@ -276,6 +276,7 @@
 <script src="js/toolbox.js"></script>
 <script src="js/dialogForm.js"></script>
 <script src="js/listFiles.js"></script>
+<script src="js/FileClick.js"></script>
 <script src="js/item.js"></script>
 <script src="js/uploadButtons.js"></script>
 <script src="js/fileEditor.js"></script>
