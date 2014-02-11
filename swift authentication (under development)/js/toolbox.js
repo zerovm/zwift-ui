@@ -252,15 +252,6 @@ function toolbox() {
 		return el.parentNode.children.indexOf(el) === el.parentNode.children.length - 1;
 	}
 
-	function onscrollLoadMore(e){//TODO: move it somewhere else
-		e = e.target ? e.target : e;
-		if(Math.abs(e.scrollTop - (e.scrollHeight - e.clientHeight)) <= 1){
-			if(!document.body.classList.contains('loading-content')){
-				FileManager.files.loadMore();
-			}
-		}
-	}
-
 	function downloadClick(path, filename){
 		var clickEvent = document.createEvent("MouseEvent"),
 			a = document.createElement("a");
@@ -315,7 +306,6 @@ function toolbox() {
 		createLoadMoreButton: createLoadMoreButton,
 		escapeHTML: escapeHTML,
 		makeDatePretty: makeDatePretty,
-		onscrollLoadMore: onscrollLoadMore,
 		ProgressBar: ProgressBar,
 		isLastChildren: isLastChildren,
 		downloadClick: downloadClick,

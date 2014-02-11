@@ -49,8 +49,6 @@ FileManager.Containers.list = function (callback) {
 		} else {
 			transitionDiv.insertAdjacentHTML('beforeend', FileManager.Containers.create([{name:""}]).replace("item", "item no-hover no-active dummy"));
 		}
-
-		window.FileManager.toolbox.onscrollLoadMore(document.getElementById('List'));
 	}
 };
 
@@ -111,6 +109,16 @@ window.onload = function () {
 	function messageForIE() {
 		if (navigator.userAgent.indexOf('MSIE') != -1) {
 			document.body.innerHTML = '<h1 style="margin:5% auto; text-align: center;font-family: arial; color: #8b0000;">Internet Explorer is not supported. Please open in other browser.</h1>';
+		}
+	}
+};
+
+
+document.getElementById('List').onscroll = function (e) {
+	e = e.target ? e.target : e;
+	if(Math.abs(e.scrollTop - (e.scrollHeight - e.clientHeight)) <= 1){
+		if(!document.body.classList.contains('loading-content')){
+			FileManager.files.loadMore();
 		}
 	}
 };

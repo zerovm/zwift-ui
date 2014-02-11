@@ -54,20 +54,15 @@ function listFiles() {
 	}
 
 	function checkLoadMore(filesArr) {
+		var listEl = document.getElementById('List');
+		var transitionDiv = document.getElementById('List').firstElementChild;
+
 		if (filesArr.length === LIMIT) {
 			FileManager.toolbox.createLoadMoreButton(transitionDiv);
 		}
 
-		// LEON TODO: remove... :
-
-		//else { // if !(filesArr.length === LIMIT)
-		//	transitionDiv.insertAdjacentHTML("beforeend", createItem({name: "", size: "", modified: ""}).replace("item", "item no-hover no-active dummy"));
-		//}
-
-
-		var el = document.getElementById('List');
-		if (Math.abs(el.scrollTop - (el.scrollHeight - el.clientHeight)) < 4) {
-			window.FileManager.files.loadMore();
+		if (Math.abs(listEl.scrollTop - (listEl.scrollHeight - listEl.clientHeight)) < 4) {
+			loadMore();
 		}
 	}
 
@@ -271,9 +266,6 @@ function listFiles() {
 	document.addEventListener("transitionend", ontransition);
 	document.addEventListener("webkitTransitionEnd", ontransition);
 	window.addEventListener("hashchange", refreshItemList);
-	document.addEventListener("DOMContentLoaded", function() {
-		document.getElementById('List').onscroll = window.FileManager.toolbox.onscrollLoadMore;
-	});
 
 	if(!window.FileManager) {
 		window.FileManager = {};
