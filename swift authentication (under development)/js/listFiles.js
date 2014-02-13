@@ -1,4 +1,4 @@
-function listFiles() {
+(function (SwiftV1) {
 	"use strict";
 
 	var LIMIT = 20;
@@ -38,11 +38,9 @@ function listFiles() {
 
 	function UI_ERROR(status, statusText, callback) {
 		reset_UI_before();
-		FileManager.errorMsgHandler.show({ // LEON TODO: remove this...  use HTML instead.
-			header: "Ajax error:",
-			status: status,
-			statusText: statusText
-		});
+		document.getElementById('AjaxErrorMessage').textContent = statusText;
+		document.getElementById('AjaxStatusCode').textContent = status;
+		document.getElementById('AjaxError').classList.remove('hidden');
 		reset_UI_after(callback);
 	}
 
@@ -277,4 +275,5 @@ function listFiles() {
 		refreshItemList: refreshItemList,
 		ontransition: ontransition
 	};
-}
+
+})(SwiftV1);

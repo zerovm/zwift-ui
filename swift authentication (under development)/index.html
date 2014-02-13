@@ -152,6 +152,7 @@
 	</div>
 	<div id="NoContainers" class="hidden">There are no containers.</div>
 	<div id="NoFiles" class="hidden">There are no files.</div>
+	<div id="AjaxError" class="hidden">Ajax Error: <span id="AjaxErrorMessage"></span> (<span id="AjaxStatusCode"></span>)</div>
 	<div id="List">
 
 		<div class="transition-div"></div>
@@ -161,15 +162,9 @@
 			</div>
 			<div id="report" class="hidden"></div>
 		</div>
-	</div>
-	<div class="code-editor-wrapper">
-		<div id="codeEditor"></div>
-	</div>
-</div>
 
-<!-- templates -->
-<template id="containerTemplate">
-	<div class="item" title="{{title}}" data-path="{{path}}" data-type="container">
+		<template id="containerTemplate">
+			<div class="item" title="{{title}}" data-path="{{path}}" data-type="container">
 			<span class="left">
 				<span class="file-type"></span>
 				<label class="name">{{name}}</label>
@@ -178,12 +173,11 @@
 				<label class="size">{{size}}</label>
 				<label class="files">{{files}}</label>
 			</span>
-		<button class="three-dot btn"></button>
-	</div>
-</template>
+				<button class="toggle-item-menu-btn btn"></button>
+			</div>
+		</template>
 
-<template id="fileTemplate">
-	<div class="item" title="{{title}}" data-path="{{path}}" data-type="file" data-full-path="" data-content-type="{{file-type}}">
+		<div class="template item">
 			<span class="left">
 				<span class="file-type"></span>
 				<label class="name">{{name}}</label>
@@ -192,18 +186,36 @@
 				<label class="size">{{size}}</label>
 				<label class="modified">{{modified}}</label>
 			</span>
-		<button class="three-dot btn"></button>
+			<button class="toggle-item-menu-btn btn"></button>
+		</div>
+
+		<template id="fileTemplate">
+			<div class="item" title="{{title}}" data-path="{{path}}" data-type="file" data-full-path="" data-content-type="{{file-type}}">
+			<span class="left">
+				<span class="file-type"></span>
+				<label class="name">{{name}}</label>
+			</span>
+			<span class="right">
+				<label class="size">{{size}}</label>
+				<label class="modified">{{modified}}</label>
+			</span>
+				<button class="toggle-item-menu-btn btn"></button>
+			</div>
+		</template>
+
+		<template id="newTransitionDivTemplate">
+			<div class="new-transition-div transition-div"></div>
+		</template>
+
+		<template id="transitionDivLoadingTemplate">
+			<label class="transition-div-loading">Loading...</label>
+		</template>
+
 	</div>
-</template>
-
-<template id="newTransitionDivTemplate">
-	<div class="new-transition-div transition-div"></div>
-</template>
-
-<template id="transitionDivLoadingTemplate">
-	<label class="transition-div-loading">Loading...</label>
-</template>
-
+	<div class="code-editor-wrapper">
+		<div id="codeEditor"></div>
+	</div>
+</div>
 
 <style>
 	.full-stretch {
@@ -266,7 +278,7 @@
 </form>
 
 
-<script src="Swift.js"></script>
+<script src="js/Swift.js"></script>
 
 <script src="js/vendor/require.js"></script>
 <script src="js/vendor/ace/ace.js"></script>
@@ -303,7 +315,6 @@
 			ok: function () {
 
 				toolbox();
-				listFiles();
 
 				document.getElementById('v1AuthForm').setAttribute('hidden', 'hidden');
 
@@ -324,7 +335,7 @@
 						return;
 					}
 
-					if (el = FileManager.toolbox.getParentByClassName(e.target,'three-dot')) {
+					if (el = FileManager.toolbox.getParentByClassName(e.target,'toggle-item-menu-btn')) {
 						FileManager.item.toggleMenu(el);
 					} else if (el = FileManager.toolbox.getParentByClassName(e.target,'item')) {
 						FileManager.item.click(el);

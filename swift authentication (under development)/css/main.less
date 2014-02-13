@@ -240,7 +240,8 @@ body.wide-content #WideButton{
 
 
 #NoContainers,
-#NoFiles {
+#NoFiles,
+#AjaxError {
   padding: 5px;
   background-color: lightgoldenrodyellow;
 }
@@ -1095,17 +1096,17 @@ template{
 .disable-toolbar-right #Toolbar .always-enabled{
   pointer-events: auto;
 }
-.three-dot{
+.toggle-item-menu-btn{
   width: 20px;
   background: url(../img/three_dot.png) center center no-repeat, @darkItemElementColor;
   border: none;
   outline: none;
   margin: 0;
 }
-.no-hover .three-dot{
+.no-hover .toggle-item-menu-btn{
   background: @darkItemElementColor;
 }
-.item:not(.no-hover):hover .three-dot{
+.item:not(.no-hover):hover .toggle-item-menu-btn{
   background: url(../img/three_dot.png) center center no-repeat, @semiDarkItemElementColor;
 }
 .submenu{
