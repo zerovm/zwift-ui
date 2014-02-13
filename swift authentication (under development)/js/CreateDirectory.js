@@ -33,7 +33,7 @@
 			SwiftV1.createDirectory({
 				path: dirPathWithoutAccount,
 				created: function(){
-					window.FileManager.files.refreshItemList();
+					window.refreshItemList();
 					CreateDirectoryDialog.classList.add('hidden');
 					document.getElementById('CreateDirectoryButton').classList.remove('selected');
 				},

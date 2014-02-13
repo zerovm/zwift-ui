@@ -213,7 +213,7 @@
 		document.getElementById('report').removeChildren();
 		(function(){//TODO: rewrite ontranstion end to get rid of this!!!!!!!!!!!!!!!!!!
 			var oldContent = document.getElementsByClassName("old-transition-div")[0];
-			oldContent && window.FileManager.files.ontransition(oldContent);
+			oldContent && window.ontransition(oldContent);
 		})();
 		document.body.classList.remove('disable-toolbar-right');
 		document.body.classList.remove('report-shown');

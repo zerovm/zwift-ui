@@ -189,20 +189,6 @@
 			<button class="toggle-item-menu-btn btn"></button>
 		</div>
 
-		<template id="fileTemplate">
-			<div class="item" title="{{title}}" data-path="{{path}}" data-type="file" data-full-path="" data-content-type="{{file-type}}">
-			<span class="left">
-				<span class="file-type"></span>
-				<label class="name">{{name}}</label>
-			</span>
-			<span class="right">
-				<label class="size">{{size}}</label>
-				<label class="modified">{{modified}}</label>
-			</span>
-				<button class="toggle-item-menu-btn btn"></button>
-			</div>
-		</template>
-
 		<template id="newTransitionDivTemplate">
 			<div class="new-transition-div transition-div"></div>
 		</template>
@@ -288,7 +274,7 @@
 <script src="js/extendNative.js"></script>
 <script src="js/toolbox.js"></script>
 <script src="js/dialogForm.js"></script>
-<script src="js/listFiles.js"></script>
+<script src="js/FilesList.js"></script>
 <script src="js/FileClick.js"></script>
 <script src="js/item.js"></script>
 <script src="js/uploadButtons.js"></script>
@@ -339,13 +325,78 @@
 						FileManager.item.toggleMenu(el);
 					} else if (el = FileManager.toolbox.getParentByClassName(e.target,'item')) {
 						FileManager.item.click(el);
-					} else if (FileManager.toolbox.getParentByClassName(e.target,'load-more-button')) {
-						window.FileManager.files.loadMore();
+					} else if (window.FileManager.toolbox.getParentByClassName(e.target, 'load-more-button')) {
+						FilesList.loadMore();
 					}
 				});
 				//setRootClass();
 			}
 		});
+	};
+
+
+
+	window.refreshItemList = function () {
+		var parentEl, newEl, oldEl, template, el, loadingEl,
+				commandName;
+
+		commandName = window.FileManager.item.itemCommandName.pop();//added to prevent unnecessary request while change event fired on loaded file
+		if (commandName === "none"){
+			return;
+		} else {
+			window.FileManager.item.itemCommandName.set(commandName);
+		}
+
+		function animateItemListRefreshing() {
+			oldEl.classList.add("old-transition-div");
+			newEl.classList.remove("new-transition-div");
+			document.getElementById('List').firstElementChild.scrollIntoView();
+		}
+
+		oldEl = document.getElementById('List').firstElementChild;
+		parentEl = oldEl.parentNode;
+
+		template = document.querySelector("#newTransitionDivTemplate").innerHTML;
+		parentEl.insertAdjacentHTML("afterbegin", template);
+		newEl = document.querySelector(".new-transition-div");
+
+		el = newEl;
+		NavigationBar.setContent(CurrentPath().withoutAccount(), true);
+
+		if (CurrentPath().isContainersList()) {
+			FileManager.Containers.list(animateItemListRefreshing);
+		} else if (CurrentPath().isFilesList()) {
+			FilesList.load(animateItemListRefreshing);
+		} else {
+			handleFileClick(el, animateItemListRefreshing);
+		}
+
+		loadingEl = document.querySelector(".transition-div-loading");
+		loadingEl && loadingEl.parentNode.removeChild(loadingEl);
+	}
+
+	window.ontransition = function (e) {
+		var el = e.target ? e.target : e, newEl;
+		if (el.classList.contains("old-transition-div")) {
+			el.parentNode.removeChild(el);
+			newEl = document.getElementById('List').firstElementChild;
+			newEl.classList.add("no-transition");
+			newEl.classList.remove("no-transition");
+			document.body.classList.remove("disabled");
+		}
+	}
+
+	document.addEventListener("transitionend", ontransition);
+	document.addEventListener("webkitTransitionEnd", ontransition);
+	window.addEventListener("hashchange", refreshItemList);
+
+	document.getElementById('List').onscroll = function (e) {
+		e = e.target ? e.target : e;
+		if (Math.abs(e.scrollTop - (e.scrollHeight - e.clientHeight)) <= 1) {
+			if (!document.body.classList.contains('loading-content')) {
+				FilesList.loadMore();
+			}
+		}
 	};
 </script>
 

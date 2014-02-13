@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", function(){
 		SwiftV1.createContainer({
 			containerName: input.value,
 			created: function(){
-				window.FileManager.files.refreshItemList();
+				window.refreshItemList();
 				cancel();
 			},
 			alreadyExisted: function(){
@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			SwiftV1.createDirectory({
 				path: dirPathWithoutAccount,
 				created: function(){
-					window.FileManager.files.refreshItemList();
+					window.refreshItemList();
 					cancel();
 				},
 				error: ajaxError

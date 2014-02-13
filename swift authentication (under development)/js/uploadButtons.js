@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			uploadingFiles--;
 			if(uploadingFiles === 0){
 				enableButtons();
-				window.FileManager.files.refreshItemList();
+				window.refreshItemList();
 				clearOnfinish();
 			}
 		}
@@ -172,7 +172,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			if(!filesCounter){
 				enableButtons();
 				if(wasSmthUploded){
-					window.FileManager.files.refreshItemList();
+					window.refreshItemList();
 				}
 				clearOnfinish();
 			}

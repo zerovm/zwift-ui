@@ -24,7 +24,7 @@
 		SwiftV1.createContainer({
 			containerName: inputEl.value,
 			created: function () {
-				window.FileManager.files.refreshItemList();
+				window.refreshItemList();
 				CreateContainerDialog.classList.add('hidden');
 				document.getElementById('CreateContainerButton').classList.remove('selected');
 			},

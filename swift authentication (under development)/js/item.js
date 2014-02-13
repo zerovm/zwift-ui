@@ -60,7 +60,7 @@
 		args = {
 			path: newName,
 			copyFrom: sourcePath,
-			copied: isReloaded ? window.FileManager.files.refreshItemList : function(){},
+			copied: isReloaded ? window.refreshItemList : function(){},
 			error: ajaxError
 		};
 
@@ -78,7 +78,7 @@
 				account: new Path(name).account(),
 				container: new Path(name).container(),
 				removed: function(){
-					window.FileManager.files.refreshItemList();
+					window.refreshItemList();
 				},
 				error: ajaxError
 			});
@@ -88,11 +88,11 @@
 			SwiftV1.delete({
 				path: new Path(itemPath).withoutAccount(),
 				deleted: function(){
-					window.FileManager.files.refreshItemList();
+					window.refreshItemList();
 				},
 				error: ajaxError,
 				notExist: function(){
-					window.FileManager.files.refreshItemList();
+					window.refreshItemList();
 				}
 			});
 			return;
@@ -108,7 +108,7 @@
 			deleted: function(){
 				document.getElementById('mainProgressBar').classList.add('hidden');
 				progressObj.remove();
-				window.FileManager.files.refreshItemList();
+				window.refreshItemList();
 			},
 			progress: function(totalFiles, deletedFiles){
 				totalFiles = totalFiles - 1;
@@ -552,7 +552,7 @@
 								metadata: metadataObj.getMeta(),
 								removeMetadata: metadataObj.getRemovedMeta(),
 								contentType: item.dataset.contentType,
-								updated: window.FileManager.files.refreshItemList,
+								updated: window.refreshItemList,
 								path: window.CurrentPath().withoutAccount() + previousParent.dataset.path,
 								error: ajaxError,
 								notExist: function(){
@@ -577,7 +577,7 @@
 					confirm: function(input){
 						input.value && SwiftV1.updateFileMetadata({
 							contentType: input.value,
-							updated: window.FileManager.files.refreshItemList,
+							updated: window.refreshItemList,
 							path: window.CurrentPath().withoutAccount() + previousParent.dataset.path,
 							error: ajaxError,
 							notExist: function(){
