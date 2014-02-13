@@ -52,15 +52,15 @@ FileManager.Containers.list = function (callback) {
 	}
 };
 
-FileManager.Containers.create = function (containerObjs) {
+FileManager.Containers.create = function (containerObj) {
 	var resulthtml = "",
 		slashStr = "/",
 		dummy = document.querySelector('#containerTemplate').innerHTML,
 		tmp,
 		container, title, path;
 
-	for (var i = 0; i < containerObjs.length; i++) {
-		container = containerObjs[i];
+	for (var i = 0; i < containerObj.length; i++) {
+		container = containerObj[i];
 		title = container.name;
 		path = title.indexOf(slashStr) === -1 ? title + slashStr : title;
 		tmp = dummy.replace('{{name}}', FileManager.toolbox.escapeHTML(FileManager.toolbox.makeShortName(container.name)))

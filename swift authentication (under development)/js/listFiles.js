@@ -1,4 +1,4 @@
-(function (SwiftV1) {
+(function (SwiftV1, Path, CurrentPath) {
 	"use strict";
 
 	var LIMIT = 20;
@@ -45,10 +45,88 @@
 	}
 
 	function fillList(files) {
-		var html = createFilesListHTML(files);
 		var transitionDiv = document.getElementById('List').firstElementChild;
-		transitionDiv.innerHTML = ''; // LEON TODO: Check out why this row is needed.
-		transitionDiv.insertAdjacentHTML("beforeend", html);
+		transitionDiv.innerHTML = '';
+		for (var i = 0; i < files.length; i++) {
+			transitionDiv.appendChild(createItem(files[i]));
+		}
+	}
+
+	function createItem(file) {
+		var newItemEl = document.getElementById('List').getElementsByClassName('template-file')[0].cloneNode(true);
+		newItemEl.classList.remove('template');
+		newItemEl.classList.remove('template-file');
+
+		newItemEl.setAttribute('title', _title());
+		newItemEl.setAttribute('data-path', _dataPath());
+		newItemEl.setAttribute('data-type', _dataType());
+		newItemEl.setAttribute('data-full-path', _dataFullPath());
+		newItemEl.setAttribute('data-content-type', _dataContentType());
+		newItemEl.getElementsByClassName('name')[0].textContent = _name();
+		newItemEl.getElementsByClassName('size')[0].textContent = _size();
+		newItemEl.getElementsByClassName('modified')[0].textContent = _modified();
+
+		return newItemEl;
+
+		function _title() {
+			var title;
+			var lastSlashRegex = /\/$/;
+			if (file.hasOwnProperty('subdir')) {
+				title = file.subdir.replace(lastSlashRegex, '');
+			} else {
+				title = file.name;
+			}
+			title = new Path(title).name();
+			return title;
+		}
+
+		function _dataPath() {
+			var dataPath;
+			if (file.hasOwnProperty('subdir')) {
+				dataPath = new Path(file.subdir).name();
+			} else {
+				dataPath = new Path(file.name).name();
+			}
+			return dataPath;
+		}
+
+		function _dataFullPath() {
+			var dataFullPath;
+			dataFullPath = CurrentPath().withoutAccount() + _title(file);
+			return dataFullPath;
+		}
+
+		function _dataType() {
+			var dataType;
+			if (file.hasOwnProperty("subdir")) {
+				dataType = 'directory';
+			} else {
+				dataType = 'file';
+			}
+			return dataType;
+		}
+
+		function _dataContentType() {
+			var dataContentType;
+			if (file.content_type && file.content_type !== 'undefined') {
+				dataContentType = file.content_type;
+			} else {
+				dataContentType = 'file-type';
+			}
+			return dataContentType;
+		}
+
+		function _name() {
+			return window.FileManager.toolbox.makeShortName(_title(file));
+		}
+
+		function _size() {
+			return isNaN(file.bytes) ? '' : window.FileManager.toolbox.shortenSize(file.bytes);
+		}
+
+		function _modified() {
+			return file.last_modified ? window.FileManager.toolbox.makeDatePretty(file.last_modified) : '';
+		}
 	}
 
 	function checkLoadMore(filesArr) {
@@ -125,19 +203,14 @@
 			if (isContainer) {
 				el.insertAdjacentHTML('beforebegin', FileManager.Containers.create(items));
 			} else {
-				el.insertAdjacentHTML("beforebegin", createFilesListHTML(items));
+				var transitionDiv = document.getElementById('List').firstElementChild;
+				for (var i = 0; i < files.length; i++) {
+					transitionDiv.appendChild(createItem(files[i]));
+				}
 			}
 
 			if (items.length < LIMIT) {
 				el.parentNode.removeChild(el);
-				/*
-				 if(!el){
-				 console.log("asdfsadfdsafdsaffdfds");
-				 document.getElementById('List').firstElementChild.insertAdjacentHTML("beforeend", createFilesListHTML(files));
-				 }else{
-				 el.insertAdjacentHTML("beforebegin", createFilesListHTML(files));
-				 el.parentNode.removeChild(el);
-				 }*/
 			} else {
 				el.textContent = "Load more";
 				el.removeAttribute("disabled");
@@ -159,50 +232,9 @@
 
 	function loadMoreError(status, statusText){
 		document.body.classList.remove('loading-content');
-		window.FileManager.errorMsgHandler.show({
-			header: "Error:",
-			status: status,
-			statusText: statusText
-		});
-	}
-
-	function createFilesListHTML(files){
-		var html = '', i, file;
-		for (i = 0; i < files.length; i++) {
-			file = files[i];
-			html += createItem(file);
-		}
-		return html;
-	}
-
-	function createItem(file){
-		var _name, contentType, name, size, modified, html, path,
-			curPath = CurrentPath().withoutAccount();
-		html = document.getElementById("fileTemplate").innerHTML;
-
-		if(file.hasOwnProperty("subdir")){
-			path = new Path(file.subdir).name();
-			var lastSlashRegex = /\/$/;
-			_name = file.subdir.replace(lastSlashRegex, "");
-			html = html.replace("data-type=\"file\"", "data-type=\"directory\"");
-		}else{
-			path = new Path(file.name).name();
-			_name = file.name;
-		}
-
-		_name = new Path(_name).name();
-		contentType = (file.content_type && file.content_type !== "undefined" && file.content_type) || "file-type";
-		name = window.FileManager.toolbox.makeShortName(_name);
-		_name = FileManager.toolbox.escapeHTML(_name);
-		size = FileManager.toolbox.shortenSize(file.bytes);
-		modified = window.FileManager.toolbox.makeDatePretty(file.last_modified);
-		return html.replace("{{file-type}}", contentType)
-			.replace("{{name}}", "<span>" + FileManager.toolbox.escapeHTML(name) + "</span>")
-			.replace("{{path}}", FileManager.toolbox.escapeHTML(path))
-			.replace("{{title}}", _name)
-			.replace("{{size}}", isNaN(file.bytes) ? "" : FileManager.toolbox.escapeHTML(size))
-			.replace("{{modified}}", file.last_modified ? FileManager.toolbox.escapeHTML(modified) : "")
-			.replace("data-full-path=\"\"", "data-full-path=\"" + curPath + _name + "\"");
+		document.getElementById('AjaxErrorMessage').textContent = statusText;
+		document.getElementById('AjaxStatusCode').textContent = status;
+		document.getElementById('AjaxError').classList.remove('hidden');
 	}
 
 	function refreshItemList() {
@@ -271,9 +303,8 @@
 
 	window.FileManager.files = {
 		loadMore: loadMore,
-		listHTML: createFilesListHTML,
 		refreshItemList: refreshItemList,
 		ontransition: ontransition
 	};
 
-})(SwiftV1);
+})(SwiftV1, Path, CurrentPath);
