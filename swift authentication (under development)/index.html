@@ -270,18 +270,61 @@
 <script src="js/vendor/ace/ace.js"></script>
 <script src="js/vendor/iscroll.js"></script>
 
+<script>
+
+	var FileManager;
+
+	if (!FileManager) {
+		FileManager = {};
+	}
+
+	FileManager.ENABLE_ZEROVM = true;
+
+	FileManager.AjaxError = {};//TODO: replace it with errrorMsg
+
+	FileManager.AjaxError.show = function (el, status, statusText) {
+		el.querySelector('.status').textContent = status;
+		el.querySelector('.status-text').textContent = statusText;
+		el.removeAttribute('hidden');
+	};
+
+	function initPage() {
+		location.hash = SwiftV1.account + "/";
+		window.refreshItemList();
+
+		FileManager.reAuth();
+
+		document.getElementById("WideButton").addEventListener("click", function(){
+			document.body.classList.toggle("wide-content");
+		});
+	}
+
+	FileManager.reAuth = function () {
+		SwiftV1.Account.head({success:function(){},error:function(){}});
+		setTimeout(FileManager.reAuth, 1000 * 60 * 20);
+	};
+
+	window.onload = function () {
+		messageForIE();
+
+		function messageForIE() {
+			if (navigator.userAgent.indexOf('MSIE') != -1) {
+				document.body.innerHTML = '<h1 style="margin:5% auto; text-align: center;font-family: arial; color: #8b0000;">Internet Explorer is not supported. Please open in other browser.</h1>';
+			}
+		}
+	};
+</script>
+
 <script src="js/Navigation.js"></script>
 <script src="js/extendNative.js"></script>
 <script src="js/toolbox.js"></script>
 <script src="js/dialogForm.js"></script>
-<script src="js/FilesList.js"></script>
 <script src="js/FileClick.js"></script>
 <script src="js/item.js"></script>
 <script src="js/uploadButtons.js"></script>
 <script src="js/fileEditor.js"></script>
 <script src="js/errorMsg.js"></script>
 <script src="js/fileExecutor.js"></script>
-<script src="js/FileManager.js"></script>
 
 <script>
 	document.getElementById('v1AuthForm').onsubmit = function (e) {
@@ -364,7 +407,7 @@
 		NavigationBar.setContent(CurrentPath().withoutAccount(), true);
 
 		if (CurrentPath().isContainersList()) {
-			FileManager.Containers.list(animateItemListRefreshing);
+			ContainersList.load(animateItemListRefreshing);
 		} else if (CurrentPath().isFilesList()) {
 			FilesList.load(animateItemListRefreshing);
 		} else {
@@ -401,6 +444,9 @@
 </script>
 
 <script src="js/Toolbar.js"></script>
+
+<script src="js/ContainersList.js"></script>
+<script src="js/FilesList.js"></script>
 <script src="js/CreateContainer.js"></script>
 <script src="js/CreateDirectory.js"></script>
 <script src="js/CreateFile.js"></script>

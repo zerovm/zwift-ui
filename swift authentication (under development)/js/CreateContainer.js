@@ -1,4 +1,4 @@
-(function () {
+(function (SwiftV1) {
 	'use strict';
 
 	var CreateContainerDialog = document.getElementById('CreateContainerDialog');
@@ -79,4 +79,5 @@
 		inputEl.removeAttribute('disabled');
 		inputEl.focus();
 	};
-})();
+
+})(SwiftV1);

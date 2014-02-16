@@ -1,4 +1,4 @@
-(function () {
+(function (SwiftV1, CurrentPath) {
 	'use strict';
 
 	var CreateFileDialog = document.getElementById('CreateFileDialog');
@@ -88,4 +88,5 @@
 		inputEl.removeAttribute('disabled');
 		inputEl.focus();
 	};
-})();
+
+})(SwiftV1, CurrentPath);

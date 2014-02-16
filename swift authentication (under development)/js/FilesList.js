@@ -1,14 +1,14 @@
-var FilesList = (function (SwiftV1, Path, CurrentPath) {
-	"use strict";
+var FilesList = (function (SwiftV1, Path, CurrentPath, ContainersList) {
+	'use strict';
 
 	var LIMIT = 20;
 
 	var load = function (callback) {
 		var requestArgs = {};
 		requestArgs.containerName = CurrentPath().container();
-		requestArgs.format = "json";
+		requestArgs.format = 'json';
 		requestArgs.limit = LIMIT;
-		requestArgs.delimiter = "/";
+		requestArgs.delimiter = '/';
 		if (CurrentPath().isDirectory()) {
 			requestArgs.prefix = CurrentPath().prefix();
 		}
@@ -22,7 +22,7 @@ var FilesList = (function (SwiftV1, Path, CurrentPath) {
 	};
 
 	var loadMore = function () {
-		var el = document.getElementsByClassName("load-more-button")[0];
+		var el = document.getElementsByClassName('load-more-button')[0];
 		var prefix;
 		var currPath = CurrentPath();
 		var isContainer = currPath.isContainersList();
@@ -33,20 +33,20 @@ var FilesList = (function (SwiftV1, Path, CurrentPath) {
 		}
 
 		document.body.classList.add('loading-content');
-		el.textContent = "Loading...";
-		el.setAttribute("disabled", "disabled");
+		el.textContent = 'Loading...';
+		el.setAttribute('disabled', 'disabled');
 
 		var filesArgs = {};
 		filesArgs.error = loadMoreError;
-		filesArgs.delimiter = "/";
+		filesArgs.delimiter = '/';
 		filesArgs.limit = LIMIT;
-		filesArgs.format = "json";
+		filesArgs.format = 'json';
 		filesArgs.marker = el.previousElementSibling.dataset.path;
 		filesArgs.success = function(items){
-			var el = document.getElementsByClassName("load-more-button")[0];
+			var el = document.getElementsByClassName('load-more-button')[0];
 			document.body.classList.remove('loading-content');
 			if (isContainer) {
-				el.insertAdjacentHTML('beforebegin', FileManager.Containers.create(items));
+				el.insertAdjacentHTML('beforebegin', ContainersList.create(items));
 			} else {
 				var transitionDiv = document.getElementById('List').firstElementChild;
 				for (var i = 0; i < files.length; i++) {
@@ -57,8 +57,8 @@ var FilesList = (function (SwiftV1, Path, CurrentPath) {
 			if (items.length < LIMIT) {
 				el.parentNode.removeChild(el);
 			} else {
-				el.textContent = "Load more";
-				el.removeAttribute("disabled");
+				el.textContent = 'Load more';
+				el.removeAttribute('disabled');
 			}
 		};
 
@@ -152,7 +152,7 @@ var FilesList = (function (SwiftV1, Path, CurrentPath) {
 
 		function _dataType() {
 			var dataType;
-			if (file.hasOwnProperty("subdir")) {
+			if (file.hasOwnProperty('subdir')) {
 				dataType = 'directory';
 			} else {
 				dataType = 'file';
@@ -202,7 +202,7 @@ var FilesList = (function (SwiftV1, Path, CurrentPath) {
 	}
 
 	function reset_UI_after(callback) {
-		document.getElementById('UpButton').removeAttribute("disabled");
+		document.getElementById('UpButton').removeAttribute('disabled');
 		NavigationBar.setContent(CurrentPath().withoutAccount(), true);
 		callback();
 	}
@@ -217,7 +217,7 @@ var FilesList = (function (SwiftV1, Path, CurrentPath) {
 				file, nameInFiles;
 			if (files.length > 0 && prefix) {
 				file = files[0];
-				nameInFiles = file.hasOwnProperty("subdir") ? file.subdir : file.name;
+				nameInFiles = file.hasOwnProperty('subdir') ? file.subdir : file.name;
 				if (prefix == nameInFiles) {
 					return true;
 				}
@@ -241,4 +241,5 @@ var FilesList = (function (SwiftV1, Path, CurrentPath) {
 		load: load,
 		loadMore: loadMore
 	};
-})(SwiftV1, Path, CurrentPath);
+
+})(SwiftV1, Path, CurrentPath, ContainersList);

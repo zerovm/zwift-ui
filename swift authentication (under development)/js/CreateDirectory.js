@@ -1,4 +1,4 @@
-(function () {
+(function (SwiftV1) {
 	'use strict';
 
 	var CreateDirectoryDialog = document.getElementById('CreateDirectoryDialog');
@@ -89,4 +89,5 @@
 		inputEl.removeAttribute('disabled');
 		inputEl.focus();
 	};
-})();
+
+})(SwiftV1);
