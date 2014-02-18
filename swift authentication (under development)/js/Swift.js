@@ -166,7 +166,7 @@ var recursiveDeleteOnSwift;
 	SwiftV1.Container = {};
 
 	SwiftV1.Container.head = function (args) {
-		
+
 		var xhr = new XMLHttpRequest();
 		var url = xStorageUrl + '/' + args.containerName;
 		xhr.open('HEAD', url);
@@ -221,7 +221,7 @@ var recursiveDeleteOnSwift;
 			queryUrlArr.push(encodeURIComponent(p) + '=' + encodeURIComponent(queryUrlObj[p]));
 		}
 		var url;
-		
+
 		if (queryUrlArr.length) {
 			var queryUrl = '?' + queryUrlArr.join('&');
 			url = xStorageUrl + '/' + args.containerName + queryUrl;
@@ -331,7 +331,7 @@ var recursiveDeleteOnSwift;
 
 	SwiftV1.File.head = function (args) {
 		var xhr = new XMLHttpRequest();
-		
+
 		var url = xStorageUrl + '/' + args.path;
 		xhr.open('HEAD', url);
 		if (xAuthToken !== null) {
@@ -358,7 +358,7 @@ var recursiveDeleteOnSwift;
 
 	SwiftV1.File.get = function (args) {
 		var xhr = new XMLHttpRequest();
-		
+
 		var url = xStorageUrl + '/' + args.path;
 		if (args.hasOwnProperty('ifMatch')) {
 			xhr.setRequestHeader('If-Match', args.ifMatch);
@@ -401,7 +401,7 @@ var recursiveDeleteOnSwift;
 
 	SwiftV1.File.post = function (args) {
 		var xhr = new XMLHttpRequest();
-		
+
 		var url = xStorageUrl + '/' + args.path;
 		xhr.open('POST', url);
 		if (xAuthToken !== null) {
@@ -487,7 +487,7 @@ var recursiveDeleteOnSwift;
 
 	SwiftV1.File.copy = function (args) {
 		var xhr = new XMLHttpRequest();
-		
+
 		var url = xStorageUrl + '/' + args.path;
 		xhr.open('PUT', url);
 		if (xAuthToken !== null) {
@@ -659,6 +659,9 @@ var recursiveDeleteOnSwift;
 		var xhr = new XMLHttpRequest();
 		xhr.open('POST', xStorageUrl, true);
 		xhr.responseType = 'blob';
+		if (xAuthToken !== null) {
+			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
+		}
 		xhr.setRequestHeader('X-Zerovm-Execute', '1.0');
 		xhr.setRequestHeader('Content-Type', args.contentType);
 		xhr.addEventListener('load', function(e){
