@@ -659,6 +659,9 @@ var recursiveDeleteOnSwift;
 		var xhr = new XMLHttpRequest();
 		xhr.open('POST', xStorageUrl, true);
 		xhr.responseType = 'blob';
+		if (xAuthToken !== null) {
+			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
+		}
 		xhr.setRequestHeader('X-Zerovm-Execute', '1.0');
 		xhr.setRequestHeader('Content-Type', args.contentType);
 		xhr.addEventListener('load', function(e){
