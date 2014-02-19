@@ -255,7 +255,7 @@
 
 <form id="v1AuthForm" class="full-stretch">
 	<div class="center-content">
-		<label>V1 AUTH URL: </label><input id="v1-auth-url" value="http://162.242.220.74/auth/v1.0"><br>
+		<label>V1 AUTH URL: </label><input id="v1-auth-url" value=""><br>
 		<label>Tenant: </label><input id="tenant"><br>
 		<label>X Auth User: </label><input id="x-auth-user"><br>
 		<label>X Auth Key: </label><input id="x-auth-key"><br>
@@ -305,6 +305,12 @@
 	};
 
 	window.onload = function () {
+                auth_url = document.getElementById('v1-auth-url');
+                if (auth_url.value == "") {
+                  auth_url.value = document.location.protocol + "//" +
+                    document.location.host + "/auth/v1.0";
+                }
+
 		messageForIE();
 
 		function messageForIE() {
