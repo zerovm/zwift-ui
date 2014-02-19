@@ -1,4 +1,4 @@
-var FilesList = (function (SwiftV1, Path, CurrentPath, ContainersList) {
+var FilesList = (function (SwiftV1, Path, CurrentPath) {
 	'use strict';
 
 	var LIMIT = 20;
@@ -22,10 +22,7 @@ var FilesList = (function (SwiftV1, Path, CurrentPath, ContainersList) {
 	};
 
 	var loadMore = function () {
-		var el = document.getElementsByClassName('load-more-button')[0];
-		var prefix;
-		var currPath = CurrentPath();
-		var isContainer = currPath.isContainersList();
+		var el = document.getElementById('LoadMoreFiles');
 
 		if (!el) {
 			document.body.classList.remove('loading-content');
@@ -36,43 +33,33 @@ var FilesList = (function (SwiftV1, Path, CurrentPath, ContainersList) {
 		el.textContent = 'Loading...';
 		el.setAttribute('disabled', 'disabled');
 
-		var filesArgs = {};
-		filesArgs.error = loadMoreError;
-		filesArgs.delimiter = '/';
-		filesArgs.limit = LIMIT;
-		filesArgs.format = 'json';
-		filesArgs.marker = el.previousElementSibling.dataset.path;
-		filesArgs.success = function(items){
-			var el = document.getElementsByClassName('load-more-button')[0];
+		var xhrArgs = {};
+		xhrArgs.containerName = CurrentPath().container();
+		xhrArgs.delimiter = '/';
+		xhrArgs.limit = LIMIT;
+		xhrArgs.format = 'json';
+		xhrArgs.marker = document.querySelector('.item:last-child').dataset.path;
+		if (CurrentPath().isDirectory()) {
+			xhrArgs.marker = CurrentPath().prefix() + xhrArgs.marker;
+			xhrArgs.prefix = CurrentPath().prefix();
+		}
+		xhrArgs.success = function (filesArr) {
+			var files = filesArr.slice();
+			fillList(files);
 			document.body.classList.remove('loading-content');
-			if (isContainer) {
-				el.insertAdjacentHTML('beforebegin', ContainersList.create(items));
-			} else {
-				var transitionDiv = document.getElementById('List').firstElementChild;
-				for (var i = 0; i < files.length; i++) {
-					transitionDiv.appendChild(createItem(files[i]));
-				}
-			}
 
-			if (items.length < LIMIT) {
-				el.parentNode.removeChild(el);
+			// check load more:
+			var el = document.getElementById('LoadMoreFiles');
+			el.textContent = 'Load more';
+			if (files.length < LIMIT) {
+				el.classList.add('hidden');
 			} else {
-				el.textContent = 'Load more';
+				//el.classList.remove('hidden');
 				el.removeAttribute('disabled');
 			}
 		};
-
-		if (isContainer) {
-			SwiftV1.listContainers(filesArgs);
-		} else {
-			filesArgs.containerName = currPath.container();
-			if(currPath.isDirectory()){
-				prefix = currPath.prefix();
-				filesArgs.marker = prefix + filesArgs.marker;
-				filesArgs.prefix = prefix;
-			}
-			SwiftV1.listFiles(filesArgs);
-		}
+		xhrArgs.error = loadMoreError;
+		SwiftV1.listFiles(xhrArgs);
 	};
 
 	function UI_OK(filesArr, callback) {
@@ -84,6 +71,7 @@ var FilesList = (function (SwiftV1, Path, CurrentPath, ContainersList) {
 		if (files.length == 0) {
 			noFiles();
 		} else {
+			document.getElementById('List').firstElementChild.innerHTML = '';
 			fillList(files);
 			checkLoadMore(filesArr);
 		}
@@ -100,7 +88,6 @@ var FilesList = (function (SwiftV1, Path, CurrentPath, ContainersList) {
 
 	function fillList(files) {
 		var transitionDiv = document.getElementById('List').firstElementChild;
-		transitionDiv.innerHTML = '';
 		for (var i = 0; i < files.length; i++) {
 			transitionDiv.appendChild(createItem(files[i]));
 		}
@@ -171,28 +158,29 @@ var FilesList = (function (SwiftV1, Path, CurrentPath, ContainersList) {
 		}
 
 		function _name() {
-			return window.FileManager.toolbox.makeShortName(_title(file));
+			return makeShortName(_title(file));
 		}
 
 		function _size() {
-			return isNaN(file.bytes) ? '' : window.FileManager.toolbox.shortenSize(file.bytes);
+			return isNaN(file.bytes) ? '' : makePrettyBytes(file.bytes);
 		}
 
 		function _modified() {
-			return file.last_modified ? window.FileManager.toolbox.makeDatePretty(file.last_modified) : '';
+			return file.last_modified ? makePrettyDate(file.last_modified) : '';
 		}
 	}
 
 	function checkLoadMore(filesArr) {
 		var listEl = document.getElementById('List');
-		var transitionDiv = document.getElementById('List').firstElementChild;
 
 		if (filesArr.length === LIMIT) {
-			FileManager.toolbox.createLoadMoreButton(transitionDiv);
-		}
+			//document.getElementById('LoadMoreFiles').classList.remove('hidden');
 
-		if (Math.abs(listEl.scrollTop - (listEl.scrollHeight - listEl.clientHeight)) < 4) {
-			FilesList.loadMore();
+			if (Math.abs(listEl.scrollTop - (listEl.scrollHeight - listEl.clientHeight)) < 4) {
+				FilesList.loadMore();
+			}
+		} else {
+			document.getElementById('LoadMoreFiles').classList.add('hidden');
 		}
 	}
 
@@ -235,11 +223,61 @@ var FilesList = (function (SwiftV1, Path, CurrentPath, ContainersList) {
 		document.getElementById('AjaxErrorMessage').textContent = statusText;
 		document.getElementById('AjaxStatusCode').textContent = status;
 		document.getElementById('AjaxError').classList.remove('hidden');
+		document.getElementById('LoadMoreFiles').textContent = 'Load More';
 	}
+
+	function makeShortName(name, len) {
+		var ext, filename;
+		len = len || 30;
+		if(name.length <= len){
+			return name;
+		}
+		if(name.indexOf(".") !== -1){
+			ext = name.substring(name.lastIndexOf("."), name.length);
+			filename = name.replace(ext, "");
+			filename = filename.substr(0, len) + "&raquo;" + ext;
+			return filename;
+		}
+		return name.substr(0, len) + "&raquo;";
+	}
+
+	function makePrettyDate(time) {
+		var alternative = new Date(time),
+			pretty,
+			diff = (new Date().getTime() - alternative.getTime()) / 1000,
+			day_diff = Math.floor(diff / 86400);
+		pretty = day_diff == 0 && (
+			diff < 60 && "just now" ||
+				diff < 120 && "1 minute ago" ||
+				diff < 3600 && Math.floor(diff / 60) + " minutes ago" ||
+				diff < 7200 && "1 hour ago" ||
+				diff < 86400 && Math.floor(diff / 3600) + " hours ago") ||
+			day_diff == 1 && "Yesterday" ||
+			day_diff < 7 && day_diff + " days ago" ||
+			day_diff < 31 && Math.ceil(day_diff / 7) + " weeks ago";
+		return pretty || alternative.toDateString();
+	}
+
+	function makePrettyBytes(bytes) {
+		var gradeMap = ["B", "KB", "MB", "GB"]
+		var counter = 1,
+			grade = 1024,
+			checksum = Math.pow(grade, counter),
+			result;
+		while(bytes > checksum){
+			counter++;
+			checksum = Math.pow(grade, counter);
+		}
+		result = (bytes / Math.pow(grade, counter - 1));
+		result = result % 1 ? result.toFixed(2) : result;
+		return result + gradeMap[counter - 1];
+	}
+
+	document.getElementById('LoadMoreFiles').onclick = loadMore;
 
 	return {
 		load: load,
 		loadMore: loadMore
 	};
 
-})(SwiftV1, Path, CurrentPath, ContainersList);
+})(SwiftV1, Path, CurrentPath);

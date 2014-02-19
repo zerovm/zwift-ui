@@ -323,19 +323,11 @@ body.wide-content .center{
   width: 100%;
   height: 100%;
   margin: 0;
-  -webkit-transition: all 0.1s;
-  transition: all 0.1s;
   background: rgba(255, 255, 255, 0.3);
   position: absolute;
   left: 0;
   top: 0;
   padding: 0;
-}
-.new-transition-div,
-.old-transition-div{
-  opacity: 0;
-  -webkit-transition: all 0.1s;
-  transition: all 0.1s;
 }
 
 .no-transition{
@@ -356,29 +348,9 @@ body.wide-content .center{
   background-color: @color4;
   color: @color5;
   position: relative;
-}
-
-.item::after,
-.submenu.appear-submenu::after,
-.load-more-button::after,
-.item::before,
-.submenu.appear-submenu::before,
-.load-more-button::before{ //hack to prevent chrom border disappearing
-  content: "";
-  width: 100%;
-  height: 1px;
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  -webkit-transform: translate3d(0, 1px, 0);
   border-bottom: 1px solid #E4E4E4;
 }
-.item::after,
-.submenu.appear-submenu::after,
-.load-more-button::after{
-  top: 0;
-  -webkit-transform: translate3d(0, -1px, 0);
-}
+
 .item.dummy::before,
 .item.dummy::after{
   display: none;
@@ -386,8 +358,8 @@ body.wide-content .center{
 .load-more-button{
   font-size: 1.2em;
   padding: 3px 0;
-  transition: all 0.1s;
-  -webkit-transition: all 0.1s;
+  /*transition: all 0.1s;
+  -webkit-transition: all 0.1s;*/
   cursor: pointer;
   margin: 0;
   display: -webkit-flex;

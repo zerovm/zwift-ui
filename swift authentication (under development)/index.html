@@ -163,19 +163,20 @@
 			<div id="report" class="hidden"></div>
 		</div>
 
-		<template id="containerTemplate">
-			<div class="item" title="{{title}}" data-path="{{path}}" data-type="container">
+		<div id="LoadMoreContainers" class="load-more-button hidden">Load More</div>
+		<div id="LoadMoreFiles" class="load-more-button hidden">Load More</div>
+
+		<div class="template template-container item" title data-path data-type="container">
 			<span class="left">
 				<span class="file-type"></span>
-				<label class="name">{{name}}</label>
+				<label class="name"></label>
 			</span>
 			<span class="right">
-				<label class="size">{{size}}</label>
-				<label class="files">{{files}}</label>
+				<label class="size"></label>
+				<label class="files"></label>
 			</span>
-				<button class="toggle-item-menu-btn btn"></button>
-			</div>
-		</template>
+			<button class="toggle-item-menu-btn btn"></button>
+		</div>
 
 		<div class="template template-file item" title data-path data-type data-full-path data-content-type>
 			<span class="left">
@@ -263,13 +264,6 @@
 	</div>
 </form>
 
-
-<script src="js/Swift.js"></script>
-
-<script src="js/vendor/require.js"></script>
-<script src="js/vendor/ace/ace.js"></script>
-<script src="js/vendor/iscroll.js"></script>
-
 <script>
 
 	var FileManager;
@@ -315,9 +309,30 @@
 	};
 </script>
 
-<script src="js/Navigation.js"></script>
+
+<script src="js/Swift.js"></script>
+<script src="js/Path.js"></script>
+<script src="js/CurrentPath.js"></script>
+
 <script src="js/extendNative.js"></script>
 <script src="js/toolbox.js"></script>
+
+<script src="js/UpButton.js"></script>
+<script src="js/NavigationBar.js"></script>
+<script src="js/ContainersList.js"></script>
+<script src="js/FilesList.js"></script>
+<script src="js/CreateContainer.js"></script>
+<script src="js/CreateDirectory.js"></script>
+<script src="js/CreateFile.js"></script>
+
+<script src="js/Toolbar.js"></script>
+
+
+<script src="js/vendor/require.js"></script>
+<script src="js/vendor/ace/ace.js"></script>
+<script src="js/vendor/iscroll.js"></script>
+
+
 <script src="js/dialogForm.js"></script>
 <script src="js/FileClick.js"></script>
 <script src="js/item.js"></script>
@@ -368,8 +383,6 @@
 						FileManager.item.toggleMenu(el);
 					} else if (el = FileManager.toolbox.getParentByClassName(e.target,'item')) {
 						FileManager.item.click(el);
-					} else if (window.FileManager.toolbox.getParentByClassName(e.target, 'load-more-button')) {
-						FilesList.loadMore();
 					}
 				});
 				//setRootClass();
@@ -391,8 +404,18 @@
 		}
 
 		function animateItemListRefreshing() {
-			oldEl.classList.add("old-transition-div");
+			//oldEl.classList.add("old-transition-div");
+			oldEl.parentNode.removeChild(oldEl);
+
+
 			newEl.classList.remove("new-transition-div");
+
+
+			newEl.classList.add("no-transition");
+			newEl.classList.remove("no-transition");
+			document.body.classList.remove("disabled");
+
+
 			document.getElementById('List').firstElementChild.scrollIntoView();
 		}
 
@@ -416,7 +439,7 @@
 
 		loadingEl = document.querySelector(".transition-div-loading");
 		loadingEl && loadingEl.parentNode.removeChild(loadingEl);
-	}
+	};
 
 	window.ontransition = function (e) {
 		var el = e.target ? e.target : e, newEl;
@@ -437,19 +460,15 @@
 		e = e.target ? e.target : e;
 		if (Math.abs(e.scrollTop - (e.scrollHeight - e.clientHeight)) <= 1) {
 			if (!document.body.classList.contains('loading-content')) {
-				FilesList.loadMore();
+				if (CurrentPath().isContainersList()) {
+					ContainersList.loadMore();
+				} else {
+					FilesList.loadMore();
+				}
 			}
 		}
 	};
 </script>
-
-<script src="js/Toolbar.js"></script>
-
-<script src="js/ContainersList.js"></script>
-<script src="js/FilesList.js"></script>
-<script src="js/CreateContainer.js"></script>
-<script src="js/CreateDirectory.js"></script>
-<script src="js/CreateFile.js"></script>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>')</script>
