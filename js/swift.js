@@ -11,7 +11,14 @@ var recursiveDeleteOnSwift;
 
     var xAuthToken = null;
     var xStorageUrl = null;
-    var unauthorized = function () {};
+
+    // Todo: add some reasonable logic for default behaviors
+    var defaultHandlers = {
+	"unauthorized": function (e) {},
+	"notFound": function (e) {},
+	"success": function (e) {},
+	"failure": function (e) {}
+    };
 
     var METADATA_PREFIX = {
         ACCOUNT: 'X-Account-Meta-',
@@ -47,23 +54,59 @@ var recursiveDeleteOnSwift;
         }
     }
 
+    function handleXhr (xhr, args) {
+	/* handleXhr takes two arguments: xhr, and args.
+	   xhr is an instance of XMLHTTPRequest.
+	   args is an object that can have the following properties:
+	      success: a function to run when the response code is in the 200s
+	      notFound: a function to run when the response code is 404
+	      unauthorized: a function to run when the response code is 401
+	      failure: a function to run when the response code is not
+	      in the 200s and no more specific function is found.
+
+	   If a property is not defined in args, then the function
+	   defined in defaultHandlers will be used.
+	*/
+	var statuses = ["success", "notFound", "unauthorized", "failure"]
+	for (var index = 0; index < statuses.length; index++) {
+	    // use the default behavior if one is not passed
+	    status = statuses[index];
+	    if (! args.hasOwnProperty(status)) {
+		args[status] = defaultHandlers[status]
+	    }
+	}
+	function handler (e) {
+            if (e.target.status == 401) {
+                args.unauthorized(e);
+            } else if (e.target.status == 404) {
+		args.notFound(e);
+	    } else if (e.target.status >= 200 && e.target.status <= 299) {
+		args.success(e);
+            } else {
+                args.failure(e);
+            }
+	}
+	xhr.addEventListener('load', handler)
+    }
+
+
     SwiftV1.retrieveTokens = function (args) {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', args.v1AuthUrl);
         xhr.setRequestHeader('X-Auth-User', args.tenant + ':' + args.xAuthUser);
         SwiftV1.account = args.xAuthUser;
         xhr.setRequestHeader('X-Auth-Key', args.xAuthKey);
-        xhr.addEventListener('load', function (e) {
-            if (e.target.status >= 200 && e.target.status <= 299) {
+	handleXhr(xhr, {
+	    "success": function (e) {
                 xStorageUrl = e.target.getResponseHeader('X-Storage-Url');
                 SwiftV1.xStorageUrl = xStorageUrl;
                 xAuthToken = e.target.getResponseHeader('X-Auth-Token');
                 SwiftV1.xAuthToken = xAuthToken;
                 args.ok();
-            } else {
-                args.error(e.target.status, e.target.statusText);
-            }
-        });
+	    },
+	    "failure": function (e) {
+		args.error(e.target.status, e.target.statusText);
+	    }});
         xhr.send();
     };
 
@@ -75,23 +118,22 @@ var recursiveDeleteOnSwift;
         }
         return xhr
     }
+
     SwiftV1.Account = {};
 
     SwiftV1.Account.head = function (args) {
         var xhr = SwiftV1.request('HEAD', xStorageUrl)
-        xhr.addEventListener('load', function (e) {
-            if (e.target.status == 401) {
-                unauthorized();
-            } else if (e.target.status >= 200 && e.target.status <= 299) {
+        handleXhr(xhr, {
+	    "success": function (e) {
                 var headers = parseResponseHeaders(e.target.getAllResponseHeaders());
                 var metadata = headersToMetadata(headers, METADATA_PREFIX.ACCOUNT);
                 var containersCount = e.target.getResponseHeader('X-Account-Container-Count');
                 var bytesUsed = e.target.getResponseHeader('X-Account-Bytes-Used');
                 args.success(metadata, containersCount, bytesUsed);
-            } else {
+	    },
+	    "failure": function (e) {
                 args.error(e.target.status, e.target.statusText);
-            }
-        });
+            }});
         xhr.send();
     };
 
@@ -123,22 +165,19 @@ var recursiveDeleteOnSwift;
             url = xStorageUrl;
         }
         var xhr = SwiftV1.request('GET', url)
-
-        xhr.addEventListener('load', function (e) {
-            if (e.target.status == 401) {
-                unauthorized();
-            } else if (e.target.status >= 200 && e.target.status <= 299) {
+	handleXhr(xhr, {
+	    "success": function (e) {
                 if (args.hasOwnProperty('format') && args.format == 'json') {
                     args.success(JSON.parse(e.target.responseText));
                 } else {
                     args.success(e.target.responseText);
                 }
-            } else {
-                args.error(e.target.status, e.target.statusText);
-            }
-        });
+	    },
+	    "failure": function(e) {
+		 args.error(e.target.status, e.target.statusText);
+	    }
+	});
         xhr.send();
-
         return xhr;
     };
 
@@ -149,40 +188,31 @@ var recursiveDeleteOnSwift;
         }
         if (args.hasOwnProperty('removeMetadata')) {
             setHeadersRemoveMetadata(xhr, args.removeMetadata, METADATA_REMOVE_PREFIX.ACCOUNT);
-        }
-        xhr.addEventListener('load', function (e) {
-            if (e.target.status == 401) {
-                unauthorized();
-            } else if (e.target.status >= 200 && e.target.status <= 299) {
-                args.updated();
-            } else {
-                args.error(e.target.status, e.target.statusText);
-            }
-        });
-        xhr.send();
+	}
+	handleXhr(xhr, {
+	    "success": function (e) { args.updated(); },
+	    "error": function (e) {
+		args.error(e.target.status, e.target.statusText);
+	    }});
+	xhr.send();
     };
 
     SwiftV1.Container = {};
-
     SwiftV1.Container.head = function (args) {
-
         var url = xStorageUrl + '/' + args.containerName;
         var xhr = SwiftV1.request('HEAD', url);
-        xhr.addEventListener('load', function (e) {
-            if (e.target.status == 401) {
-                unauthorized();
-            } else if (e.target.status == 404) {
-                args.notExist();
-            } else if (e.target.status >= 200 && e.target.status <= 299) {
+	handleXhr(xhr, {
+	    "success": function (e) {
                 var headers = parseResponseHeaders(e.target.getAllResponseHeaders());
                 var metadata = headersToMetadata(headers, METADATA_PREFIX.CONTAINER);
                 var objectCount = e.target.getResponseHeader('X-Container-Object-Count');
                 var bytesUsed = e.target.getResponseHeader('X-Container-Bytes-Used');
                 args.success(metadata, objectCount, bytesUsed);
-            } else {
-                args.error(e.target.status, e.target.statusText);
-            }
-        });
+	    },
+	    "notFound": function (e) { args.notExist(); },
+	    "failure": function (e) {
+		args.error(e.target.status, e.target.statusText);
+	    }});
         xhr.send();
         return xhr;
     };
@@ -217,29 +247,31 @@ var recursiveDeleteOnSwift;
             queryUrlArr.push(encodeURIComponent(p) + '=' + encodeURIComponent(queryUrlObj[p]));
         }
 
-        if (queryUrlArr.length) {
-            var queryUrl = '?' + queryUrlArr.join('&');
-            url = xStorageUrl + '/' + args.containerName + queryUrl;
-        } else {
-            url = xStorageUrl + '/' + args.containerName;
-        }
-        xhr = SwiftV1.request('GET', url);
-        xhr.addEventListener('load', function (e) {
-            if (e.target.status == 401) {
-                unauthorized();
-            } else if (e.target.status == 404 && args.hasOwnProperty('notExist')) {
-                args.notExist();
-            } else if (e.target.status >= 200 && e.target.status <= 299) {
-                if (args.hasOwnProperty('format') && args.format == 'json') {
-                    args.success(JSON.parse(e.target.responseText));
-                } else {
-                    args.success(e.target.responseText);
-                }
-            } else {
-                args.error(e.target.status, e.target.statusText);
-            }
-        });
-        xhr.send();
+	if (queryUrlArr.length) {
+	    var queryUrl = '?' + queryUrlArr.join('&');
+	    url = xStorageUrl + '/' + args.containerName + queryUrl;
+	} else {
+	    url = xStorageUrl + '/' + args.containerName;
+	}
+	xhr = SwiftV1.request('GET', url);
+	handleXhr(xhr, {
+	    "notFound": function (e) {
+		if (args.hasOwnProperty('notExist')) {
+		    args.notExist();
+		}
+	    },
+	    "success": function(e) {
+		if (args.hasOwnProperty('format') && args.format == 'json') {
+		    args.success(JSON.parse(e.target.responseText));
+		} else {
+		    args.success(e.target.responseText);
+		}
+	    },
+	    "failure": function (e) {
+		args.error(e.target.status, e.target.statusText);
+	    }
+	});
+	xhr.send();
     };
 
     SwiftV1.Container.post = function (args) {
@@ -251,17 +283,12 @@ var recursiveDeleteOnSwift;
         if (args.hasOwnProperty('removeMetadata')) {
             setHeadersRemoveMetadata(xhr, args.removeMetadata, METADATA_REMOVE_PREFIX.CONTAINER);
         }
-        xhr.addEventListener('load', function (e) {
-            if (e.target.status == 401) {
-                unauthorized();
-            } else if (e.target.status == 404) {
-                args.notExist();
-            } else if (e.target.status >= 200 && e.target.status <= 299) {
-                args.updated();
-            } else {
-                args.error(e.target.status, e.target.statusText);
-            }
-        });
+	handleXhr(xhr, {
+	    "notFound": function (e) { args.notExist(); },
+	    "success": function (e) { args.updated(); },
+	    "failure": function (e) {
+		args.error(e.target.status, e.target.statusText);
+	    }});
         xhr.send();
     };
 
@@ -276,34 +303,30 @@ var recursiveDeleteOnSwift;
                 xhr.setRequestHeader(header, value);
             }
         }
-        xhr.addEventListener('load', function (e) {
-            if (e.target.status == 401) {
-                unauthorized();
-            } else if (e.target.status == 201) {
-                args.created();
-            } else if (e.target.status == 202) {
-                args.alreadyExisted();
-            } else {
-                args.error(e.target.status, e.target.statusText);
-            }
-        });
+	handleXhr(xhr, {
+	    "success": function (e) {
+		if (e.target.status == 201) {
+		    args.created();
+		} else {
+		    // must be a 202 by api spec
+		    args.alreadyExisted();
+		}
+	    },
+	    "failure": function (e) {
+		args.error(e.target.status, e.target.statusText);
+	    }});
         xhr.send();
     };
 
     SwiftV1.Container.delete = function (args) {
-        var url = xStorageUrl + '/' + args.containerName;
+	var url = xStorageUrl + '/' + args.containerName;
         var xhr = SwiftV1.request('DELETE', url);
-        xhr.addEventListener('load', function (e) {
-            if (e.target.status == 401) {
-                unauthorized();
-            } else if (e.target.status == 404) {
-                args.notExist();
-            } else if (e.target.status >= 200 && e.target.status <= 299) {
-                args.deleted();
-            } else {
-                args.error(e.target.status, e.target.statusText);
-            }
-        });
+	handleXhr(xhr, {
+	    "success": function (e) { args.deleted(); },
+	    "notFound": function (e) { args.notExist() },
+	    "failure": function (e) {
+		args.error(e.target.status, e.target.statusText);
+	    }});
         xhr.send();
     };
 
@@ -312,22 +335,19 @@ var recursiveDeleteOnSwift;
     SwiftV1.File.head = function (args) {
         var url = xStorageUrl + '/' + args.path;
         var xhr = SwiftV1.request('HEAD', url);
-        xhr.addEventListener('load', function (e) {
-            if (e.target.status == 401) {
-                unauthorized();
-            } else if (e.target.status == 404) {
-                args.notExist();
-            } else if (e.target.status >= 200 && e.target.status <= 299) {
-                var headers = parseResponseHeaders(e.target.getAllResponseHeaders());
-                var metadata = headersToMetadata(headers, METADATA_PREFIX.OBJECT);
-                var contentType = e.target.getResponseHeader('Content-Type');
-                var contentLength = e.target.getResponseHeader('Content-Length');
-                var lastModified = e.target.getResponseHeader('Last-Modified');
-                args.success(metadata, contentType, contentLength, lastModified);
-            } else {
-                args.error(e.target.status, e.target.statusText);
-            }
-        });
+	handleXhr(xhr, {
+	    "notFound": function (e) { args.notExist() },
+	    "success": function (e) {
+		var headers = parseResponseHeaders(e.target.getAllResponseHeaders());
+		var metadata = headersToMetadata(headers, METADATA_PREFIX.OBJECT);
+		var contentType = e.target.getResponseHeader('Content-Type');
+		var contentLength = e.target.getResponseHeader('Content-Length');
+		var lastModified = e.target.getResponseHeader('Last-Modified');
+		args.success(metadata, contentType, contentLength, lastModified);
+	    },
+	    "failure": function (e) {
+		args.error(e.target.status, e.target.statusText);
+	    }});
         xhr.send();
     };
 
@@ -349,17 +369,15 @@ var recursiveDeleteOnSwift;
         if (args.hasOwnProperty('range')) {
             xhr.setRequestHeader('Range', args.range);
         }
-        xhr.addEventListener('load', function (e) {
-            if (e.target.status == 401) {
-                unauthorized();
-            } else if (e.target.status == 404) {
-                args.notExist();
-            } else if (e.target.status >= 200 && e.target.status <= 299) {
-                args.success(e.target.responseText, e.target.getResponseHeader('Content-Type'));
-            } else {
-                args.error(e.target.status, e.target.statusText);
-            }
-        });
+	handleXhr(xhr, {
+	    "notFound": function (e) { args.notExist() },
+	    "success": function (e) {
+		args.success(e.target.responseText,
+			     e.target.getResponseHeader('Content-Type'));
+	    },
+	    "failure": function (e) {
+		args.error(e.target.status, e.target.statusText);
+	    }});
         if (args.hasOwnProperty('progress')) {
             xhr.addEventListener('progress', function (e) {
                 args.progress(e.loaded);
@@ -379,17 +397,12 @@ var recursiveDeleteOnSwift;
             setHeadersRemoveMetadata(xhr, args.removeMetadata, METADATA_REMOVE_PREFIX.OBJECT);
         }
         xhr.setRequestHeader('Content-Type', args.contentType);
-        xhr.addEventListener('load', function (e) {
-            if (e.target.status == 401) {
-                unauthorized();
-            } else if (e.target.status == 404) {
-                args.notExist();
-            } else if (e.target.status >= 200 && e.target.status <= 299) {
-                args.updated();
-            } else {
-                args.error(e.target.status, e.target.statusText);
-            }
-        });
+	handleXhr(xhr, {
+	    "notFound": function (e) { args.notExist(); },
+	    "success": function (e) { args.updated(); },
+	    "failure": function (e) {
+		args.error(e.target.status, e.target.statusText);
+	    }});
         xhr.send();
     };
 
@@ -411,15 +424,11 @@ var recursiveDeleteOnSwift;
                 }
             });
         }
-        xhr.addEventListener('load', function (e) {
-            if (e.target.status == 401) {
-                unauthorized();
-            } else if (e.target.status == 201) {
-                args.created();
-            } else {
-                args.error(e.target.status, e.target.statusText);
-            }
-        });
+	handleXhr(xhr, {
+	    "success": function (e) { args.created(); },
+	    "failure": function (e) {
+		args.error(e.target.status, e.target.statusText);
+	    }});
         xhr.send(args.data);
         return xhr;
     };
@@ -427,17 +436,12 @@ var recursiveDeleteOnSwift;
     SwiftV1.File.delete = function (args) {
         var url = xStorageUrl + '/' + args.path;
         var xhr = SwiftV1.request('DELETE', url);
-        xhr.addEventListener('load', function (e) {
-            if (e.target.status == 401) {
-                unauthorized();
-            } else if (e.target.status == 404) {
-                args.notExist();
-            } else if (e.target.status >= 200 && e.target.status <= 299) {
-                args.deleted();
-            } else {
-                args.error(e.target.status, e.target.statusText);
-            }
-        });
+	handleXhr(xhr, {
+	    "notFound": function (e) { args.notExist(); },
+	    "success": function (e) { args.deleted() },
+	    "failure": function (e) {
+		args.error(e.target.status, e.target.statusText);
+	    }});
         xhr.send();
     };
 
@@ -445,15 +449,11 @@ var recursiveDeleteOnSwift;
         var url = xStorageUrl + '/' + args.path;
         var xhr = SwiftV1.request('PUT', url);
         xhr.setRequestHeader('X-Copy-From', args.copyFrom);
-        xhr.addEventListener('load', function (e) {
-            if (e.target.status == 401) {
-                unauthorized();
-            } else if (e.target.status == 201) {
-                args.copied();
-            } else {
-                args.error(e.target.status, e.target.statusText);
-            }
-        });
+	handleXhr(xhr, {
+	    "success": function (e) { args.copied() },
+	    "failure": function (e) {
+		args.error(e.target.status, e.target.statusText);
+	    }});
         xhr.send();
     };
 
