@@ -1,10 +1,10 @@
-(function (SwiftV1) {
+(function (SwiftV1, List) {
 	'use strict';
 
-	var CreateContainerDialog = document.getElementById('CreateContainerDialog');
-	var inputEl = CreateContainerDialog.getElementsByTagName('input')[0];
+	var createContainerDialog = document.getElementById('CreateContainerDialog');
+	var inputEl = createContainerDialog.getElementsByTagName('input')[0];
 
-	CreateContainerDialog.onsubmit = function (e) {
+	createContainerDialog.onsubmit = function (e) {
 		e.preventDefault();
 		inputEl.setAttribute('disabled', 'disabled');
 
@@ -24,8 +24,8 @@
 		SwiftV1.createContainer({
 			containerName: inputEl.value,
 			created: function () {
-				window.refreshItemList();
-				CreateContainerDialog.classList.add('hidden');
+				List.containers();
+				createContainerDialog.classList.add('hidden');
 				document.getElementById('CreateContainerButton').classList.remove('selected');
 			},
 			alreadyExisted: function () {
@@ -36,7 +36,7 @@
 	};
 
 	function err(className) {
-		var errEl = CreateContainerDialog.getElementsByClassName(className)[0];
+		var errEl = createContainerDialog.getElementsByClassName(className)[0];
 		errEl.classList.remove('hidden');
 		inputEl.removeAttribute('disabled');
 		inputEl.onkeydown = function () {
@@ -45,7 +45,7 @@
 	}
 
 	function errAjax(status, statusText) {
-		var errAjaxEl = CreateContainerDialog.getElementsByClassName('err-ajax')[0];
+		var errAjaxEl = createContainerDialog.getElementsByClassName('err-ajax')[0];
 		errAjaxEl.textContent = 'Ajax Error: ' + statusText + '(' + status + ').';
 		errAjaxEl.classList.remove('hidden');
 		inputEl.removeAttribute('disabled');
@@ -54,8 +54,8 @@
 		};
 	}
 
-	CreateContainerDialog.getElementsByClassName('btn-cancel')[0].onclick = function () {
-		CreateContainerDialog.classList.add('hidden');
+	createContainerDialog.getElementsByClassName('btn-cancel')[0].onclick = function () {
+		createContainerDialog.classList.add('hidden');
 		document.getElementById('CreateContainerButton').classList.remove('selected');
 	} ;
 
@@ -71,13 +71,13 @@
 		for (var i = 0; i < dialogs.length; i++) {
 			dialogs[i].classList.add('hidden');
 		}
-		CreateContainerDialog.getElementsByClassName('err').forEach(function (errEl) {
+		createContainerDialog.getElementsByClassName('err').forEach(function (errEl) {
 			errEl.classList.add('hidden');
 		});
 		inputEl.value = '';
-		CreateContainerDialog.classList.remove('hidden');
+		createContainerDialog.classList.remove('hidden');
 		inputEl.removeAttribute('disabled');
 		inputEl.focus();
 	};
 
-})(SwiftV1);
+})(SwiftV1, List);
