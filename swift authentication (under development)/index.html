@@ -152,20 +152,11 @@
 	</div>
 	<div id="NoContainers" class="hidden">There are no containers.</div>
 	<div id="NoFiles" class="hidden">There are no files.</div>
-	<div id="AjaxError" class="hidden">Ajax Error: <span id="AjaxErrorMessage"></span> (<span id="AjaxStatusCode"></span>)</div>
+	<div class="hidden ajax-error">Ajax Error: <span class="ajax-error-message"></span> (<span class="ajax-status-code"></span>)</div>
 	<div id="List">
+		<div class="list-items">
 
-		<div class="transition-div"></div>
-		<div class="report-wrapper">
-			<div class="timer-wrapper">
-				<span class="pre-text"></span><span class="time-output">00</span>:<span class="time-output">00</span>
-			</div>
-			<div id="report" class="hidden"></div>
 		</div>
-
-		<div id="LoadMoreContainers" class="load-more-button hidden">Load More</div>
-		<div id="LoadMoreFiles" class="load-more-button hidden">Load More</div>
-
 		<div class="template template-container item" title data-path data-type="container">
 			<span class="left">
 				<span class="file-type"></span>
@@ -190,14 +181,8 @@
 			<button class="toggle-item-menu-btn btn"></button>
 		</div>
 
-		<template id="newTransitionDivTemplate">
-			<div class="new-transition-div transition-div"></div>
-		</template>
-
-		<template id="transitionDivLoadingTemplate">
-			<label class="transition-div-loading">Loading...</label>
-		</template>
-
+		<div id="LoadMoreContainers" class="load-more-button hidden">Load More</div>
+		<div id="LoadMoreFiles" class="load-more-button hidden">Load More</div>
 	</div>
 	<div class="code-editor-wrapper">
 		<div id="codeEditor"></div>
@@ -319,8 +304,7 @@
 
 <script src="js/UpButton.js"></script>
 <script src="js/NavigationBar.js"></script>
-<script src="js/ContainersList.js"></script>
-<script src="js/FilesList.js"></script>
+<script src="js/List.js"></script>
 <script src="js/CreateContainer.js"></script>
 <script src="js/CreateDirectory.js"></script>
 <script src="js/CreateFile.js"></script>
@@ -396,49 +380,23 @@
 		var parentEl, newEl, oldEl, template, el, loadingEl,
 				commandName;
 
-		commandName = window.FileManager.item.itemCommandName.pop();//added to prevent unnecessary request while change event fired on loaded file
+		//added to prevent unnecessary request while change event fired on loaded file:
+		commandName = window.FileManager.item.itemCommandName.pop();
 		if (commandName === "none"){
 			return;
 		} else {
 			window.FileManager.item.itemCommandName.set(commandName);
 		}
 
-		function animateItemListRefreshing() {
-			//oldEl.classList.add("old-transition-div");
-			oldEl.parentNode.removeChild(oldEl);
-
-
-			newEl.classList.remove("new-transition-div");
-
-
-			newEl.classList.add("no-transition");
-			newEl.classList.remove("no-transition");
-			document.body.classList.remove("disabled");
-
-
-			document.getElementById('List').firstElementChild.scrollIntoView();
-		}
-
-		oldEl = document.getElementById('List').firstElementChild;
-		parentEl = oldEl.parentNode;
-
-		template = document.querySelector("#newTransitionDivTemplate").innerHTML;
-		parentEl.insertAdjacentHTML("afterbegin", template);
-		newEl = document.querySelector(".new-transition-div");
-
-		el = newEl;
 		NavigationBar.setContent(CurrentPath().withoutAccount(), true);
 
 		if (CurrentPath().isContainersList()) {
-			ContainersList.load(animateItemListRefreshing);
+			List.containers();
 		} else if (CurrentPath().isFilesList()) {
-			FilesList.load(animateItemListRefreshing);
+			List.files();
 		} else {
-			handleFileClick(el, animateItemListRefreshing);
+			handleFileClick(el);
 		}
-
-		loadingEl = document.querySelector(".transition-div-loading");
-		loadingEl && loadingEl.parentNode.removeChild(loadingEl);
 	};
 
 	window.ontransition = function (e) {
@@ -455,19 +413,6 @@
 	document.addEventListener("transitionend", ontransition);
 	document.addEventListener("webkitTransitionEnd", ontransition);
 	window.addEventListener("hashchange", refreshItemList);
-
-	document.getElementById('List').onscroll = function (e) {
-		e = e.target ? e.target : e;
-		if (Math.abs(e.scrollTop - (e.scrollHeight - e.clientHeight)) <= 1) {
-			if (!document.body.classList.contains('loading-content')) {
-				if (CurrentPath().isContainersList()) {
-					ContainersList.loadMore();
-				} else {
-					FilesList.loadMore();
-				}
-			}
-		}
-	};
 </script>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
