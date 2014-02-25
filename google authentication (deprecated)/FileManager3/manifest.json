@@ -1,8 +1,0 @@
-{
-	"author": "LiteStack",
-	"name": "File Manager",
-	"version": "0.1",
-	"manifest_version": 1,
-	"icon": "apple-touch-icon-114x114-fm.png",
-	"homepage": "index.html"
-}
