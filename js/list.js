@@ -202,6 +202,7 @@ var List = (function (SwiftV1, UpButton, NavigationBar, CurrentPath) {
 		document.getElementById('NoContainers').classList.add('hidden');
 		document.getElementById('NoFiles').classList.add('hidden');
 		listEl.getElementsByClassName('list-items')[0].innerHTML = '';
+		listEl.getElementsByClassName('list-items')[0].classList.remove('empty-list');
 	}
 
 	function fill(data, createItem) {
@@ -406,7 +407,8 @@ var List = (function (SwiftV1, UpButton, NavigationBar, CurrentPath) {
 
 	return {
 		containers: containers,
-		files: files
+		files: files,
+		clear: clear
 	};
 
 })(SwiftV1, UpButton, NavigationBar, CurrentPath);
