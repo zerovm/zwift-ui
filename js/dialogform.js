@@ -15,7 +15,7 @@
 
 	function DialogForm(options){
 		var dialogContainer = document.getElementById(options.wrapperId),
-			input = dialogContainer.getElementsByTagName("input")[0],
+			input = dialogContainer.getElementsByTagName("input")[0] || null,
 			dialogContentWrapper = dialogContainer.getElementsByClassName("dialog-wrapper")[0],
 			inputClass = "input-shown", dialogClass = "dialog-shown",
 			inputInvalidClass = "invalid-input",

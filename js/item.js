@@ -8,7 +8,10 @@
 		itemCommandName,
 		progressElWrapper;
 
+	var __el;
+
 	function onItemClick(itemEl){
+		__el = itemEl;
 		var name = itemEl.dataset.path,
 			curPath = CurrentPath(),
 			fullPath;
@@ -175,7 +178,6 @@
 		var button, wrapper, path,
 			buttonsClass = "submenu-items",
 			actionPrefix = "on",
-			metadataObj,
 			oncopy,
 			handlers,
 			transtionHandler = new TransitionHandler();
@@ -218,182 +220,6 @@
 			var textEl = document.createElement("span");
 			textEl.innerHTML = "Are you sure you want to delete <strong>" + previousParent.dataset.path + "</strong>?";
 			return textEl;
-		}
-
-		function MetadataObj(){
-			var wrapper = document.createElement("div"),
-				containerType = "container",
-				rowClassName = "meta-data-row",
-				metaKeyClassName = "meta-key-input",
-				metaValueClassName = "meta-value-input",
-				errorInputClassName = "error-input",
-				inputWrapperClassName = "input-wrapper",
-				metadataRemoveClassName = "metadata-remove",
-				disabledAttribute = "disabled",
-				firstLetterRegex = /./,
-				originMetadata,
-				originMetadataKeys,
-				lastInput;
-
-			function createMetaInputRow(meta, value){
-				var metadataWrapper = document.createElement("div"),
-					inputWrapper = document.createElement("div"),
-					input, button;
-				metadataWrapper.className = rowClassName;
-				inputWrapper.className = inputWrapperClassName;
-
-				input = document.createElement("input");
-				lastInput = input;
-				input.className = metaKeyClassName;
-				input.type = "text";
-				meta && (input.value = decodeURIComponent(meta));
-				input.placeholder = "Meta key";
-				inputWrapper.appendChild(input);
-
-				input = document.createElement("input");
-				input.className = metaValueClassName;
-				input.type = "text";
-				value && (input.value = decodeURIComponent(value));
-				input.placeholder = "Meta value";
-				inputWrapper.appendChild(input);
-
-				metadataWrapper.appendChild(inputWrapper);
-
-				button = document.createElement("button");
-				button.className = metadataRemoveClassName;
-				button.tabIndex = -1;
-				button.type = "button";
-				metadataWrapper.appendChild(button);
-
-				wrapper.appendChild(metadataWrapper);
-			}
-
-			function makeMetadataStandartView(str){
-				return str.toLowerCase().replace(firstLetterRegex, str[0].toUpperCase());
-			}
-
-			function checkCoincidence(inputs, input){
-				var i, isCoincidence, comparisonInputValue,
-					inputValue = input.value;
-				if(!inputValue){
-					return;
-				}
-				inputValue = makeMetadataStandartView(inputValue);
-				for(i = inputs.length - 1; i >= 0; i--){
-					comparisonInputValue = inputs[i].value;
-					if(comparisonInputValue){
-						comparisonInputValue = makeMetadataStandartView(comparisonInputValue);
-					}else{
-						continue;
-					}
-					if(comparisonInputValue && comparisonInputValue === inputValue && inputs[i] !== input){
-						isCoincidence = true;
-						break;
-					}
-				}
-				if(isCoincidence){
-					input.classList.add(errorInputClassName);
-					input.nextSibling.setAttribute(disabledAttribute, disabledAttribute);
-				}else{
-					input.classList.remove(errorInputClassName);
-					input.nextSibling.removeAttribute(disabledAttribute);
-				}
-			}
-
-			function checkAllErrorInputs(){
-				var inputs = wrapper.getElementsByClassName(metaKeyClassName);
-				wrapper.getElementsByClassName(errorInputClassName).forEach(function(input){
-					checkCoincidence(inputs, input);
-				});
-			}
-
-			function removeRow(row){
-				row.nextSibling.getElementsByTagName("input")[0].focus();
-				row.parentNode.removeChild(row);
-				checkAllErrorInputs();
-			}
-
-			function getMeta(){
-				var result = {};
-				wrapper.getElementsByClassName(inputWrapperClassName).filter(function(el){
-					return !el.firstElementChild.classList.contains(errorInputClassName);
-				}).forEach(function(inputwrapper){
-						var metaValue = encodeURIComponent(inputwrapper.children[0].value),
-							metaKey = encodeURIComponent(inputwrapper.children[1].value);
-						metaValue && metaKey && (result[metaValue] = metaKey);
-					});
-				return result;
-			}
-
-			this.el = wrapper;
-			this.getMeta = getMeta;
-			this.getRemovedMeta = function(){
-				var removedMeta = [],
-					currentMeta = getMeta();
-				originMetadataKeys.forEach(function(key){
-					if(!currentMeta[key]){
-						removedMeta.push(key);
-					}
-				});
-				return removedMeta;
-			};
-			this.showMetaData = function(path, type, callback){
-				var args = {
-					success: function(metadata){
-						wrapper.removeChildren();
-						originMetadata = metadata;
-						originMetadataKeys = Object.keys(originMetadata);
-						originMetadataKeys.forEach(function(key){
-							createMetaInputRow(key, originMetadata[key]);
-						});
-						createMetaInputRow();
-						callback(function(){
-							lastInput.focus();
-							lastInput.scrollIntoView();
-						});
-					},
-					notExist: function(){
-						window.FileManager.errorMsgHandler.show({
-							header: "Item does not exist"
-						});
-					},
-					error: ajaxError
-				};
-				path = window.CurrentPath().withoutAccount() + path;
-				window.FileManager.errorMsgHandler.hide();
-				if(type === containerType){
-					args.containerName = path;
-					SwiftV1.Container.head(args);
-				}else{
-					args.path = path;
-					SwiftV1.File.head(args);
-				}
-			};
-			wrapper.className = "meta-data-wrapper";
-			wrapper.addEventListener("click", function(e){
-				var row;
-				if(e.target.tagName === "BUTTON"){
-					row = window.FileManager.toolbox.getParentByClassName(e.target, rowClassName);
-					!window.FileManager.toolbox.isLastChildren(row) && removeRow(row);
-				}
-			});
-			wrapper.addEventListener("input", function(e){
-				var input = e.target,
-					row = window.FileManager.toolbox.getParentByClassName(e.target, rowClassName),
-					isRowLastChildren = window.FileManager.toolbox.isLastChildren(row);
-				if(!input.value){
-					if(!isRowLastChildren){
-						removeRow(row);
-					}
-				}else{
-					if(isRowLastChildren){
-						createMetaInputRow();
-					}
-				}
-				if(input.classList.contains(metaKeyClassName)){
-					checkCoincidence(this.getElementsByClassName(metaKeyClassName), input);
-				}
-			});
 		}
 
 		this.appear = function(parentEl){
@@ -543,48 +369,25 @@
 			oncopy: function(){
 				oncopy();
 			},
-			/*onmetadata: function(e){
-				var item = previousParent;
-				metadataObj.showMetaData(item.dataset.path, item.dataset.type, function(callback){
-					window.FileManager.dialogForm.show({
-						confirm: function(){
-							SwiftV1.updateFileMetadata({
-								metadata: metadataObj.getMeta(),
-								removeMetadata: metadataObj.getRemovedMeta(),
-								contentType: item.dataset.contentType,
-								updated: window.refreshItemList,
-								path: window.CurrentPath().withoutAccount() + previousParent.dataset.path,
-								error: ajaxError,
-								notExist: function(){
-									window.FileManager.errorMsgHandler.show({
-										header: "File not exist"
-									});
-								}});
-							window.FileManager.dialogForm.hide();
-						},
-						dialogContent: metadataObj.el,
-						onshow: callback,
-						customizationClass: "metadata",
-						type: "dialog"
-					});
-				});
-			},*/
+			onmetadata: function(e){
+				Metadata.loadMetadata(window.CurrentPath().get() + previousParent.dataset.path);
+			},
 			ontype: function(e){
 				window.FileManager.dialogForm.show({
 					type: "input",
 					placeholder: "New file type",
 					customizationClass: "change-type",
 					confirm: function(input){
-						input.value && SwiftV1.updateFileMetadata({
+
+						if (!input.value) {
+							window.FileManager.dialogForm.hide();
+							return;
+						}
+						SwiftV1.File.post({
 							contentType: input.value,
 							updated: window.refreshItemList,
 							path: window.CurrentPath().withoutAccount() + previousParent.dataset.path,
-							error: ajaxError,
-							notExist: function(){
-								window.FileManager.errorMsgHandler.show({
-									header: "File not exist"
-								});
-							}
+							error: ajaxError
 						});
 						window.FileManager.dialogForm.hide();
 					},
@@ -632,7 +435,6 @@
 				handlers[handler] && handlers[handler]();
 			}
 		});
-		metadataObj = new MetadataObj;
 	}
 
 	itemCommandName = new ItemCommandName();
@@ -650,6 +452,9 @@
 		toggleMenu: toggleMenu,
 		itemCommandName: itemCommandName,
 		open: open,
-		execute: execute
+		execute: execute,
+		el: function () {
+			return __el;
+		}
 	};
 })();

@@ -17,6 +17,7 @@
 	<link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon-144x144-fm.png">
 
 	<link rel="stylesheet" href="css/main.css">
+	<link rel="stylesheet" href="css/metadata.css">
 </head>
 <body>
 
@@ -118,6 +119,39 @@
 				</span>
 				</form>
 			</div>
+
+			<form id="MetadataDialog" class="input-group hidden">
+				<!-- messages: loading, error, etc. -->
+				<div class="metadata-loading hidden">Loading Metadata...</div>
+				<div class="metadata-loading-error hidden">
+					Error occurred while loading metadata. Ajax Error:
+					<span class="ajax-error-status-text"></span>
+					<span class="ajax-error-status-code"></span>
+				</div>
+				<div class="metadata-uploading hidden">Uploading Metadata...</div>
+				<div class="metadata-uploaded hidden">Metadata is uploaded successfully.</div>
+				<div class="metadata-uploading-error hidden">
+					Error occurred while uploading metadata. Ajax Error:
+					<span class="ajax-error-status-text"></span>
+					<span class="ajax-error-status-code"></span>
+				</div>
+
+
+				<!-- metadata-row template -->
+				<div class="template metadata-row">
+					<input class="metadata-key" type="text" placeholder="Meta key">
+					<input class="metadata-value" type="text" placeholder="Meta value">
+					<button class="metadata-remove" tabindex="-1" type="button"></button>
+				</div>
+				<!-- metadata-list -->
+				<div class="metadata-list">
+				</div>
+				<!-- OK and Cancel buttons -->
+				<div class="metadata-footer">
+					<button class="metadata-ok" type="submit">OK</button>
+					<button class="metadata-cancel" type="button">Cancel</button>
+				</div>
+			</form>
 
 			<div id="CopyDialog" class="hidden">
 				<form class="input-group">
@@ -314,6 +348,7 @@
 <script src="js/createcontainer.js"></script>
 <script src="js/createdirectory.js"></script>
 <script src="js/createfile.js"></script>
+<script src="js/metadata.js"></script>
 
 <script src="js/toolbar.js"></script>
 
@@ -388,7 +423,7 @@
 
 		//added to prevent unnecessary request while change event fired on loaded file:
 		commandName = window.FileManager.item.itemCommandName.pop();
-		if (commandName === "none"){
+		if (commandName === "none") {
 			return;
 		} else {
 			window.FileManager.item.itemCommandName.set(commandName);
@@ -401,7 +436,7 @@
 		} else if (CurrentPath().isFilesList()) {
 			List.files();
 		} else {
-			handleFileClick(el);
+			handleFileClick(document.querySelector('#List .list-items'), function () {});
 		}
 	};
 
@@ -414,7 +449,7 @@
 			newEl.classList.remove("no-transition");
 			document.body.classList.remove("disabled");
 		}
-	}
+	};
 
 	document.addEventListener("transitionend", ontransition);
 	document.addEventListener("webkitTransitionEnd", ontransition);
@@ -422,7 +457,4 @@
 </script>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
-<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>')</script>
-
-</body>
-</html>
+<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/scri
