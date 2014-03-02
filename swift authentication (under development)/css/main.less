@@ -698,7 +698,6 @@ body:not(.freeze-all) .item-confirm-delete button:hover{
 .menu-file button.save-as{
   background-position: -332px top;
 }
-.metadata-remove,
 .menu-file .txt-btn{
   background: url(../img/submenu_buttons.png) -138px top no-repeat;
   background-size: auto 70px;
@@ -730,20 +729,6 @@ body:not(.freeze-all) .item-confirm-delete button:hover{
   color: rgba(0, 0, 0, 0.35);
 }
 
-.metadata-save,
-.metadata-discard-changes{
-  width: 120px;
-  height: 30px;
-  padding: 5px;
-  background: rgba(0, 0, 0, 0.19);
-  color: rgba(0, 0, 0, 0.52);
-  font-weight: bold;
-  margin: 1px;
-  border: 0;
-}
-.metadata-save{
-  float: right;
-}
 .err-msg{
   font-size: 1.4em;
   text-align: left;
@@ -1103,7 +1088,6 @@ template{
   border-bottom: none;
 }
 .err-msg-wrapper::before,
-.metadata-remove,
 .submenu button{
   width: 30px;
   height: 35px;
@@ -1273,20 +1257,20 @@ template{
 /*width: 190px;*/
   white-space: nowrap;
 }
-.meta-data-row{
+/*
+.metadata-row{
   display: -webkit-box;
   display: -moz-box;
   display: -ms-flexbox;
   display: -webkit-flex;
   display: flex;
 }
-/*.meta-data-row:not(:first-child){
+.metadata-row:not(:first-child){
   margin-top: 5px;
 }*/
 #CreateDialog.save-as-dialog .input-wrapper,
 #CreateDialog.change-type .input-wrapper,
-#CopyDialog .input-wrapper,
-.meta-data-row .input-wrapper{
+#CopyDialog .input-wrapper{
   width: 100%;
   display: -webkit-inline-flex;
   display: inline-flex;
@@ -1294,9 +1278,6 @@ template{
   min-height: 30px;
   -webkit-align-items: center;
   align-items: center;
-}
-.meta-data-row .input-wrapper{
-  padding-top: 4px;
 }
 /*
 #CreateDialog input:focus,
@@ -1319,20 +1300,16 @@ border: none;*/
   border-radius: 4px;
   margin: 0 4px;
 }
+/*
 #CreateDialog.metadata input{
   font-size: 1em;
 }
-#CreateDialog .meta-key-input.error-input{
+#CreateDialog .metadata-key.error-input{
   background: @color3;
   color: white;
   outline: none;
 }
-.metadata-remove{
-  width: 24px;
-  border: 0;
-  background-position: -496px 0;
-  pointer-events: auto;
-}
+*/
 #CreateDialog.save-as-dialog form,
 #CreateDialog.change-type form,
 #CopyDialog form{
@@ -1621,4 +1598,8 @@ input[type=text]:focus{
 
 .template {
   display: none;
+}
+
+.list-items {
+  width: 100% !important;
 }
