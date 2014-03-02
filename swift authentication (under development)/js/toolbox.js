@@ -134,13 +134,6 @@ function toolbox() {
 		return name.substr(0, len) + "&raquo;";
 	}
 
-	function createLoadMoreButton(parent){
-		var el = document.createElement("div");
-		el.className = "load-more-button";
-		el.textContent = "Load More";
-		parent.appendChild(el);
-	}
-
 	function makeDatePretty(time){
 		var alternative = new Date(time),
 			pretty,
@@ -303,7 +296,6 @@ function toolbox() {
 		isExecutable: isExecutable,
 		shortenSize: getTransformedBytes,
 		makeShortName: makeShortName,
-		createLoadMoreButton: createLoadMoreButton,
 		escapeHTML: escapeHTML,
 		makeDatePretty: makeDatePretty,
 		ProgressBar: ProgressBar,

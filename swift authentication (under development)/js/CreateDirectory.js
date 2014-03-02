@@ -1,10 +1,10 @@
 (function (SwiftV1) {
 	'use strict';
 
-	var CreateDirectoryDialog = document.getElementById('CreateDirectoryDialog');
-	var inputEl = CreateDirectoryDialog.getElementsByTagName('input')[0];
+	var createDirectoryDialog = document.getElementById('CreateDirectoryDialog');
+	var inputEl = createDirectoryDialog.getElementsByTagName('input')[0];
 
-	CreateDirectoryDialog.onsubmit = function (e) {
+	createDirectoryDialog.onsubmit = function (e) {
 		e.preventDefault();
 		inputEl.setAttribute('disabled', 'disabled');
 
@@ -33,8 +33,8 @@
 			SwiftV1.createDirectory({
 				path: dirPathWithoutAccount,
 				created: function(){
-					window.refreshItemList();
-					CreateDirectoryDialog.classList.add('hidden');
+					List.files();
+					createDirectoryDialog.classList.add('hidden');
 					document.getElementById('CreateDirectoryButton').classList.remove('selected');
 				},
 				error: errAjax
@@ -46,7 +46,7 @@
 	};
 
 	function err(className) {
-		var errEl = CreateDirectoryDialog.getElementsByClassName(className)[0];
+		var errEl = createDirectoryDialog.getElementsByClassName(className)[0];
 		errEl.classList.remove('hidden');
 		inputEl.removeAttribute('disabled');
 		inputEl.onkeydown = function () {
@@ -55,7 +55,7 @@
 	}
 
 	function errAjax(status, statusText) {
-		var errAjaxEl = CreateDirectoryDialog.getElementsByClassName('err-ajax')[0];
+		var errAjaxEl = createDirectoryDialog.getElementsByClassName('err-ajax')[0];
 		errAjaxEl.textContent = 'Ajax Error: ' + statusText + '(' + status + ').';
 		errAjaxEl.classList.remove('hidden');
 		inputEl.removeAttribute('disabled');
@@ -64,8 +64,8 @@
 		};
 	}
 
-	CreateDirectoryDialog.getElementsByClassName('btn-cancel')[0].onclick = function () {
-		CreateDirectoryDialog.classList.add('hidden');
+	createDirectoryDialog.getElementsByClassName('btn-cancel')[0].onclick = function () {
+		createDirectoryDialog.classList.add('hidden');
 		document.getElementById('CreateDirectoryButton').classList.remove('selected');
 	};
 
@@ -81,11 +81,11 @@
 		for (var i = 0; i < dialogs.length; i++) {
 			dialogs[i].classList.add('hidden');
 		}
-		CreateDirectoryDialog.getElementsByClassName('err').forEach(function (errEl) {
+		createDirectoryDialog.getElementsByClassName('err').forEach(function (errEl) {
 			errEl.classList.add('hidden');
 		});
 		inputEl.value = '';
-		CreateDirectoryDialog.classList.remove('hidden');
+		createDirectoryDialog.classList.remove('hidden');
 		inputEl.removeAttribute('disabled');
 		inputEl.focus();
 	};
