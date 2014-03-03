@@ -11,27 +11,29 @@
 }
 
 #MetadataDialog .metadata-row {
-	padding: 2px 0px;
+	display: flex;
+	display: -webkit-flex;
 }
 
 #MetadataDialog input.metadata-key,
 #MetadataDialog input.metadata-value {
-	width: -webkit-calc(50% - 24px);
-	width: -moz-calc(50% - 24px);
-	width: calc(50% - 24px);
-	height: 24px;
-	vertical-align: middle;
+	flex-grow: 1;
+	-webkit-flex-grow: 1;
 }
 
 #MetadataDialog button.metadata-remove {
 	width: 24px;
+}
+
+#MetadataDialog input.metadata-key,
+#MetadataDialog input.metadata-value {
+	margin: 2px;
 	height: 24px;
 	vertical-align: middle;
 }
-
 #MetadataDialog input {
 	/*box-sizing: border-box;*/
-	padding: 5px;
+	padding: 0 5px;
 	border-radius: 4px;
 	border: 1px solid #999;
 	font-size: .7em;
