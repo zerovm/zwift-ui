@@ -18,6 +18,7 @@
 
 	<link rel="stylesheet" href="css/main.css">
 	<link rel="stylesheet" href="css/metadata.css">
+	<link rel="stylesheet" href="css/authentication.css">
 </head>
 <body>
 
@@ -223,65 +224,16 @@
 	</div>
 </div>
 
-<style>
-	.full-stretch {
-		position: absolute;
-		left: 0;
-		right: 0;
-		top: 0;
-		bottom: 0;
-		overflow: auto;
-	}
-	.center-content {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		-webkit-transform: translateX(-50%) translateY(-50%);
-		-moz-transform: translateX(-50%) translateY(-50%);
-		-ms-transform: translateX(-50%) translateY(-50%);
-		-o-transform: translateX(-50%) translateY(-50%);
-		transform: translateX(-50%) translateY(-50%);
-	}
-
-	#v1AuthForm {
-		z-index:999;
-		background: url(img/cloud_left_top.png) left top, url(img/cloud_right_top.png) right top, url(img/cloud_left_bottom.png) left bottom, url(img/cloud_right_bottom.png) right bottom, #92AEC8;
-		background-repeat: no-repeat;
-		background-attachment: fixed;
-	}
-
-	#v1AuthForm label {
-		cursor: default;
-		color: white;
-		font-size: medium;
-		margin-top: 10px;
-		margin-bottom: 2px;
-		display: block;
-	}
-
-	#v1AuthForm input {
-		font-size: small;
-		line-height: 22px;
-		width: 250px;
-		padding: 0 5px;
-	}
-
-	#v1AuthForm button[type=submit] {
-		margin-top: 10px;
-		font-size: medium;
-		padding: 5px 10px;
-	}
-</style>
-
-<form id="v1AuthForm" class="full-stretch">
+<form id="Authentication" class="full-stretch">
 	<div class="center-content">
-		<label>V1 AUTH URL: </label><input id="v1-auth-url" value=""><br>
-		<label>Tenant: </label><input id="tenant"><br>
-		<label>X Auth User: </label><input id="x-auth-user"><br>
-		<label>X Auth Key: </label><input id="x-auth-key"><br>
+		<label>V1 AUTH URL: </label><input class="v1-auth-url" value=""><br>
+		<label>Tenant: </label><input class="tenant"><br>
+		<label>X Auth User: </label><input class="x-auth-user"><br>
+		<label>X Auth Key: </label><input class="x-auth-key"><br>
 		<button type="submit" class="btn">Submit</button>
 	</div>
 </form>
+
 
 <script>
 
@@ -301,16 +253,9 @@
 		el.removeAttribute('hidden');
 	};
 
-	function initPage() {
-		location.hash = SwiftV1.account + "/";
-		window.refreshItemList();
-
-		FileManager.reAuth();
-
-		document.getElementById("WideButton").addEventListener("click", function(){
-			document.body.classList.toggle("wide-content");
-		});
-	}
+	document.getElementById("WideButton").onclick = function() {
+		document.body.classList.toggle("wide-content");
+	};
 
 	FileManager.reAuth = function () {
 		SwiftV1.Account.head({success:function(){},error:function(){}});
@@ -318,12 +263,6 @@
 	};
 
 	window.onload = function () {
-                auth_url = document.getElementById('v1-auth-url');
-                if (auth_url.value == "") {
-                  auth_url.value = document.location.protocol + "//" +
-                    document.location.host + "/auth/v1.0";
-                }
-
 		messageForIE();
 
 		function messageForIE() {
@@ -344,6 +283,10 @@
 
 <script src="js/upbutton.js"></script>
 <script src="js/navigationbar.js"></script>
+
+
+<script src="js/item.js"></script>
+
 <script src="js/list.js"></script>
 <script src="js/createcontainer.js"></script>
 <script src="js/createdirectory.js"></script>
@@ -360,63 +303,12 @@
 
 <script src="js/dialogform.js"></script>
 <script src="js/fileclick.js"></script>
-<script src="js/item.js"></script>
 <script src="js/uploadbuttons.js"></script>
 <script src="js/fileeditor.js"></script>
 <script src="js/errormsg.js"></script>
 <script src="js/fileexecutor.js"></script>
 
 <script>
-	document.getElementById('v1AuthForm').onsubmit = function (e) {
-		e.preventDefault();
-		var v1AuthUrl = document.getElementById('v1-auth-url').value;
-		var tenant = document.getElementById('tenant').value;
-		var xAuthUser = document.getElementById('x-auth-user').value;
-		var xAuthKey = document.getElementById('x-auth-key').value;
-		SwiftV1.retrieveTokens({
-			v1AuthUrl: v1AuthUrl,
-			tenant: tenant,
-			xAuthUser: xAuthUser,
-			xAuthKey: xAuthKey,
-			error: function () {
-				alert(arguments[0] + ' ' + arguments[1]);
-			},
-			ok: function () {
-
-				toolbox();
-
-				document.getElementById('v1AuthForm').setAttribute('hidden', 'hidden');
-
-				document.getElementById('AccountId').textContent = SwiftV1.account;
-
-				document.getElementById('SignOut').onclick = function () {
-					window.location.reload(true);
-					//document.getElementById('v1AuthForm').removeAttribute('hidden');
-				};
-
-				initPage();
-
-
-				document.addEventListener('click', function (e) {
-					var el;
-
-					if (document.body.classList.contains('disabled')) {
-						return;
-					}
-
-					if (el = FileManager.toolbox.getParentByClassName(e.target,'toggle-item-menu-btn')) {
-						FileManager.item.toggleMenu(el);
-					} else if (el = FileManager.toolbox.getParentByClassName(e.target,'item')) {
-						FileManager.item.click(el);
-					}
-				});
-				//setRootClass();
-			}
-		});
-	};
-
-
-
 	window.refreshItemList = function () {
 		var parentEl, newEl, oldEl, template, el, loadingEl,
 				commandName;
@@ -455,6 +347,7 @@
 	document.addEventListener("webkitTransitionEnd", ontransition);
 	window.addEventListener("hashchange", refreshItemList);
 </script>
+<script src="js/authentication.js"></script>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
-<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/scri
+<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>');</script>
