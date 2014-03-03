@@ -20,14 +20,6 @@ document.addEventListener("DOMContentLoaded", function(){
 		},
 		rootClass = "location-root";
 
-	function setRootClass(){
-		if(window.CurrentPath().isContainersList()){
-			document.body.classList.add(rootClass);
-		}else{
-			document.body.classList.remove(rootClass);
-		}
-	}
-
 	function ajaxError(status, statusText){
 		window.FileManager.errorMsgHandler.show({
 			header: errorMsgMap.emptyInput,
@@ -73,7 +65,6 @@ document.addEventListener("DOMContentLoaded", function(){
 		}
 	}
 
-	window.addEventListener("hashchange", setRootClass);
 	window.addEventListener("hashchange", cancel);
 	buttons.forEach(function(el){
 		el.addEventListener("click", showCreateButtonDialog);
