@@ -1,4 +1,4 @@
-var List = (function (SwiftV1, UpButton, NavigationBar, CurrentPath) {
+var List = (function (SwiftV1, UpButton, NavigationBar, CurrentPath, item) {
 	'use strict';
 
 	var LIMIT = 20;
@@ -405,10 +405,36 @@ var List = (function (SwiftV1, UpButton, NavigationBar, CurrentPath) {
 		}
 	};
 
+	listEl.onclick = function (e) {
+		var el;
+
+		if (document.body.classList.contains('disabled')) {
+			return;
+		}
+
+		if (el = checkParentClassName(e.target,'toggle-item-menu-btn')) {
+			item.toggleMenu(el);
+		} else if (el = checkParentClassName(e.target,'item')) {
+			item.click(el);
+		}
+	};
+
+
+	function checkParentClassName(el, className){
+		var topParentTag = "BODY";
+		while(el && el.tagName !== topParentTag){
+			if(el.classList.contains(className)){
+				return el;
+			}
+			el = el.parentNode;
+		}
+		return null;
+	}
+
 	return {
 		containers: containers,
 		files: files,
 		clear: clear
 	};
 
-})(SwiftV1, UpButton, NavigationBar, CurrentPath);
+})(SwiftV1, UpButton, NavigationBar, CurrentPath, FileManager.item);

@@ -1,0 +1,51 @@
+#Authentication {
+	z-index:999;
+	background: url(../img/cloud_left_top.png) left top,
+				url(../img/cloud_right_top.png) right top,
+				url(../img/cloud_left_bottom.png) left bottom,
+				url(../img/cloud_right_bottom.png) right bottom,
+				#92AEC8;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+}
+
+#Authentication label {
+	cursor: default;
+	color: white;
+	font-size: medium;
+	margin-top: 10px;
+	margin-bottom: 2px;
+	display: block;
+}
+
+#Authentication input {
+	font-size: small;
+	line-height: 22px;
+	width: 250px;
+	padding: 0 5px;
+}
+
+#Authentication button[type=submit] {
+	margin-top: 10px;
+	font-size: medium;
+	padding: 5px 10px;
+}
+
+.full-stretch {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	overflow: auto;
+}
+.center-content {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	-webkit-transform: translateX(-50%) translateY(-50%);
+	-moz-transform: translateX(-50%) translateY(-50%);
+	-ms-transform: translateX(-50%) translateY(-50%);
+	-o-transform: translateX(-50%) translateY(-50%);
+	transform: translateX(-50%) translateY(-50%);
+}
