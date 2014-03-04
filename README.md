@@ -84,14 +84,13 @@ already exist, HTTP error.
 ## Create Directory Form
 
 Create directory form consists of: Directory Name Field, OK Button,
-Cancel Button, Error Label. Minimum input length is 1, maximum input
-length is 1024 bytes.
+Cancel Button, Error Label. Allowed input length is 1-1024 bytes.
 
 ## Create File Form
 
 Create file form consists of: File Name Field, File Type ("text/plain"
-is the default value), OK Button, Cancel Button, Error Label. Minimum
-name input length is 1, maximum name input length is 1024 bytes.
+is the default value), OK Button, Cancel Button, Error Label. Allowed
+name input length is 1-1024 bytes.
 
 ## Uploading Files Area
 
