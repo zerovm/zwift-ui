@@ -1,25 +1,21 @@
-#Authentication {
-	z-index:999;
-	background: url(../img/cloud_left_top.png) left top,
-				url(../img/cloud_right_top.png) right top,
-				url(../img/cloud_left_bottom.png) left bottom,
-				url(../img/cloud_right_bottom.png) right bottom,
-				#92AEC8;
-	background-repeat: no-repeat;
-	background-attachment: fixed;
+#Authentication .window {
+	background: rgba(255, 255, 255, 0.3);
+	padding: 20px;
+	border-radius: 2px;
 }
 
 #Authentication label {
 	cursor: default;
-	color: white;
-	font-size: medium;
+	color: #476786;
+	font-size: 14px;
 	margin-top: 10px;
 	margin-bottom: 2px;
 	display: block;
+	margin-left: 5px;
 }
 
 #Authentication input {
-	font-size: small;
+	font-size: 12px;
 	line-height: 22px;
 	width: 250px;
 	padding: 0 5px;
@@ -27,8 +23,8 @@
 
 #Authentication button[type=submit] {
 	margin-top: 10px;
-	font-size: medium;
-	padding: 5px 10px;
+	font-size: 12px;
+	padding: 5px 20px;
 }
 
 .full-stretch {
@@ -38,6 +34,7 @@
 	top: 0;
 	bottom: 0;
 	overflow: auto;
+	z-index:999;
 }
 .center-content {
 	position: absolute;

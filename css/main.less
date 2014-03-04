@@ -14,16 +14,7 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-
-
 html, body {
-  background: url(../img/cloud_left_top.png) left top,
-              url(../img/cloud_right_top.png) right top,
-              url(../img/cloud_left_bottom.png) left bottom,
-              url(../img/cloud_right_bottom.png) right bottom,
-              #B2C4D6;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
   height: 100%;
   min-width: 0;
   margin: 0;
@@ -1122,6 +1113,13 @@ template{
 .submenu button.download{
   background-position: -248px 0;
 }
+#CreateDialog #input_CreateContainerDialog{
+  display: none;
+}
+#CreateDialog.input-shown #input_CreateContainerDialog{
+  display: inline-block;
+}
+/*
 #CopyDialog,
 #CreateDialog{
   background-color: @dialogColor;
@@ -1146,29 +1144,10 @@ template{
   font-size: 0.7em;
   height: 26px;
   width: 90px;
-  border: none;
-  border-radius: 4px;
-  background: @color2;
-  color: white;
-  -webkit-box-shadow: 0 1px 1px 1px rgba(0, 0, 0, 0.25);
-  box-shadow: 0 1px 1px 1px rgba(0, 0, 0, 0.25);
-  outline: 1px solid transparent;
-}
-.btn-primary:active,
-.btn-default:active,
-.ok-dialog-button:active,
-.cancel-dialog-button:active{
-  -webkit-box-shadow: inset 0 1px 1px 2px rgba(0, 0, 0, 0.25);
-  box-shadow: inset 0 1px 1px 2px rgba(0, 0, 0, 0.25);
-  outline: 1px solid transparent;
-  background: @color5_5;
 }
 #CreateDialog #input_CreateContainerDialog,
 #CreateDialog .dialog-wrapper{
   display: none;
-}
-#CreateDialog.input-shown #input_CreateContainerDialog{
-  display: inline-block;
 }
 #CreateDialog.save-as-dialog #input_CreateContainerDialog,
 #CreateDialog.change-type #input_CreateContainerDialog{
@@ -1188,6 +1167,7 @@ template{
   text-align: center;
   margin: 5px 5px 5px -15px;
 }
+*/
 .item.submenu button.share,
 .item.submenu button.execute,
 .item:not([data-type="file"]) + .item.submenu button.edit,
@@ -1207,6 +1187,7 @@ template{
   opacity: 0.75;
   pointer-events: none;
 }
+/*
 #CopyDialog .dialog-wrapper,
 #CreateDialog .dialog-wrapper{
   height: auto;
@@ -1254,10 +1235,8 @@ template{
   padding-right: 25px;
 }
 #CopyDialog .input-group-btn button.btn-primary{
-/*width: 190px;*/
   white-space: nowrap;
 }
-/*
 .metadata-row{
   display: -webkit-box;
   display: -moz-box;
@@ -1267,7 +1246,7 @@ template{
 }
 .metadata-row:not(:first-child){
   margin-top: 5px;
-}*/
+}
 #CreateDialog.save-as-dialog .input-wrapper,
 #CreateDialog.change-type .input-wrapper,
 #CopyDialog .input-wrapper{
@@ -1279,12 +1258,12 @@ template{
   -webkit-align-items: center;
   align-items: center;
 }
-/*
+
 #CreateDialog input:focus,
 #CopyDialog input:focus{
   outline-offset: -2px;
   background: white;
-}*/
+}
 #CreateDialog input,
 #CopyDialog input{
   -webkit-flex: 1;
@@ -1293,23 +1272,9 @@ template{
   padding: 5px;
   font-size: 0.7em;
   line-height: normal;
-/*-webkit-box-shadow: inset 0px 2px 3px 0px rgba(0, 0, 0, 0.3);
--moz-box-shadow: inset 0px 2px 3px 0px rgba(0, 0, 0, 0.3);
-box-shadow: inset 0px 2px 3px 0px rgba(0, 0, 0, 0.3);
-border: none;*/
   border-radius: 4px;
   margin: 0 4px;
 }
-/*
-#CreateDialog.metadata input{
-  font-size: 1em;
-}
-#CreateDialog .metadata-key.error-input{
-  background: @color3;
-  color: white;
-  outline: none;
-}
-*/
 #CreateDialog.save-as-dialog form,
 #CreateDialog.change-type form,
 #CopyDialog form{
@@ -1334,6 +1299,7 @@ border: none;*/
 #CopyDialog .dialog-wrapper{
   width: 100%;
 }
+*/
 .report-wrapper{
   display: none;
 }
@@ -1518,83 +1484,7 @@ input[type=text]:focus{
   background: white;
 }
 
-@media screen and (max-width: 960px) {
-
-}
-
-
-
-.form {
-  transition: all 0.1s;
-  vertical-align: middle;
-  background: #e0e3e8;
-  padding: 5px 5px 15px 5px;
-  text-align: center;
-}
-
-.form input {
-  height: 24px;
-  box-sizing: border-box;
-  width: 100%;
-  padding: 5px;
-  margin: 0 0 5px;
-  border-radius: 4px;
-  border: 1px solid #999;
-  font-size: .7em;
-}
-
-.form input:focus {
-  -webkit-box-shadow: inset 0 0 6px rgba(30,110,193,0.9);
-  box-shadow: inset 0 0 6px rgba(30,110,193,0.9);
-  background: white;
-  outline: 0;
-}
-
-.form .err {
-  text-align: left;
-  height: 35px;
-  margin-left: 25px;
-  line-height: 35px;
-  font-size: medium;
-}
-
-.form .err::before {
-  height: 35px;
-  border: none;
-  background: url(../img/submenu_buttons.png);
-  background-size: auto 70px;
-  content: "";
-  position: absolute;
-  left: 4px;
-  background-position: -1138px 0;
-  width: 24px;
-}
-
-.form-two-inputs input {
-  -webkit-flex: 1;
-  flex: 1;
-  height: 25px;
-  padding: 5px;
-  font-size: 0.7em;
-  line-height: normal;
-  border-radius: 4px;
-  margin: 0 4px;
-}
-
-.form-two-inputs footer {
-  width: 100%;
-  display: inline-block;
-  text-align: center;
-  margin: 5px 5px 5px -20px;
-}
-
-.form-two-inputs footer button,
-.form-two-inputs footer button:active,
-.form-two-inputs footer button:focus {
-  width: 80px;
-  height: 22px;
-  margin: 0 3px;
-}
+@media screen and (max-width: 960px) {}
 
 .template {
   display: none;
