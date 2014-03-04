@@ -330,6 +330,7 @@
 		} else if (CurrentPath().isFilesList()) {
 			List.files();
 		} else {
+			List.clear();
 			handleFileClick(document.querySelector('#List .list-items'), function () {});
 		}
 	};
