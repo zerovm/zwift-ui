@@ -13,7 +13,7 @@ Deleting entire Container or Pseudo-Directory with its files is
 allowed, although swift does not support it in one transaction. Text
 files can be edited with advanced capabilities like syntax
 highlighting, Cloud9 ACE JavaScript library is used. The code is
-readable. Web standards are used. Two latest versions of 5 most
+readable. Web standards are used. Two latest versions of five most
 popular desktop browsers are supported. Latest versions of the most
 popular mobile browsers are supported.
 
@@ -106,8 +106,8 @@ Containers List and Files List
 There is a list on containers screen and files screen. The list is
 presented only if there are files to show. Otherwise, a message and a
 button with action that will allow to add new items to the list. Each
-item on the list is a row. Each row has 5 columns: icon, container /
-file name, size, number of file in container / last time file is
+item on the list is a row. Each row has five columns: icon, container
+/ file name, size, number of file in container / last time file is
 modified, menu icon button.
 
 Empty containers / files list has an icon button positioned on center
