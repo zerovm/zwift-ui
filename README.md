@@ -6,7 +6,7 @@
 ## Swift File Manager
 
 File Manager is an open source web application. All code is client
-side. The only backend is the Swift v1 API is used and called directly
+side. The backend is the Swift v1 API. It is used and called directly
 from the client side. Authentication specified in Swift v1 API is
 used. File Manager provides UI for all Swift v1 API capabilities.
 Deleting entire Container or Pseudo-Directory with its files is
@@ -30,8 +30,8 @@ TODO: figure out how to install Swift with File Manager.
 ## Creating account
 
 File Manager has no ability to create an account. Because File Manager
-is using only Swift v1 API as a backend. And Swift v1 API has no
-option to create an account.
+is using only Swift v1 API as a backend, which has no option to create
+an account.
 
 ## Changing Logo
 
@@ -44,9 +44,9 @@ most cases it should be located relatively top-left.
 The first screen in File Manager is authentication form. It contains
 following fields: Host URL, X-Auth-User (divided into tenant and
 user), X-Auth-Key. When is the form filled correctly and 'submit'
-button clicked or 'enter' key typed Containers List screen is opened.
-If the form is filled incorrectly and submitted, then a relevant error
-with instructions is presented.
+button clicked or 'enter' key typed, the Containers List screen is
+opened. If the form is filled incorrectly and submitted, then a
+relevant error with instructions is presented.
 
 ## Screens
   * Authentication
@@ -57,17 +57,17 @@ with instructions is presented.
 
 ## Account name and sign out button
 
-On all screens when the user is logged in, there is place that
-contains an account name and sign out button. Clicking on sign out
-button is moving the user to the authentication screen. In most cases
-it should be located relatively top-right.
+When the user is logged in, all screens show the account name and a
+sign out button. Clicking on sign out button is moving the user to the
+authentication screen. In most cases it should be located relatively
+top-right.
 
 Navigation bar and Toolbar
 
 Navigation bar consists of Up Button and Current Path.
 
-There is a toolbar on some screens. Buttons visibility on the toolbar
-depends on screen. On containers screen the following toolbar buttons
+There is a toolbar on some screens. The buttons visible on the toolbar
+depend on screen. On containers screen the following toolbar buttons
 are visible: Create Container Button, Wide Button. On files screen the
 following toolbar buttons are visible: Create Directory, Create File,
 Upload Files, Upload As.
@@ -79,7 +79,7 @@ cancel buttons, error label. A valid container name is minimum length
 1 and maximum length 256 bytes. Entering a valid container name and
 submitting the form adds a new container to the list. A relevant
 message is presented in the following cases: invalid input, container
-already exist, http error.
+already exist, HTTP error.
 
 ## Create Directory Form
 
@@ -104,7 +104,7 @@ bar, cancel button.
 Containers List and Files List
 
 There is a list on containers screen and files screen. The list is
-presented only if there is what to present. Otherwise, a message and a
+presented only if there are files to show. Otherwise, a message and a
 button with action that will allow to add new items to the list. Each
 item on the list is a row. Each row has 5 columns: icon, container /
 file name, size, number of file in container / last time file is
