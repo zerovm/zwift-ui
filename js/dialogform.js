@@ -33,8 +33,11 @@
 			switch(params.type){
 				case "input":
 					input.placeholder = params.placeholder;
+					input.classList.add('blue-input');
+					input.classList.add('one-input');
 					params.inputValue && (input.value = params.inputValue);
 					dialogContainer.classList.add(inputClass);
+					dialogContainer.classList.add('blue-form');
 					dialogContainer.classList.remove('hidden');
 					input.focus();
 					break;
@@ -43,11 +46,13 @@
 					dialogContentWrapper.appendChild(params.dialogContent);
 					dialogContainer.classList.add(dialogClass);
 					dialogContainer.classList.remove('hidden');
+					dialogContainer.classList.add('blue-form');
 					params.onshow && params.onshow();
 					break;
 				case "simple-dialog":
 					dialogContainer.classList.add(dialogClass);
 					dialogContainer.classList.remove('hidden');
+					dialogContainer.classList.add('blue-form');
 					params.onshow && params.onshow();
 					break;
 				default: console.log("dialog form: unknown type");

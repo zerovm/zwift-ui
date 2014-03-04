@@ -290,17 +290,18 @@
 				input.placeholder = "New name of file";
 				input.type = "text";
 				input.value = previousParent.dataset.path;
+				input.classList.add('blue-input');
 				form.appendChild(input);
 
 				button = document.createElement("button");
 				button.textContent = "Copy";
-				button.className = "btn btn-primary";
+				button.className = "btn btn-primary blue-button";
 				button.type = "submit";
 				form.appendChild(button);
 
 				button = document.createElement("button");
 				button.textContent = "Cancel";
-				button.className = "btn btn-default";
+				button.className = "btn btn-default blue-button";
 				button.type = "button";
 				button.addEventListener("click", removeForm);
 				form.appendChild(button);

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="blue-background">
 <head>
 	<meta charset="utf-8">
 	<title>File Manager</title>
@@ -19,8 +19,9 @@
 	<link rel="stylesheet" href="css/main.css">
 	<link rel="stylesheet" href="css/metadata.css">
 	<link rel="stylesheet" href="css/authentication.css">
+	<link rel="stylesheet" href="css/theme-blue.css">
 </head>
-<body>
+<body class="blue-background">
 
 <!--
 
@@ -79,49 +80,49 @@
 			</div>
 		</div>
 		<div id="Row3">
-			<form id="CreateContainerDialog" class="form dialog hidden">
-				<input placeholder="Container Name">
+			<form id="CreateContainerDialog" class="blue-form dialog hidden">
+				<input placeholder="Container Name" class="blue-input one-input">
 				<div class="err-empty err hidden">Please type container name.</div>
 				<div class="err-size-limit err hidden">Container name must be less than 256 bytes.</div>
 				<div class="err-invalid-character err hidden">Container name cannot contain a forward slash '/' character.</div>
 				<div class="err-ajax err hidden"></div>
-				<div class="err-already-exists err hidden">Container already exists.</div>
-				<button type="submit" class="btn btn-primary">Create</button>
-				<button type="button" class="btn-cancel btn btn-primary">Cancel</button>
+				<div class="err-already-exists err hidden">Container is already exists.</div>
+				<button type="submit" class="btn btn-primary blue-button">Create</button>
+				<button type="button" class="btn-cancel btn btn-primary blue-button">Cancel</button>
 			</form>
-			<form id="CreateDirectoryDialog" class="form dialog hidden">
-				<input placeholder="Directory Name">
+			<form id="CreateDirectoryDialog" class="blue-form dialog hidden">
+				<input placeholder="Directory Name" class="blue-input one-input">
 				<div class="err-empty err hidden">Please type directory name.</div>
 				<div class="err-size-limit err hidden">Directory name must be less than 1024 bytes.</div>
 				<div class="err-invalid-character err hidden">Directory name cannot contain a forward slash '/' character.</div>
 				<div class="err-ajax err hidden"></div>
-				<div class="err-already-exists err hidden">Directory already exists.</div>
-				<button type="submit" class="btn btn-primary">Create</button>
-				<button type="button" class="btn-cancel btn btn-primary">Cancel</button>
+				<div class="err-already-exists err hidden">Directory is already exists.</div>
+				<button type="submit" class="btn btn-primary blue-button">Create</button>
+				<button type="button" class="btn-cancel btn btn-primary blue-button">Cancel</button>
 			</form>
-			<form id="CreateFileDialog" class="form dialog hidden">
-				<input placeholder="File Name">
+			<form id="CreateFileDialog" class="blue-form dialog hidden">
+				<input placeholder="File Name" class="blue-input one-input">
 				<div class="err-empty err hidden">Please type file name.</div>
 				<div class="err-size-limit err hidden">File name must be less than 1024 bytes.</div>
 				<div class="err-invalid-character err hidden">File name cannot contain a forward slash '/' character.</div>
 				<div class="err-ajax err hidden"></div>
-				<div class="err-already-exists err hidden">File already exists.</div>
-				<button type="submit" class="btn btn-primary">Create</button>
-				<button type="button" class="btn-cancel btn btn-primary">Cancel</button>
+				<div class="err-already-exists err hidden">File is already exists.</div>
+				<button type="submit" class="btn btn-primary blue-button">Create</button>
+				<button type="button" class="btn-cancel btn btn-primary blue-button">Cancel</button>
 			</form>
 
 			<div id="CreateDialog" class="hidden dialog">
 				<form class="input-group">
 					<input id="input_CreateContainerDialog" type="text" class="form-control">
-					<div class="dialog-wrapper"></div>
+					<div class="dialog-wrapper" style="padding: 7px;"></div>
 				<span class="input-group-btn dialog-footer">
-					<button id="OKDialog" class="btn btn-primary ok-dialog-button" type="submit">OK</button>
-					<button id="CancelDialog" class="btn btn-default cancel-dialog-button" type="button">Cancel</button>
+					<button id="OKDialog" class="btn btn-primary ok-dialog-button blue-button" type="submit">OK</button>
+					<button id="CancelDialog" class="btn btn-default cancel-dialog-button blue-button" type="button">Cancel</button>
 				</span>
 				</form>
 			</div>
 
-			<form id="MetadataDialog" class="input-group hidden">
+			<form id="MetadataDialog" class="input-group blue-form hidden">
 				<!-- messages: loading, error, etc. -->
 				<div class="metadata-loading hidden">Loading Metadata...</div>
 				<div class="metadata-loading-error hidden">
@@ -140,8 +141,8 @@
 
 				<!-- metadata-row template -->
 				<div class="template metadata-row">
-					<input class="metadata-key" type="text" placeholder="Meta key">
-					<input class="metadata-value" type="text" placeholder="Meta value">
+					<input class="metadata-key blue-input" type="text" placeholder="Meta key">
+					<input class="metadata-value blue-input" type="text" placeholder="Meta value">
 					<button class="metadata-remove" tabindex="-1" type="button"></button>
 				</div>
 				<!-- metadata-list -->
@@ -149,20 +150,20 @@
 				</div>
 				<!-- OK and Cancel buttons -->
 				<div class="metadata-footer">
-					<button class="metadata-ok" type="submit">OK</button>
-					<button class="metadata-cancel" type="button">Cancel</button>
+					<button class="metadata-ok blue-button" type="submit">OK</button>
+					<button class="metadata-cancel blue-button" type="button">Cancel</button>
 				</div>
 			</form>
 
 			<div id="CopyDialog" class="hidden">
 				<form class="input-group">
 					<div class="input-wrapper hidden">
-						<input type="text" class="form-control">
+						<input type="text" class="form-control blue-input">
 					</div>
 					<div class="dialog-wrapper"></div>
 				<span class="input-group-btn">
-					<button class="btn btn-primary" type="submit">Copy all</button>
-					<button class="btn btn-default" type="button">Cancel</button>
+					<button class="btn btn-primary blue-button" type="submit">Copy all</button>
+					<button class="btn btn-default blue-button" type="button">Cancel</button>
 				</span>
 				</form>
 			</div>
@@ -224,13 +225,13 @@
 	</div>
 </div>
 
-<form id="Authentication" class="full-stretch">
-	<div class="center-content">
-		<label>V1 AUTH URL: </label><input class="v1-auth-url" value=""><br>
-		<label>Tenant: </label><input class="tenant"><br>
-		<label>X Auth User: </label><input class="x-auth-user"><br>
-		<label>X Auth Key: </label><input class="x-auth-key"><br>
-		<button type="submit" class="btn">Submit</button>
+<form id="Authentication" class="blue-background full-stretch">
+	<div class="center-content window">
+		<label>V1 AUTH URL: </label><input class="v1-auth-url blue-input" value=""><br>
+		<label>Tenant: </label><input class="tenant blue-input"><br>
+		<label>X Auth User: </label><input class="x-auth-user blue-input"><br>
+		<label>X Auth Key: </label><input class="x-auth-key blue-input"><br>
+		<button type="submit" class="btn blue-button">Login</button>
 	</div>
 </form>
 
