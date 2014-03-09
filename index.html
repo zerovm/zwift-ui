@@ -61,7 +61,7 @@
 			<h1 id="Logo">File Manager</h1>
 			<div id="Account">
 				<label id="AccountId"></label>
-				<button id="SignOut">Sign Out</button>
+				<button id="SignOut" class="blue-button">Sign Out</button>
 			</div>
 		</div>
 		<div id="Row2">
@@ -152,6 +152,22 @@
 				<div class="metadata-footer">
 					<button class="metadata-ok blue-button" type="submit">OK</button>
 					<button class="metadata-cancel blue-button" type="button">Cancel</button>
+				</div>
+			</form>
+
+			<form id="DeleteDialog" class="blue-form hidden">
+				<label class="delete-label">Are you sure you want to delete <span class="delete-name"></span>?</label>
+				<br>
+				<button type="submit" class="blue-button">Delete</button>
+				<button type="button" class="delete-cancel blue-button">Cancel</button>
+				<label class="delete-error hidden">
+					An error occurred while deleting <span class="delete-name"></span>.
+					<span class="status-text"></span> <span class="status-code"></span>.
+				</label>
+				<div class="delete-progressbar progressbar hidden">
+					<div class="progress">
+						<div class="progress-value" style="width: 30%;"></div>
+					</div>
 				</div>
 			</form>
 
@@ -351,6 +367,7 @@
 	document.addEventListener("webkitTransitionEnd", ontransition);
 	window.addEventListener("hashchange", refreshItemList);
 </script>
+<script src="js/delete.js"></script>
 <script src="js/authentication.js"></script>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
