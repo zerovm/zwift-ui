@@ -396,6 +396,10 @@
 				});
 			},
 			ondelete: function(e){
+				var isFile = previousParent.dataset.type === 'file';
+				var fullPath = CurrentPath().add(previousParent.dataset.path);
+				DeleteDialog.show(fullPath, isFile);
+				/*
 				var dialog = window.FileManager.dialogForm;
 				dialog.show({
 					confirm: function(){
@@ -408,7 +412,7 @@
 					},
 					dialogContent: createDeleteDialog(),
 					type: "dialog"
-				});
+				});*/
 			},
 			onexecute: function(){
 				itemCommandName.set("execute");
