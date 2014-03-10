@@ -56,7 +56,6 @@ var recursiveDeleteOnSwift;
 		xhr.addEventListener('load', function (e) {
 			if (e.target.status >= 200 && e.target.status <= 299) {
 				xStorageUrl = e.target.getResponseHeader('X-Storage-Url');
-				SwiftV1.xStorageUrl = xStorageUrl;
 				xAuthToken = e.target.getResponseHeader('X-Auth-Token');
 				SwiftV1.xAuthToken = xAuthToken;
 				args.ok();
@@ -65,6 +64,14 @@ var recursiveDeleteOnSwift;
 			}
 		});
 		xhr.send();
+	};
+
+	SwiftV1.setStorageUrl = function (url) {
+		xStorageUrl = url;
+	};
+
+	SwiftV1.getStorageUrl = function () {
+		return xStorageUrl;
 	};
 
 	SwiftV1.Account = {};
