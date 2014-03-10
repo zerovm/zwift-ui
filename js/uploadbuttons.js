@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", function(){
 			_name = file.newName || file.name;
 			_type = file.newType || file.type || window.FileManager.toolbox.getMIMEType(_name);
 
-			url = SwiftV1.xStorageUrl + '/' + CurrentPath().withoutAccount() + _name;
+			url = SwiftV1.getStorageUrl() + '/' + CurrentPath().withoutAccount() + _name;
 			uploadRequest = new XMLHttpRequest();
 			requests.push(uploadRequest);
 			new window.FileManager.toolbox.ProgressBar({
