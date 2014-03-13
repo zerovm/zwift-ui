@@ -242,12 +242,17 @@
 </div>
 
 <form id="Authentication" class="blue-background full-stretch">
-	<div class="center-content window">
-		<label>V1 AUTH URL: </label><input class="v1-auth-url blue-input" value=""><br>
-		<label>Tenant: </label><input class="tenant blue-input"><br>
-		<label>X Auth User: </label><input class="x-auth-user blue-input"><br>
-		<label>X Auth Key: </label><input class="x-auth-key blue-input"><br>
-		<button type="submit" class="btn blue-button">Login</button>
+	<div class="center-content">
+		<div class="window">
+			<label>V1 AUTH URL: </label><input class="v1-auth-url blue-input" value=""><br>
+			<label>Tenant: </label><input class="tenant blue-input"><br>
+			<label>X Auth User: </label><input class="x-auth-user blue-input"><br>
+			<label>X Auth Key: </label><input class="x-auth-key blue-input"><br>
+			<button type="submit" class="btn blue-button">Login</button>
+		</div>
+		<div class="window">
+			<button type="button" class="blue-button login-with-google">Login with Google</button>
+		</div>
 	</div>
 </form>
 
@@ -264,7 +269,7 @@
 
 	FileManager.ENABLE_ZEROVM = true;
 
-	FileManager.AjaxError = {};//TODO: replace it with errrorMsg
+	FileManager.AjaxError = {};//TODO: replace it with errorMsg
 
 	FileManager.AjaxError.show = function (el, status, statusText) {
 		el.querySelector('.status').textContent = status;
@@ -368,7 +373,11 @@
 	window.addEventListener("hashchange", refreshItemList);
 </script>
 <script src="js/delete.js"></script>
+<script src="js/liteauth.js"></script>
 <script src="js/authentication.js"></script>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>');</script>
+
+</body>
+</html>

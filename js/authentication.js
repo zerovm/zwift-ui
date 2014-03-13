@@ -26,6 +26,33 @@ var Authentication = (function (SwiftV1, toolbox, refreshItemList) {
 		});
 	};
 
+
+	if (liteauth.getLoginInfo()) {
+		liteauth.getProfile(function (response) {
+			var xAuthUser =
+				liteauth.getLoginInfo().split(':')[0];
+			var tenant =
+				liteauth.getLoginInfo().split(':').splice(1).join(':');
+			var v1AuthUrl =
+				decodeURIComponent(getCookie('storage'));
+			var xAuthKey =
+				JSON.parse(response)['auth'].split('plaintext:')[1];
+
+			SwiftV1.retrieveTokens({
+				v1AuthUrl: v1AuthUrl,
+				tenant: tenant,
+				xAuthUser: xAuthUser,
+				xAuthKey: xAuthKey,
+				error: XHR_ERROR,
+				ok: XHR_OK
+			});
+		});
+	}
+
+	authenticationEl.getElementsByClassName('login-with-google')[0].onclick = function () {
+		liteauth.login(liteauth.AUTH_TYPES.GOOGLE);
+	};
+
 	function XHR_OK() {
 		document.getElementById('Authentication').setAttribute('hidden', 'hidden');
 
@@ -47,6 +74,18 @@ var Authentication = (function (SwiftV1, toolbox, refreshItemList) {
 	function reAuth() {
 		SwiftV1.Account.head({success:function(){},error:function(){}});
 		setTimeout(Authentication.reAuth, 1000 * 60 * 20);
+	}
+
+	function getCookie(cookieName) {
+		var name = cookieName + '=';
+		var ca = document.cookie.split(';');
+		for (var i=0; i< ca.length; i++) {
+			var c = ca[i].trim();
+			if (c.indexOf(name)==0) {
+				return c.substring(name.length, c.length);
+			}
+		}
+		return '';
 	}
 
 	return {
