@@ -1,7 +1,8 @@
 #Authentication .window {
 	background: rgba(255, 255, 255, 0.3);
-	padding: 20px;
+	padding: 15px;
 	border-radius: 2px;
+	margin: 15px;
 }
 
 #Authentication label {
@@ -19,9 +20,10 @@
 	line-height: 22px;
 	width: 250px;
 	padding: 0 5px;
+	height: 25px;
 }
 
-#Authentication button[type=submit] {
+#Authentication button {
 	margin-top: 10px;
 	font-size: 12px;
 	padding: 5px 20px;

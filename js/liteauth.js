@@ -30,26 +30,51 @@ var liteauth = (function () {
 	} ();
 
 	function login(authType) {
-		var account, accountParts, accountId, accountName;
-		if (account = QueryString.hasOwnProperty('account')) {
-			accountParts = account.split(':');
-			accountId = accountParts[0];
-			accountName = accountParts.splice(1).join(':');
 
-		} else {
-			window.location = location.protocol + '//' + AUTH_ENDPOINT
-				+ authType + '?state=' + encodeURIComponent(location.pathname);
-		}
+		window.location = location.protocol + '//' + AUTH_ENDPOINT
+			+ authType + '?state=' + encodeURIComponent(location.pathname);
 	}
 
-	function updateProfile() {
+	function getLoginInfo() {
+		return QueryString['account'];
+	}
+
+	function getProfile(callback) {
 		var xhr = new XMLHttpRequest();
-		xhr.open('PUT', );
+		xhr.open('GET', 'https://auth.zerovm.org/profile');
+		xhr.withCredentials = true;
+		xhr.onload = function (e) {
+			callback(e.target.responseText);
+		};
+		xhr.send();
+	}
+
+	function updateProfile(userKey, inviteCode) {
+		var xhr = new XMLHttpRequest();
+		xhr.open('PUT', 'https://auth.zerovm.org/profile');
+		xhr.withCredentials = true;
+		//xhr.setRequestHeader('X-Auth-User-Key', userKey);
+		//xhr.setRequestHeader('Content-Type', 'text/plain');
+		//xhr.setRequestHeader('X-Auth-Invite-Code', inviteCode);
+		xhr.onload = function (e) {
+			console.log(e.target.status);
+			console.log(e.target.statusText);
+			console.log(e.target.responseText);
+			console.log(e.target.getResponseHeader('Content-Type'));
+		};
+		xhr.onreadystatechange = function () {
+			console.log(document.readyState);
+			console.log(arguments);
+		};
+		xhr.send('{"user-key": "'+userKey+'"}');
 	}
 
 	return {
 		AUTH_TYPES: AUTH_TYPES,
-		login: login
+		login: login,
+		getProfile: getProfile,
+		updateProfile: updateProfile,
+		getLoginInfo: getLoginInfo
 	};
 
 })();
