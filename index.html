@@ -1,243 +1,155 @@
 <!DOCTYPE html>
 <html class="blue-background">
 <head>
-	<meta charset="utf-8">
 	<title>File Manager</title>
-	<link rel="shortcut icon" type="image/x-icon" href="favicon.ico"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="lib/codemirror.css">
+	<script src="lib/codemirror.js"></script>
 
-	<!-- for mobile devices -->
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, user-scalable=no" />
+	<script src="mode/javascript/javascript.js"></script>
+	<script src="mode/php/php.js"></script>
+	<script src="mode/css/css.js"></script>
+	<script src="mode/xml/xml.js"></script>
+	<script src="mode/python/python.js"></script>
+	<script src="mode/clike/clike.js"></script>
+	<script src="mode/lua/lua.js"></script>
 
-	<!-- For iOS devices -->
-	<meta name="apple-mobile-web-app-capable" content="yes">
-	<meta name="format-detection" content="telephone=no">
-	<link rel="apple-touch-icon" sizes="57x57" href="apple-touch-icon-57x57-fm.png">
-	<link rel="apple-touch-icon" sizes="76x76" href="apple-touch-icon-72x72-fm.png">
-	<link rel="apple-touch-icon" sizes="114x114" href="apple-touch-icon-114x114-fm.png">
-	<link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon-144x144-fm.png">
-
-	<link rel="stylesheet" href="css/main.css">
-	<link rel="stylesheet" href="css/metadata.css">
-	<link rel="stylesheet" href="css/authentication.css">
-	<link rel="stylesheet" href="css/theme-blue.css">
+	<link rel="stylesheet" href="FileManager.css">
 </head>
-<body class="blue-background">
+<body class="view-mode blue-background">
 
-<!--
+<div class="center">
+	<div class="fixed-background"></div>
 
-1. Page
-1.1. Header
-1.1.1. Row1
-1.1.1.1. Logo
-1.1.1.2. Account
-1.1.1.2.1. AccountId
-1.1.1.2.2. SignOutButton
-1.1.2. Row2
-1.1.2.1. Navigation
-1.1.2.1.1. UpButton
-1.1.2.1.2. NavigationBar
-1.1.2.2. Toolbar
-1.1.2.2.1. CreateContainer
-1.1.2.2.2. CreateDirectory
-1.1.2.2.3. CreateFile
-1.1.2.2.4. UploadFiles
-1.1.2.2.5. UploadAs
-1.1.2.2.6. Wide
-1.1.3. Row3
-1.1.3.1. CreateContainerForm
-1.1.3.2. CreateDirectoryForm
-1.1.3.3. CreateFileForm
-1.2. NoContainers
-1.3. NoFiles
-1.4. List
-1.5. Editor
-2. Authentication
-
--->
-
-<div id="Page">
-	<div id="Header">
-		<div id="Row1">
-			<h1 id="Logo">File Manager</h1>
-			<div id="Account">
-				<label id="AccountId"></label>
-				<button id="SignOut" class="blue-button">Sign Out</button>
-			</div>
-		</div>
-		<div id="Row2">
-			<div id="Navigation">
-				<button id="UpButton" class="toolbar-button" title="Up"></button>
-				<label id="NavigationBar"></label>
-			</div>
-			<div id="Toolbar">
-				<button id="CreateContainerButton" class="toolbar-button dialog-button" title="Create Container" data-action="container" data-placeholder="Create Container"></button>
-				<button id="CreateDirectoryButton" class="toolbar-button dialog-button" title="Create Directory" data-action="directory" data-placeholder="Create Directory"></button>
-				<button id="CreateFileButton" class="toolbar-button dialog-button" title="Create File" data-action="file" data-placeholder="Create File"></button>
-				<span id="UploadFilesButton" class="toolbar-button input-wrapper" title="Upload Files"><input class="upload-input" type="file" multiple="multiple" data-action="file"/></span>
-				<span id="UploadAsButton" class="toolbar-button input-wrapper" title="Upload As..."><input class="upload-input" type="file" multiple="multiple" data-action="as"/></span>
-				<span id="UploadAndExecuteButton" class="toolbar-button input-wrapper" title="Upload & Execute"><input class="upload-input" type="file" data-action="exec"/></span>
-				<button id="WideButton" class="toolbar-button always-enabled" title="Wide"></button>
-			</div>
-		</div>
-		<div id="Row3">
-			<form id="CreateContainerDialog" class="blue-form dialog hidden">
-				<input placeholder="Container Name" class="blue-input one-input">
-				<div class="err-empty err hidden">Please type container name.</div>
-				<div class="err-size-limit err hidden">Container name must be less than 256 bytes.</div>
-				<div class="err-invalid-character err hidden">Container name cannot contain a forward slash '/' character.</div>
-				<div class="err-ajax err hidden"></div>
-				<div class="err-already-exists err hidden">Container is already exists.</div>
-				<button type="submit" class="btn btn-primary blue-button">Create</button>
-				<button type="button" class="btn-cancel btn btn-primary blue-button">Cancel</button>
-			</form>
-			<form id="CreateDirectoryDialog" class="blue-form dialog hidden">
-				<input placeholder="Directory Name" class="blue-input one-input">
-				<div class="err-empty err hidden">Please type directory name.</div>
-				<div class="err-size-limit err hidden">Directory name must be less than 1024 bytes.</div>
-				<div class="err-invalid-character err hidden">Directory name cannot contain a forward slash '/' character.</div>
-				<div class="err-ajax err hidden"></div>
-				<div class="err-already-exists err hidden">Directory is already exists.</div>
-				<button type="submit" class="btn btn-primary blue-button">Create</button>
-				<button type="button" class="btn-cancel btn btn-primary blue-button">Cancel</button>
-			</form>
-			<form id="CreateFileDialog" class="blue-form dialog hidden">
-				<input placeholder="File Name" class="blue-input one-input">
-				<div class="err-empty err hidden">Please type file name.</div>
-				<div class="err-size-limit err hidden">File name must be less than 1024 bytes.</div>
-				<div class="err-invalid-character err hidden">File name cannot contain a forward slash '/' character.</div>
-				<div class="err-ajax err hidden"></div>
-				<div class="err-already-exists err hidden">File is already exists.</div>
-				<button type="submit" class="btn btn-primary blue-button">Create</button>
-				<button type="button" class="btn-cancel btn btn-primary blue-button">Cancel</button>
-			</form>
-
-			<div id="CreateDialog" class="hidden dialog">
-				<form class="input-group">
-					<input id="input_CreateContainerDialog" type="text" class="form-control">
-					<div class="dialog-wrapper" style="padding: 7px;"></div>
-				<span class="input-group-btn dialog-footer">
-					<button id="OKDialog" class="btn btn-primary ok-dialog-button blue-button" type="submit">OK</button>
-					<button id="CancelDialog" class="btn btn-default cancel-dialog-button blue-button" type="button">Cancel</button>
-				</span>
-				</form>
-			</div>
-
-			<form id="MetadataDialog" class="input-group blue-form hidden">
-				<!-- messages: loading, error, etc. -->
-				<div class="metadata-loading hidden">Loading Metadata...</div>
-				<div class="metadata-loading-error hidden">
-					Error occurred while loading metadata. Ajax Error:
-					<span class="ajax-error-status-text"></span>
-					<span class="ajax-error-status-code"></span>
-				</div>
-				<div class="metadata-uploading hidden">Uploading Metadata...</div>
-				<div class="metadata-uploaded hidden">Metadata is uploaded successfully.</div>
-				<div class="metadata-uploading-error hidden">
-					Error occurred while uploading metadata. Ajax Error:
-					<span class="ajax-error-status-text"></span>
-					<span class="ajax-error-status-code"></span>
-				</div>
-
-
-				<!-- metadata-row template -->
-				<div class="template metadata-row">
-					<input class="metadata-key blue-input" type="text" placeholder="Meta key">
-					<input class="metadata-value blue-input" type="text" placeholder="Meta value">
-					<button class="metadata-remove" tabindex="-1" type="button"></button>
-				</div>
-				<!-- metadata-list -->
-				<div class="metadata-list">
-				</div>
-				<!-- OK and Cancel buttons -->
-				<div class="metadata-footer">
-					<button class="metadata-ok blue-button" type="submit">OK</button>
-					<button class="metadata-cancel blue-button" type="button">Cancel</button>
-				</div>
-			</form>
-
-			<form id="DeleteDialog" class="blue-form hidden">
-				<label class="delete-label">Are you sure you want to delete <span class="delete-name"></span>?</label>
-				<br>
-				<button type="submit" class="blue-button">Delete</button>
-				<button type="button" class="delete-cancel blue-button">Cancel</button>
-				<label class="delete-error hidden">
-					An error occurred while deleting <span class="delete-name"></span>.
-					<span class="status-text"></span> <span class="status-code"></span>.
-				</label>
-				<div class="delete-progressbar progressbar hidden">
-					<div class="progress">
-						<div class="progress-value" style="width: 30%;"></div>
-					</div>
-				</div>
-			</form>
-
-			<div id="CopyDialog" class="hidden">
-				<form class="input-group">
-					<div class="input-wrapper hidden">
-						<input type="text" class="form-control blue-input">
-					</div>
-					<div class="dialog-wrapper"></div>
-				<span class="input-group-btn">
-					<button class="btn btn-primary blue-button" type="submit">Copy all</button>
-					<button class="btn btn-default blue-button" type="button">Cancel</button>
-				</span>
-				</form>
-			</div>
-			<div id="progressDialog">
-			</div>
-
-			<div id="mainProgressBar" class="hidden"></div>
-
-			<div class="hidden err-msg-wrapper"><label class="err-msg"></label></div>
-			<div class="menu-file dialog no-select">
-				<button class="undo txt-btn" title="Undo"></button>
-				<button class="redo txt-btn" title="Redo"></button>
-				<button class="save txt-btn" title="Save"></button>
-				<button class="save-as txt-btn" data-action="saveas" title="Save As..."></button>
-				<button class="execute txt-btn" data-action="execute" title="Execute"></button>
-				<button class="download-link txt-btn"></button>
-				<div class="editor-toolbar-error" hidden>Error: <span class="status"></span>
-					<span class="status-text"></span>.
-				</div>
-			</div>
-		</div>
-	</div>
-	<div id="NoContainers" class="hidden">There are no containers.</div>
-	<div id="NoFiles" class="hidden">There are no files.</div>
-	<div class="hidden ajax-error">Ajax Error: <span class="ajax-error-message"></span> (<span class="ajax-status-code"></span>)</div>
-	<div id="List">
-		<div class="list-items">
-
-		</div>
-		<div class="template template-container item" title data-path data-type="container">
+	<!-- header -->
+	<div class="fixed-top center">
+		<div id="header" class="center">
 			<span class="left">
-				<span class="file-type"></span>
-				<label class="name"></label>
+				<button autocomplete="off" class="up-button icon-button" title="Up" disabled></button>
+				<label class="current-dir-label"></label>
 			</span>
 			<span class="right">
-				<label class="size"></label>
-				<label class="files"></label>
+				<button autocomplete="off" class="open-button icon-button" title="Open" hidden></button>
+				<label class="execute-label" hidden></label>
+				<button autocomplete="off" class="execute-button icon-button" title="Execute" hidden></button>
+				<button autocomplete="off" class="edit-button icon-button" title="Edit"></button>
+				<button autocomplete="off" class="done-button icon-button" title="Done" hidden></button>
+				<button autocomplete="off" class="wide-button icon-button" title="Wide"></button>
+				<button autocomplete="off" class="unwide-button icon-button" title="Unwide" hidden></button>
+				<button autocomplete="off" class="sign-out-button icon-button" title="Sign Out"></button>
 			</span>
-			<button class="toggle-item-menu-btn btn"></button>
 		</div>
 
-		<div class="template template-file item" title data-path data-type data-full-path data-content-type>
-			<span class="left">
-				<span class="file-type"></span>
-				<label class="name"></label>
-			</span>
-			<span class="right">
-				<label class="size"></label>
-				<label class="modified"></label>
-			</span>
-			<button class="toggle-item-menu-btn btn"></button>
+		<div class="menu-containers dialog" hidden>
+			<table class="input-group-table create-container">
+				<tr>
+					<td><img src="img/box.png"></td>
+					<td><input autocomplete="off" class="create-container-input" placeholder="Container Name"></td>
+					<td class="create-container-button">+</td>
+				</tr>
+				<tr class="err-msg create-container-error-ajax" hidden>
+					<td></td>
+					<td>Error: <span class="status"></span> <span class="status-text"></span>.</td>
+					<td></td>
+				</tr>
+				<tr class="err-msg create-container-error-max-length" hidden>
+					<td></td>
+					<td>Container name must be until 256 characters.</td>
+					<td></td>
+				</tr>
+				<tr class="err-msg create-container-error-invalid-character" hidden>
+					<td></td>
+					<td>Container name cannot have a slash (/) character.</td>
+					<td></td>
+				</tr>
+				<tr class="err-msg create-container-error-already-exist" hidden>
+					<td></td>
+					<td>Container is already exists.</td>
+					<td></td>
+				</tr>
+			</table>
+			<table class="input-group-table add-shared">
+				<tr>
+					<td><img src="img/shared-box.png"></td>
+					<td><input autocomplete="off" class="add-shared-input-account" placeholder="Account Name"></td>
+					<td><input autocomplete="off" class="add-shared-input-container" placeholder="Container Name"></td>
+					<td class="add-shared-button">+</td>
+				</tr>
+				<tr class="err-msg add-shared-error-ajax" hidden>
+					<td></td>
+					<td>Error: <span class="status"></span> <span class="status-text"></span>.</td>
+					<td></td>
+				</tr>
+				<tr class="err-msg add-shared-error" hidden>
+					<td></td>
+					<td colspan="2">Cannot add specified container.</td>
+					<td></td>
+				</tr>
+			</table>
 		</div>
+		<div class="menu-files dialog" hidden>
+			<table class="input-group-table create-directory">
+				<tr>
+					<td><img src="img/folder.png"></td>
+					<td><input autocomplete="off" class="create-directory-input" placeholder="Directory Name"></td>
+					<td class="create-directory-button">+</td>
+				</tr>
+				<tr class="err-msg create-directory-error-ajax" hidden>
+					<td></td>
+					<td>Error: <span class="status"></span> <span class="status-text"></span>.</td>
+					<td></td>
+				</tr>
+				<tr class="err-msg create-directory-error-invalid-character" hidden>
+					<td></td>
+					<td>Directory name cannot have a slash (/) character.</td>
+					<td></td>
+				</tr>
+				<tr class="err-msg create-directory-error-already-exist" hidden>
+					<td></td>
+					<td>Directory is already exists.</td>
+					<td></td>
+				</tr>
+			</table>
+			<table class="input-group-table">
+				<tr>
+					<td><img src="img/file_txt.png"></td>
+					<td><input autocomplete="off" class="create-file-input-name" placeholder="File Name"></td>
+					<td><input autocomplete="off" class="create-file-input-type" placeholder="Content Type" value="text/plain"></td>
+					<td class="create-file-button">+</td>
+				</tr>
+				<tr class="err-msg create-file-error-ajax" hidden>
+					<td></td>
+					<td>Error: <span class="status"></span> <span class="status-text"></span>.</td>
+					<td></td>
+				</tr>
+			</table>
 
-		<div id="LoadMoreContainers" class="load-more-button hidden">Load More</div>
-		<div id="LoadMoreFiles" class="load-more-button hidden">Load More</div>
+			<div class="div-button upload-files" style="width: 33%;"><input autocomplete="off" type="file" multiple><img src="img/upload.png"><span>Upload Files</span></div>
+			<div class="div-button upload-as" style="width: 32%;"><input autocomplete="off" type="file" multiple><img src="img/upload-as.png"><span>Upload As</span></div>
+			<div class="div-button upload-execute" style="width: 33%;"><input autocomplete="off" type="file"><img src="img/execute.png"><span>Upload & Execute</span></div>
+		</div>
+		<div class="menu-file dialog" hidden>
+			<button autocomplete="off" class="undo txt-btn" disabled></button><button autocomplete="off" class="redo txt-btn" disabled></button><button autocomplete="off" class="save txt-btn" disabled></button><button autocomplete="off" class="save-as">Save As...</button>
+			<a href="#" class="download-link" target="_blank">Download</a>
+			<div class="editor-toolbar-error" hidden>Error: <span class="status"></span> <span class="status-text"></span>.</div>
+			<table class="input-group-table save-as-dialog" hidden>
+				<tr>
+					<td><img src="img/file_txt.png"></td>
+					<td><input autocomplete="off" class="save-as-input-path" placeholder="File Path"></td>
+					<td><input autocomplete="off" class="save-as-input-type" placeholder="Content Type"></td>
+					<td class="save-as-button">+</td>
+				</tr>
+				<tr class="save-as-error-ajax" hidden>
+					<td colspan="4">Error: <span class="status"></span> <span class="status-text"></span>.</td>
+				</tr>
+			</table>
+		</div>
 	</div>
-	<div class="code-editor-wrapper">
-		<div id="codeEditor"></div>
+
+	<!-- content -->
+	<div id="content">
+		<div class="scrolling-content">
+		</div>
 	</div>
 </div>
 
@@ -257,127 +169,370 @@
 </form>
 
 
-<script>
+<!-- templates -->
+<template id="containerTemplate">
+	<div class="item" title="{{title}}">
+			<span class="left">
+				<img src="img/box32.png">
+				<label class="name">{{name}}</label>
+			</span>
+			<span class="right">
+				<label class="size">{{size}}</label>
+				<label class="files">{{files}}</label>
+				<label class="delete">X</label>
+			</span>
+	</div>
+</template>
 
-	location.hash = '';
+<template id="sharedContainerTemplate">
+	<div class="item" title="{{title}}">
+			<span class="left">
+				<img src="img/shared-box32.png">
+				<label class="name">{{name}}</label>
+			</span>
+			<span class="right">
+				<label class="size">...</label>
+				<label class="files">...</label>
+				<label class="delete">X</label>
+			</span>
+	</div>
+</template>
 
-	var FileManager;
+<template id="fileTemplate">
+	<div class="item" title="{{title}}">
+			<span class="left">
+				<img src="{{icon}}">
+				<label class="name">{{name}}</label>
+			</span>
+			<span class="right">
+				<label class="size">{{size}}</label>
+				<label class="modified">{{modified}}</label>
+				<label class="delete">X</label>
+			</span>
+	</div>
+</template>
 
-	if (!FileManager) {
-		FileManager = {};
-	}
+<template id="directoryTemplate">
+	<div class="item" title="{{title}}">
+			<span class="left">
+				<img src="img/folder32.png">
+				<label class="name">{{name}}</label>
+			</span>
+			<span class="right">
+				<label class="delete">X</label>
+			</span>
+	</div>
+</template>
 
-	FileManager.ENABLE_ZEROVM = true;
+<template id="newScrollingContentTemplate">
+	<div class="new-scrolling-content scrolling-content"></div>
+</template>
 
-	FileManager.AjaxError = {};//TODO: replace it with errorMsg
+<template id="itemLoadingTemplate">
+	<span class="item-loading">Loading...</span>
+</template>
 
-	FileManager.AjaxError.show = function (el, status, statusText) {
-		el.querySelector('.status').textContent = status;
-		el.querySelector('.status-text').textContent = statusText;
-		el.removeAttribute('hidden');
-	};
+<template id="noContainersTemplate">
+	<label class="empty-list">There are no containers.</label>
+</template>
 
-	document.getElementById("WideButton").onclick = function() {
-		document.body.classList.toggle("wide-content");
-	};
+<template id="noFilesTemplate">
+	<label class="empty-list">There are no files.</label>
+</template>
 
-	FileManager.reAuth = function () {
-		SwiftV1.Account.head({success:function(){},error:function(){}});
-		setTimeout(FileManager.reAuth, 1000 * 60 * 20);
-	};
+<template id="notTextFileTemplate">
+	<label class="empty-list">Not text file.</label>
+</template>
 
-	window.onload = function () {
-		messageForIE();
+<template id="largeFileTemplate">
+	<label class="empty-list">File is too large.</label>
+</template>
 
-		function messageForIE() {
-			if (navigator.userAgent.indexOf('MSIE') != -1) {
-				document.body.innerHTML = '<h1 style="margin:5% auto; text-align: center;font-family: arial; color: #8b0000;">Internet Explorer is not supported. Please open in another browser.</h1>';
-			}
-		}
-	};
-</script>
+<template id="loadMoreButtonTemplate">
+	<div class="load-more-button">Load More</div>
+</template>
+
+<template id="scrollingContentLoadingTemplate">
+	<label class="scrolling-content-loading">Loading...</label>
+</template>
+
+<template id="errorTemplate">
+	<span class="error">Error occurred. <span class="error-reason">reason</span> <span class="error-status"></span>.</span>
+</template>
+
+<template id="itemMenuTemplate">
+	<div class="item-menu">
+		<table class="rights-table" hidden>
+			<thead>
+				<tr>
+					<th colspan="3">Rights</th>
+				</tr>
+				<tr class="loading">
+					<td colspan="3">Loading...</td>
+				</tr>
+				<tr class="rights-error-ajax" hidden>
+					<td colspan="3">Error: <span class="status"></span> <span class="status-text"></span>.</td>
+				</tr>
+			</thead>
+			<tbody hidden>
+			<tr>
+				<td style="width: 1px;">Read</td>
+				<td><input autocomplete="off" class="read-rights-input" placeholder="Read Rights"></td>
+			</tr>
+			<tr style="width: 1px;">
+				<td>Write</td>
+				<td><input autocomplete="off" class="write-rights-input" placeholder="Write Rights"></td>
+			</tr>
+			</tbody>
+			<tfoot hidden>
+			<tr>
+				<td colspan="2"><button autocomplete="off" class="rights-save">Save</button><button autocomplete="off" class="rights-discard-changes">Discard Changes</button></td>
+			</tr>
+			</tfoot>
+		</table>
+
+		<table class="content-type-table" hidden>
+			<thead>
+				<tr>
+					<th colspan="3">Content Type</th>
+				</tr>
+				<tr class="loading">
+					<td colspan="3">Loading...</td>
+				</tr>
+				<tr class="content-type-error-ajax" hidden>
+					<td colspan="3">Error: <span class="status"></span> <span class="status-text"></span>.</td>
+				</tr>
+			</thead>
+			<tbody class="input-group-table" style="background: transparent;" hidden>
+			<tr>
+				<td><img src="img/file_type.png"></td>
+				<td><input autocomplete="off" class="content-type-input" placeholder="Content Type"></td>
+				<td class="content-type-button">></td>
+			</tr>
+			</tbody>
+		</table>
+
+		<table class="metadata-table">
+			<thead>
+				<tr>
+					<th colspan="2">Metadata</th>
+					<td></td>
+				</tr>
+				<tr class="metadata-loading">
+					<td colspan="3">Loading...</td>
+				</tr>
+				<tr class="metadata-error-ajax" hidden>
+					<td colspan="3">Error: <span class="status"></span> <span class="status-text"></span>.</td>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+			<tfoot hidden>
+				<tr>
+					<td><button autocomplete="off" class="metadata-save">Save</button></td>
+					<td><button autocomplete="off" class="metadata-discard-changes">Discard Changes</button></td>
+					<td></td>
+				</tr>
+			</tfoot>
+		</table>
+
+		<table class="copy-table" hidden>
+			<thead>
+				<tr>
+					<th colspan="3">Copy</th>
+				</tr>
+				<tr class="copy-loading" hidden="">
+					<td colspan="3">Loading...</td>
+				</tr>
+				<tr class="copy-ok" hidden>
+					<td colspan="3">File is copied successfully.</td>
+				</tr>
+				<tr class="copy-error-ajax" hidden>
+					<td colspan="3">Error: <span class="status"></span> <span class="status-text"></span>.</td>
+				</tr>
+			</thead>
+			<tbody class="input-group-table" style="background: transparent;">
+			<tr>
+				<td><img src="img/copy.png"></td>
+				<td><input autocomplete="off" class="copy-input" placeholder="Copy to..."></td>
+				<td class="copy-button">+</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+</template>
+
+<template id="metadataRowTemplate">
+	<tr>
+		<td><input autocomplete="off" class="metadata-key" placeholder="Key" value="{{key}}"></td>
+		<td><input autocomplete="off" class="metadata-value" placeholder="Value" value="{{value}}"></td>
+		<td class="remove-metadata">x</td>
+	</tr>
+</template>
+
+<template id="itemConfirmDeleteTemplate">
+	<div class="item-confirm-delete">
+		<div class="delete-label" style="margin: 8px;display: inline-block;">Are you sure you want delete?</div>
+		<button autocomplete="off" class="delete-button" style="float: right;">Delete</button>
+		<label class="delete-deleting-label" hidden>Deleting...</label>
+		<label class="delete-error-ajax" hidden>Error: <span class="status"></span> <span class="status-text"></span>.</label>
+	</div>
+</template>
+
+<template id="uploadTemplate">
+	<table class="input-group-table" id="{{upload-id}}">
+		<tr>
+			<td><img src="img/file.png"></td>
+			<td style="text-align: left;"><label class="upload-label-name">{{upload-label-name}}</label></td>
+			<td style="text-align: right;"><span class="progresslabel">&nbsp;0%&nbsp;</span><progress style="width: 100px;" class="upload-progress" max="100" value="0"></progress></td>
+			<td class="cancel-upload-button">x</td>
+		</tr>
+		<tr class="err-msg error" hidden>
+			<td></td>
+			<td colspan="2">Error: <span class="status"></span> <span class="status-text"></span>.</td>
+			<td></td>
+		</tr>
+	</table>
+</template>
+
+<template id="uploadAsTemplate">
+	<table class="input-group-table">
+		<tr id="upload-as-{{index}}">
+			<td><img src="img/file.png"></td>
+			<td><input autocomplete="off" data-index="{{index}}" class="upload-as-input-name" placeholder="File Name" value="{{upload-input-name}}"></td>
+			<td><input autocomplete="off" data-index="{{index}}" class="upload-as-input-type" placeholder="Content Type" value="{{upload-input-type}}"></td>
+			<td data-index="{{index}}" class="upload-as-button">+</td>
+		</tr>
+	</table>
+</template>
+
+<template id="reportTemplate">
+	<div id="report">
+		<table>
+			<tr>
+				<td>
+					<table>
+						<thead>
+						<tr>
+							<th colspan="2">Execution Report</th>
+						</tr>
+						</thead>
+						<tbody id="execute-tbody">
+						<tr id="execute-status-tr" hidden>
+							<td class="execute-report-part-name">
+								Status
+							</td>
+						</tr>
+						<tr>
+							<td id="execute-status-val"></td>
+						</tr>
+						<tr id="execute-error-tr" hidden>
+							<td class="execute-report-part-name">
+								Error
+							</td>
+						</tr>
+						<tr>
+							<td id="execute-error-val"></td>
+						</tr>
+						</tbody>
+					</table>
+				</td></tr>
+
+			<tr>
+				<td>
+					<button autocomplete="off" class="execute-full-button">Show full report</button>
+				</td>
+			</tr>
+			<tr><td>
+				<table class="billing-report-table">
+					<thead>
+					<tr>
+						<th id="billing-report-title">Billing Report</th>
+					</tr>
+					</thead>
+					<tbody id="billing-tbody">
+					<tr id="total-time-tr">
+						<td class="billing-report-part-name">
+							Total time
+						</td>
+					</tr>
+					<tr id="node-number-tr">
+						<td class="billing-report-part-name" style="width: 120px;">
+							Node #
+						</td>
+					</tr>
+					<tr id="node-server-time-tr">
+						<td class="billing-report-part-name">
+							Node server time
+						</td>
+					</tr>
+					<tr id="system-time-tr">
+						<td class="billing-report-part-name">
+							System time
+						</td>
+					</tr>
+					<tr id="user-time-tr">
+						<td class="billing-report-part-name">
+							User time
+						</td>
+					</tr>
+					<tr id="reads-from-disk-tr">
+						<td class="billing-report-part-name">
+							Number of reads from disk
+						</td>
+					</tr>
+					<tr id="bytes-read-from-disk-tr">
+						<td class="billing-report-part-name">
+							Number of bytes read from disk
+						</td>
+					</tr>
+					<tr id="writes-to-disk-tr">
+						<td class="billing-report-part-name">
+							Number of writes to disk
+						</td>
+					</tr>
+					<tr id="bytes-written-to-disk-tr">
+						<td class="billing-report-part-name">
+							Number of bytes written to disk
+						</td>
+					</tr>
+					<tr id="reads-from-network-tr">
+						<td class="billing-report-part-name">
+							Number of reads from network
+						</td>
+					</tr>
+					<tr id="bytes-read-from-network-tr">
+						<td class="billing-report-part-name">
+							Number of bytes read from network
+						</td>
+					</tr>
+					<tr id="writes-to-network-tr">
+						<td class="billing-report-part-name">
+							Number of writes to network
+						</td>
+					</tr>
+					<tr id="bytes-written-to-network-tr">
+						<td class="billing-report-part-name">
+							Number of bytes written to network
+						</td>
+					</tr>
+					</tbody>
+				</table>
+			</td>
+			</tr>
+			<tr>
+				<td>
+					<button autocomplete="off" class="execute-close-button" style="height: 40px;">Close</button>
+				</td>
+			</tr>
+		</table>
+	</div>
+</template>
 
 
-<script src="js/swift.js"></script>
-<script src="js/path.js"></script>
-<script src="js/currentpath.js"></script>
-
-<script src="js/extendnative.js"></script>
-<script src="js/toolbox.js"></script>
-
-<script src="js/upbutton.js"></script>
-<script src="js/navigationbar.js"></script>
-
-
-<script src="js/item.js"></script>
-
-<script src="js/list.js"></script>
-<script src="js/createcontainer.js"></script>
-<script src="js/createdirectory.js"></script>
-<script src="js/createfile.js"></script>
-<script src="js/metadata.js"></script>
-
-<script src="js/toolbar.js"></script>
-
-
-<script src="js/vendor/require.js"></script>
-<script src="js/vendor/ace/ace.js"></script>
-<script src="js/vendor/iscroll.js"></script>
-
-
-<script src="js/dialogform.js"></script>
-<script src="js/fileclick.js"></script>
-<script src="js/uploadbuttons.js"></script>
-<script src="js/fileeditor.js"></script>
-<script src="js/errormsg.js"></script>
-<script src="js/fileexecutor.js"></script>
-
-<script>
-	window.refreshItemList = function () {
-		var parentEl, newEl, oldEl, template, el, loadingEl,
-				commandName;
-
-		//added to prevent unnecessary request while change event fired on loaded file:
-		commandName = window.FileManager.item.itemCommandName.pop();
-		if (commandName === "none") {
-			return;
-		} else {
-			window.FileManager.item.itemCommandName.set(commandName);
-		}
-
-		NavigationBar.setContent(CurrentPath().withoutAccount(), true);
-
-		if (CurrentPath().isContainersList()) {
-			List.containers();
-		} else if (CurrentPath().isFilesList()) {
-			List.files();
-		} else {
-			List.clear();
-			handleFileClick(document.querySelector('#List .list-items'), function () {});
-		}
-	};
-
-	window.ontransition = function (e) {
-		var el = e.target ? e.target : e, newEl;
-		if (el.classList.contains("old-transition-div")) {
-			el.parentNode.removeChild(el);
-			newEl = document.getElementById('List').firstElementChild;
-			newEl.classList.add("no-transition");
-			newEl.classList.remove("no-transition");
-			document.body.classList.remove("disabled");
-		}
-	};
-
-	document.addEventListener("transitionend", ontransition);
-	document.addEventListener("webkitTransitionEnd", ontransition);
-	window.addEventListener("hashchange", refreshItemList);
-</script>
-<script src="js/delete.js"></script>
-<script src="js/liteauth.js"></script>
-<script src="js/authentication.js"></script>
-
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
-<script>window.jQuery || document.write('<script src="js/vendor/jquery-1.10.1.min.js"><\/script>');</script>
+	<script src="liteauth.js"></script>
+	<script src="Swift.js"></script>
+	<script src="FileManager.js"></script>
 
 </body>
 </html>
