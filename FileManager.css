@@ -352,39 +352,39 @@ input[type=file] {
 }
 
 .item-menu .execute-button {
-	background-image: url('../img/execute.png');
+	background-image: url('img/execute.png');
 }
 .item-menu .open-button {
-	background-image: url('../img/arrowright.png');
+	background-image: url('img/arrowright.png');
 	background-position: 5px 6px !important;
 }
 .item-menu .edit-button {
-	background-image: url('../img/pencil.png');
+	background-image: url('img/pencil.png');
 }
 .item-menu .board-button {
-	background-image: url('../img/board.png');
+	background-image: url('img/board.png');
 }
 .item-menu .download-button {
-	background-image: url('../img/download.png');
+	background-image: url('img/download.png');
 	background-position: 5px 6px !important;
 }
 .item-menu .delete-button,
 .item-menu .remove-button {
-	background-image: url('../img/delete.png');
+	background-image: url('img/delete.png');
 	background-position: 5px 6px !important;
 }
 .item-menu .copy-button {
-	background-image: url('../img/copy.png');
+	background-image: url('img/copy.png');
 }
 .item-menu .metadata-button {
-	background-image: url('../img/metadata.png');
+	background-image: url('img/metadata.png');
 	background-position: 5px 6px !important;
 }
 .item-menu .rights-button {
-	background-image: url('../img/rights.png');
+	background-image: url('img/rights.png');
 }
 .item-menu .type-button {
-	background-image: url('../img/file_type.png');
+	background-image: url('img/file_type.png');
 	background-position: 5px 5px !important;
 }
 

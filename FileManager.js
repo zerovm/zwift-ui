@@ -2,11 +2,11 @@
 
 var FileManager = {};
 
-Auth.useClusterAuth();
+Auth.useSwiftAuth();
 
-FileManager.ENABLE_SHARED_CONTAINERS = true;
+FileManager.ENABLE_SHARED_CONTAINERS = false;
 FileManager.ENABLE_ZEROVM = true;
-FileManager.ENABLE_EMAILS = true;
+FileManager.ENABLE_EMAILS = false;
 
 FileManager.enableAll = function () {
 	document.body.classList.remove('disabled');
@@ -192,6 +192,8 @@ FileManager.execute = function (data, contentType) {
 			FileManager.enableAll();
 		},
 		error: function (status, statusText, result) {
+			alert(status + ' ' + statusText + ' ' + result);
+			console.log(status + ' ' + statusText + ' ' + result);
 			FileManager.ExecuteTimer.stop();
 			FileManager.ExecuteTimer.hide();
 			showResult(result);
@@ -211,11 +213,41 @@ FileManager.execute = function (data, contentType) {
 	}
 };
 
+FileManager.executePython = function (pythonFilePath) {
+	var json = [{
+		exec: {
+			path: 'file://python:python',
+			args: '/dev/input'
+		},
+		file_list: [
+			{
+				device: 'input',
+				path: 'swift://' + Auth.getAccount() + '/' + pythonFilePath
+			},
+			{
+				device: 'stdout',
+				content_type: 'text/plain'
+			},
+			{
+				device: 'stderr',
+				path: 'swift://' + Auth.getAccount() + '/' + pythonFilePath + '.log',
+				content_type: 'text/plain'
+			},
+			{
+				device: 'python'
+			}
+		],
+		name: 'python'
+	}];
+	console.log(json);
+	console.log(JSON.stringify(json));
+	FileManager.execute(JSON.stringify(json), 'application/json');
+};
 
 FileManager.ExecuteButton = {};
 
 FileManager.ExecuteButton.click = function () {
-	FileManager.execute(FileManager.File.codeMirror.getValue(), 'application/json');
+	FileManager.execute(FileManager.File.codeMirror.getValue(), FileManager.File.contentType);
 };
 
 FileManager.ExecuteButton.hide = function () {
@@ -1131,7 +1163,7 @@ FileManager.File.open = function (el, callback) {
 		callback();
 
 		function isExecutable(contentType) {
-			return contentType === 'application/json' || contentType === 'application/x-tar' || contentType === 'application/gtar';
+			return contentType === 'application/json' || contentType === 'application/x-tar' || contentType === 'application/gtar' || contentType === 'text/x-python';
 		}
 
 		function isTextFile(contentType) {
@@ -2046,6 +2078,10 @@ FileManager.Path = function (path) {
 			return name;
 		}
 
+		/*if (location.hash === '' && this.isContainersList()) {
+			return '/' + name;
+		}*/
+
 		if (path.lastIndexOf('/') == path.length - 1) {
 			return path + name;
 		}
@@ -2327,6 +2363,7 @@ document.addEventListener('change', function (e) {
 
 document.addEventListener('DOMContentLoaded', function () {
 	Auth.init(function () {
+
 		if (!location.hash) {
 			location.hash = Auth.getAccount();
 		} else {

@@ -1,17 +1,30 @@
 /*
-* SwiftV1 API:
-* http://docs.openstack.org/api/openstack-object-storage/1.0/content/
-*/
+ * SwiftV1 API:
+ * http://docs.openstack.org/api/openstack-object-storage/1.0/content/
+ */
 var SwiftV1 = {};
 var ZeroVmOnSwift = {};
-var SharedContainersOnSwift = {};
 var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
-var ZeroAppsOnSwift = {};
 var SwiftAuth = {};
 var Auth = {};
 
 (function () {
 	'use strict';
+
+
+	var containers = [{"count": 7, "bytes": 184, "name": "aaa"},
+		{"count": 5, "bytes": 27, "name": "bbb"},
+		{"count": 0, "bytes": 0, "name": "ccc"},
+		{"count": 3, "bytes": 72520264, "name": "python"}];
+
+	var files = {
+		'aaa': [{"hash": "023b1ecfa6968b02809421e7a1602f36", "last_modified": "2014-03-17T13:47:29.506000", "bytes": 27, "name": "aaa", "content_type": "text/plain"},
+			{"subdir": "ddd/"},
+			{"subdir": "ee/"},
+			{"subdir": "ggg/"},
+			{"hash": "d41d8cd98f00b204e9800998ecf8427e", "last_modified": "2014-03-17T13:47:42.092540", "bytes": 0, "name": "mklmldsa", "content_type": "text/plain"}]
+	};
+
 
 	var xStorageUrl = null;
 	var xAuthToken = null;
@@ -30,51 +43,13 @@ var Auth = {};
 		OBJECT: 'X-Remove-Object-Meta-'
 	};
 
-	function headersToMetadata(headers, prefix) {
-		var metadata = {};
-		for (var header in headers) {
-			if (header.indexOf(prefix) === 0) {
-				metadata[header.substr(prefix.length)] = headers[header];
-			}
-		}
-		return metadata;
-	}
-
-	function setHeadersMetadata(xhr, metadata, prefix) {
-		for (var metadataKey in metadata) {
-			xhr.setRequestHeader(prefix + metadataKey, metadata[metadataKey]);
-		}
-	}
-
-	function setHeadersRemoveMetadata(xhr, removeMetadataArr, prefixRemove) {
-		for (var i = 0; i < removeMetadataArr.length; i++) {
-			xhr.setRequestHeader(prefixRemove + removeMetadataArr[i], 'x');
-		}
-	}
-
 	SwiftV1.retrieveTokens = function (args) {
-		var xhr = new XMLHttpRequest();
-		xhr.open('GET', args.v1AuthUrl);
-		xhr.setRequestHeader('X-Auth-User', args.tenant + ':' + args.xAuthUser);
-		SwiftV1.account = args.xAuthUser;
-		xhr.setRequestHeader('X-Auth-Key', args.xAuthKey);
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status >= 200 && e.target.status <= 299) {
-				xAuthToken = e.target.getResponseHeader('X-Auth-Token');
-				xStorageUrl = e.target.getResponseHeader('X-Storage-Url');
-
-				// TODO: check if the following lines are okay, consult Swift V1 API
-				account = xStorageUrl.split('/').pop();
-				xStorageUrl = xStorageUrl.substring(0, xStorageUrl.lastIndexOf('/')) + '/';
-
-
-				SwiftV1.xAuthToken = xAuthToken;
-				args.ok();
-			} else {
-				args.error(e.target.status, e.target.statusText);
-			}
-		});
-		xhr.send();
+		xAuthToken = 'test-token';
+		xStorageUrl = 'test-storage-url';
+		account = 'test account';
+		SwiftV1.xAuthToken = xAuthToken;
+		args.ok();
+		//args.error(e.target.status, e.target.statusText);
 	};
 
 	SwiftV1.setStorageUrl = function (url) {
@@ -85,116 +60,23 @@ var Auth = {};
 		return xStorageUrl;
 	};
 
-	SwiftV1.setAuthData = function (args) {
-		if (args.xStorageUrl.lastIndexOf('/') == args.xStorageUrl.length - 1) {
-			xStorageUrl = args.xStorageUrl;
-		} else {
-			xStorageUrl = args.xStorageUrl + '/';
-		}
-		account = args.account;
-		unauthorized = args.unauthorized;
-		if (args.hasOwnProperty('xAuthToken')) {
-			xAuthToken = args.xAuthToken;
-		}
-	};
-
 	SwiftV1.Account = {};
 
 	SwiftV1.Account.head = function (args) {
-		var accountId = args.hasOwnProperty('account') ? args.account : account;
-		var url = xStorageUrl + accountId;
-		var xhr = new XMLHttpRequest();
-		xhr.open('HEAD', url);
-		if (xAuthToken !== null) {
-			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
-		}
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status >= 200 && e.target.status <= 299) {
-				var headers = parseResponseHeaders(e.target.getAllResponseHeaders());
-				var metadata = headersToMetadata(headers, METADATA_PREFIX.ACCOUNT);
-				var containersCount = e.target.getResponseHeader('X-Account-Container-Count');
-				var bytesUsed = e.target.getResponseHeader('X-Account-Bytes-Used');
-				args.success(metadata, containersCount, bytesUsed);
-			} else {
-				args.error(e.target.status, e.target.statusText);
-			}
-		});
-		xhr.send();
+		args.success({
+			'aaa': 'aaa'
+		}, 0, 0);
+		//args.error(e.target.status, e.target.statusText);
 	};
 
 	SwiftV1.Account.get = function (args) {
-		var xhr = new XMLHttpRequest();
-		var queryUrlObj = {};
-		if (args.hasOwnProperty('limit')) {
-			queryUrlObj.limit = args.limit;
-		}
-		if (args.hasOwnProperty('marker')) {
-			queryUrlObj.marker = args.marker;
-		}
-		if (args.hasOwnProperty('end_marker')) {
-			queryUrlObj.end_marker = args.end_marker;
-		}
-		if (args.hasOwnProperty('format')) {
-			queryUrlObj.format = args.format;
-		}
-		var queryUrlArr = [];
-		for (var p in queryUrlObj) {
-			queryUrlArr.push(encodeURIComponent(p) + '=' + encodeURIComponent(queryUrlObj[p]));
-		}
-		var url;
-		if (queryUrlArr.length) {
-			var queryUrl = '?' + queryUrlArr.join('&');
-			url = xStorageUrl + account + queryUrl;
-		} else {
-			url = xStorageUrl + account;
-		}
-		xhr.open('GET', url);
-		if (xAuthToken !== null) {
-			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
-		}
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status >= 200 && e.target.status <= 299) {
-				if (args.hasOwnProperty('format') && args.format == 'json') {
-					args.success(JSON.parse(e.target.responseText));
-				} else {
-					args.success(e.target.responseText);
-				}
-			} else {
-				args.error(e.target.status, e.target.statusText);
-			}
-		});
-		xhr.send();
-
-		return xhr;
+		args.success(containers);
+		//args.error(e.target.status, e.target.statusText);
 	};
 
 	SwiftV1.Account.post = function (args) {
-		var xhr = new XMLHttpRequest();
-		var url = xStorageUrl + account;
-		xhr.open('POST', url);
-		if (xAuthToken !== null) {
-			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
-		}
-		if (args.hasOwnProperty('metadata')) {
-			setHeadersMetadata(xhr, args.metadata, METADATA_PREFIX.ACCOUNT);
-		}
-		if (args.hasOwnProperty('removeMetadata')) {
-			setHeadersRemoveMetadata(xhr, args.removeMetadata, METADATA_REMOVE_PREFIX.ACCOUNT);
-		}
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status >= 200 && e.target.status <= 299) {
-				args.updated();
-			} else {
-				args.error(e.target.status, e.target.statusText);
-			}
-		});
-		xhr.send();
+		//args.updated();
+		args.error(404, 'Not Found');
 	};
 
 	SwiftV1.Container = {};
@@ -227,61 +109,8 @@ var Auth = {};
 	};
 
 	SwiftV1.Container.get = function (args) {
-		var xhr = new XMLHttpRequest();
-		var queryUrlObj = {};
-		if (args.hasOwnProperty('limit')) {
-			queryUrlObj.limit = args.limit;
-		}
-		if (args.hasOwnProperty('marker')) {
-			queryUrlObj.marker = args.marker;
-		}
-		if (args.hasOwnProperty('end_marker')) {
-			queryUrlObj.end_marker = args.end_marker;
-		}
-		if (args.hasOwnProperty('format')) {
-			queryUrlObj.format = args.format;
-		}
-		if (args.hasOwnProperty('prefix')) {
-			queryUrlObj.prefix = args.prefix;
-		}
-		if (args.hasOwnProperty('delimiter')) {
-			queryUrlObj.delimiter = args.delimiter;
-		}
-		if (args.hasOwnProperty('path')) {
-			queryUrlObj.path = args.path;
-		}
-		var queryUrlArr = [];
-		for (var p in queryUrlObj) {
-			queryUrlArr.push(encodeURIComponent(p) + '=' + encodeURIComponent(queryUrlObj[p]));
-		}
-		var url;
-		var accountId = args.hasOwnProperty('account') ? args.account : account;
-		if (queryUrlArr.length) {
-			var queryUrl = '?' + queryUrlArr.join('&');
-			url = xStorageUrl + accountId + '/' + args.containerName + queryUrl;
-		} else {
-			url = xStorageUrl + accountId + '/' + args.containerName;
-		}
-		xhr.open('GET', url);
-		if (xAuthToken !== null) {
-			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
-		}
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status == 404) {
-				args.notExist();
-			} else if (e.target.status >= 200 && e.target.status <= 299) {
-				if (args.hasOwnProperty('format') && args.format == 'json') {
-					args.success(JSON.parse(e.target.responseText));
-				} else {
-					args.success(e.target.responseText);
-				}
-			} else {
-				args.error(e.target.status, e.target.statusText);
-			}
-		});
-		xhr.send();
+		args.success(files[args.containerName] || []);
+		args.error(e.target.status, e.target.statusText);
 	};
 
 	SwiftV1.Container.post = function (args) {
@@ -313,31 +142,33 @@ var Auth = {};
 	};
 
 	SwiftV1.Container.put = function (args) {
-		var xhr = new XMLHttpRequest();
-		var url = xStorageUrl + account + '/' + args.containerName;
-		xhr.open('PUT', url);
-		if (xAuthToken !== null) {
-			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
-		}
+		/*
 		if (args.hasOwnProperty('metadata')) {
 			for (var metadataKey in args.metadata) {
 				var header = 'X-Container-Meta-' + metadataKey;
 				var value = args.metadata[metadataKey];
 				xhr.setRequestHeader(header, value);
 			}
+		}*/
+		if (containerExists(args.containerName)) {
+			args.alreadyExisted();
+		} else {
+			containers.push({"count": 0, "bytes": 0, "name": args.containerName});
+			args.created();
 		}
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status == 201) {
-				args.created();
-			} else if (e.target.status == 202) {
-				args.alreadyExisted();
-			} else {
-				args.error(e.target.status, e.target.statusText);
+
+		//args.error(111, 'Test Ajax Error');
+
+		function containerExists(containerName) {
+			var exist = false;
+			for (var i = 0; i < containers.length; i++) {
+				if (containers[i]['name'] == containerName) {
+					exist = true;
+					break;
+				}
 			}
-		});
-		xhr.send();
+			return exist;
+		}
 	};
 
 	SwiftV1.Container.delete = function (args) {
@@ -598,12 +429,12 @@ var Auth = {};
 		var url = zwiftUrlPrefix + 'open/' + accountId + '/' + args.path;
 		window.location = url;
 		/*
-		var xhr = new XMLHttpRequest();
-		xhr.open('GET', url);
-		xhr.addEventListener('load', function (e) {
-			args.callback(e.target.responseText);
-		});
-		xhr.send();*/
+		 var xhr = new XMLHttpRequest();
+		 xhr.open('GET', url);
+		 xhr.addEventListener('load', function (e) {
+		 args.callback(e.target.responseText);
+		 });
+		 xhr.send();*/
 	};
 
 	ZeroVmOnSwift.execute = function (args) {
@@ -705,130 +536,6 @@ var Auth = {};
 
 			return report;
 		}
-	};
-
-
-	SharedContainersOnSwift.updateRights = function (args) {
-		var xhr = new XMLHttpRequest();
-		var url = xStorageUrl + account + '/' + args.containerName;
-		xhr.open('POST', url);
-		xhr.setRequestHeader('X-Container-Read', args.readRights);
-		xhr.setRequestHeader('X-Container-Write', args.writeRights);
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status >= 200 && e.target.status <= 299) {
-				args.updated();
-			} else {
-				args.error(e.target.status, e.target.statusText);
-			}
-		});
-		xhr.send();
-	};
-
-	SharedContainersOnSwift.getRights = function (xhr) {
-		return {
-			read: xhr.getResponseHeader('X-Container-Read') || '',
-			write: xhr.getResponseHeader('X-Container-Write') || ''
-		};
-	};
-
-	SharedContainersOnSwift.addSharedContainer = function (args) {
-		var xhr = new XMLHttpRequest();
-		var sharedUrlPrefix = xStorageUrl.split('/').slice(0, -2).join('/');
-		var url = sharedUrlPrefix + '/load-share/' + args.account + '/' + args.container;
-		xhr.open('GET', url);
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status == 200) {
-				args.added();
-			} else if (e.target.status == 403) {
-				args.notAuthorized();
-			} else {
-				args.error(e.target.status, e.target.statusText);
-			}
-		});
-		xhr.send();
-	};
-
-	SharedContainersOnSwift.removeSharedContainer = function (args) {
-		var xhr = new XMLHttpRequest();
-		var sharedUrlPrefix = xStorageUrl.split('/').slice(0, -2).join('/');
-		var url = sharedUrlPrefix + '/drop-share/' + args.account + '/' + args.container;
-		xhr.open('GET', url);
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status == 200) {
-				args.removed();
-			} else if (e.target.status == 403) {
-				unauthorized();
-			} else {
-				args.error(e.target.status, e.target.statusText);
-			}
-		});
-		xhr.send();
-	};
-
-	SharedContainersOnSwift.getFromXhr = function (xhr) {
-		var allContainers = {};
-
-		var i = 0;
-		var headerKey = 'X-Account-Meta-Shared' + i;
-		var headerVal = xhr.getResponseHeader(headerKey);
-
-		while (headerVal) {
-			var obj = JSON.parse(headerVal);
-			for (var attrname in obj) {
-				allContainers[attrname] = obj[attrname];
-			}
-
-			i++;
-			headerKey = 'X-Account-Meta-Shared' + i;
-			headerVal = xhr.getResponseHeader(headerKey);
-		}
-
-		return allContainers;
-	};
-
-	SharedContainersOnSwift.getContainerSize = function (args) {
-		var xhr = new XMLHttpRequest();
-		var url = xStorageUrl + args.account + '/' + args.container;
-		xhr.open('HEAD', url);
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status >= 200 && e.target.status <= 299) {
-				var bytes = xhr.getResponseHeader('X-Container-Bytes-Used');
-				var count = xhr.getResponseHeader('X-Container-Object-Count');
-				args.success(bytes, count);
-			} else {
-				args.error(e.target.status, e.target.statusText);
-			}
-		});
-		xhr.send();
-	};
-
-	SharedContainersOnSwift.copy = function (args) {
-		var xhr = new XMLHttpRequest();
-		var accountId = args.hasOwnProperty('account') ? args.account : account;
-		var url = xStorageUrl + accountId + '/' + args.path;
-		xhr.open('PUT', url);
-		if (xAuthToken !== null) {
-			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
-		}
-		xhr.setRequestHeader('X-Copy-From-Account', args.copyFrom);
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status == 201) {
-				args.copied();
-			} else {
-				args.error(e.target.status, e.target.statusText);
-			}
-		});
-		xhr.send();
 	};
 
 	SwiftAdvancedFunctionality.delete = function (args) {
@@ -971,160 +678,6 @@ var Auth = {};
 
 	SwiftAdvancedFunctionality.rename = SwiftAdvancedFunctionality.move;
 
-
-	ZeroAppsOnSwift.createAppLocations = function () {
-
-	};
-
-	ZeroAppsOnSwift.getAppLocations = function (args) {
-		SwiftV1.getFile({
-			path: '.gui/app-locations',
-			success: function (fileData) {
-				var appLocations = JSON.parse(fileData);
-				args.success(appLocations);
-			},
-			notExist: function () {
-				ZeroAppsOnSwift.createAppLocations();
-			},
-			error: function (message) {
-				args.error(message);
-			}
-		});
-	};
-
-	ZeroAppsOnSwift.openApp = function (args) {
-		window.location = xStorageUrl + account + '/.gui/' + args.appLocation + '/' + args.defaultPage + location.search;
-	};
-
-	ZeroAppsOnSwift.getAppIconUrl = function (args) {
-		return xStorageUrl + account + '/.gui/' + args.appLocation + '/' + args.appIcon;
-	};
-
-	ZeroAppsOnSwift.createAppDir = function (args) {
-		var path = '.gui/'+ args.appAuthor +'/'+ args.appName +'/'+ args.appVersion + '/';
-		SwiftV1.createDirectory({
-			path: path,
-			created: args.created,
-			error: args.error
-		});
-	};
-
-	ZeroAppsOnSwift.addAppLocation = function (args) {
-		ZeroAppsOnSwift.getAppLocations({
-			success: function (appLocations) {
-				if (appLocations.indexOf(args.appLocation) != -1) {
-					return;
-				}
-				appLocations.push(args.appLocation);
-				SwiftV1.createFile({
-					path: '.gui/app-locations',
-					contentType: 'application/json',
-					data: JSON.stringify(appLocations),
-					created: function () {
-
-					},
-					error: function () {
-
-					}
-				});
-			},
-			error: function (message) {
-				console.log(message);
-			}
-		});
-	};
-
-	ZeroAppsOnSwift.removeAppLocation = function (args) {
-		ZeroAppsOnSwift.getAppLocations({
-			success: function (appLocations) {
-				var index = appLocations.indexOf(args.appLocation);
-				if (index == -1) {
-					return;
-				}
-				appLocations.splice(index, 1);
-				SwiftV1.createFile({
-					path: '.gui/app-locations',
-					contentType: 'application/json',
-					data: JSON.stringify(appLocations),
-					created: function () {
-
-					},
-					error: function () {
-
-					}
-				});
-			},
-			error: function (message) {
-				console.log(message);
-			}
-		});
-	};
-
-	ZeroAppsOnSwift.checkAppExist = function (args) {
-
-		var xhr = new XMLHttpRequest();
-		var url = xStorageUrl + account + '/.gui/' + args.appLocation;
-
-		xhr.open('HEAD', url);
-
-		xhr.addEventListener('load', function (e) {
-			var status = e.target.status;
-
-			if (status == 401) {
-				unauthorized();
-			}
-			if (status == 404) {
-				args.notExist();
-				return;
-			}
-			if (status >= 200 && status <= 299) {
-				args.exist();
-			}
-			args.error();
-		});
-
-		xhr.send();
-	};
-
-	ZeroAppsOnSwift.uploadAppFile = function (args) {
-		var xhr = new XMLHttpRequest();
-		var url = xStorageUrl + account + '/.gui/' + args.filePath;
-		xhr.open('PUT', url);
-		xhr.setRequestHeader('Content-Type', args.contentType);
-		xhr.addEventListener('load', args.callback);
-		xhr.send(args.fileData);
-	};
-
-	ZeroAppsOnSwift.getManifest = function (args) {
-		var xhr = new XMLHttpRequest();
-		var manifestUrl = xStorageUrl + account + '/.gui/' + args.appPath + '/manifest.json';
-		xhr.open('GET', manifestUrl);
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 404) {
-				args.callback(null);
-				return;
-			}
-			var manifest = JSON.parse(e.currentTarget.response);
-			args.callback(manifest);
-		});
-		xhr.send();
-	};
-
-	ZeroAppsOnSwift.removeApp = function (appPath, callback, progress) {
-		ZeroAppsOnSwift.removeAppLocation({
-			appLocation: appPath
-		});
-		SwiftAdvancedFunctionality.deleteAll({
-			path: '.gui/' + appPath + '/',
-			success: callback,
-			error: function () {
-				//TODO: error treatment.
-			},
-			progress: progress,
-			notExist: callback
-		});
-	};
-
 	SwiftAuth.init = function(callback) {
 
 		var authenticationEl = document.getElementById('Authentication');
@@ -1158,25 +711,25 @@ var Auth = {};
 			XHR_OK();
 
 			/*
-			liteauth.getProfile(function (responses) {
-				var xAuthUser =
-					liteauth.getLoginInfo().split(':')[0];
-				var tenant =
-					liteauth.getLoginInfo().split(':').splice(1).join(':');
-				var xAuthKey =
-					JSON.parse(response)['auth'].split('plaintext:')[1];
-				var v1AuthUrl =
-					decodeURIComponent(getCookie('storage'));
-				SwiftV1.retrieveTokens({
-					v1AuthUrl: v1AuthUrl,
-					tenant: tenant,
-					xAuthUser: xAuthUser,
-					xAuthKey: xAuthKey,
-					error: XHR_ERROR,
-					ok: XHR_OK
-				});
-			});
-			*/
+			 liteauth.getProfile(function (responses) {
+			 var xAuthUser =
+			 liteauth.getLoginInfo().split(':')[0];
+			 var tenant =
+			 liteauth.getLoginInfo().split(':').splice(1).join(':');
+			 var xAuthKey =
+			 JSON.parse(response)['auth'].split('plaintext:')[1];
+			 var v1AuthUrl =
+			 decodeURIComponent(getCookie('storage'));
+			 SwiftV1.retrieveTokens({
+			 v1AuthUrl: v1AuthUrl,
+			 tenant: tenant,
+			 xAuthUser: xAuthUser,
+			 xAuthKey: xAuthKey,
+			 error: XHR_ERROR,
+			 ok: XHR_OK
+			 });
+			 });
+			 */
 		}
 
 		authenticationEl.getElementsByClassName('login-with-google')[0].onclick = function () {
@@ -1232,4 +785,14 @@ var Auth = {};
 		Auth.signOut = SwiftAuth.signOut;
 	};
 
+
+	function headersToMetadata(headers, prefix) {
+		var metadata = {};
+		for (var header in headers) {
+			if (header.indexOf(prefix) === 0) {
+				metadata[header.substr(prefix.length)] = headers[header];
+			}
+		}
+		return metadata;
+	}
 })();
