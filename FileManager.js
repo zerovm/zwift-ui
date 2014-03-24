@@ -187,8 +187,13 @@ FileManager.execute = function (data, contentType) {
 		success: function (result, report) {
 			FileManager.ExecuteTimer.stop();
 			FileManager.ExecuteTimer.hide();
-			FileManager.ExecuteReport.create(report);
 			showResult(result);
+			if (report) {
+				FileManager.ExecuteReport.create(report);
+			} else {
+				//alert('JS Error: report object is undefined');
+			}
+
 			FileManager.enableAll();
 		},
 		error: function (status, statusText, result) {
@@ -202,14 +207,16 @@ FileManager.execute = function (data, contentType) {
 	});
 
 	function showResult(result) {
-		var el = document.querySelector('.scrolling-content');
 		FileManager.File.hideMenu();
+		var el = document.querySelector('.scrolling-content').textContent = result;
+		/*
 		FileManager.File.codeMirror = CodeMirror(el, {
 			value: result,
 			mode: 'text/plain',
 			lineNumbers: false
 		});
 		FileManager.Layout.adjust();
+		*/
 	}
 };
 
@@ -314,6 +321,7 @@ FileManager.ExecuteReport.create = function (report) {
 	var scrollingContentEl = document.querySelector('.scrolling-content');
 	var reportTemplate = document.querySelector('#reportTemplate').innerHTML;
 	scrollingContentEl.innerHTML = reportTemplate;
+
 
 	executionReport();
 	billingReport();
@@ -589,7 +597,7 @@ FileManager.CreateFile.click = function () {
 
 FileManager.CreateFile.clear = function () {
 	document.querySelector('.create-file-input-name').value = '';
-	document.querySelector('.create-file-input-type').value = '';
+	document.querySelector('.create-file-input-type').value = 'text/plain';
 	FileManager.CreateFile.clearErrors();
 };
 

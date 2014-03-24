@@ -12,17 +12,35 @@ var Auth = {};
 	'use strict';
 
 
-	var containers = [{"count": 7, "bytes": 184, "name": "aaa"},
+	var __continers = [];/*[{"count": 7, "bytes": 184, "name": "aaa"},
 		{"count": 5, "bytes": 27, "name": "bbb"},
 		{"count": 0, "bytes": 0, "name": "ccc"},
-		{"count": 3, "bytes": 72520264, "name": "python"}];
+		{"count": 3, "bytes": 72520264, "name": "python"}];*/
 
-	var files = {
+	var __files = {};/*{
 		'aaa': [{"hash": "023b1ecfa6968b02809421e7a1602f36", "last_modified": "2014-03-17T13:47:29.506000", "bytes": 27, "name": "aaa", "content_type": "text/plain"},
 			{"subdir": "ddd/"},
 			{"subdir": "ee/"},
 			{"subdir": "ggg/"},
-			{"hash": "d41d8cd98f00b204e9800998ecf8427e", "last_modified": "2014-03-17T13:47:42.092540", "bytes": 0, "name": "mklmldsa", "content_type": "text/plain"}]
+			{"hash": "d41d8cd98f00b204e9800998ecf8427e", "last_modified": "2014-03-17T13:47:42.092540", "bytes": 0, "name": "mklmldsa", "content_type": "text/plain"}],
+		'bbb': [],
+		'ccc': [],
+		'python': []
+	};*/
+
+	var __metadata = {
+		'aaa': {
+			'aaa': 'bbb'
+		},
+		'bbb': {},
+		'ccc': {},
+		'python': {}
+	};
+
+	//var __contentType = {};
+
+	var __fileContent = {
+
 	};
 
 
@@ -70,7 +88,7 @@ var Auth = {};
 	};
 
 	SwiftV1.Account.get = function (args) {
-		args.success(containers);
+		args.success(__continers);
 		//args.error(e.target.status, e.target.statusText);
 	};
 
@@ -82,78 +100,35 @@ var Auth = {};
 	SwiftV1.Container = {};
 
 	SwiftV1.Container.head = function (args) {
-		var accountId = args.hasOwnProperty('account') ? args.account : account;
-		var xhr = new XMLHttpRequest();
-		var url = xStorageUrl + accountId + '/' + args.containerName;
-		xhr.open('HEAD', url);
-		if (xAuthToken !== null) {
-			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
-		}
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status == 404) {
-				args.notExist();
-			} else if (e.target.status >= 200 && e.target.status <= 299) {
-				var headers = parseResponseHeaders(e.target.getAllResponseHeaders());
-				var metadata = headersToMetadata(headers, METADATA_PREFIX.CONTAINER);
-				var objectCount = e.target.getResponseHeader('X-Container-Object-Count');
-				var bytesUsed = e.target.getResponseHeader('X-Container-Bytes-Used');
-				args.success(metadata, objectCount, bytesUsed);
-			} else {
-				args.error(e.target.status, e.target.statusText);
-			}
-		});
-		xhr.send();
-		return xhr;
+		var metadata = __metadata[args.containerName];
+		var objectCount = 0;
+		var bytesUsed = 0;
+		args.success(metadata, objectCount, bytesUsed);
+		//args.error(111, 'Test Ajax Error');
 	};
 
 	SwiftV1.Container.get = function (args) {
-		args.success(files[args.containerName] || []);
-		args.error(e.target.status, e.target.statusText);
+		args.success(__files[args.containerName] || []);
+		//args.error(111, 'Test Ajax Error');
 	};
 
 	SwiftV1.Container.post = function (args) {
-		var xhr = new XMLHttpRequest();
-		var url = xStorageUrl + account + '/' + args.containerName;
-		xhr.open('POST', url);
-		if (xAuthToken !== null) {
-			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
-		}
-
-		if (args.hasOwnProperty('metadata')) {
-			setHeadersMetadata(xhr, args.metadata, METADATA_PREFIX.CONTAINER);
-		}
-		if (args.hasOwnProperty('removeMetadata')) {
-			setHeadersRemoveMetadata(xhr, args.removeMetadata, METADATA_REMOVE_PREFIX.CONTAINER);
-		}
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status == 404) {
-				args.notExist();
-			} else if (e.target.status >= 200 && e.target.status <= 299) {
-				args.updated();
-			} else {
-				args.error(e.target.status, e.target.statusText);
-			}
-		});
-		xhr.send();
+		__metadata[args.containerName] = args.metadata;
+		args.updated();
+		//args.error(111, 'Test Ajax Error');
 	};
 
 	SwiftV1.Container.put = function (args) {
-		/*
 		if (args.hasOwnProperty('metadata')) {
-			for (var metadataKey in args.metadata) {
-				var header = 'X-Container-Meta-' + metadataKey;
-				var value = args.metadata[metadataKey];
-				xhr.setRequestHeader(header, value);
-			}
-		}*/
+			__metadata[args.containerName] = args.metadata;
+		}
+
 		if (containerExists(args.containerName)) {
 			args.alreadyExisted();
 		} else {
-			containers.push({"count": 0, "bytes": 0, "name": args.containerName});
+			__continers.push({"count": 0, "bytes": 0, "name": args.containerName});
+			__files[args.containerName] = [];
+			__metadata[args.containerName] = {};
 			args.created();
 		}
 
@@ -161,8 +136,8 @@ var Auth = {};
 
 		function containerExists(containerName) {
 			var exist = false;
-			for (var i = 0; i < containers.length; i++) {
-				if (containers[i]['name'] == containerName) {
+			for (var i = 0; i < __continers.length; i++) {
+				if (__continers[i]['name'] == containerName) {
 					exist = true;
 					break;
 				}
@@ -172,184 +147,131 @@ var Auth = {};
 	};
 
 	SwiftV1.Container.delete = function (args) {
-		var xhr = new XMLHttpRequest();
-		var url = xStorageUrl + account + '/' + args.containerName;
-		xhr.open('DELETE', url);
-		if (xAuthToken !== null) {
-			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
-		}
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status == 404) {
-				args.notExist();
-			} else if (e.target.status >= 200 && e.target.status <= 299) {
-				args.deleted();
-			} else {
-				args.error(e.target.status, e.target.statusText);
+		deleteContainer(args.containerName);
+		delete __files[args.containerName];
+		delete __metadata[args.containerName];
+		args.deleted();
+		//args.error(111, 'Test Ajax Error');
+		function deleteContainer(containerName) {
+			var index;
+			for (var i = 0; i < __continers.length; i++) {
+				if (__continers[i].name == containerName) {
+					index = i;
+					break;
+				}
 			}
-		});
-		xhr.send();
+			if (index > -1) {
+				__continers.splice(index, 1);
+			}
+		}
 	};
 
 	SwiftV1.File = {};
 
 	SwiftV1.File.head = function (args) {
-		var xhr = new XMLHttpRequest();
-		var accountId = args.hasOwnProperty('account') ? args.account : account;
-		var url = xStorageUrl + accountId + '/' + args.path;
-		xhr.open('HEAD', url);
-		if (xAuthToken !== null) {
-			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
-		}
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status == 404) {
-				args.notExist();
-			} else if (e.target.status >= 200 && e.target.status <= 299) {
-				var headers = parseResponseHeaders(e.target.getAllResponseHeaders());
-				var metadata = headersToMetadata(headers, METADATA_PREFIX.OBJECT);
-				var contentType = e.target.getResponseHeader('Content-Type');
-				var contentLength = e.target.getResponseHeader('Content-Length');
-				var lastModified = e.target.getResponseHeader('Last-Modified');
-				args.success(metadata, contentType, contentLength, lastModified);
-			} else {
-				args.error(e.target.status, e.target.statusText);
-			}
-		});
-		xhr.send();
+		var metadata = __metadata[args.path];
+		var contentType = getContentType(args.path);
+		var contentLength = 0;
+		var lastModified = 'test';
+		args.success(metadata, contentType, contentLength, lastModified);
+		//args.error(111, 'Test Ajax Error');
 	};
 
 	SwiftV1.File.get = function (args) {
-		var xhr = new XMLHttpRequest();
-		var accountId = args.hasOwnProperty('account') ? args.account : account;
-		var url = xStorageUrl + accountId + '/' + args.path;
-		if (args.hasOwnProperty('ifMatch')) {
-			xhr.setRequestHeader('If-Match', args.ifMatch);
-		}
-		if (args.hasOwnProperty('ifNoneMatch')) {
-			xhr.setRequestHeader('If-None-Match', args.ifNoneMatch);
-		}
-		if (args.hasOwnProperty('ifModifiedSince')) {
-			xhr.setRequestHeader('If-Modified-Since', args.ifModifiedSince);
-		}
-		if (args.hasOwnProperty('ifUnmodifiedSince')) {
-			xhr.setRequestHeader('If-Unmodified-Since', args.ifUnmodifiedSince);
-		}
-		if (args.hasOwnProperty('range')) {
-			xhr.setRequestHeader('Range', args.range);
-		}
-		xhr.open('GET', url);
-		if (xAuthToken !== null) {
-			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
-		}
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status == 404) {
-				args.notExist();
-			} else if (e.target.status >= 200 && e.target.status <= 299) {
-				args.success(e.target.responseText, e.target.getResponseHeader('Content-Type'));
-			} else {
-				args.error(e.target.status, e.target.statusText);
-			}
-		});
-		if (args.hasOwnProperty('progress')) {
-			xhr.addEventListener('progress', function (e) {
-				args.progress(e.loaded);
-			});
-		}
-		xhr.send();
-		return xhr;
+		args.success(__fileContent[args.path], __metadata[args.path]);
+		//args.error(111, 'Test Ajax Error');
 	};
 
 	SwiftV1.File.post = function (args) {
-		var xhr = new XMLHttpRequest();
-		var accountId = args.hasOwnProperty('account') ? args.account : account;
-		var url = xStorageUrl + accountId + '/' + args.path;
-		xhr.open('POST', url);
-		if (xAuthToken !== null) {
-			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
-		}
-		if (args.hasOwnProperty('metadata')) {
-			setHeadersMetadata(xhr, args.metadata, METADATA_PREFIX.OBJECT);
-		}
-		if (args.hasOwnProperty('removeMetadata')) {
-			setHeadersRemoveMetadata(xhr, args.removeMetadata, METADATA_REMOVE_PREFIX.OBJECT);
-		}
-		xhr.setRequestHeader('Content-Type', args.contentType);
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status == 404) {
-				args.notExist();
-			} else if (e.target.status >= 200 && e.target.status <= 299) {
-				args.updated();
-			} else {
-				args.error(e.target.status, e.target.statusText);
-			}
-		});
-		xhr.send();
+		__metadata[args.path] = args.metadata;
+		setContentType(args.path, args.contentType);
+		args.updated();
+		//args.error(111, 'Test Ajax Error');
 	};
 
 	SwiftV1.File.put = function (args) {
-		var xhr = new XMLHttpRequest();
-		var accountId = args.hasOwnProperty('account') ? args.account : account;
-		var url = xStorageUrl + accountId + '/' + args.path;
-		xhr.open('PUT', url, true);
-		if (xAuthToken !== null) {
-			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
-		}
-		if (args.hasOwnProperty('metadata')) {
-			setHeadersMetadata(xhr, args.metadata, METADATA_PREFIX.OBJECT);
-		}
-		if (args.hasOwnProperty('removeMetadata')) {
-			setHeadersRemoveMetadata(xhr, args.removeMetadata, METADATA_REMOVE_PREFIX.OBJECT);
-		}
-		xhr.setRequestHeader('Content-Type', args.contentType);
-		if (args.hasOwnProperty('progress')) {
-			xhr.upload.addEventListener('progress', function (e) {
-				if (e.lengthComputable) {
-					var percentLoaded = Math.round((e.loaded / e.total) * 100);
-					args.progress(percentLoaded, e.loaded, e.total);
-				}
+		__fileContent[args.path] = args.data;
+		__metadata[args.path] = args.metadata || {};
+		//__contentType[args.path] = args.contentType;
+
+		var pathObj = FileManager.Path(args.path);
+		var fileName = pathObj.name();
+		var fileDir = __files[pathObj.up()];
+		if (checkFileExist(fileDir, fileName)) {
+		} else {
+			fileDir.push({
+				"hash": "d41d8cd98f00b204e9800998ecf8427e",
+				"last_modified": "2014-03-17T13:47:42.092540",
+				"bytes": 0,
+				"name": fileName,
+				"content_type": args.contentType
 			});
 		}
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status == 201) {
-				args.created();
-			} else {
-				args.error(e.target.status, e.target.statusText);
-			}
-		});
-		xhr.send(args.data);
+		args.created();
+		//args.error(111, 'Test Ajax Error');
 
-		return xhr;
+		function checkFileExist(filesDir, fileName) {
+			var fileObj = null;
+			for (var i = 0; i < filesDir.length; i++) {
+				if (filesDir[i].name == fileName) {
+					fileObj = filesDir[i];
+					break;
+				}
+			}
+			return fileObj;
+		}
 	};
 
-	SwiftV1.File.delete = function (args) {
-		var xhr = new XMLHttpRequest();
-		var accountId = args.hasOwnProperty('account') ? args.account : account;
-		var url = xStorageUrl + accountId + '/' + args.path;
-		xhr.open('DELETE', url);
-		if (xAuthToken !== null) {
-			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
-		}
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status == 404) {
-				args.notExist();
-			} else if (e.target.status >= 200 && e.target.status <= 299) {
-				args.deleted();
-			} else {
-				args.error(e.target.status, e.target.statusText);
+	function setContentType(path, contentType) {
+		var pathObj = new FileManager.Path(path);
+		var fileName = pathObj.name();
+		var filesDir = __files[pathObj.up()];
+		for (var i = 0; i < filesDir.length; i++) {
+			if (filesDir[i].name == fileName) {
+				filesDir[i]['content_type'] = contentType;
+				break;
 			}
-		});
-		xhr.send();
+		}
+	}
+
+	function getContentType(path) {
+		var pathObj = new FileManager.Path(path);
+		var fileName = pathObj.name();
+		var filesDir = __files[pathObj.up()];
+		var contentType = '';
+		for (var i = 0; i < filesDir.length; i++) {
+			if (filesDir[i].name == fileName) {
+				contentType = filesDir[i]['content_type'];
+				break;
+			}
+		}
+		return contentType;
+	}
+
+
+
+	SwiftV1.File.delete = function (args) {
+		deleteFile(args.path);
+		delete __metadata[args.path];
+		delete __fileContent[args.path];
+		args.deleted();
+		//args.error(111, 'Test Ajax Error');
+
+		function deleteFile(path) {
+			var pathObj = FileManager.Path(args.path);
+			var dirFiles = __files[pathObj.up()];
+			var fileName = pathObj.name();
+			var index;
+			for (var i = 0; i < dirFiles.length; i++) {
+				if (dirFiles[i].name == fileName) {
+					index = i;
+					break;
+				}
+			}
+			if (index > -1) {
+				dirFiles.splice(index, 1);
+			}
+		}
 	};
 
 	SwiftV1.File.copy = function (args) {
@@ -438,6 +360,8 @@ var Auth = {};
 	};
 
 	ZeroVmOnSwift.execute = function (args) {
+		args.success('Hello, World!');
+		/*
 		var xhr = new XMLHttpRequest();
 		var accountId = args.hasOwnProperty('account') ? args.account : account;
 		var url = xStorageUrl + account;
@@ -477,7 +401,7 @@ var Auth = {};
 				reader.readAsText(e.target.response);
 			}
 		});
-		xhr.send(args.data);
+		xhr.send(args.data);*/
 
 		function makeReportObj(headers) {
 
@@ -560,92 +484,17 @@ var Auth = {};
 
 	SwiftAdvancedFunctionality.deleteAll = function (args) {
 		var accountId = args.hasOwnProperty('account') ? args.account : account;
-		var levels = [];
-		var files;
-		var deleteCount = 0;
-		var newArgs = {};
-		var pathArr = args.path.split('/');
-		newArgs.format = 'json';
-		newArgs.notExist = args.hasOwnProperty('notExist') ? args.notExist : args.deleted;
-		newArgs.error = args.error;
-		newArgs.success = success;
-		newArgs.containerName = pathArr[0];
-		if (pathArr.length > 1) {
-			newArgs.prefix = pathArr.splice(1).join('/');
-		}
-		SwiftV1.listFiles(newArgs);
-
-		function success(response) {
-			files = response;
-			for (var i = 0; i < files.length; i++) {
-				var level = files[i].name.split('/').length;
-				if (typeof levels[level] === "undefined") {
-					levels[level] = [];
-				}
-				levels[level].push(newArgs.containerName + '/' + files[i].name);
-			}
-
-			deleteLevel(levels.length);
-		}
-
-		function deleteLevel(level) {
-			if (level == 0) {
-				SwiftAdvancedFunctionality.delete({
-					account: accountId,
-					path: args.path,
-					deleted: function () {
-						args.progress(files.length, deleteCount, 'deleted');
-						args.deleted();
-					},
-					error: function (status, statusText) {
-						args.progress(files.length, deleteCount, 'error occurred');
-						args.error(status, statusText);
-					},
-					notExist: function () {
-						args.progress(files.length, deleteCount, 'not existed');
-						newArgs.notExist();
-					}
-				});
-				return;
-			}
-			if (typeof levels[level] === "undefined") {
-				deleteLevel(level -  1);
-				return;
-			}
-
-			var levelAmountLast = levels[level].length;
-
-			for (var  i = 0; i < levels[level].length; i++) {
-				SwiftAdvancedFunctionality.delete({
-					account: accountId,
-					path: levels[level][i],
-					deleted: function () {
-						levelAmountLast--;
-						args.progress(files.length, deleteCount, 'deleted');
-						deleteCount++;
-						if (levelAmountLast == 0) {
-							deleteLevel(level -  1);
-						}
-					},
-					error: function () {
-						levelAmountLast--;
-						args.progress(files.length, deleteCount, 'error occurred');
-						deleteCount++;
-						if (levelAmountLast == 0) {
-							deleteLevel(level -  1);
-						}
-					},
-					notExist: function () {
-						levelAmountLast--;
-						args.progress(files.length, deleteCount, 'not existed');
-						deleteCount++;
-						if (levelAmountLast == 0) {
-							deleteLevel(level -  1);
-						}
-					}
-				});
-			}
-		}
+		SwiftAdvancedFunctionality.delete({
+			account: accountId,
+			path: args.path,
+			deleted: function () {
+				args.deleted();
+			},
+			error: function (status, statusText) {
+				args.error(status, statusText);
+			},
+			notExist: function () {}
+		});
 	};
 
 	SwiftAdvancedFunctionality.checkPathHasFiles = function (args) {
