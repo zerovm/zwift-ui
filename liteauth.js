@@ -1,6 +1,6 @@
 var liteauth = (function () {
 
-	var AUTH_ENDPOINT = 'auth.zerovm.org';
+	var AUTH_ENDPOINT = 'zauth.rax.io';
 	var AUTH_TYPES = {
 		GOOGLE: '/login/google',
 		FACEBOOK: '/login/fb'
@@ -41,7 +41,7 @@ var liteauth = (function () {
 
 	function getProfile(callback) {
 		var xhr = new XMLHttpRequest();
-		xhr.open('GET', 'https://auth.zerovm.org/profile');
+		xhr.open('GET', 'https://' + AUTH_ENDPOINT + '/profile');
 		xhr.withCredentials = true;
 		xhr.onload = function (e) {
 			callback(e.target.responseText);
@@ -51,7 +51,7 @@ var liteauth = (function () {
 
 	function updateProfile(userKey, inviteCode) {
 		var xhr = new XMLHttpRequest();
-		xhr.open('PUT', 'https://auth.zerovm.org/profile');
+		xhr.open('PUT', 'https://' + AUTH_ENDPOINT + '/profile');
 		xhr.withCredentials = true;
 		//xhr.setRequestHeader('X-Auth-User-Key', userKey);
 		//xhr.setRequestHeader('Content-Type', 'text/plain');

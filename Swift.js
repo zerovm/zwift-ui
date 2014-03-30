@@ -7,8 +7,7 @@ var ZeroVmOnSwift = {};
 var SharedContainersOnSwift = {};
 var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
 var ZeroAppsOnSwift = {};
-var ZLitestackDotCom = {};
-var ClusterAuth = {};
+var SwiftAuth = {};
 var Auth = {};
 
 (function () {
@@ -16,7 +15,7 @@ var Auth = {};
 
 	var xStorageUrl = null;
 	var xAuthToken = null;
-	var account = null;
+	var account = '';
 	var unauthorized = function () {};
 
 	var METADATA_PREFIX = {
@@ -61,8 +60,14 @@ var Auth = {};
 		xhr.setRequestHeader('X-Auth-Key', args.xAuthKey);
 		xhr.addEventListener('load', function (e) {
 			if (e.target.status >= 200 && e.target.status <= 299) {
-				xStorageUrl = e.target.getResponseHeader('X-Storage-Url');
 				xAuthToken = e.target.getResponseHeader('X-Auth-Token');
+				xStorageUrl = e.target.getResponseHeader('X-Storage-Url');
+
+				// TODO: check if the following lines are okay, consult Swift V1 API
+				account = xStorageUrl.split('/').pop();
+				xStorageUrl = xStorageUrl.substring(0, xStorageUrl.lastIndexOf('/')) + '/';
+
+
 				SwiftV1.xAuthToken = xAuthToken;
 				args.ok();
 			} else {
@@ -311,9 +316,6 @@ var Auth = {};
 		var xhr = new XMLHttpRequest();
 		var url = xStorageUrl + account + '/' + args.containerName;
 		xhr.open('PUT', url);
-		if (xAuthToken !== null) {
-			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
-		}
 		if (xAuthToken !== null) {
 			xhr.setRequestHeader('X-Auth-Token', xAuthToken);
 		}
@@ -1123,119 +1125,7 @@ var Auth = {};
 		});
 	};
 
-	ZLitestackDotCom.init = function (callback) {
-		var accountId = getUrlParameter('account');
-
-		if (!accountId) {
-			loginRedirect();
-			return;
-		}
-
-		if (accountId == 'logout') {
-			document.body.innerHTML = 'Logging out...';
-			window.location = 'logoutZLitestackDotCom.html';
-			return false;
-		}
-
-		function loginRedirect() {
-			var urlPrefix = 'https://z.litestack.com/login/google/?state=';
-			var stateEncoded = encodeURIComponent(location.pathname);
-			window.location = urlPrefix + stateEncoded;
-		}
-		SwiftV1.setAuthData({
-			account: accountId,
-			xStorageUrl: 'https://z.litestack.com/v1',
-			unauthorized: function () {
-				var urlPrefix = 'https://z.litestack.com/login/google/?state=';
-				var stateEncoded = encodeURIComponent(location.pathname);
-				window.location = urlPrefix + stateEncoded;
-			}
-		});
-
-		if (arguments.length) {
-			callback();
-		}
-
-		function getUrlParameter(name) {
-			name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-			var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-				results = regex.exec(location.search);
-			return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-		}
-	};
-
-	ZLitestackDotCom.getAccount = function () {
-		return account;
-	};
-
-	ZLitestackDotCom.getStorageUrl = function () {
-		return xStorageUrl;
-	};
-
-	ZLitestackDotCom.userData = null;
-
-	ZLitestackDotCom.getEmail = function (args) {
-
-		if (ZLitestackDotCom.userData !== null) {
-			var email = ZLitestackDotCom.userData['email'];
-			args.success(email);
-			return;
-		}
-
-		var xhr = new XMLHttpRequest();
-		var url = xStorageUrl + account;
-		xhr.open('HEAD', url);
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status >= 200 && e.target.status <= 299) {
-				setUserData(e.target);
-				var email = ZLitestackDotCom.userData['email'];
-				args.success(email);
-			} else {
-				args.error(e.target.status, e.target.statusText);
-			}
-		});
-		xhr.send();
-
-		function setUserData(xhr) {
-			var userDataBuilder = {};
-			var headerPrefix = 'X-Account-Meta-Userdata';
-
-			var i = 0;
-			var headerKey = headerPrefix + i;
-			var headerValue = xhr.getResponseHeader(headerKey);
-
-			while (headerValue) {
-				var obj = JSON.parse(headerValue);
-				userDataBuilder = clone(obj);
-				for (var key in obj) {
-					userDataBuilder[key] = obj[key];
-				}
-
-				i++;
-				headerKey = headerPrefix + i;
-				headerValue = xhr.getResponseHeader(headerKey);
-			}
-			ZLitestackDotCom.userData = userDataBuilder;
-		}
-
-		function clone(obj) {
-			var copiedObj = {};
-
-			for (var key in obj) {
-				copiedObj[key] = obj[key];
-			}
-
-			return copiedObj;
-		}
-	};
-
-	ZLitestackDotCom.signOut = function () {
-		window.location = 'https://z.litestack.com/login/google/?state=/js&code=logout';
-	};
-
-	ClusterAuth.init = function(callback) {
+	SwiftAuth.init = function(callback) {
 
 		var authenticationEl = document.getElementById('Authentication');
 
@@ -1265,19 +1155,28 @@ var Auth = {};
 
 
 		if (liteauth.getLoginInfo()) {
-			var v1AuthUrl =
-				decodeURIComponent(getCookie('storage'));
 			XHR_OK();
 
 			/*
-			 liteauth.getProfile(function (response) {
-			 var xAuthUser =
-			 liteauth.getLoginInfo().split(':')[0];
-			 var tenant =
-			 liteauth.getLoginInfo().split(':').splice(1).join(':');
-			 var xAuthKey =
-			 JSON.parse(response)['auth'].split('plaintext:')[1];
-			 });*/
+			liteauth.getProfile(function (responses) {
+				var xAuthUser =
+					liteauth.getLoginInfo().split(':')[0];
+				var tenant =
+					liteauth.getLoginInfo().split(':').splice(1).join(':');
+				var xAuthKey =
+					JSON.parse(response)['auth'].split('plaintext:')[1];
+				var v1AuthUrl =
+					decodeURIComponent(getCookie('storage'));
+				SwiftV1.retrieveTokens({
+					v1AuthUrl: v1AuthUrl,
+					tenant: tenant,
+					xAuthUser: xAuthUser,
+					xAuthKey: xAuthKey,
+					error: XHR_ERROR,
+					ok: XHR_OK
+				});
+			});
+			*/
 		}
 
 		authenticationEl.getElementsByClassName('login-with-google')[0].onclick = function () {
@@ -1286,16 +1185,16 @@ var Auth = {};
 
 		function XHR_OK() {
 			document.getElementById('Authentication').setAttribute('hidden', 'hidden');
-
-			document.getElementById('AccountId').textContent = SwiftV1.account;
-			document.getElementById('SignOut').onclick = function () {
+			document.getElementsByClassName('sign-out-button')[0].onclick = function () {
+				// TODO:
 				window.location.reload(true);
 			};
-			location.hash = SwiftV1.account + "/";
 
-			toolbox();
-			reAuth();
-			refreshItemList();
+			//document.getElementById('AccountId').textContent = SwiftV1.account;
+
+			callback();
+
+			//location.hash = SwiftV1.account + "/";
 		}
 
 		function XHR_ERROR() {
@@ -1305,9 +1204,9 @@ var Auth = {};
 		function getCookie(cookieName) {
 			var name = cookieName + '=';
 			var ca = document.cookie.split(';');
-			for (var i=0; i< ca.length; i++) {
+			for (var i=0; i < ca.length; i++) {
 				var c = ca[i].trim();
-				if (c.indexOf(name)==0) {
+				if (c.indexOf(name) == 0) {
 					return c.substring(name.length, c.length);
 				}
 			}
@@ -1315,42 +1214,22 @@ var Auth = {};
 		}
 	};
 
-	ClusterAuth.getAccount = function () {
+	SwiftAuth.getAccount = function () {
 		return account;
 	};
 
-	ClusterAuth.getStorageUrl = function () {
+	SwiftAuth.getStorageUrl = function () {
 		return xStorageUrl;
 	};
 
-	ClusterAuth.signOut = function () {
-		document.querySelector('.cluster-auth .account').value = '';
-		document.querySelector('.cluster-auth .storage-url').value = '';
-		document.querySelector('.cluster-auth').parentNode.removeAttribute('hidden');
+	SwiftAuth.signOut = function () {
 	};
 
-	Auth.useZLitestackDotCom = function () {
-		Auth.init = ZLitestackDotCom.init;
-		Auth.getAccount = ZLitestackDotCom.getAccount;
-		Auth.getStorageUrl = ZLitestackDotCom.getStorageUrl;
-		Auth.signOut = ZLitestackDotCom.signOut;
-		Auth.getEmail = function (callback) {
-			ZLitestackDotCom.getEmail({
-				success: function (email) {
-					callback(email);
-				},
-				error: function (status, statusText) {
-					callback(ZLitestackDotCom.getAccount());
-				}
-			});
-		};
-	};
-
-	Auth.useClusterAuth = function () {
-		Auth.init = ClusterAuth.init;
-		Auth.getAccount = ClusterAuth.getAccount;
-		Auth.getStorageUrl = ClusterAuth.getStorageUrl;
-		Auth.signOut = ZLitestackDotCom.signOut;
+	Auth.useSwiftAuth = function () {
+		Auth.init = SwiftAuth.init;
+		Auth.getAccount = SwiftAuth.getAccount;
+		Auth.getStorageUrl = SwiftAuth.getStorageUrl;
+		Auth.signOut = SwiftAuth.signOut;
 	};
 
 })();

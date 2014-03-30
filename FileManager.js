@@ -2,11 +2,11 @@
 
 var FileManager = {};
 
-Auth.useClusterAuth();
+Auth.useSwiftAuth();
 
-FileManager.ENABLE_SHARED_CONTAINERS = true;
+FileManager.ENABLE_SHARED_CONTAINERS = false;
 FileManager.ENABLE_ZEROVM = true;
-FileManager.ENABLE_EMAILS = true;
+FileManager.ENABLE_EMAILS = false;
 
 FileManager.enableAll = function () {
 	document.body.classList.remove('disabled');
@@ -84,6 +84,100 @@ FileManager.CurrentDirLabel.root = function () {
 FileManager.CurrentDirLabel.showLoading = function () {
 	FileManager.CurrentDirLabel.setContent('Loading...');
 	FileManager.CurrentDirLabel.removeTooltip();
+};
+
+/*
+ .create-container-button
+ */
+
+document.querySelector('.toolbar-create-container').onclick = function () {
+	FileManager.CreateContainerForm.show();
+};
+
+/*
+  #CreateContainerForm
+ */
+
+FileManager.CreateContainerForm = {};
+
+FileManager.CreateContainerForm.show = function () {
+	FileManager.CreateContainerForm.clearErrors();
+	var inputEl = document.querySelector('#CreateContainerForm .container-name');
+	inputEl.value = '';
+	inputEl.removeAttribute('disabled');
+	document.querySelector('#CreateContainerForm').removeAttribute('hidden');
+	inputEl.focus();
+	FileManager.Layout.adjust();
+};
+
+FileManager.CreateContainerForm.hide = function () {
+	document.querySelector('#CreateContainerForm').setAttribute('hidden', 'hidden');
+	FileManager.Layout.adjust();
+};
+
+document.querySelector('#CreateContainerForm').onsubmit = function (e) {
+	e.preventDefault();
+
+	var inputEl = document.querySelector('#CreateContainerForm .container-name');
+	inputEl.setAttribute('disabled', 'disabled');
+
+	if (inputEl.value.length == 0) {
+		err('err-empty');
+		return;
+	} else if (inputEl.value.length > 256) {
+		err('err-size-limit');
+		return;
+	}
+
+	if (inputEl.value.indexOf('/') != -1) {
+		err('err-invalid-character');
+		return;
+	}
+
+	SwiftV1.createContainer({
+		containerName: inputEl.value,
+		created: function () {
+			FileManager.ContentChange.animate();
+			FileManager.CreateContainerForm.hide();
+		},
+		alreadyExisted: function () {
+			err('err-already-exists');
+		},
+		error: errAjax
+	});
+
+	function err(className) {
+		var errEl = document.querySelector('#CreateContainerForm .' + className);
+		errEl.removeAttribute('hidden');
+		inputEl.removeAttribute('disabled');
+		FileManager.Layout.adjust();
+		inputEl.focus();
+	}
+
+	function errAjax(status, statusText) {
+		var errAjaxEl = document.querySelector('#CreateContainerForm .err-ajax');
+		errAjaxEl.textContent = 'Ajax Error: ' + statusText + '(' + status + ').';
+		errAjaxEl.removeAttribute('hidden');
+		inputEl.removeAttribute('disabled');
+		FileManager.Layout.adjust();
+		inputEl.focus();
+	}
+};
+
+document.querySelector('#CreateContainerForm .cancel').onclick = function () {
+	FileManager.CreateContainerForm.hide();
+};
+
+document.querySelector('#CreateContainerForm .container-name').onkeydown = function () {
+	FileManager.CreateContainerForm.clearErrors();
+};
+
+FileManager.CreateContainerForm.clearErrors = function () {
+	var errElements = document.querySelectorAll('#CreateContainerForm .err');
+	for (var i = 0; i < errElements.length; i++) {
+		errElements[i].setAttribute('hidden', 'hidden');
+	}
+	FileManager.Layout.adjust();
 };
 
 
@@ -187,11 +281,18 @@ FileManager.execute = function (data, contentType) {
 		success: function (result, report) {
 			FileManager.ExecuteTimer.stop();
 			FileManager.ExecuteTimer.hide();
-			FileManager.ExecuteReport.create(report);
 			showResult(result);
+			if (report) {
+				FileManager.ExecuteReport.create(report);
+			} else {
+				//alert('JS Error: report object is undefined');
+			}
+
 			FileManager.enableAll();
 		},
 		error: function (status, statusText, result) {
+			alert(status + ' ' + statusText + ' ' + result);
+			console.log(status + ' ' + statusText + ' ' + result);
 			FileManager.ExecuteTimer.stop();
 			FileManager.ExecuteTimer.hide();
 			showResult(result);
@@ -200,22 +301,54 @@ FileManager.execute = function (data, contentType) {
 	});
 
 	function showResult(result) {
-		var el = document.querySelector('.scrolling-content');
 		FileManager.File.hideMenu();
+		var el = document.querySelector('.scrolling-content').textContent = result;
+		/*
 		FileManager.File.codeMirror = CodeMirror(el, {
 			value: result,
 			mode: 'text/plain',
 			lineNumbers: false
 		});
 		FileManager.Layout.adjust();
+		*/
 	}
 };
 
+FileManager.executePython = function (pythonFilePath) {
+	var json = [{
+		exec: {
+			path: 'file://python:python',
+			args: '/dev/input'
+		},
+		file_list: [
+			{
+				device: 'input',
+				path: 'swift://' + Auth.getAccount() + '/' + pythonFilePath
+			},
+			{
+				device: 'stdout',
+				content_type: 'text/plain'
+			},
+			{
+				device: 'stderr',
+				path: 'swift://' + Auth.getAccount() + '/' + pythonFilePath + '.log',
+				content_type: 'text/plain'
+			},
+			{
+				device: 'python'
+			}
+		],
+		name: 'python'
+	}];
+	console.log(json);
+	console.log(JSON.stringify(json));
+	FileManager.execute(JSON.stringify(json), 'application/json');
+};
 
 FileManager.ExecuteButton = {};
 
 FileManager.ExecuteButton.click = function () {
-	FileManager.execute(FileManager.File.codeMirror.getValue(), 'application/json');
+	FileManager.execute(FileManager.File.codeMirror.getValue(), FileManager.File.contentType);
 };
 
 FileManager.ExecuteButton.hide = function () {
@@ -282,6 +415,7 @@ FileManager.ExecuteReport.create = function (report) {
 	var scrollingContentEl = document.querySelector('.scrolling-content');
 	var reportTemplate = document.querySelector('#reportTemplate').innerHTML;
 	scrollingContentEl.innerHTML = reportTemplate;
+
 
 	executionReport();
 	billingReport();
@@ -557,7 +691,7 @@ FileManager.CreateFile.click = function () {
 
 FileManager.CreateFile.clear = function () {
 	document.querySelector('.create-file-input-name').value = '';
-	document.querySelector('.create-file-input-type').value = '';
+	document.querySelector('.create-file-input-type').value = 'text/plain';
 	FileManager.CreateFile.clearErrors();
 };
 
@@ -1131,7 +1265,7 @@ FileManager.File.open = function (el, callback) {
 		callback();
 
 		function isExecutable(contentType) {
-			return contentType === 'application/json' || contentType === 'application/x-tar' || contentType === 'application/gtar';
+			return contentType === 'application/json' || contentType === 'application/x-tar' || contentType === 'application/gtar' || contentType === 'text/x-python';
 		}
 
 		function isTextFile(contentType) {
@@ -1387,6 +1521,7 @@ FileManager.Containers = {};
 FileManager.Containers.LIMIT = 20;
 
 FileManager.Containers.list = function (callback) {
+	document.body.classList.add('now-containers');
 	var scrollingContentEl = document.querySelector('.new-scrolling-content');
 
 	var xhr = SwiftV1.listContainers({
@@ -1820,6 +1955,7 @@ FileManager.Files.listHtml = function (files) {
 FileManager.ContentChange = {};
 
 FileManager.ContentChange.animate = function () {
+	document.body.classList.remove('now-containers');
 
 	var parentEl, newEl, oldEl, template;
 
@@ -2045,6 +2181,10 @@ FileManager.Path = function (path) {
 		if (FileManager.ENABLE_SHARED_CONTAINERS && this.isContainersList() && name.indexOf('/') != -1) {
 			return name;
 		}
+
+		/*if (location.hash === '' && this.isContainersList()) {
+			return '/' + name;
+		}*/
 
 		if (path.lastIndexOf('/') == path.length - 1) {
 			return path + name;
@@ -2327,6 +2467,7 @@ document.addEventListener('change', function (e) {
 
 document.addEventListener('DOMContentLoaded', function () {
 	Auth.init(function () {
+
 		if (!location.hash) {
 			location.hash = Auth.getAccount();
 		} else {
