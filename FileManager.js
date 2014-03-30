@@ -86,6 +86,100 @@ FileManager.CurrentDirLabel.showLoading = function () {
 	FileManager.CurrentDirLabel.removeTooltip();
 };
 
+/*
+ .create-container-button
+ */
+
+document.querySelector('.toolbar-create-container').onclick = function () {
+	FileManager.CreateContainerForm.show();
+};
+
+/*
+  #CreateContainerForm
+ */
+
+FileManager.CreateContainerForm = {};
+
+FileManager.CreateContainerForm.show = function () {
+	FileManager.CreateContainerForm.clearErrors();
+	var inputEl = document.querySelector('#CreateContainerForm .container-name');
+	inputEl.value = '';
+	inputEl.removeAttribute('disabled');
+	document.querySelector('#CreateContainerForm').removeAttribute('hidden');
+	inputEl.focus();
+	FileManager.Layout.adjust();
+};
+
+FileManager.CreateContainerForm.hide = function () {
+	document.querySelector('#CreateContainerForm').setAttribute('hidden', 'hidden');
+	FileManager.Layout.adjust();
+};
+
+document.querySelector('#CreateContainerForm').onsubmit = function (e) {
+	e.preventDefault();
+
+	var inputEl = document.querySelector('#CreateContainerForm .container-name');
+	inputEl.setAttribute('disabled', 'disabled');
+
+	if (inputEl.value.length == 0) {
+		err('err-empty');
+		return;
+	} else if (inputEl.value.length > 256) {
+		err('err-size-limit');
+		return;
+	}
+
+	if (inputEl.value.indexOf('/') != -1) {
+		err('err-invalid-character');
+		return;
+	}
+
+	SwiftV1.createContainer({
+		containerName: inputEl.value,
+		created: function () {
+			FileManager.ContentChange.animate();
+			FileManager.CreateContainerForm.hide();
+		},
+		alreadyExisted: function () {
+			err('err-already-exists');
+		},
+		error: errAjax
+	});
+
+	function err(className) {
+		var errEl = document.querySelector('#CreateContainerForm .' + className);
+		errEl.removeAttribute('hidden');
+		inputEl.removeAttribute('disabled');
+		FileManager.Layout.adjust();
+		inputEl.focus();
+	}
+
+	function errAjax(status, statusText) {
+		var errAjaxEl = document.querySelector('#CreateContainerForm .err-ajax');
+		errAjaxEl.textContent = 'Ajax Error: ' + statusText + '(' + status + ').';
+		errAjaxEl.removeAttribute('hidden');
+		inputEl.removeAttribute('disabled');
+		FileManager.Layout.adjust();
+		inputEl.focus();
+	}
+};
+
+document.querySelector('#CreateContainerForm .cancel').onclick = function () {
+	FileManager.CreateContainerForm.hide();
+};
+
+document.querySelector('#CreateContainerForm .container-name').onkeydown = function () {
+	FileManager.CreateContainerForm.clearErrors();
+};
+
+FileManager.CreateContainerForm.clearErrors = function () {
+	var errElements = document.querySelectorAll('#CreateContainerForm .err');
+	for (var i = 0; i < errElements.length; i++) {
+		errElements[i].setAttribute('hidden', 'hidden');
+	}
+	FileManager.Layout.adjust();
+};
+
 
 FileManager.EditButton = {};
 
@@ -1427,6 +1521,7 @@ FileManager.Containers = {};
 FileManager.Containers.LIMIT = 20;
 
 FileManager.Containers.list = function (callback) {
+	document.body.classList.add('now-containers');
 	var scrollingContentEl = document.querySelector('.new-scrolling-content');
 
 	var xhr = SwiftV1.listContainers({
@@ -1860,6 +1955,7 @@ FileManager.Files.listHtml = function (files) {
 FileManager.ContentChange = {};
 
 FileManager.ContentChange.animate = function () {
+	document.body.classList.remove('now-containers');
 
 	var parentEl, newEl, oldEl, template;
 

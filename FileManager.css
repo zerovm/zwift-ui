@@ -1,3 +1,10 @@
+*, *:before, *:after {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	-webkit-tap-highlight-color: transparent;
+}
+
 html {
 	transition: 5s all;
 	-webkit-transition: 5s all;
@@ -116,7 +123,7 @@ input[type=file] {
 	outline: 0;
 }
 .up-button {
-	background: url('img/back.png') no-repeat 6px 8px;
+	background: url('img/up.png') no-repeat 6px 8px;
 }
 .current-dir-label {
 	font-weight: bold;
@@ -126,6 +133,13 @@ input[type=file] {
 }
 .edit-button {
 	background: url('img/pencil.png') no-repeat 7px 8px;
+}
+.toolbar-create-container {
+	background: url('img/plus.png') no-repeat 7px 8px;
+	display: none;
+}
+.now-containers .toolbar-create-container {
+	display: inline;
 }
 .done-button {
 	background: url('img/pencil.png') no-repeat 7px 8px;
@@ -727,10 +741,38 @@ template {
 	position: relative;
 }
 
+.blue-form .one-input {
+	width: 100%;
+	height: 24px;
+	padding: 5px;
+	margin: 0 0 5px;
+	font-size: .7em;
+}
+
 .blue-form .blue-button {
 	width: 85px;
 	height: 25px;
 	font-size: 12px;
+}
+
+.blue-form .err {
+	text-align: left;
+	height: 35px;
+	margin-left: 25px;
+	line-height: 35px;
+	font-size: medium;
+}
+
+.blue-form .err::before {
+	position: absolute;
+	left: 4px;
+	background: url(img/submenu_buttons.png);
+	background-position: -1138px 0;
+	background-size: auto 70px;
+	height: 35px;
+	width: 24px;
+	border: none;
+	content: "";
 }
 .full-stretch {
 	position: absolute;
