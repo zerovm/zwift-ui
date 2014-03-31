@@ -2,8 +2,6 @@
 
 var FileManager = {};
 
-Auth.useSwiftAuth();
-
 FileManager.ENABLE_SHARED_CONTAINERS = false;
 FileManager.ENABLE_ZEROVM = true;
 FileManager.ENABLE_EMAILS = false;
@@ -69,14 +67,14 @@ FileManager.CurrentDirLabel.removeTooltip = function () {
 FileManager.CurrentDirLabel.root = function () {
 
 	if (FileManager.ENABLE_EMAILS) {
-		Auth.getEmail(function (email) {
+		/*Auth.getEmail(function (email) {
 			FileManager.CurrentDirLabel.setContent(email);
 			FileManager.CurrentDirLabel.setTooltip(email);
-		});
+		});*/
 		return;
 	}
 
-	var account = Auth.getAccount();
+	var account = SwiftV1.getAccount();
 	FileManager.CurrentDirLabel.setContent(account);
 	FileManager.CurrentDirLabel.setTooltip(account);
 };
@@ -231,14 +229,6 @@ FileManager.DoneButton.show = function () {
 	document.querySelector('.done-button').removeAttribute('hidden');
 };
 
-
-FileManager.SignOutButton = {};
-
-FileManager.SignOutButton.click = function () {
-	Auth.signOut();
-};
-
-
 FileManager.OpenButton = {};
 
 FileManager.OpenButton.click = function () {
@@ -323,7 +313,7 @@ FileManager.executePython = function (pythonFilePath) {
 		file_list: [
 			{
 				device: 'input',
-				path: 'swift://' + Auth.getAccount() + '/' + pythonFilePath
+				path: 'swift://' + SwiftV1.getAccount() + '/' + pythonFilePath
 			},
 			{
 				device: 'stdout',
@@ -331,7 +321,7 @@ FileManager.executePython = function (pythonFilePath) {
 			},
 			{
 				device: 'stderr',
-				path: 'swift://' + Auth.getAccount() + '/' + pythonFilePath + '.log',
+				path: 'swift://' + SwiftV1.getAccount() + '/' + pythonFilePath + '.log',
 				content_type: 'text/plain'
 			},
 			{
@@ -1241,7 +1231,7 @@ FileManager.File.open = function (el, callback) {
 
 	function fileExist(metadata, contentType, contentLength, lastModified) {
 		var Current = FileManager.CurrentPath();
-		var href = Auth.getStorageUrl() + Current.get();
+		var href = SwiftV1.getStorageUrl() + Current.get();
 		var filename = Current.name();
 
 		if (isTextFile(contentType)) {
@@ -2164,7 +2154,7 @@ FileManager.Path = function (path) {
 		if (newPathParts.length == 1) {
 
 			if (FileManager.ENABLE_SHARED_CONTAINERS && FileManager.Shared.isShared(newPathParts[0])) {
-				return Auth.getAccount();
+				return SwiftV1.getAccount();
 			}
 
 			return newPathParts[0];
@@ -2222,10 +2212,6 @@ window.addEventListener('resize', function (e) {
 
 document.addEventListener('click', function (e) {
 	var el;
-
-	if (el = is('sign-out-button')) {
-		FileManager.SignOutButton.click(el);
-	}
 
 	if (document.body.classList.contains('disabled')) {
 		return;
@@ -2465,20 +2451,6 @@ document.addEventListener('change', function (e) {
 	}
 });
 
-document.addEventListener('DOMContentLoaded', function () {
-	Auth.init(function () {
-
-		if (!location.hash) {
-			location.hash = Auth.getAccount();
-		} else {
-			FileManager.ContentChange.animate();
-		}
-		FileManager.Layout.adjust();
-		FileManager.reAuth();
-	});
-	FileManager.changeBackground();
-});
-
 document.addEventListener('load', function () {
 	FileManager.Layout.adjust();
 	setTimeout(FileManager.Layout.adjust, 1000);
@@ -2487,7 +2459,7 @@ document.addEventListener('load', function () {
 //SHARED-CONTAINERS
 FileManager.Shared = {};
 FileManager.Shared.isShared = function (path) {
-	return path.split('/')[0] != Auth.getAccount();
+	return path.split('/')[0] != SwiftV1.getAccount();
 };
 FileManager.Shared.listSharedContainers = function (sharedContainers, scrollingContentEl) {
 
@@ -2639,24 +2611,98 @@ FileManager.Rights.discardChanges = function () {
 	document.querySelector('.clicked').click();
 };
 
-FileManager.changeBackground = function () {
-	var colors = [
-		'rgb(87, 64, 158)',
-		'rgb(64, 106, 158)',
-		'rgb(131, 148, 168)',
-		'#6b91b6',
-		'#6b91b6',
-		'#6b91b6',
-		'#6b91b6',
-		'#6b91b6'
-	];
-	/*
-	var hue = 'rgb(' + (Math.floor(Math.random() * 180)) + ',' + (Math.floor(Math.random() * 180)) + ',' + (Math.floor(Math.random() * 180)) + ')';*/
-	//document.querySelector('html').style.background = colors[Math.floor(Math.random() * 8)];
-	//setTimeout(FileManager.changeBackground, 1000 * 60 * 1);
-};
-
 FileManager.reAuth = function () {
 	SwiftV1.Account.head({success:function(){},error:function(){}});
 	setTimeout(FileManager.reAuth, 1000 * 60 * 20);
 };
+
+document.querySelector('#Authentication .v1-auth-url').value = document.location.protocol + '//' + document.location.host + '/auth/v1.0';
+
+document.querySelector('#Authentication .login-with-google').onclick = function () {
+	liteauth.login(liteauth.AUTH_TYPES.GOOGLE);
+};
+
+if (liteauth.getLoginInfo()) {
+	document.querySelector('#Authentication .tenant').value = liteauth.getLoginInfo().split(':')[1];
+	document.querySelector('#Authentication .x-auth-user').value = liteauth.getLoginInfo().split(':')[0];
+
+	liteauth.getProfile({
+		success: function (response) {
+			document.querySelector('#Authentication .x-auth-key').value = JSON.parse(response)['auth'].split('plaintext:')[1];
+		},
+		error: function (status, statusText) {
+			alert(status + ' ' + statusText);
+		}
+	});
+}
+
+document.getElementById('Authentication').onsubmit = function (e) {
+	e.preventDefault();
+
+	var v1AuthUrl = this.getElementsByClassName('v1-auth-url')[0].value;
+	var tenant = this.getElementsByClassName('tenant')[0].value;
+	var xAuthUser = this.getElementsByClassName('x-auth-user')[0].value;
+	var xAuthKey = this.getElementsByClassName('x-auth-key')[0].value;
+
+	SwiftV1.retrieveTokens({
+		v1AuthUrl: v1AuthUrl,
+		tenant: tenant,
+		xAuthUser: xAuthUser,
+		xAuthKey: xAuthKey,
+		error: XHR_ERROR,
+		ok: XHR_OK
+	});
+
+	function XHR_OK() {
+		document.getElementById('Authentication').setAttribute('hidden', 'hidden');
+		if (!location.hash) {
+			location.hash = SwiftV1.getAccount();
+		} else {
+			FileManager.ContentChange.animate();
+		}
+		FileManager.Layout.adjust();
+		FileManager.reAuth();
+	}
+
+	function XHR_ERROR() {
+		alert(arguments[0] + ' ' + arguments[1]);
+	}
+};
+
+document.querySelector('.sign-out-button').onclick = function () {
+	window.location.reload(true);
+};
+
+/*
+if (liteauth.getLoginInfo()) {
+	liteauth.getProfile(function (responses) {
+		var xAuthUser =
+			liteauth.getLoginInfo().split(':')[0];
+		var tenant =
+			liteauth.getLoginInfo().split(':').splice(1).join(':');
+		var xAuthKey =
+			JSON.parse(response)['auth'].split('plaintext:')[1];
+		var v1AuthUrl =
+			decodeURIComponent(getCookie('storage'));
+		SwiftV1.retrieveTokens({
+			v1AuthUrl: v1AuthUrl,
+			tenant: tenant,
+			xAuthUser: xAuthUser,
+			xAuthKey: xAuthKey,
+			error: XHR_ERROR,
+			ok: XHR_OK
+		});
+	});
+}
+
+function getCookie(cookieName) {
+	var name = cookieName + '=';
+	var ca = document.cookie.split(';');
+	for (var i=0; i < ca.length; i++) {
+		var c = ca[i].trim();
+		if (c.indexOf(name) == 0) {
+			return c.substring(name.length, c.length);
+		}
+	}
+	return '';
+}*/
