@@ -30,7 +30,6 @@ var liteauth = (function () {
 	} ();
 
 	function login(authType) {
-
 		window.location = location.protocol + '//' + AUTH_ENDPOINT
 			+ authType + '?state=' + encodeURIComponent(location.pathname);
 	}
@@ -39,12 +38,16 @@ var liteauth = (function () {
 		return QueryString['account'];
 	}
 
-	function getProfile(callback) {
+	function getProfile(args) {
 		var xhr = new XMLHttpRequest();
 		xhr.open('GET', 'https://' + AUTH_ENDPOINT + '/profile');
 		xhr.withCredentials = true;
 		xhr.onload = function (e) {
-			callback(e.target.responseText);
+			if (e.target.status == 200) {
+				args.success(e.target.responseText);
+			} else {
+				args.error(e.target.status, e.target.statusText);
+			}
 		};
 		xhr.send();
 	}

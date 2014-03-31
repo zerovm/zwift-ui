@@ -7,8 +7,6 @@ var ZeroVmOnSwift = {};
 var SharedContainersOnSwift = {};
 var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
 var ZeroAppsOnSwift = {};
-var SwiftAuth = {};
-var Auth = {};
 
 (function () {
 	'use strict';
@@ -75,6 +73,10 @@ var Auth = {};
 			}
 		});
 		xhr.send();
+	};
+
+	SwiftV1.getAccount = function () {
+		return account;
 	};
 
 	SwiftV1.setStorageUrl = function (url) {
@@ -1124,112 +1126,4 @@ var Auth = {};
 			notExist: callback
 		});
 	};
-
-	SwiftAuth.init = function(callback) {
-
-		var authenticationEl = document.getElementById('Authentication');
-
-		var auth_url = authenticationEl.getElementsByClassName('v1-auth-url')[0];
-		if (auth_url.value === '') {
-			auth_url.value = document.location.protocol + '//' +
-				document.location.host + '/auth/v1.0';
-		}
-
-		authenticationEl.onsubmit = function (e) {
-			e.preventDefault();
-
-			var v1AuthUrl = authenticationEl.getElementsByClassName('v1-auth-url')[0].value;
-			var tenant = authenticationEl.getElementsByClassName('tenant')[0].value;
-			var xAuthUser = authenticationEl.getElementsByClassName('x-auth-user')[0].value;
-			var xAuthKey = authenticationEl.getElementsByClassName('x-auth-key')[0].value;
-
-			SwiftV1.retrieveTokens({
-				v1AuthUrl: v1AuthUrl,
-				tenant: tenant,
-				xAuthUser: xAuthUser,
-				xAuthKey: xAuthKey,
-				error: XHR_ERROR,
-				ok: XHR_OK
-			});
-		};
-
-
-		if (liteauth.getLoginInfo()) {
-			XHR_OK();
-
-			/*
-			liteauth.getProfile(function (responses) {
-				var xAuthUser =
-					liteauth.getLoginInfo().split(':')[0];
-				var tenant =
-					liteauth.getLoginInfo().split(':').splice(1).join(':');
-				var xAuthKey =
-					JSON.parse(response)['auth'].split('plaintext:')[1];
-				var v1AuthUrl =
-					decodeURIComponent(getCookie('storage'));
-				SwiftV1.retrieveTokens({
-					v1AuthUrl: v1AuthUrl,
-					tenant: tenant,
-					xAuthUser: xAuthUser,
-					xAuthKey: xAuthKey,
-					error: XHR_ERROR,
-					ok: XHR_OK
-				});
-			});
-			*/
-		}
-
-		authenticationEl.getElementsByClassName('login-with-google')[0].onclick = function () {
-			liteauth.login(liteauth.AUTH_TYPES.GOOGLE);
-		};
-
-		function XHR_OK() {
-			document.getElementById('Authentication').setAttribute('hidden', 'hidden');
-			document.getElementsByClassName('sign-out-button')[0].onclick = function () {
-				// TODO:
-				window.location.reload(true);
-			};
-
-			//document.getElementById('AccountId').textContent = SwiftV1.account;
-
-			callback();
-
-			//location.hash = SwiftV1.account + "/";
-		}
-
-		function XHR_ERROR() {
-			alert(arguments[0] + ' ' + arguments[1]);
-		}
-
-		function getCookie(cookieName) {
-			var name = cookieName + '=';
-			var ca = document.cookie.split(';');
-			for (var i=0; i < ca.length; i++) {
-				var c = ca[i].trim();
-				if (c.indexOf(name) == 0) {
-					return c.substring(name.length, c.length);
-				}
-			}
-			return '';
-		}
-	};
-
-	SwiftAuth.getAccount = function () {
-		return account;
-	};
-
-	SwiftAuth.getStorageUrl = function () {
-		return xStorageUrl;
-	};
-
-	SwiftAuth.signOut = function () {
-	};
-
-	Auth.useSwiftAuth = function () {
-		Auth.init = SwiftAuth.init;
-		Auth.getAccount = SwiftAuth.getAccount;
-		Auth.getStorageUrl = SwiftAuth.getStorageUrl;
-		Auth.signOut = SwiftAuth.signOut;
-	};
-
 })();
