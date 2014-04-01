@@ -1552,8 +1552,8 @@ FileManager.Containers.list = function (callback) {
 
 		for (var i = 0; i < containers.length; i++) {
 			var container = containers[i];
-			var html = FileManager.Containers.create(container);
-			scrollingContentEl.insertAdjacentHTML('beforeend', html);
+			var containerEl = FileManager.Containers.create(container);
+			scrollingContentEl.appendChild(containerEl);
 		}
 
 		callback();
@@ -1598,8 +1598,8 @@ FileManager.Containers.loadMore = function () {
 
 			for (var i = 0; i < containers.length; i++) {
 				var container = containers[i];
-				var html = FileManager.Containers.create(container);
-				document.querySelector('.load-more-button').insertAdjacentHTML('beforebegin', html);
+				var containerEl = FileManager.Containers.create(container);
+				document.querySelector('.scrolling-content').insertBefore(containerEl, document.querySelector('.load-more-button'));
 			}
 
 			document.querySelector('.load-more-button').textContent = 'Load more';
@@ -1625,14 +1625,17 @@ FileManager.Containers.create = function (containerObj) {
 	var size = FileManager.Utils.bytesToSize(containerObj.bytes);
 	var files = containerObj.count;
 
-	var html = document.querySelector('#containerTemplate').innerHTML;
+	var t = document.querySelector('.template-container').cloneNode(true);
 
-	html = html.replace('{{name}}', FileManager.Utils.htmlEscape(name));
-	html = html.replace('{{title}}', FileManager.Utils.htmlEscape(title));
-	html = html.replace('{{size}}', FileManager.Utils.htmlEscape(size));
-	html = html.replace('{{files}}', FileManager.Utils.htmlEscape(files));
+	t.classList.remove('template');
+	t.classList.remove('template-container');
 
-	return html;
+	t.querySelector('.name').textContent = name;
+	t.setAttribute('title', title);
+	t.querySelector('.size').textContent = size;
+	t.querySelector('.files').textContent = files;
+
+	return t;
 };
 
 
@@ -2672,37 +2675,3 @@ document.getElementById('Authentication').onsubmit = function (e) {
 document.querySelector('.sign-out-button').onclick = function () {
 	window.location.reload(true);
 };
-
-/*
-if (liteauth.getLoginInfo()) {
-	liteauth.getProfile(function (responses) {
-		var xAuthUser =
-			liteauth.getLoginInfo().split(':')[0];
-		var tenant =
-			liteauth.getLoginInfo().split(':').splice(1).join(':');
-		var xAuthKey =
-			JSON.parse(response)['auth'].split('plaintext:')[1];
-		var v1AuthUrl =
-			decodeURIComponent(getCookie('storage'));
-		SwiftV1.retrieveTokens({
-			v1AuthUrl: v1AuthUrl,
-			tenant: tenant,
-			xAuthUser: xAuthUser,
-			xAuthKey: xAuthKey,
-			error: XHR_ERROR,
-			ok: XHR_OK
-		});
-	});
-}
-
-function getCookie(cookieName) {
-	var name = cookieName + '=';
-	var ca = document.cookie.split(';');
-	for (var i=0; i < ca.length; i++) {
-		var c = ca[i].trim();
-		if (c.indexOf(name) == 0) {
-			return c.substring(name.length, c.length);
-		}
-	}
-	return '';
-}*/
