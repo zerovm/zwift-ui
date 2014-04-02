@@ -196,19 +196,18 @@
 
 
 <!-- templates -->
-<template id="containerTemplate">
-	<div class="item" title="{{title}}">
-			<span class="left">
-				<img src="img/container.png">
-				<label class="name">{{name}}</label>
-			</span>
-			<span class="right">
-				<label class="size">{{size}}</label>
-				<label class="files">{{files}}</label>
-				<label class="delete">X</label>
-			</span>
-	</div>
-</template>
+<div class="template template-container item" title>
+	<span class="left">
+		<img src="img/container.png">
+		<label class="name"></label>
+	</span>
+	<span class="right">
+		<label class="size"></label>
+		<label class="files"></label>
+		<label class="open-item-menu"></label>
+		<label class="delete">X</label>
+	</span>
+</div>
 
 <template id="sharedContainerTemplate">
 	<div class="item" title="{{title}}">
@@ -555,10 +554,9 @@
 	</div>
 </template>
 
-
 	<script src="liteauth.js"></script>
-	<script src="Swift.js"></script>
-<!--<script src="mock.js"></script>-->
+	<!--<script src="Swift.js"></script>-->
+	<script src="mock.js"></script>
 	<script src="FileManager.js"></script>
 
 </body>
