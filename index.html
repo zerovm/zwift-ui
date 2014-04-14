@@ -46,16 +46,16 @@
 				<button class="open-button icon-button" title="Open" hidden></button>
 				<label class="execute-label" hidden></label>
 				<button class="execute-button icon-button" title="Execute" hidden></button>
-				<button class="toolbar-create-container icon-button" title="Create Container"></button>
 				<button class="edit-button icon-button" title="Edit"></button>
 				<button class="done-button icon-button" title="Done" hidden></button>
+				<button class="create-container icon-button" title="Create Container"></button>
 				<button class="wide-button icon-button" title="Wide"></button>
 				<button class="unwide-button icon-button" title="Unwide" hidden></button>
 				<button class="sign-out-button icon-button" title="Sign Out"></button>
 			</span>
 		</div>
 
-		<form id="CreateContainerForm" class="blue-form dialog" hidden>
+		<form class="create-container blue-form dialog" hidden>
 			<input placeholder="Container Name" class="container-name blue-input one-input">
 			<div class="err-empty err" hidden>Please type container name.</div>
 			<div class="err-size-limit err" hidden>Container name must be less than 256 bytes.</div>
@@ -197,34 +197,80 @@
 
 <!-- templates -->
 <div class="template template-container item" title>
-	<span class="left">
-		<img src="img/container.png">
-		<label class="name"></label>
-	</span>
-	<span class="right">
-		<label class="size"></label>
-		<label class="files"></label>
-		<label class="open-item-menu"></label>
-		<label class="delete">X</label>
-	</span>
+	<div class="default-action">
+		<span class="left">
+			<img src="img/container.png">
+			<label class="name"></label>
+		</span>
+		<span class="right">
+			<label class="size"></label>
+			<label class="files"></label>
+			<label class="delete">X</label>
+		</span>
+	</div>
+	<div class="toggle-actions-menu"></div>
 </div>
 
+<div class="template template-actions-menu actions-menu">
+	<button class="metadata-action">Metadata</button>
+	<button class="delete-action">Delete</button>
+</div>
+
+<form class="template template-confirm-delete-form confirm-delete-form blue-form">
+	<label class="one-label">Are you sure you want to delete?</label>
+	<button type="submit" class="blue-button">Delete</button>
+	<button class="cancel blue-button">Cancel</button>
+</form>
+
+<form class="template template-metadata-form metadata-form blue-form">
+
+	<div class="metadata-loading" hidden>Loading Metadata...</div>
+	<div class="metadata-loading-error" hidden>
+		Error occurred while loading metadata. Ajax Error:
+		<span class="ajax-error-status-text"></span>
+		<span class="ajax-error-status-code"></span>
+	</div>
+	<div class="metadata-uploading" hidden>Uploading Metadata...</div>
+	<div class="metadata-uploaded" hidden>Metadata is uploaded successfully.</div>
+	<div class="metadata-uploading-error" hidden>
+		Error occurred while uploading metadata. Ajax Error:
+		<span class="ajax-error-status-text"></span>
+		<span class="ajax-error-status-code"></span>
+	</div>
+
+
+	<!-- metadata-row template -->
+	<div class="template metadata-row">
+		<input class="metadata-key blue-input" type="text" placeholder="Meta key">
+		<input class="metadata-value blue-input" type="text" placeholder="Meta value">
+		<button class="metadata-remove" tabindex="-1" type="button"></button>
+	</div>
+	<!-- metadata-list -->
+	<div class="metadata-list">
+	</div>
+	<!-- OK and Cancel buttons -->
+	<div class="metadata-footer">
+		<button class="metadata-ok blue-button" type="submit">OK</button>
+		<button class="metadata-cancel blue-button" type="button">Cancel</button>
+	</div>
+</form>
+
 <template id="sharedContainerTemplate">
-	<div class="item" title="{{title}}">
-			<span class="left">
-				<img src="img/shared-box32.png">
-				<label class="name">{{name}}</label>
-			</span>
-			<span class="right">
-				<label class="size">...</label>
-				<label class="files">...</label>
-				<label class="delete">X</label>
-			</span>
+	<div class="item default-action" title="{{title}}">
+		<span class="left">
+			<img src="img/shared-box32.png">
+			<label class="name">{{name}}</label>
+		</span>
+		<span class="right">
+			<label class="size">...</label>
+			<label class="files">...</label>
+			<label class="delete">X</label>
+		</span>
 	</div>
 </template>
 
 <template id="fileTemplate">
-	<div class="item" title="{{title}}">
+	<div class="item default-action" title="{{title}}">
 			<span class="left">
 				<img src="{{icon}}">
 				<label class="name">{{name}}</label>
@@ -238,7 +284,7 @@
 </template>
 
 <template id="directoryTemplate">
-	<div class="item" title="{{title}}">
+	<div class="item default-action" title="{{title}}">
 			<span class="left">
 				<img src="img/folder32.png">
 				<label class="name">{{name}}</label>

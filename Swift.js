@@ -334,7 +334,7 @@ var ZeroAppsOnSwift = {};
 			} else if (e.target.status == 201) {
 				args.created();
 			} else if (e.target.status == 202) {
-				args.alreadyExisted();
+				args.alreadyExists();
 			} else {
 				args.error(e.target.status, e.target.statusText);
 			}
