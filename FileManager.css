@@ -26,13 +26,15 @@ pre {
 }
 
 input[type=file] {
-	position: absolute;
-	left: 0;
-	right: 0;
-	top: 0;
-	bottom: 0;
-	opacity: 0;
-	width: 100%;
+	border: 0;
+	display: inline-block;
+	opacity: 0!important;
+	cursor: pointer;
+	width: 200%;
+	height: 200%;
+	position: relative;
+	top: -50%;
+	left: -50%;
 }
 
 .progresslabel {
@@ -100,6 +102,19 @@ input[type=file] {
 	height: 32px;
 	border-radius: 5px;
 	border: 0 solid rgba(0, 0, 0, 0.35);
+}
+span.icon-button {
+	display: inline-block;
+	background-repeat: no-repeat;
+}
+span.upload-files {
+	background-image: url('img/upload.png');
+}
+span.upload-as {
+	background-image: url('img/upload-as.png');
+}
+span.upload-execute {
+	background-image: url('img/execute.png');
 }
 #header .icon-button:disabled {
 	opacity: 0.5;
@@ -885,7 +900,7 @@ button.create-container {
 }
 
 .metadata-form button.metadata-remove {
-	background: url(../img/submenu_buttons.png);
+	background: url(img/submenu_buttons.png);
 	background-size: auto 70px;
 	border: 0;
 	background-position: -497px -7px;
@@ -905,4 +920,8 @@ button.create-container {
 
 .metadata-form .template {
 	display: none;
+}
+
+*[hidden] {
+	display: none !important;
 }

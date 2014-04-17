@@ -829,7 +829,6 @@ FileManager.UploadAndExecute.change = function (file) {
 	FileManager.execute(file, file.type);
 };
 
-
 FileManager.ConfirmDelete = {};
 
 FileManager.ConfirmDelete.click = function (el) {
@@ -1456,7 +1455,6 @@ FileManager.Containers.LIMIT = 20;
 
 FileManager.Containers.list = function (callback) {
 	FileManager.CreateContainerButton.show();
-	FileManager.EditButton.hide();
 	var scrollingContentEl = document.querySelector('.new-scrolling-content');
 
 	var xhr = SwiftV1.listContainers({
@@ -1896,8 +1894,12 @@ FileManager.Files.listHtml = function (files) {
 FileManager.ContentChange = {};
 
 FileManager.ContentChange.animate = function () {
+	document.querySelector('span.upload-files').setAttribute('hidden', 'hidden');
+	document.querySelector('span.upload-as').setAttribute('hidden', 'hidden');
+	document.querySelector('span.upload-execute').setAttribute('hidden', 'hidden');
 	FileManager.CreateContainerButton.hide();
-	FileManager.EditButton.show();
+	FileManager.EditButton.hide();
+	FileManager.DoneButton.hide();
 
 	var parentEl, newEl, oldEl, template;
 
@@ -1925,6 +1927,10 @@ FileManager.ContentChange.animate = function () {
 	} else if (FileManager.CurrentPath().isFilesList()) {
 		FileManager.Files.list(callback);
 
+		FileManager.EditButton.show();
+		document.querySelector('span.upload-files').removeAttribute('hidden');
+		document.querySelector('span.upload-as').removeAttribute('hidden');
+		document.querySelector('span.upload-execute').removeAttribute('hidden');
 		//FileManager.File.hideMenu();
 		//FileManager.ExecuteButton.hide();
 		//FileManager.OpenButton.hide();

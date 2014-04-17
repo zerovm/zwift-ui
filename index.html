@@ -43,6 +43,11 @@
 				<label class="current-dir-label"></label>
 			</span>
 			<span class="right">
+
+				<span class="icon-button upload-files"><input type="file" multiple></span>
+				<span class="icon-button upload-as"><input type="file" multiple></span>
+				<span class="icon-button upload-execute"><input type="file"></span>
+
 				<button class="open-button icon-button" title="Open" hidden></button>
 				<label class="execute-label" hidden></label>
 				<button class="execute-button icon-button" title="Execute" hidden></button>
@@ -149,10 +154,6 @@
 					<td></td>
 				</tr>
 			</table>
-
-			<div class="div-button upload-files" style="width: 33%;"><input autocomplete="off" type="file" multiple><img src="img/upload.png"><span>Upload Files</span></div>
-			<div class="div-button upload-as" style="width: 32%;"><input autocomplete="off" type="file" multiple><img src="img/upload-as.png"><span>Upload As</span></div>
-			<div class="div-button upload-execute" style="width: 33%;"><input autocomplete="off" type="file"><img src="img/execute.png"><span>Upload & Execute</span></div>
 		</div>
 		<div class="menu-file dialog" hidden>
 			<button autocomplete="off" class="undo txt-btn" disabled></button><button autocomplete="off" class="redo txt-btn" disabled></button><button autocomplete="off" class="save txt-btn" disabled></button><button autocomplete="off" class="save-as">Save As...</button>
