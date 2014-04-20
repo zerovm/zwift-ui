@@ -33,8 +33,8 @@ input[type=file] {
 	width: 100%;
 	height: 100%;
 	position: relative;
-	top: -50%;
-	left: -50%;
+	/*top: -50%;
+	left: -50%;*/
 }
 
 .progresslabel {
@@ -70,15 +70,6 @@ input[type=file] {
 
 #header {
 	height: 42px;
-	background-color: rgba(255,255,255,0.8);
-	/*
-	background-image: -ms-linear-gradient(top, #F8F8F8 0%, #ebebea 50%, #F8F8F8 100%);
-	background-image: -moz-linear-gradient(top, #F8F8F8 0%, #ebebea 50%, #F8F8F8 100%);
-	background-image: -o-linear-gradient(top, #F8F8F8 0%, #ebebea 50%, #F8F8F8 100%);
-	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #F8F8F8), color-stop(0.5, #ebebea), color-stop(1, #F8F8F8));
-	background-image: -webkit-linear-gradient(top, #F8F8F8 0%,#ebebea 50%, #F8F8F8 100%);
-	background-image: linear-gradient(to bottom, #F8F8F8 0%, #ebebea 50%, #F8F8F8 100%);
-	*/
 }
 
 #header .left {
@@ -89,6 +80,10 @@ input[type=file] {
 #header .right {
 	float: right;
 	margin-right: 5px;
+	vertical-align: middle;
+}
+#header .right  * {
+	vertical-align: middle;
 }
 
 #header button,
@@ -98,7 +93,7 @@ input[type=file] {
 }
 #header .icon-button {
 	background-color: transparent;
-	width: 32px;
+	width: 30px;
 	height: 32px;
 	border-radius: 5px;
 	border: 0 solid rgba(0, 0, 0, 0.35);
@@ -108,13 +103,34 @@ span.icon-button {
 	background-repeat: no-repeat;
 }
 span.upload-files {
-	background-image: url('img/upload.png');
+	/*background-image: url('img/upload.png');*/
+
+
+	background-image: url(img/white_icon.png);
+	background-repeat: no-repeat;
+	background-color: transparent;
+	background-size: auto 35px;
+
 }
 span.upload-as {
-	background-image: url('img/upload-as.png');
+	/*background-image: url('img/upload-as.png');*/
+
+
+	background-image: url(img/white_icon.png);
+	background-repeat: no-repeat;
+	background-color: transparent;
+	background-size: auto 35px;
+	background-position: -30px center;
 }
 span.upload-execute {
-	background-image: url('img/execute.png');
+	/*background-image: url('img/execute.png');*/
+
+
+	background-image: url(img/white_icon.png);
+	background-repeat: no-repeat;
+	background-color: transparent;
+	background-size: auto 35px;
+	background-position: -60px center;
 }
 #header .icon-button:disabled {
 	opacity: 0.5;
@@ -130,14 +146,25 @@ span.upload-execute {
 #header .icon-button:focus {
 	outline: 0;
 }
-.up-button {
-	background: url('img/up.png') no-repeat 6px 8px;
+button.up-button {
+/*background: url('img/up.png') no-repeat 6px 8px;*/
+
+	background-image: url('img/white_icon.png');
+	background-repeat: no-repeat;
+	background-size: auto 35px;
+	background-position: -231px -3px;
 }
 .current-dir-label {
-	font-weight: bold;
+	/*font-weight: bold;*/
+	color: white;
 }
-.sign-out-button {
-	background: url('img/logout.png') no-repeat 7px 8px;
+button.sign-out-button {
+	background: #829fbd;
+	border-radius: 5px;
+	font-size: 12px;
+	padding: 5px 20px;
+	margin: 0;
+	float: right;
 }
 .edit-button {
 	background: url('img/pencil.png') no-repeat 7px 8px;
@@ -184,6 +211,7 @@ span.upload-execute {
 	transition: all 0.4s;
 	-webkit-transition: all 0.4s;
 	background: rgba(255, 255, 255, 0.3);
+	-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;
 }
 
 .new-scrolling-content {
@@ -845,7 +873,11 @@ template {
 
 
 button.create-container {
-	background: url('img/plus.png') no-repeat 7px 8px;
+	/*background: url('img/plus.png') no-repeat 7px 8px;*/
+	background-image: url('img/white_icon.png');
+	background-repeat: no-repeat;
+	background-size: auto 35px;
+	background-position: -143px center;
 }
 
 /*
@@ -924,4 +956,21 @@ button.create-container {
 
 *[hidden] {
 	display: none !important;
+}
+
+#Row1 {
+	padding: 5px;
+	background-color: #6a93bb;
+	color: #cad7e4;
+}
+
+#header {
+	background-color: #829fbd;
+}
+
+.logo {
+	margin: 5px 0;
+	font-weight: normal;
+	display: inline-block;
+	font-size: medium;
 }

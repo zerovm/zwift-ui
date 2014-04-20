@@ -84,6 +84,7 @@ FileManager.CurrentDirLabel.showLoading = function () {
 	FileManager.CurrentDirLabel.setContent('Loading...');
 	FileManager.CurrentDirLabel.removeTooltip();
 };
+
 FileManager.futureEvent = function (targetElementClass, eventType, eventHandler) {
 	document.addEventListener(eventType, function (e) {
 		if (e.target.classList.contains(targetElementClass)) {
@@ -3026,3 +3027,9 @@ FileManager.MetadataForm.save = function () {
 		errorEl.removeAttribute('hidden');
 	}
 };
+
+FileManager.MetadataForm.removeClass = '.metadata-remove';
+
+FileManager.futureEvent(FileManager.MetadataForm.removeClass, 'click', function (e) {
+	console.log(e.target.parentNode);
+});

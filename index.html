@@ -37,6 +37,10 @@
 
 	<!-- header -->
 	<div class="fixed-top center">
+		<div id="Row1">
+			<span class="logo">File Manager</span>
+			<button class="sign-out-button blue-button" title="Sign Out">Sign Out</button>
+		</div>
 		<div id="header" class="center">
 			<span class="left">
 				<button class="up-button icon-button" title="Up" disabled></button>
@@ -54,9 +58,8 @@
 				<button class="edit-button icon-button" title="Edit"></button>
 				<button class="done-button icon-button" title="Done" hidden></button>
 				<button class="create-container icon-button" title="Create Container"></button>
-				<button class="wide-button icon-button" title="Wide"></button>
+				<button class="wide-button icon-button" title="Wide" hidden></button>
 				<button class="unwide-button icon-button" title="Unwide" hidden></button>
-				<button class="sign-out-button icon-button" title="Sign Out"></button>
 			</span>
 		</div>
 
@@ -78,7 +81,7 @@
 					<td><input autocomplete="off" class="create-container-input" placeholder="Container Name"></td>
 					<td class="create-container-button">+</td>
 				</tr>
-				<tr class="err-msg create-container-error-ajax" hidden>
+׳				<tr class="err-msg create-container-error-ajax" hidden>
 					<td></td>
 					<td>Error: <span class="status"></span> <span class="status-text"></span>.</td>
 					<td></td>
@@ -602,8 +605,12 @@
 </template>
 
 	<script src="liteauth.js"></script>
-	<!--<script src="Swift.js"></script>-->
+
+
+<!--<script src="Swift.js"></script>-->
 	<script src="mock.js"></script>
+
+
 	<script src="FileManager.js"></script>
 
 </body>
