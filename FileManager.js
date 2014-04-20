@@ -85,14 +85,6 @@ FileManager.CurrentDirLabel.showLoading = function () {
 	FileManager.CurrentDirLabel.removeTooltip();
 };
 
-FileManager.futureEvent = function (targetElementClass, eventType, eventHandler) {
-	document.addEventListener(eventType, function (e) {
-		if (e.target.classList.contains(targetElementClass)) {
-			eventHandler(e);
-		}
-	});
-};
-
 
 FileManager.CreateContainerButton = {};
 
@@ -908,11 +900,13 @@ FileManager.Item.click = function (itemEl) {
 	location.hash = FileManager.Item.selectedPath;
 };
 
+/*
 document.addEventListener('click', function (e) {
 	if (e.target.classList.contains('default-action')) {
 		FileManager.Item.click(e.target.parentNode);
 	}
 });
+*/
 
 FileManager.Item.deleteclick = function (el) {
 
@@ -1577,6 +1571,28 @@ FileManager.Containers.create = function (containerObj) {
 	t.classList.remove('template');
 	t.classList.remove('template-container');
 
+	t.querySelector('.default-action').addEventListener('click', function (e) {
+		FileManager.Item.click(e.target.parentNode);
+	});
+	t.querySelector('.toggle-actions-menu').addEventListener('click', function (e) {
+		var itemEl = e.target.parentNode;
+		FileManager.selectedItemEl = itemEl;
+		var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
+
+		FileManager.ActionsMenu.removeForms();
+		var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
+
+		if (actionsMenu) {
+			actionsMenu.parentNode.removeChild(actionsMenu);
+		}
+
+		if (!isNext) {
+			var newActionsMenu = document.querySelector('.template-actions-menu').cloneNode(true);
+			newActionsMenu.classList.remove('template-actions-menu');
+			newActionsMenu.classList.remove('template');
+			document.querySelector('.scrolling-content').insertBefore(newActionsMenu, itemEl.nextSibling);
+		}
+	});
 	t.querySelector('.name').textContent = name;
 	t.setAttribute('title', title);
 	t.querySelector('.size').textContent = size;
@@ -2649,30 +2665,6 @@ document.querySelector('.sign-out-button').onclick = function () {
 
 FileManager.selectedItemEl = null;
 
-FileManager.ToggleActionsMenu = {};
-
-FileManager.ToggleActionsMenu.class = 'toggle-actions-menu';
-
-FileManager.futureEvent(FileManager.ToggleActionsMenu.class, 'click', function (e) {
-	var itemEl = e.target.parentNode;
-	FileManager.selectedItemEl = itemEl;
-	var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
-
-	FileManager.ActionsMenu.removeForms();
-	var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
-
-	if (actionsMenu) {
-		actionsMenu.parentNode.removeChild(actionsMenu);
-	}
-
-	if (!isNext) {
-		var newActionsMenu = document.querySelector('.template-actions-menu').cloneNode(true);
-		newActionsMenu.classList.remove('template-actions-menu');
-		newActionsMenu.classList.remove('template');
-		document.querySelector('.scrolling-content').insertBefore(newActionsMenu, itemEl.nextSibling);
-	}
-});
-
 FileManager.ActionsMenu = {};
 
 FileManager.ActionsMenu.removeForms = function () {
@@ -2809,6 +2801,10 @@ FileManager.MetadataForm.load = function () {
 			newRow.getElementsByClassName('metadata-key')[0].value = k;
 			newRow.getElementsByClassName('metadata-value')[0].value = v;
 		}
+		newRow.querySelector('.metadata-remove').addEventListener('click', function (e) {
+			var metadataRowEl = e.target.parentNode;
+			document.querySelector('.metadata-list').removeChild(metadataRowEl);
+		});
 		listEl.appendChild(newRow);
 	}
 
@@ -2816,9 +2812,9 @@ FileManager.MetadataForm.load = function () {
 		listEl.innerHTML = '';
 		listEl.removeAttribute('hidden');
 		formEl.getElementsByClassName('metadata-loading-error')[0].setAttribute('hidden', 'hidden');
-		formEl.getElementsByClassName('metadata-uploading')[0].setAttribute('hidden', 'hidden');
-		formEl.getElementsByClassName('metadata-uploaded')[0].setAttribute('hidden', 'hidden');
-		formEl.getElementsByClassName('metadata-uploading-error')[0].setAttribute('hidden', 'hidden');
+		formEl.getElementsByClassName('metadata-updating')[0].setAttribute('hidden', 'hidden');
+		formEl.getElementsByClassName('metadata-updated')[0].setAttribute('hidden', 'hidden');
+		formEl.getElementsByClassName('metadata-updating-error')[0].setAttribute('hidden', 'hidden');
 	}
 
 	function loadContainerMetadata() {
@@ -2950,7 +2946,7 @@ FileManager.MetadataForm.save = function () {
 	var formEl = document.querySelector('.scrolling-content .metadata-form');
 	var listEl = formEl.querySelector('.metadata-list');
 
-	formEl.getElementsByClassName('metadata-uploading')[0].removeAttribute('hidden');
+	formEl.getElementsByClassName('metadata-updating')[0].removeAttribute('hidden');
 	listEl.setAttribute('hidden', 'hidden');
 	var metadata = metadataFromMetadataList();
 
@@ -3014,22 +3010,16 @@ FileManager.MetadataForm.save = function () {
 	}
 
 	function XHR_OK() {
-		formEl.getElementsByClassName('metadata-uploaded')[0].setAttribute('hidden', 'hidden');
+		formEl.getElementsByClassName('metadata-updated')[0].setAttribute('hidden', 'hidden');
 		setTimeout(function () {
 			formEl.setAttribute('hidden', 'hidden');
 		}, 1000);
 	}
 
 	function XHR_ERROR(status, statusText) {
-		var errorEl = formEl.getElementsByClassName('metadata-uploading-error')[0];
+		var errorEl = formEl.getElementsByClassName('metadata-updating-error')[0];
 		errorEl.getElementsByClassName('ajax-error-status-text')[0].textContent = statusText;
 		errorEl.getElementsByClassName('ajax-error-status-code')[0].textContent = status;
 		errorEl.removeAttribute('hidden');
 	}
 };
-
-FileManager.MetadataForm.removeClass = '.metadata-remove';
-
-FileManager.futureEvent(FileManager.MetadataForm.removeClass, 'click', function (e) {
-	console.log(e.target.parentNode);
-});
