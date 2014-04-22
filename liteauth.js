@@ -57,7 +57,6 @@ var liteauth = (function () {
 				    args.error(e.target.status, e.target.statusText);
 				}};
 			    pxhr.send();
-			    }
 			} else {
 				args.error(e.target.status, e.target.statusText);
 			}
