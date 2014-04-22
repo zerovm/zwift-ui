@@ -51,7 +51,7 @@ var liteauth = (function () {
 			    pxhr.open('PUT', profile_url);
 			    pxhr.withCredentials = true;
 			    pxhr.onload = function (e) {
-				if (e.target.status == 200) {
+				if (e.target.status == 201) {
 				    args.success(e.target.responseText);
 				} else {
 				    args.error(e.target.status, e.target.statusText);
