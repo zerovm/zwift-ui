@@ -126,7 +126,7 @@ var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
 		}
 
 		if (containerExists(args.containerName)) {
-			args.alreadyExisted();
+			args.alreadyExists();
 		} else {
 			__continers.push({"count": 0, "bytes": 0, "name": args.containerName});
 			__files[args.containerName] = [];
