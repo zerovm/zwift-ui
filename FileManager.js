@@ -202,58 +202,6 @@ FileManager.CreateContainerForm.clearErrors = function () {
 	FileManager.Layout.adjust();
 };
 
-
-FileManager.EditButton = {};
-
-FileManager.EditButton.click = function () {
-
-	if (FileManager.CurrentPath().isContainersList()) {
-		FileManager.ContainersMenu.show();
-	} else if (FileManager.CurrentPath().isFilesList()) {
-		FileManager.FilesMenu.show();
-		FileManager.UpButton.disable();
-	}
-
-	FileManager.EditButton.hide();
-	FileManager.DoneButton.show();
-	FileManager.setEditMode();
-};
-
-
-FileManager.EditButton.hide = function () {
-	document.querySelector('.edit-button').setAttribute('hidden', 'hidden');
-};
-
-FileManager.EditButton.show = function () {
-	document.querySelector('.edit-button').removeAttribute('hidden');
-};
-
-
-FileManager.DoneButton = {};
-
-FileManager.DoneButton.click = function () {
-
-	FileManager.ContainersMenu.hide();
-	FileManager.FilesMenu.hide();
-
-	if (FileManager.CurrentPath().isFilesList()) {
-		FileManager.UpButton.enable();
-	}
-
-	FileManager.DoneButton.hide();
-	FileManager.EditButton.show();
-	FileManager.Item.unselect();
-	FileManager.setViewMode();
-};
-
-FileManager.DoneButton.hide = function () {
-	document.querySelector('.done-button').setAttribute('hidden', 'hidden');
-};
-
-FileManager.DoneButton.show = function () {
-	document.querySelector('.done-button').removeAttribute('hidden');
-};
-
 FileManager.OpenButton = {};
 
 FileManager.OpenButton.click = function () {
@@ -535,53 +483,6 @@ FileManager.FilesMenu.show = function () {
 FileManager.FilesMenu.hide = function () {
 	document.querySelector('.menu-files').setAttribute('hidden', 'hidden');
 	FileManager.Layout.adjust();
-};
-
-
-FileManager.CreateFile = {};
-
-FileManager.CreateFile.click = function () {
-	var nameEl = document.querySelector('.create-file-input-name');
-	var typeEl = document.querySelector('.create-file-input-type');
-
-	if (!nameEl.value) {
-		nameEl.classList.add('invalid-input');
-		return;
-	}
-
-	var filePath = FileManager.CurrentPath().add(nameEl.value);
-
-	var requestArgs = {};
-	requestArgs.path = FileManager.Path(filePath).withoutAccount();
-	requestArgs.contentType = typeEl.value;
-	requestArgs.data = '';
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		requestArgs.account = FileManager.CurrentPath().account();
-	}
-
-	requestArgs.created = function () {
-		FileManager.ContentChange.animate();
-		FileManager.CreateFile.clear();
-	};
-
-	requestArgs.error = function (status, statusText) {
-		var el = document.querySelector('.create-file-error-ajax');
-		FileManager.AjaxError.show(el, status, statusText);
-	};
-
-	SwiftV1.createFile(requestArgs);
-};
-
-FileManager.CreateFile.clear = function () {
-	document.querySelector('.create-file-input-name').value = '';
-	document.querySelector('.create-file-input-type').value = 'text/plain';
-	FileManager.CreateFile.clearErrors();
-};
-
-FileManager.CreateFile.clearErrors = function () {
-	document.querySelector('.create-file-input-name').classList.remove('invalid-input');
-	document.querySelector('.create-file-input-type').classList.remove('invalid-input');
 };
 
 
@@ -1043,9 +944,6 @@ FileManager.File.open = function (el, callback) {
 		} else {
 			FileManager.File.notTextFile(el);
 		}
-
-		FileManager.EditButton.hide();
-		FileManager.DoneButton.hide();
 
 		FileManager.OpenButton.show();
 
@@ -1782,9 +1680,8 @@ FileManager.ContentChange.animate = function () {
 	document.querySelector('span.upload-as').setAttribute('hidden', 'hidden');
 	document.querySelector('span.upload-execute').setAttribute('hidden', 'hidden');
 	FileManager.CreateContainerButton.hide();
-	FileManager.EditButton.hide();
-	FileManager.DoneButton.hide();
 	FileManager.CreateDirectoryButton.hide();
+	FileManager.CreateFileButton.hide();
 
 	var parentEl, newEl, oldEl, template;
 
@@ -1812,7 +1709,7 @@ FileManager.ContentChange.animate = function () {
 	} else if (FileManager.CurrentPath().isFilesList()) {
 		FileManager.Files.list(callback);
 		FileManager.CreateDirectoryButton.show();
-		FileManager.EditButton.show();
+		FileManager.CreateFileButton.show();
 		document.querySelector('span.upload-files').removeAttribute('hidden');
 		document.querySelector('span.upload-as').removeAttribute('hidden');
 		document.querySelector('span.upload-execute').removeAttribute('hidden');
@@ -2884,6 +2781,7 @@ FileManager.MetadataForm.save = function () {
 FileManager.CreateDirectoryButton = {};
 FileManager.CreateDirectoryButton.el = document.querySelector('button.create-directory');
 FileManager.CreateDirectoryButton.el.addEventListener('click', function (e) {
+	FileManager.CreateFileForm.close();
 	FileManager.CreateDirectoryForm.open();
 });
 FileManager.CreateDirectoryButton.show = function () {
@@ -2981,3 +2879,79 @@ FileManager.CreateDirectoryForm.clearErrors = function () {
 		err[i].setAttribute('hidden', 'hidden');
 	}
 };
+
+FileManager.CreateFileButton = {};
+FileManager.CreateFileButton.el = document.querySelector('button.create-file');
+FileManager.CreateFileButton.show = function () {
+	FileManager.CreateFileButton.el.removeAttribute('hidden');
+};
+FileManager.CreateFileButton.hide = function () {
+	FileManager.CreateFileButton.el.setAttribute('hidden', 'hidden');
+};
+FileManager.CreateFileButton.el.addEventListener('click', function () {
+	FileManager.CreateDirectoryForm.close();
+	FileManager.CreateFileForm.open();
+});
+FileManager.CreateFileForm = {};
+FileManager.CreateFileForm.el = document.querySelector('form.create-file');
+FileManager.CreateFileForm.el.addEventListener('submit', function (e) {
+	e.preventDefault();
+
+	var nameEl = this.querySelector('input.file-name');
+	var typeEl = this.querySelector('input.content-type');
+
+	if (nameEl.value === '') {
+		this.querySelector('.err-empty').removeAttribute('hidden');
+		FileManager.Layout.adjust();
+		return;
+	}
+
+
+	var filePath = FileManager.CurrentPath().add(nameEl.value);
+
+	var requestArgs = {};
+	requestArgs.path = FileManager.Path(filePath).withoutAccount();
+	requestArgs.contentType = typeEl.value;
+	requestArgs.data = '';
+
+	if (FileManager.ENABLE_SHARED_CONTAINERS) {
+		requestArgs.account = FileManager.CurrentPath().account();
+	}
+
+	requestArgs.created = function () {
+		FileManager.CreateFileForm.close();
+		FileManager.ContentChange.animate();
+		FileManager.CreateFileForm.clearErrors();
+	};
+
+	requestArgs.error = function (status, statusText) {
+		var el = FileManager.CreateFileForm.el.querySelector('.err-ajax');
+		FileManager.AjaxError.show(el, status, statusText);
+	};
+
+	SwiftV1.createFile(requestArgs);
+});
+FileManager.CreateFileForm.open = function () {
+	FileManager.CreateFileForm.el.removeAttribute('hidden');
+	var nameEl = FileManager.CreateFileForm.el.querySelector('input.file-name');
+	var typeEl = FileManager.CreateFileForm.el.querySelector('input.content-type');
+	nameEl.value = '';
+	typeEl.value = 'text/plain';
+	nameEl.focus();
+	FileManager.CreateFileForm.clearErrors();
+	FileManager.Layout.adjust();
+};
+FileManager.CreateFileForm.close = function () {
+	FileManager.CreateFileForm.el.setAttribute('hidden', 'hidden');
+	FileManager.Layout.adjust();
+};
+FileManager.CreateFileForm.clearErrors = function () {
+	var err = FileManager.CreateFileForm.el.querySelectorAll('.err');
+	for (var i = 0; i < err.length; i++) {
+		err[i].setAttribute('hidden', 'hidden');
+	}
+};
+FileManager.CreateFileForm.el.querySelector('button.cancel').addEventListener('click', function (e) {
+	e.preventDefault();
+	FileManager.CreateFileForm.close();
+});
