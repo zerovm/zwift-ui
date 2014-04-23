@@ -974,3 +974,10 @@ button.create-container {
 	display: inline-block;
 	font-size: medium;
 }
+
+button.create-directory {
+	background-image: url(img/white_icon.png);
+	background-position: -114px center;
+	background-repeat: no-repeat;
+	background-size: auto 35px;
+}

@@ -597,80 +597,6 @@ FileManager.CreateContainer.clearErrors = function (inputEl) {
 };
 
 
-
-
-FileManager.CreateDirectory = {};
-
-FileManager.CreateDirectory.click = function () {
-
-	var inputEl = document.querySelector('.create-directory-input');
-
-	if (!inputEl.value) {
-		inputEl.classList.add('invalid-input');
-		return;
-	}
-
-	if (inputEl.value.indexOf('/') !== -1) {
-		inputEl.classList.add('invalid-input');
-		document.querySelector('.create-directory-error-invalid-character').removeAttribute('hidden');
-		return;
-	}
-
-	var dirName = inputEl.value + '/';
-	var dirPath = FileManager.CurrentPath().add(dirName);
-	var dirPathWithoutAccount = FileManager.Path(dirPath).withoutAccount();
-
-	var requestArgs = {};
-
-	requestArgs.path = dirPathWithoutAccount;
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		requestArgs.account = FileManager.CurrentPath().account();
-	}
-
-	requestArgs.success = function () {
-		inputEl.classList.add('invalid-input');
-		document.querySelector('.create-directory-error-already-exist').removeAttribute('hidden');
-	};
-
-	requestArgs.notExist = function () {
-
-		SwiftV1.createDirectory({
-			path: dirPathWithoutAccount,
-			created: function () {
-				FileManager.ContentChange.animate();
-				FileManager.CreateDirectory.clear();
-			},
-			error: function (status, statusText) {
-				var el = document.querySelector('.create-directory-error-ajax');
-				FileManager.AjaxError.show(el, status, statusText);
-			}
-		});
-
-	};
-
-	requestArgs.error = function (status, statusText) {
-		var el = document.querySelector('.create-directory-error-ajax');
-		FileManager.AjaxError.show(el, status, statusText);
-	};
-
-	SwiftV1.checkDirectoryExist(requestArgs);
-};
-
-FileManager.CreateDirectory.clear = function () {
-	document.querySelector('.create-directory-input').value = '';
-};
-
-FileManager.CreateDirectory.clearErrors = function () {
-	document.querySelector('.create-directory-input').classList.remove('invalid-input');
-
-	var errElArr = document.querySelectorAll('.create-directory .err-msg');
-	for (var i = 0; i < errElArr.length; i++) {
-		errElArr[i].setAttribute('hidden', 'hidden');
-	}
-};
-
-
 FileManager.CreateFile = {};
 
 FileManager.CreateFile.click = function () {
@@ -1917,6 +1843,7 @@ FileManager.ContentChange.animate = function () {
 	FileManager.CreateContainerButton.hide();
 	FileManager.EditButton.hide();
 	FileManager.DoneButton.hide();
+	FileManager.CreateDirectoryButton.hide();
 
 	var parentEl, newEl, oldEl, template;
 
@@ -1943,7 +1870,7 @@ FileManager.ContentChange.animate = function () {
 		//FileManager.OpenButton.hide();
 	} else if (FileManager.CurrentPath().isFilesList()) {
 		FileManager.Files.list(callback);
-
+		FileManager.CreateDirectoryButton.show();
 		FileManager.EditButton.show();
 		document.querySelector('span.upload-files').removeAttribute('hidden');
 		document.querySelector('span.upload-as').removeAttribute('hidden');
@@ -2197,8 +2124,6 @@ document.addEventListener('click', function (e) {
 	} else if (el = is('add-shared-button')) {
 		//SHARED-CONTAINERS
 		FileManager.AddShared.click(el);
-	} else if (el = is('create-directory-button')) {
-		FileManager.CreateDirectory.click(el);
 	} else if (el = is('create-file-button')) {
 		FileManager.CreateFile.click(el);
 	} else if (el = is('undo')) {
@@ -2290,16 +2215,6 @@ document.addEventListener('keydown', function (e) {
 			return;
 		}
 		FileManager.AddShared.clearErrors(e.target);
-	}
-
-	if (e.target.classList.contains('create-directory-input')) {
-
-		if (e.which == 13) {
-			FileManager.CreateDirectory.click();
-			return;
-		}
-
-		FileManager.CreateDirectory.clearErrors(e.target);
 	}
 
 	if (e.target.classList.contains('create-file-input-name')) {
@@ -3023,3 +2938,164 @@ FileManager.MetadataForm.save = function () {
 		errorEl.removeAttribute('hidden');
 	}
 };
+
+
+FileManager.CreateDirectoryButton = {};
+FileManager.CreateDirectoryButton.el = document.querySelector('button.create-directory');
+FileManager.CreateDirectoryButton.el.addEventListener('click', function (e) {
+	FileManager.CreateDirectoryForm.open();
+});
+FileManager.CreateDirectoryButton.show = function () {
+	FileManager.CreateDirectoryButton.el.removeAttribute('hidden');
+};
+FileManager.CreateDirectoryButton.hide = function () {
+	FileManager.CreateDirectoryButton.el.setAttribute('hidden', 'hidden');
+};
+
+FileManager.CreateDirectoryForm = {};
+FileManager.CreateDirectoryForm.el = document.querySelector('form.create-directory');
+FileManager.CreateDirectoryForm.el.addEventListener('submit', function (e) {
+	e.preventDefault();
+
+	var inputEl = this.querySelector('input.directory-name');
+
+	if (!inputEl.value) {
+		this.querySelector('err-empty').removeAttribute('hidden');
+		return;
+	}
+
+	if (inputEl.value.indexOf('/') !== -1) {
+		this.querySelector('.err-invalid-character').removeAttribute('hidden');
+		return;
+	}
+
+	if (inputEl.value.length > 1024) {
+		this.querySelector('.err-size-limit').removeAttribute('hidden');
+		return;
+	}
+
+	var dirName = inputEl.value + '/';
+	var dirPath = FileManager.CurrentPath().add(dirName);
+	var dirPathWithoutAccount = FileManager.Path(dirPath).withoutAccount();
+
+	var requestArgs = {};
+
+	requestArgs.path = dirPathWithoutAccount;
+
+	if (FileManager.ENABLE_SHARED_CONTAINERS) {
+		requestArgs.account = FileManager.CurrentPath().account();
+	}
+
+	requestArgs.success = function () {
+		inputEl.classList.add('invalid-input');
+		document.querySelector('.create-directory-error-already-exist').removeAttribute('hidden');
+	};
+
+	requestArgs.notExist = function () {
+
+		SwiftV1.createDirectory({
+			path: dirPathWithoutAccount,
+			created: function () {
+				FileManager.ContentChange.animate();
+				FileManager.CreateDirectoryForm.close();
+			},
+			error: function (status, statusText) {
+				var el = document.querySelector('.create-directory-error-ajax');
+				FileManager.AjaxError.show(el, status, statusText);
+			}
+		});
+
+	};
+
+	requestArgs.error = function (status, statusText) {
+		var el = document.querySelector('.create-directory-error-ajax');
+		FileManager.AjaxError.show(el, status, statusText);
+	};
+
+	SwiftV1.checkDirectoryExist(requestArgs);
+});
+FileManager.CreateDirectoryForm.open = function () {
+	FileManager.CreateDirectoryForm.el.removeAttribute('hidden');
+	FileManager.Layout.adjust();
+};
+FileManager.CreateDirectoryForm.close = function () {
+	FileManager.CreateDirectoryForm.el.setAttribute('hidden', 'hidden');
+	FileManager.Layout.adjust();
+};
+FileManager.CreateDirectoryForm.el.querySelector('button.cancel').addEventListener('click', function (e) {
+	e.preventDefault();
+	FileManager.CreateDirectoryForm.close();
+});
+
+
+
+
+
+
+
+document.querySelector('button.create-directory').addEventListener('click', function (e) {
+	document.querySelector('form.create-directory').removeAttribute('hidden');
+	FileManager.Layout.adjust();
+});
+
+document.querySelector('form.create-directory').addEventListener('submit', function (e) {
+	e.preventDefault();
+
+	var inputEl = this.querySelector('input.directory-name');
+
+	if (!inputEl.value) {
+		this.querySelector('err-empty').removeAttribute('hidden');
+		return;
+	}
+
+	if (inputEl.value.indexOf('/') !== -1) {
+		this.querySelector('.err-invalid-character').removeAttribute('hidden');
+		return;
+	}
+
+	if (inputEl.value.length > 1024) {
+		this.querySelector('.err-size-limit').removeAttribute('hidden');
+		return;
+	}
+
+	var dirName = inputEl.value + '/';
+	var dirPath = FileManager.CurrentPath().add(dirName);
+	var dirPathWithoutAccount = FileManager.Path(dirPath).withoutAccount();
+
+	var requestArgs = {};
+
+	requestArgs.path = dirPathWithoutAccount;
+
+	if (FileManager.ENABLE_SHARED_CONTAINERS) {
+		requestArgs.account = FileManager.CurrentPath().account();
+	}
+
+	requestArgs.success = function () {
+		inputEl.classList.add('invalid-input');
+		document.querySelector('.create-directory-error-already-exist').removeAttribute('hidden');
+	};
+
+	requestArgs.notExist = function () {
+
+		SwiftV1.createDirectory({
+			path: dirPathWithoutAccount,
+			created: function () {
+				FileManager.ContentChange.animate();
+				FileManager.CreateDirectoryForm.close();
+			},
+			error: function (status, statusText) {
+				var el = document.querySelector('.create-directory-error-ajax');
+				FileManager.AjaxError.show(el, status, statusText);
+			}
+		});
+
+	};
+
+	requestArgs.error = function (status, statusText) {
+		var el = document.querySelector('.create-directory-error-ajax');
+		FileManager.AjaxError.show(el, status, statusText);
+	};
+
+	SwiftV1.checkDirectoryExist(requestArgs);
+});
+

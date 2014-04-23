@@ -48,6 +48,8 @@
 			</span>
 			<span class="right">
 
+				<button class="icon-button create-directory" hidden></button>
+
 				<span class="icon-button upload-files"><input type="file" multiple></span>
 				<span class="icon-button upload-as"><input type="file" multiple></span>
 				<span class="icon-button upload-execute"><input type="file"></span>
@@ -70,6 +72,17 @@
 			<div class="err-invalid-character err" hidden>Container name cannot contain a forward slash '/' character.</div>
 			<div class="err-ajax err" hidden></div>
 			<div class="err-already-exists err" hidden>Container is already exists.</div>
+			<button type="submit" class="btn btn-primary blue-button">Create</button>
+			<button type="button" class="cancel btn btn-primary blue-button">Cancel</button>
+		</form>
+
+		<form class="create-directory blue-form dialog" hidden>
+			<input placeholder="Directory Name" class="directory-name blue-input one-input">
+			<div class="err-empty err" hidden>Please type directory name.</div>
+			<div class="err-size-limit err" hidden>Directory name must be less than 256 bytes.</div>
+			<div class="err-invalid-character err" hidden>Directory name cannot contain a forward slash '/' character.</div>
+			<div class="err-ajax err" hidden></div>
+			<div class="err-already-exists err" hidden>Directory is already exists.</div>
 			<button type="submit" class="btn btn-primary blue-button">Create</button>
 			<button type="button" class="cancel btn btn-primary blue-button">Cancel</button>
 		</form>
@@ -122,28 +135,6 @@
 			</table>
 		</div>
 		<div class="menu-files dialog" hidden>
-			<table class="input-group-table create-directory">
-				<tr>
-					<td><img src="img/folder.png"></td>
-					<td><input autocomplete="off" class="create-directory-input" placeholder="Directory Name"></td>
-					<td class="create-directory-button">+</td>
-				</tr>
-				<tr class="err-msg create-directory-error-ajax" hidden>
-					<td></td>
-					<td>Error: <span class="status"></span> <span class="status-text"></span>.</td>
-					<td></td>
-				</tr>
-				<tr class="err-msg create-directory-error-invalid-character" hidden>
-					<td></td>
-					<td>Directory name cannot have a slash (/) character.</td>
-					<td></td>
-				</tr>
-				<tr class="err-msg create-directory-error-already-exist" hidden>
-					<td></td>
-					<td>Directory is already exists.</td>
-					<td></td>
-				</tr>
-			</table>
 			<table class="input-group-table">
 				<tr>
 					<td><img src="img/file_txt.png"></td>
@@ -607,11 +598,11 @@
 	<script src="liteauth.js"></script>
 
 
-<!--<script src="Swift.js"></script>-->
-	<script src="mock.js"></script>
+<script src="Swift.js"></script>
+<!--<script src="mock.js"></script>-->
 
 
-	<script src="FileManager.js"></script>
+<script src="FileManager.js"></script>
 
 </body>
 </html>
