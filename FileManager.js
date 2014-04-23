@@ -538,65 +538,6 @@ FileManager.FilesMenu.hide = function () {
 };
 
 
-FileManager.CreateContainer = {};
-
-FileManager.CreateContainer.click = function () {
-
-	var inputEl = document.querySelector('.create-container-input');
-	var input = inputEl.value;
-
-	if (!input) {
-		inputEl.classList.add('invalid-input');
-		return;
-	}
-
-	if (input.length > 256) {
-		inputEl.classList.add('invalid-input');
-		document.querySelector('.create-container-error-max-length').removeAttribute('hidden');
-		FileManager.Layout.adjust();
-		return;
-	}
-
-	if (input.indexOf('/') != -1) {
-		inputEl.classList.add('invalid-input');
-		document.querySelector('.create-container-error-invalid-character').removeAttribute('hidden');
-		FileManager.Layout.adjust();
-		return;
-	}
-
-	SwiftV1.createContainer({
-		containerName: input,
-		created: function () {
-			FileManager.ContentChange.animate();
-			FileManager.CreateContainer.clear();
-		},
-		alreadyExisted: function () {
-			inputEl.classList.add('invalid-input');
-			document.querySelector('.create-container-error-already-exist').removeAttribute('hidden');
-		},
-		error: function (status, statusText) {
-			var el = document.querySelector('.create-container-error-ajax');
-			FileManager.AjaxError.show(el, status, statusText);
-		}
-	});
-};
-
-FileManager.CreateContainer.clear = function () {
-	var inputEl = document.querySelector('.create-container-input');
-	inputEl.value = '';
-	FileManager.CreateContainer.clearErrors(inputEl);
-};
-
-FileManager.CreateContainer.clearErrors = function (inputEl) {
-	inputEl.classList.remove('invalid-input');
-
-	var errElArr = document.querySelectorAll('.create-container .err-msg');
-	for (var i = 0; i < errElArr.length; i++) {
-		errElArr[i].setAttribute('hidden', 'hidden');
-	}
-};
-
-
 FileManager.CreateFile = {};
 
 FileManager.CreateFile.click = function () {
@@ -2960,17 +2901,20 @@ FileManager.CreateDirectoryForm.el.addEventListener('submit', function (e) {
 	var inputEl = this.querySelector('input.directory-name');
 
 	if (!inputEl.value) {
-		this.querySelector('err-empty').removeAttribute('hidden');
+		this.querySelector('.err-empty').removeAttribute('hidden');
+		FileManager.Layout.adjust();
 		return;
 	}
 
 	if (inputEl.value.indexOf('/') !== -1) {
 		this.querySelector('.err-invalid-character').removeAttribute('hidden');
+		FileManager.Layout.adjust();
 		return;
 	}
 
 	if (inputEl.value.length > 1024) {
 		this.querySelector('.err-size-limit').removeAttribute('hidden');
+		FileManager.Layout.adjust();
 		return;
 	}
 
@@ -2988,7 +2932,8 @@ FileManager.CreateDirectoryForm.el.addEventListener('submit', function (e) {
 
 	requestArgs.success = function () {
 		inputEl.classList.add('invalid-input');
-		document.querySelector('.err-already-exists').removeAttribute('hidden');
+		FileManager.CreateDirectoryForm.el.querySelector('.err-already-exists').removeAttribute('hidden');
+		FileManager.Layout.adjust();
 	};
 
 	requestArgs.notExist = function () {
