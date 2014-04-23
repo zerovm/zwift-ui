@@ -49,6 +49,7 @@
 			<span class="right">
 
 				<button class="icon-button create-directory" hidden></button>
+				<button class="icon-button create-file" hidden></button>
 
 				<span class="icon-button upload-files"><input type="file" multiple></span>
 				<span class="icon-button upload-as"><input type="file" multiple></span>
@@ -57,8 +58,6 @@
 				<button class="open-button icon-button" title="Open" hidden></button>
 				<label class="execute-label" hidden></label>
 				<button class="execute-button icon-button" title="Execute" hidden></button>
-				<button class="edit-button icon-button" title="Edit"></button>
-				<button class="done-button icon-button" title="Done" hidden></button>
 				<button class="create-container icon-button" title="Create Container"></button>
 				<button class="wide-button icon-button" title="Wide" hidden></button>
 				<button class="unwide-button icon-button" title="Unwide" hidden></button>
@@ -87,67 +86,18 @@
 			<button type="button" class="cancel btn btn-primary blue-button">Cancel</button>
 		</form>
 
-		<div class="menu-containers dialog" hidden>
-			<table class="input-group-table create-container">
-				<tr>
-					<td><img src="img/box.png"></td>
-					<td><input autocomplete="off" class="create-container-input" placeholder="Container Name"></td>
-					<td class="create-container-button">+</td>
-				</tr>
-׳				<tr class="err-msg create-container-error-ajax" hidden>
-					<td></td>
-					<td>Error: <span class="status"></span> <span class="status-text"></span>.</td>
-					<td></td>
-				</tr>
-				<tr class="err-msg create-container-error-max-length" hidden>
-					<td></td>
-					<td>Container name must be until 256 characters.</td>
-					<td></td>
-				</tr>
-				<tr class="err-msg create-container-error-invalid-character" hidden>
-					<td></td>
-					<td>Container name cannot have a slash (/) character.</td>
-					<td></td>
-				</tr>
-				<tr class="err-msg create-container-error-already-exist" hidden>
-					<td></td>
-					<td>Container is already exists.</td>
-					<td></td>
-				</tr>
-			</table>
-			<table class="input-group-table add-shared">
-				<tr>
-					<td><img src="img/shared-box.png"></td>
-					<td><input autocomplete="off" class="add-shared-input-account" placeholder="Account Name"></td>
-					<td><input autocomplete="off" class="add-shared-input-container" placeholder="Container Name"></td>
-					<td class="add-shared-button">+</td>
-				</tr>
-				<tr class="err-msg add-shared-error-ajax" hidden>
-					<td></td>
-					<td>Error: <span class="status"></span> <span class="status-text"></span>.</td>
-					<td></td>
-				</tr>
-				<tr class="err-msg add-shared-error" hidden>
-					<td></td>
-					<td colspan="2">Cannot add specified container.</td>
-					<td></td>
-				</tr>
-			</table>
-		</div>
-		<div class="menu-files dialog" hidden>
-			<table class="input-group-table">
-				<tr>
-					<td><img src="img/file_txt.png"></td>
-					<td><input autocomplete="off" class="create-file-input-name" placeholder="File Name"></td>
-					<td><input autocomplete="off" class="create-file-input-type" placeholder="Content Type" value="text/plain"></td>
-					<td class="create-file-button">+</td>
-				</tr>
-				<tr class="err-msg create-file-error-ajax" hidden>
-					<td></td>
-					<td>Error: <span class="status"></span> <span class="status-text"></span>.</td>
-					<td></td>
-				</tr>
-			</table>
+		<form class="create-file blue-form dialog" hidden>
+			<div style="display: flex;">
+				<input placeholder="File Name" class="file-name blue-input" style="flex-grow: 1;">
+				<input placeholder="Content Type" value="text/plain" class="content-type blue-input" style="flex-grow: 1;">
+			</div>
+			<button type="submit" class="blue-button">Create</button>
+			<button type="button" class="cancel blue-button">Cancel</button>
+			<div class="err-empty err" hidden>Please type file name.</div>
+			<div class="err-ajax err" hidden><span class="status"></span> <span class="status-text"></span></div>
+		</form>
+
+		<div class="menu-files">
 		</div>
 		<div class="menu-file dialog" hidden>
 			<button autocomplete="off" class="undo txt-btn" disabled></button><button autocomplete="off" class="redo txt-btn" disabled></button><button autocomplete="off" class="save txt-btn" disabled></button><button autocomplete="off" class="save-as">Save As...</button>

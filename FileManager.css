@@ -981,3 +981,16 @@ button.create-directory {
 	background-repeat: no-repeat;
 	background-size: auto 35px;
 }
+button.create-file {
+	background-image: url(img/white_icon.png);
+	background-position: -86px center;
+	background-repeat: no-repeat;
+	background-size: auto 35px;
+}
+
+form.create-file input {
+	height: 24px;
+	padding: 5px;
+	margin: 0 0 5px;
+	font-size: .7em;
+}
