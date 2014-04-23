@@ -2988,7 +2988,7 @@ FileManager.CreateDirectoryForm.el.addEventListener('submit', function (e) {
 
 	requestArgs.success = function () {
 		inputEl.classList.add('invalid-input');
-		document.querySelector('.create-directory-error-already-exist').removeAttribute('hidden');
+		document.querySelector('.err-already-exists').removeAttribute('hidden');
 	};
 
 	requestArgs.notExist = function () {
@@ -3000,7 +3000,7 @@ FileManager.CreateDirectoryForm.el.addEventListener('submit', function (e) {
 				FileManager.CreateDirectoryForm.close();
 			},
 			error: function (status, statusText) {
-				var el = document.querySelector('.create-directory-error-ajax');
+				var el = document.querySelector('.err-ajax');
 				FileManager.AjaxError.show(el, status, statusText);
 			}
 		});
@@ -3008,7 +3008,7 @@ FileManager.CreateDirectoryForm.el.addEventListener('submit', function (e) {
 	};
 
 	requestArgs.error = function (status, statusText) {
-		var el = document.querySelector('.create-directory-error-ajax');
+		var el = document.querySelector('.err-ajax');
 		FileManager.AjaxError.show(el, status, statusText);
 	};
 
@@ -3016,6 +3016,10 @@ FileManager.CreateDirectoryForm.el.addEventListener('submit', function (e) {
 });
 FileManager.CreateDirectoryForm.open = function () {
 	FileManager.CreateDirectoryForm.el.removeAttribute('hidden');
+	var inputEl = FileManager.CreateDirectoryForm.el.querySelector('input.directory-name');
+	inputEl.value = '';
+	inputEl.focus();
+	FileManager.CreateDirectoryForm.clearErrors();
 	FileManager.Layout.adjust();
 };
 FileManager.CreateDirectoryForm.close = function () {
@@ -3026,76 +3030,9 @@ FileManager.CreateDirectoryForm.el.querySelector('button.cancel').addEventListen
 	e.preventDefault();
 	FileManager.CreateDirectoryForm.close();
 });
-
-
-
-
-
-
-
-document.querySelector('button.create-directory').addEventListener('click', function (e) {
-	document.querySelector('form.create-directory').removeAttribute('hidden');
-	FileManager.Layout.adjust();
-});
-
-document.querySelector('form.create-directory').addEventListener('submit', function (e) {
-	e.preventDefault();
-
-	var inputEl = this.querySelector('input.directory-name');
-
-	if (!inputEl.value) {
-		this.querySelector('err-empty').removeAttribute('hidden');
-		return;
+FileManager.CreateDirectoryForm.clearErrors = function () {
+	var err = FileManager.CreateDirectoryForm.el.querySelectorAll('.err');
+	for (var i = 0; i < err.length; i++) {
+		err[i].setAttribute('hidden', 'hidden');
 	}
-
-	if (inputEl.value.indexOf('/') !== -1) {
-		this.querySelector('.err-invalid-character').removeAttribute('hidden');
-		return;
-	}
-
-	if (inputEl.value.length > 1024) {
-		this.querySelector('.err-size-limit').removeAttribute('hidden');
-		return;
-	}
-
-	var dirName = inputEl.value + '/';
-	var dirPath = FileManager.CurrentPath().add(dirName);
-	var dirPathWithoutAccount = FileManager.Path(dirPath).withoutAccount();
-
-	var requestArgs = {};
-
-	requestArgs.path = dirPathWithoutAccount;
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		requestArgs.account = FileManager.CurrentPath().account();
-	}
-
-	requestArgs.success = function () {
-		inputEl.classList.add('invalid-input');
-		document.querySelector('.create-directory-error-already-exist').removeAttribute('hidden');
-	};
-
-	requestArgs.notExist = function () {
-
-		SwiftV1.createDirectory({
-			path: dirPathWithoutAccount,
-			created: function () {
-				FileManager.ContentChange.animate();
-				FileManager.CreateDirectoryForm.close();
-			},
-			error: function (status, statusText) {
-				var el = document.querySelector('.create-directory-error-ajax');
-				FileManager.AjaxError.show(el, status, statusText);
-			}
-		});
-
-	};
-
-	requestArgs.error = function (status, statusText) {
-		var el = document.querySelector('.create-directory-error-ajax');
-		FileManager.AjaxError.show(el, status, statusText);
-	};
-
-	SwiftV1.checkDirectoryExist(requestArgs);
-});
-
+};
