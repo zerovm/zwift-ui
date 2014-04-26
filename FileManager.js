@@ -455,24 +455,6 @@ FileManager.ExecuteReport.showFullReport = function (el) {
 };
 
 
-FileManager.ContainersMenu = {};
-
-FileManager.ContainersMenu.show = function () {
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		FileManager.AddShared.clear();
-	}
-
-	document.querySelector('.menu-containers').removeAttribute('hidden');
-	FileManager.Layout.adjust();
-};
-
-FileManager.ContainersMenu.hide = function () {
-	document.querySelector('.menu-containers').setAttribute('hidden', 'hidden');
-	FileManager.Layout.adjust();
-};
-
-
 FileManager.FilesMenu = {};
 
 FileManager.FilesMenu.show = function () {
@@ -1221,7 +1203,7 @@ FileManager.Containers.list = function (callback) {
 		format: 'json',
 		limit: FileManager.Containers.LIMIT,
 		success: function (containers) {
-			scrollingContentEl.innerHTML = '';
+			//scrollingContentEl.innerHTML = '';
 
 			if (FileManager.ENABLE_SHARED_CONTAINERS) {
 				var sharedContainers = SharedContainersOnSwift.getFromXhr(xhr);
@@ -1251,18 +1233,18 @@ FileManager.Containers.list = function (callback) {
 
 		FileManager.UpButton.disable();
 		FileManager.CurrentDirLabel.root();
-
+		var loadMoreEl = scrollingContentEl.querySelector('.load-more-button');
 
 		for (var i = 0; i < containers.length; i++) {
 			var container = containers[i];
 			var containerEl = FileManager.Containers.create(container);
-			scrollingContentEl.appendChild(containerEl);
+			scrollingContentEl.insertBefore(containerEl, loadMoreEl);
 		}
 
 		callback();
 
 		if (containers.length == 20) {
-			FileManager.Utils.addLoadMoreButton(scrollingContentEl);
+			loadMoreEl.removeAttribute('hidden');
 		}
 
 		if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
@@ -1278,12 +1260,12 @@ FileManager.Containers.list = function (callback) {
 };
 
 FileManager.Containers.loadMore = function () {
-
-	if (!document.querySelector('.load-more-button')) {
+	var loadMoreEl = document.querySelector('.load-more-button');
+	if (!loadMoreEl) {
 		return;
 	}
-	document.querySelector('.load-more-button').textContent = 'Loading...';
-	document.querySelector('.load-more-button').setAttribute('disabled', 'disabled');
+	loadMoreEl.textContent = 'Loading...';
+	loadMoreEl.setAttribute('disabled', 'disabled');
 
 	var marker = document.querySelector('.item:nth-last-child(2)').getAttribute('title');
 
@@ -1293,23 +1275,25 @@ FileManager.Containers.loadMore = function () {
 		limit: FileManager.Containers.LIMIT,
 		success: function (containers) {
 
+			var loadMoreEl = document.querySelector('.load-more-button');
+
 			if (containers.length == 0) {
-				var loadMoreEl = document.querySelector('.load-more-button');
-				loadMoreEl.parentNode.removeChild(loadMoreEl);
+				loadMoreEl.setAttribute('hidden', 'hidden')
 				return;
 			}
 
+			if (loadMoreEl) {
+				loadMoreEl.removeAttribute('hidden');
+			}
 			for (var i = 0; i < containers.length; i++) {
 				var container = containers[i];
 				var containerEl = FileManager.Containers.create(container);
-				var loadMoreButton = document.querySelector('.load-more-button');
-				if (loadMoreButton) {
-					document.querySelector('.scrolling-content').insertBefore(containerEl, loadMoreButton);
-				}
+				var scrollingContentEl = document.querySelector('.scrolling-content');
+				scrollingContentEl.insertBefore(containerEl, loadMoreEl);
 			}
 
-			document.querySelector('.load-more-button').textContent = 'Load more';
-			document.querySelector('.load-more-button').removeAttribute('disabled');
+			loadMoreEl.textContent = 'Load more';
+			loadMoreEl.removeAttribute('disabled');
 
 			if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
 				FileManager.Containers.loadMore();
@@ -1319,8 +1303,8 @@ FileManager.Containers.loadMore = function () {
 	});
 
 	function error(status, statusText) {
-		var loadingEl = document.querySelector('.load-more-button');
-		loadingEl.textContent = 'Error: ' + status + ' ' + statusText;
+		var loadMoreEl = document.querySelector('.load-more-button');
+		loadMoreEl.textContent = 'Error: ' + status + ' ' + statusText;
 	}
 };
 
@@ -1389,7 +1373,7 @@ FileManager.Files.list = function (callback) {
 
 	requestArgs.success = function (FILES) {
 		var scrollingContentEl = document.querySelector('.new-scrolling-content');
-		scrollingContentEl.innerHTML = '';
+		//scrollingContentEl.innerHTML = '';
 
 		var files = FILES.slice(0); // copy (clone) array
 
@@ -1403,11 +1387,10 @@ FileManager.Files.list = function (callback) {
 
 		} else {
 
-			var html = FileManager.Files.listHtml(files);
-			scrollingContentEl.insertAdjacentHTML('beforeend', html);
+			FileManager.Files.listHtml(files, scrollingContentEl);
 
 			if (FILES.length == 20) {
-				FileManager.Utils.addLoadMoreButton(scrollingContentEl);
+				document.querySelector('.load-more-button').removeAttribute('hidden');
 			}
 
 			if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
@@ -1436,7 +1419,7 @@ FileManager.Files.list = function (callback) {
 
 	requestArgs.error = function error(status, statusText) {
 		var scrollingContentEl = document.querySelector('.new-scrolling-content');
-		scrollingContentEl.innerHTML = '';
+		//scrollingContentEl.innerHTML = '';
 		var loadingEl = document.querySelector('.item-loading') || document.querySelector('.scrolling-content-loading');
 		loadingEl.textContent = 'Error: ' + status + ' ' + statusText;
 		callback();
@@ -1449,14 +1432,14 @@ FileManager.Files.list = function (callback) {
 
 FileManager.Files.loadMore = function () {
 
-	var el = document.querySelector('.load-more-button');
+	var loadMoreEl = document.querySelector('.load-more-button');
 
-	if (!el) {
+	if (!loadMoreEl) {
 		return;
 	}
 
-	el.textContent = 'Loading...';
-	el.setAttribute('disabled', 'disabled');
+	loadMoreEl.textContent = 'Loading...';
+	loadMoreEl.setAttribute('disabled', 'disabled');
 
 	var filesArgs = {};
 
@@ -1480,16 +1463,18 @@ FileManager.Files.loadMore = function () {
 	}
 
 	filesArgs.success = function (files) {
-		var el = document.querySelector('.load-more-button');
+		var loadMoreEl = document.querySelector('.load-more-button');
 
 		if (files.length == 0) {
-			el.parentNode.removeChild(el);
+			loadMoreEl.setAttribute('hidden', 'hidden');
 			return;
 		}
 
-		el.insertAdjacentHTML('beforebegin', FileManager.Files.listHtml(files));
-		el.textContent = 'Load more';
-		el.removeAttribute('disabled');
+		//el.insertAdjacentHTML('beforebegin', );
+		var scrollingContentEl = document.querySelector('.scrolling-content');
+		FileManager.Files.listHtml(files, scrollingContentEl);
+		loadMoreEl.textContent = 'Load more';
+		loadMoreEl.removeAttribute('disabled');
 
 		if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
 			FileManager.Files.loadMore();
@@ -1497,8 +1482,8 @@ FileManager.Files.loadMore = function () {
 	};
 
 	filesArgs.error =  function (status, statusText) {
-		var loadingEl = document.querySelector('.load-more-button');
-		loadingEl.textContent = 'Error: ' + status + ' ' + statusText;
+		var loadMoreEl = document.querySelector('.load-more-button');
+		loadMoreEl.textContent = 'Error: ' + status + ' ' + statusText;
 	};
 
 	filesArgs.notExist = FileManager.Files.notExist;
@@ -1508,7 +1493,7 @@ FileManager.Files.loadMore = function () {
 
 FileManager.Files.notExist = function () {
 	var scrollingContentEl = document.querySelector('.new-scrolling-content');
-	scrollingContentEl.innerHTML = '';
+	//scrollingContentEl.innerHTML = '';
 	if (FileManager.CurrentPath().isContainersList()) {
 		scrollingContentEl.innerHTML = 'Container not exist.';
 	} else {
@@ -1516,20 +1501,18 @@ FileManager.Files.notExist = function () {
 	}
 };
 
-FileManager.Files.listHtml = function (files) {
-	var html = '';
+FileManager.Files.listHtml = function (files, scrollingContentEl) {
+	var loadMoreEl = document.querySelector('.load-more-button');
 
 	for (var i = 0; i < files.length; i++) {
 		var file = files[i];
 
 		if (file.hasOwnProperty('subdir') || file.content_type == 'application/directory') {
-			html += createDirectory(file);
+			scrollingContentEl.insertBefore(createDirectory(file), loadMoreEl);
 		} else {
-			html += createFile(file);
+			scrollingContentEl.insertBefore(createFile(file), loadMoreEl);
 		}
 	}
-
-	return html;
 
 	function createDirectory(file) {
 		var _name;
@@ -1545,12 +1528,13 @@ FileManager.Files.listHtml = function (files) {
 		var name = FileManager.Utils.makeShortName(_name);
 		var title = _name;
 
-		var html = document.querySelector('#directoryTemplate').innerHTML;
+		var newEl = document.querySelector('.template-directory').cloneNode(true);
+		newEl.classList.remove('template-directory');
+		newEl.classList.remove('template');
+		newEl.querySelector('.name').textContent = name;
+		newEl.setAttribute('title', title);
 
-		html = html.replace('{{name}}', FileManager.Utils.htmlEscape(name));
-		html = html.replace('{{title}}', FileManager.Utils.htmlEscape(title));
-
-		return html;
+		return newEl;
 	}
 
 	function createFile(file) {
@@ -1560,17 +1544,17 @@ FileManager.Files.listHtml = function (files) {
 		var title = _name;
 		var size = FileManager.Utils.bytesToSize(file.bytes);
 		var modified = makeDatePretty(file.last_modified);
-
-		var html = document.querySelector('#fileTemplate').innerHTML;
-
-		html = html.replace('{{icon}}', FileManager.Utils.htmlEscape(icon));
-		html = html.replace('{{name}}', FileManager.Utils.htmlEscape(name));
-		html = html.replace('{{title}}', FileManager.Utils.htmlEscape(title));
-		html = html.replace('{{size}}', FileManager.Utils.htmlEscape(size));
-		html = html.replace('{{modified}}', FileManager.Utils.htmlEscape(modified));
-
-		return html;
+		var newEl = document.querySelector('.template-file').cloneNode(true)
+		newEl.classList.remove('template-file');
+		newEl.classList.remove('template');
+		newEl.querySelector('img').setAttribute('src', icon);
+		newEl.querySelector('.name').textContent = name;
+		newEl.setAttribute('title', title);
+		newEl.querySelector('.size').textContent = size;
+		newEl.querySelector('.modified').textContent = modified;
+		return newEl;
 	}
+
 	function typeToIcon(type) {
 
 		type = type.split(';')[0];
@@ -1699,7 +1683,7 @@ FileManager.ContentChange.animate = function () {
 		newEl.classList.remove('new-scrolling-content');
 	};
 
-	el.textContent = 'Loading...';
+	//el.textContent = 'Loading...';
 	if (FileManager.CurrentPath().isContainersList()) {
 		FileManager.Containers.list(callback);
 
@@ -1817,11 +1801,6 @@ FileManager.Utils.bytesToSize = function (bytes, precision) {
 	} else {
 		return bytes + ' B';
 	}
-};
-
-FileManager.Utils.addLoadMoreButton = function (scrollingContentEl) {
-	var html = document.querySelector('#loadMoreButtonTemplate').innerHTML;
-	scrollingContentEl.insertAdjacentHTML('beforeend', html);
 };
 
 FileManager.AjaxError = {};
@@ -2829,7 +2808,6 @@ FileManager.CreateDirectoryForm.el.addEventListener('submit', function (e) {
 	}
 
 	requestArgs.success = function () {
-		inputEl.classList.add('invalid-input');
 		FileManager.CreateDirectoryForm.el.querySelector('.err-already-exists').removeAttribute('hidden');
 		FileManager.Layout.adjust();
 	};
@@ -2878,7 +2856,11 @@ FileManager.CreateDirectoryForm.clearErrors = function () {
 	for (var i = 0; i < err.length; i++) {
 		err[i].setAttribute('hidden', 'hidden');
 	}
+	FileManager.Layout.adjust();
 };
+FileManager.CreateDirectoryForm.el.querySelector('input.directory-name').addEventListener('keydown', function () {
+	FileManager.CreateDirectoryForm.clearErrors();
+});
 
 FileManager.CreateFileButton = {};
 FileManager.CreateFileButton.el = document.querySelector('button.create-file');
@@ -2950,8 +2932,10 @@ FileManager.CreateFileForm.clearErrors = function () {
 	for (var i = 0; i < err.length; i++) {
 		err[i].setAttribute('hidden', 'hidden');
 	}
+	FileManager.Layout.adjust();
 };
 FileManager.CreateFileForm.el.querySelector('button.cancel').addEventListener('click', function (e) {
 	e.preventDefault();
 	FileManager.CreateFileForm.close();
 });
+

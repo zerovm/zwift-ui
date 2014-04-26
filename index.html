@@ -214,38 +214,35 @@
 	</div>
 </template>
 
-<template id="fileTemplate">
-	<div class="item default-action" title="{{title}}">
-			<span class="left">
-				<img src="{{icon}}">
-				<label class="name">{{name}}</label>
-			</span>
-			<span class="right">
-				<label class="size">{{size}}</label>
-				<label class="modified">{{modified}}</label>
-				<label class="delete">X</label>
-			</span>
-	</div>
-</template>
+<div class="template template-file item default-action" title>
+	<span class="left">
+		<img src>
+		<label class="name"></label>
+	</span>
+	<span class="right">
+		<label class="size"></label>
+		<label class="modified"></label>
+	</span>
+</div>
 
-<template id="directoryTemplate">
-	<div class="item default-action" title="{{title}}">
-			<span class="left">
-				<img src="img/folder32.png">
-				<label class="name">{{name}}</label>
-			</span>
-			<span class="right">
-				<label class="delete">X</label>
-			</span>
-	</div>
-</template>
+<div class="template template-directory item default-action" title>
+	<span class="left">
+		<img src="img/folder32.png">
+		<label class="name"></label>
+	</span>
+	<span class="right">
+
+	</span>
+</div>
 
 <template id="newScrollingContentTemplate">
-	<div class="new-scrolling-content scrolling-content"></div>
+	<div class="new-scrolling-content scrolling-content">
+		<div class="load-more-button" hidden>Load More</div>
+	</div>
 </template>
 
 <template id="itemLoadingTemplate">
-	<span class="item-loading">Loading...</span>
+	<span class="item-loading" hidden>Loading...</span>
 </template>
 
 <template id="noContainersTemplate">
@@ -262,10 +259,6 @@
 
 <template id="largeFileTemplate">
 	<label class="empty-list">File is too large.</label>
-</template>
-
-<template id="loadMoreButtonTemplate">
-	<div class="load-more-button">Load More</div>
 </template>
 
 <template id="scrollingContentLoadingTemplate">
