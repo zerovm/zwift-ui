@@ -2418,6 +2418,10 @@ FileManager.ActionsMenu.click = function (e) {
 		var newActionsMenu = document.querySelector('.template-actions-menu').cloneNode(true);
 		newActionsMenu.classList.remove('template-actions-menu');
 		newActionsMenu.classList.remove('template');
+		newActionsMenu.querySelector('button.metadata-action').addEventListener('click',
+			FileManager.ActionsMenu.metadataAction);
+		newActionsMenu.querySelector('button.delete-action').addEventListener('click',
+			FileManager.ActionsMenu.deleteAction);
 		document.querySelector('.scrolling-content').insertBefore(newActionsMenu, itemEl.nextSibling);
 	}
 };
@@ -2430,21 +2434,11 @@ FileManager.ActionsMenu.deleteAction = function () {
 	FileManager.ActionsMenu.removeForms();
 	FileManager.ConfirmDeleteForm.createAfterActionsMenu(actionsMenu);
 };
-document.addEventListener('click', function (e) {
-	if (e.target.classList.contains('delete-action')) {
-		FileManager.ActionsMenu.deleteAction();
-	}
-});
 FileManager.ActionsMenu.metadataAction = function () {
 	var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
 	FileManager.ActionsMenu.removeForms();
 	FileManager.MetadataForm.createAfterActionsMenu(actionsMenu);
 };
-document.addEventListener('click', function (e) {
-	if (e.target.classList.contains('metadata-action')) {
-		FileManager.ActionsMenu.metadataAction();
-	}
-});
 
 FileManager.ConfirmDeleteForm = {};
 FileManager.ConfirmDeleteForm.removeEl = function () {
