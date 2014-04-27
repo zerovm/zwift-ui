@@ -1153,9 +1153,6 @@ document.addEventListener('click', function (e) {
 		if (FileManager.ENABLE_ZEROVM) {
 			FileManager.ExecuteButton.click(el);
 		}
-	} else if (el = is('delete')) {
-		FileManager.Item.deleteclick(el);
-		return;
 	} else if (el = is('load-more-button')) {
 		FileManager.LoadMoreButton.click(el);
 	} else if (el = is('add-shared-button')) {
