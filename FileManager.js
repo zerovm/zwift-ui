@@ -941,518 +941,6 @@ FileManager.SaveAs.clearErrors = function () {
 };
 
 
-FileManager.Containers = {};
-
-FileManager.Containers.LIMIT = 20;
-
-FileManager.Containers.list = function (callback) {
-	FileManager.CreateContainerButton.show();
-	var scrollingContentEl = document.querySelector('.new-scrolling-content');
-
-	var xhr = SwiftV1.listContainers({
-		format: 'json',
-		limit: FileManager.Containers.LIMIT,
-		success: function (containers) {
-			//scrollingContentEl.innerHTML = '';
-
-			if (FileManager.ENABLE_SHARED_CONTAINERS) {
-				var sharedContainers = SharedContainersOnSwift.getFromXhr(xhr);
-				if (containers.length == 0 && sharedContainers.length == 0) {
-					noContainers();
-					callback();
-					return;
-				}
-				FileManager.Shared.listSharedContainers(sharedContainers, scrollingContentEl);
-			}
-
-			list(containers);
-		},
-		error: function (status, statusText) {
-			scrollingContentEl.innerHTML = 'Error occurred: ' + status + ' ' + statusText;
-			callback();
-		}
-	});
-
-	function list(containers) {
-
-		if (containers.length == 0) {
-			noContainers();
-			callback();
-			return;
-		}
-
-		FileManager.UpButton.disable();
-		FileManager.CurrentDirLabel.root();
-		var loadMoreEl = scrollingContentEl.querySelector('.load-more-button');
-
-		for (var i = 0; i < containers.length; i++) {
-			var container = containers[i];
-			var containerEl = FileManager.Containers.create(container);
-			scrollingContentEl.insertBefore(containerEl, loadMoreEl);
-		}
-
-		callback();
-
-		if (containers.length == 20) {
-			loadMoreEl.removeAttribute('hidden');
-		}
-
-		if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
-			FileManager.Containers.loadMore();
-		}
-	}
-
-	function noContainers() {
-		var html = document.querySelector('#noContainersTemplate').innerHTML;
-		scrollingContentEl.insertAdjacentHTML('beforeend', html);
-	}
-
-};
-
-FileManager.Containers.loadMore = function () {
-	var loadMoreEl = document.querySelector('.load-more-button');
-	if (!loadMoreEl) {
-		return;
-	}
-	loadMoreEl.textContent = 'Loading...';
-	loadMoreEl.setAttribute('disabled', 'disabled');
-
-	var marker = document.querySelector('.item:nth-last-child(2)').getAttribute('title');
-
-	SwiftV1.listContainers({
-		marker: marker,
-		format: 'json',
-		limit: FileManager.Containers.LIMIT,
-		success: function (containers) {
-
-			var loadMoreEl = document.querySelector('.load-more-button');
-
-			if (containers.length == 0) {
-				loadMoreEl.setAttribute('hidden', 'hidden')
-				return;
-			}
-
-			if (loadMoreEl) {
-				loadMoreEl.removeAttribute('hidden');
-			}
-			for (var i = 0; i < containers.length; i++) {
-				var container = containers[i];
-				var containerEl = FileManager.Containers.create(container);
-				var scrollingContentEl = document.querySelector('.scrolling-content');
-				scrollingContentEl.insertBefore(containerEl, loadMoreEl);
-			}
-
-			loadMoreEl.textContent = 'Load more';
-			loadMoreEl.removeAttribute('disabled');
-
-			if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
-				FileManager.Containers.loadMore();
-			}
-		},
-		error: error
-	});
-
-	function error(status, statusText) {
-		var loadMoreEl = document.querySelector('.load-more-button');
-		loadMoreEl.textContent = 'Error: ' + status + ' ' + statusText;
-	}
-};
-
-FileManager.Containers.create = function (containerObj) {
-
-	var name = FileManager.Utils.makeShortName(containerObj.name);
-	var title = containerObj.name;
-	var size = FileManager.Utils.bytesToSize(containerObj.bytes);
-	var files = containerObj.count;
-
-	var t = document.querySelector('.template-container').cloneNode(true);
-
-	t.classList.remove('template');
-	t.classList.remove('template-container');
-
-	t.querySelector('.default-action').addEventListener('click', function (e) {
-		FileManager.Item.click(e.target.parentNode);
-	});
-	t.querySelector('.toggle-actions-menu').addEventListener('click', function (e) {
-		var itemEl = e.target.parentNode;
-		FileManager.selectedItemEl = itemEl;
-		var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
-
-		FileManager.ActionsMenu.removeForms();
-		var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
-
-		if (actionsMenu) {
-			actionsMenu.parentNode.removeChild(actionsMenu);
-		}
-
-		if (!isNext) {
-			var newActionsMenu = document.querySelector('.template-actions-menu').cloneNode(true);
-			newActionsMenu.classList.remove('template-actions-menu');
-			newActionsMenu.classList.remove('template');
-			document.querySelector('.scrolling-content').insertBefore(newActionsMenu, itemEl.nextSibling);
-		}
-	});
-	t.querySelector('.name').textContent = name;
-	t.setAttribute('title', title);
-	t.querySelector('.size').textContent = size;
-	t.querySelector('.files').textContent = files;
-
-	return t;
-};
-
-
-FileManager.Files = {};
-
-FileManager.Files.LIMIT = 20;
-
-FileManager.Files.list = function (callback) {
-	var requestArgs = {};
-
-	requestArgs.containerName = FileManager.CurrentPath().container();
-	requestArgs.format = 'json';
-	requestArgs.limit = FileManager.Files.LIMIT;
-	requestArgs.delimiter = '/';
-
-	if (FileManager.CurrentPath().isDirectory()) {
-		requestArgs.prefix = FileManager.CurrentPath().prefix();
-	}
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		requestArgs.account = FileManager.CurrentPath().account();
-	}
-
-	requestArgs.success = function (FILES) {
-		var scrollingContentEl = document.querySelector('.new-scrolling-content');
-		//scrollingContentEl.innerHTML = '';
-
-		var files = FILES.slice(0); // copy (clone) array
-
-		if (checkFirstFile(files)) {
-			files = files.splice(1);
-		}
-
-		if (files.length == 0) {
-			var html = document.querySelector('#noFilesTemplate').innerHTML;
-			scrollingContentEl.insertAdjacentHTML('beforeend', html);
-
-		} else {
-
-			FileManager.Files.listHtml(files, scrollingContentEl);
-
-			if (FILES.length == 20) {
-				document.querySelector('.load-more-button').removeAttribute('hidden');
-			}
-
-			if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
-				FileManager.Files.loadMore();
-			}
-
-		}
-
-		FileManager.UpButton.enable();
-		FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().name());
-		callback();
-
-		function checkFirstFile(files) {
-			var prefix = FileManager.CurrentPath().prefix();
-			if (files.length > 0 && prefix) {
-				var file = files[0];
-				var nameInFiles = file.hasOwnProperty('subdir') ? file.subdir : file.name;
-
-				if (prefix == nameInFiles) {
-					return true;
-				}
-			}
-			return false;
-		}
-	};
-
-	requestArgs.error = function error(status, statusText) {
-		var scrollingContentEl = document.querySelector('.new-scrolling-content');
-		//scrollingContentEl.innerHTML = '';
-		var loadingEl = document.querySelector('.item-loading') || document.querySelector('.scrolling-content-loading');
-		loadingEl.textContent = 'Error: ' + status + ' ' + statusText;
-		callback();
-	};
-
-	requestArgs.notExist = FileManager.Files.notExist;
-
-	SwiftV1.listFiles(requestArgs);
-};
-
-FileManager.Files.loadMore = function () {
-
-	var loadMoreEl = document.querySelector('.load-more-button');
-
-	if (!loadMoreEl) {
-		return;
-	}
-
-	loadMoreEl.textContent = 'Loading...';
-	loadMoreEl.setAttribute('disabled', 'disabled');
-
-	var filesArgs = {};
-
-	filesArgs.containerName = FileManager.CurrentPath().container();
-	filesArgs.delimiter = '/';
-	filesArgs.format = 'json';
-	filesArgs.limit = FileManager.Files.LIMIT;
-
-	var lastFile = document.querySelector('.item:nth-last-child(2)').getAttribute('title');
-
-	if (FileManager.CurrentPath().isDirectory()) {
-		var prefix = FileManager.CurrentPath().prefix();
-		filesArgs.marker = prefix + lastFile;
-		filesArgs.prefix = prefix;
-	} else {
-		filesArgs.marker = lastFile;
-	}
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		filesArgs.account = FileManager.CurrentPath().account();
-	}
-
-	filesArgs.success = function (files) {
-		var loadMoreEl = document.querySelector('.load-more-button');
-
-		if (files.length == 0) {
-			loadMoreEl.setAttribute('hidden', 'hidden');
-			return;
-		}
-
-		//el.insertAdjacentHTML('beforebegin', );
-		var scrollingContentEl = document.querySelector('.scrolling-content');
-		FileManager.Files.listHtml(files, scrollingContentEl);
-		loadMoreEl.textContent = 'Load more';
-		loadMoreEl.removeAttribute('disabled');
-
-		if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
-			FileManager.Files.loadMore();
-		}
-	};
-
-	filesArgs.error =  function (status, statusText) {
-		var loadMoreEl = document.querySelector('.load-more-button');
-		loadMoreEl.textContent = 'Error: ' + status + ' ' + statusText;
-	};
-
-	filesArgs.notExist = FileManager.Files.notExist;
-
-	SwiftV1.listFiles(filesArgs);
-};
-
-FileManager.Files.notExist = function () {
-	var scrollingContentEl = document.querySelector('.new-scrolling-content');
-	//scrollingContentEl.innerHTML = '';
-	if (FileManager.CurrentPath().isContainersList()) {
-		scrollingContentEl.innerHTML = 'Container not exist.';
-	} else {
-		scrollingContentEl.innerHTML = 'Directory not exist.';
-	}
-};
-
-FileManager.Files.listHtml = function (files, scrollingContentEl) {
-	var loadMoreEl = document.querySelector('.load-more-button');
-
-	for (var i = 0; i < files.length; i++) {
-		var file = files[i];
-
-		if (file.hasOwnProperty('subdir') || file.content_type == 'application/directory') {
-			scrollingContentEl.insertBefore(createDirectory(file), loadMoreEl);
-		} else {
-			scrollingContentEl.insertBefore(createFile(file), loadMoreEl);
-		}
-	}
-
-	function createDirectory(file) {
-		var _name;
-
-		if (file.hasOwnProperty('subdir')) {
-			_name = file.subdir;
-		} else {
-			_name = file.name;
-		}
-
-		_name = FileManager.Path(_name).name();
-
-		var name = FileManager.Utils.makeShortName(_name);
-		var title = _name;
-
-		var newEl = document.querySelector('.template-directory').cloneNode(true);
-		newEl.classList.remove('template-directory');
-		newEl.classList.remove('template');
-		newEl.querySelector('.name').textContent = name;
-		newEl.setAttribute('title', title);
-		newEl.querySelector('.default-action').addEventListener('click', function (e) {
-			FileManager.Item.click(e.target.parentNode);
-		});
-		newEl.querySelector('.toggle-actions-menu').addEventListener('click', function (e) {
-			var itemEl = e.target.parentNode;
-			FileManager.selectedItemEl = itemEl;
-			var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
-
-			FileManager.ActionsMenu.removeForms();
-			var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
-
-			if (actionsMenu) {
-				actionsMenu.parentNode.removeChild(actionsMenu);
-			}
-
-			if (!isNext) {
-				var newActionsMenu = document.querySelector('.template-actions-menu').cloneNode(true);
-				newActionsMenu.classList.remove('template-actions-menu');
-				newActionsMenu.classList.remove('template');
-				newActionsMenu.textContent = 'Feature is not implemented yet.'
-				document.querySelector('.scrolling-content').insertBefore(newActionsMenu, itemEl.nextSibling);
-			}
-		});
-
-		return newEl;
-	}
-
-	function createFile(file) {
-		var _name = FileManager.Path(file.name).name();
-		var icon = typeToIcon(file.content_type);
-		var name = makeShortFileName(_name);
-		var title = _name;
-		var size = FileManager.Utils.bytesToSize(file.bytes);
-		var modified = makeDatePretty(file.last_modified);
-		var newEl = document.querySelector('.template-file').cloneNode(true)
-		newEl.classList.remove('template-file');
-		newEl.classList.remove('template');
-		newEl.querySelector('span.file-icon').classList.add(icon);
-		newEl.querySelector('.name').textContent = name;
-		newEl.setAttribute('title', title);
-		newEl.querySelector('.size').textContent = size;
-		newEl.querySelector('.modified').textContent = modified;
-		newEl.querySelector('.default-action').addEventListener('click', function (e) {
-			FileManager.Item.click(e.target.parentNode);
-		});
-		newEl.querySelector('.toggle-actions-menu').addEventListener('click', function (e) {
-			var itemEl = e.target.parentNode;
-			FileManager.selectedItemEl = itemEl;
-			var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
-
-			FileManager.ActionsMenu.removeForms();
-			var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
-
-			if (actionsMenu) {
-				actionsMenu.parentNode.removeChild(actionsMenu);
-			}
-
-			if (!isNext) {
-				var newActionsMenu = document.querySelector('.template-actions-menu').cloneNode(true);
-				newActionsMenu.classList.remove('template-actions-menu');
-				newActionsMenu.classList.remove('template');
-				newActionsMenu.textContent = 'Feature is not implemented yet.'
-				document.querySelector('.scrolling-content').insertBefore(newActionsMenu, itemEl.nextSibling);
-			}
-		});
-		return newEl;
-	}
-
-	function typeToIcon(type) {
-
-		type = type.split(';')[0];
-		var icon;
-
-		if (type.indexOf('audio') == 0) {
-			icon = 'audio';
-
-		} else if (type == 'application/pdf') {
-			icon = 'pdf';
-
-		} else if (type.indexOf('image') == 0) {
-			icon = 'pic';
-
-		} else if (type.indexOf('video') == 0) {
-			icon = 'video';
-
-		} else if (type == 'application/msword' || type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-			icon = 'doc';
-
-		} else if (type == 'application/vnd.ms-excel' || type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-			icon = 'xsl';
-
-		} else if (type == 'application/vnd.ms-powerpoint' || type == 'application/vnd.openxmlformats-officedocument.presentationml.presentation') {
-			icon = 'ppt';
-
-		} else if (type == 'text/html' || type.toLowerCase().indexOf('xml') != -1) {
-			icon = 'xml';
-
-		} else if (type == 'text/x-python') {
-			icon = 'py';
-
-		} else if (type == 'text/x-lua') {
-			icon = 'lua';
-
-		} else if (type == 'application/x-tar' || type == 'application/zip' || type == 'application/gzip' || type == 'application/x-rar' || type == 'application/x-rar-compressed') {
-			icon = 'tar';
-
-		} else if (type == 'text/plain') {
-			icon = 'txt';
-
-		} else if (type == 'text/csv') {
-			icon = 'csv';
-
-		} else if (type == 'application/json') {
-			icon = 'json';
-
-		} else if (type == 'application/x-nexe') {
-			icon = 'nexe';
-
-		} else if (type == 'text/x-csrc' || type == 'text/x-chdr') {
-			icon = 'c';
-
-		} else {
-			icon = 'none';
-		}
-
-		return icon;
-	}
-
-	function makeShortFileName(n, len) {
-		len = len || 30;
-
-		if (n.length <= len) {
-			return n;
-		}
-
-		if (n.indexOf('.') != -1) {
-			var ext = n.substring(n.lastIndexOf("."), n.length);
-			var filename = n.replace(ext, '');
-
-			filename = filename.substr(0, len) + '&raquo;' + ext;
-			return filename;
-		}
-
-		return n.substr(0, len) + '&raquo;';
-	}
-
-	function makeDatePretty(time) {
-		var alternative = (new Date(time)).toDateString();
-
-		var diff = ((new Date()).getTime() - (new Date(time)).getTime()) / 1000,
-			day_diff = Math.floor(diff / 86400);
-
-		if ( isNaN(day_diff) || day_diff < 0 || day_diff >= 31 )
-			return alternative;
-
-		var pretty = day_diff == 0 && (
-			diff < 60 && "just now" ||
-				diff < 120 && "1 minute ago" ||
-				diff < 3600 && Math.floor( diff / 60 ) + " minutes ago" ||
-				diff < 7200 && "1 hour ago" ||
-				diff < 86400 && Math.floor( diff / 3600 ) + " hours ago") ||
-			day_diff == 1 && "Yesterday" ||
-			day_diff < 7 && day_diff + " days ago" ||
-			day_diff < 31 && Math.ceil( day_diff / 7 ) + " weeks ago";
-
-		return pretty || alternative;
-	}
-};
-
-
 FileManager.ContentChange = {};
 
 FileManager.ContentChange.animate = function () {
@@ -2820,4 +2308,516 @@ FileManager.CreateFileForm.el.querySelector('button.cancel').addEventListener('c
 	e.preventDefault();
 	FileManager.CreateFileForm.close();
 });
+
+
+FileManager.Containers = {};
+
+FileManager.Containers.LIMIT = 20;
+
+FileManager.Containers.list = function (callback) {
+	FileManager.CreateContainerButton.show();
+	var scrollingContentEl = document.querySelector('.new-scrolling-content');
+
+	var xhr = SwiftV1.listContainers({
+		format: 'json',
+		limit: FileManager.Containers.LIMIT,
+		success: function (containers) {
+			//scrollingContentEl.innerHTML = '';
+
+			if (FileManager.ENABLE_SHARED_CONTAINERS) {
+				var sharedContainers = SharedContainersOnSwift.getFromXhr(xhr);
+				if (containers.length == 0 && sharedContainers.length == 0) {
+					noContainers();
+					callback();
+					return;
+				}
+				FileManager.Shared.listSharedContainers(sharedContainers, scrollingContentEl);
+			}
+
+			list(containers);
+		},
+		error: function (status, statusText) {
+			scrollingContentEl.innerHTML = 'Error occurred: ' + status + ' ' + statusText;
+			callback();
+		}
+	});
+
+	function list(containers) {
+
+		if (containers.length == 0) {
+			noContainers();
+			callback();
+			return;
+		}
+
+		FileManager.UpButton.disable();
+		FileManager.CurrentDirLabel.root();
+		var loadMoreEl = scrollingContentEl.querySelector('.load-more-button');
+
+		for (var i = 0; i < containers.length; i++) {
+			var container = containers[i];
+			var containerEl = FileManager.Containers.create(container);
+			scrollingContentEl.insertBefore(containerEl, loadMoreEl);
+		}
+
+		callback();
+
+		if (containers.length == 20) {
+			loadMoreEl.removeAttribute('hidden');
+		}
+
+		if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
+			FileManager.Containers.loadMore();
+		}
+	}
+
+	function noContainers() {
+		var html = document.querySelector('#noContainersTemplate').innerHTML;
+		scrollingContentEl.insertAdjacentHTML('beforeend', html);
+	}
+
+};
+
+FileManager.Containers.loadMore = function () {
+	var loadMoreEl = document.querySelector('.load-more-button');
+	if (!loadMoreEl) {
+		return;
+	}
+	loadMoreEl.textContent = 'Loading...';
+	loadMoreEl.setAttribute('disabled', 'disabled');
+
+	var marker = document.querySelector('.item:nth-last-child(2)').getAttribute('title');
+
+	SwiftV1.listContainers({
+		marker: marker,
+		format: 'json',
+		limit: FileManager.Containers.LIMIT,
+		success: function (containers) {
+
+			var loadMoreEl = document.querySelector('.load-more-button');
+
+			if (containers.length == 0) {
+				loadMoreEl.setAttribute('hidden', 'hidden')
+				return;
+			}
+
+			if (loadMoreEl) {
+				loadMoreEl.removeAttribute('hidden');
+			}
+			for (var i = 0; i < containers.length; i++) {
+				var container = containers[i];
+				var containerEl = FileManager.Containers.create(container);
+				var scrollingContentEl = document.querySelector('.scrolling-content');
+				scrollingContentEl.insertBefore(containerEl, loadMoreEl);
+			}
+
+			loadMoreEl.textContent = 'Load more';
+			loadMoreEl.removeAttribute('disabled');
+
+			if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
+				FileManager.Containers.loadMore();
+			}
+		},
+		error: error
+	});
+
+	function error(status, statusText) {
+		var loadMoreEl = document.querySelector('.load-more-button');
+		loadMoreEl.textContent = 'Error: ' + status + ' ' + statusText;
+	}
+};
+
+FileManager.Containers.create = function (containerObj) {
+
+	var name = FileManager.Utils.makeShortName(containerObj.name);
+	var title = containerObj.name;
+	var size = FileManager.Utils.bytesToSize(containerObj.bytes);
+	var files = containerObj.count;
+
+	var t = document.querySelector('.template-container').cloneNode(true);
+
+	t.classList.remove('template');
+	t.classList.remove('template-container');
+
+	t.querySelector('.default-action').addEventListener('click', function (e) {
+		FileManager.Item.click(e.target.parentNode);
+	});
+	t.querySelector('.toggle-actions-menu').addEventListener('click', function (e) {
+		var itemEl = e.target.parentNode;
+		FileManager.selectedItemEl = itemEl;
+		var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
+
+		FileManager.ActionsMenu.removeForms();
+		var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
+
+		if (actionsMenu) {
+			actionsMenu.parentNode.removeChild(actionsMenu);
+		}
+
+		if (!isNext) {
+			var newActionsMenu = document.querySelector('.template-actions-menu').cloneNode(true);
+			newActionsMenu.classList.remove('template-actions-menu');
+			newActionsMenu.classList.remove('template');
+			document.querySelector('.scrolling-content').insertBefore(newActionsMenu, itemEl.nextSibling);
+		}
+	});
+	t.querySelector('.name').textContent = name;
+	t.setAttribute('title', title);
+	t.querySelector('.size').textContent = size;
+	t.querySelector('.files').textContent = files;
+
+	return t;
+};
+
+
+FileManager.Files = {};
+
+FileManager.Files.LIMIT = 20;
+
+FileManager.Files.list = function (callback) {
+	var requestArgs = {};
+
+	requestArgs.containerName = FileManager.CurrentPath().container();
+	requestArgs.format = 'json';
+	requestArgs.limit = FileManager.Files.LIMIT;
+	requestArgs.delimiter = '/';
+
+	if (FileManager.CurrentPath().isDirectory()) {
+		requestArgs.prefix = FileManager.CurrentPath().prefix();
+	}
+
+	if (FileManager.ENABLE_SHARED_CONTAINERS) {
+		requestArgs.account = FileManager.CurrentPath().account();
+	}
+
+	requestArgs.success = function (FILES) {
+		var scrollingContentEl = document.querySelector('.new-scrolling-content');
+		//scrollingContentEl.innerHTML = '';
+
+		var files = FILES.slice(0); // copy (clone) array
+
+		if (checkFirstFile(files)) {
+			files = files.splice(1);
+		}
+
+		if (files.length == 0) {
+			var html = document.querySelector('#noFilesTemplate').innerHTML;
+			scrollingContentEl.insertAdjacentHTML('beforeend', html);
+
+		} else {
+
+			FileManager.Files.listHtml(files, scrollingContentEl);
+
+			if (FILES.length == 20) {
+				document.querySelector('.load-more-button').removeAttribute('hidden');
+			}
+
+			if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
+				FileManager.Files.loadMore();
+			}
+
+		}
+
+		FileManager.UpButton.enable();
+		FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().name());
+		callback();
+
+		function checkFirstFile(files) {
+			var prefix = FileManager.CurrentPath().prefix();
+			if (files.length > 0 && prefix) {
+				var file = files[0];
+				var nameInFiles = file.hasOwnProperty('subdir') ? file.subdir : file.name;
+
+				if (prefix == nameInFiles) {
+					return true;
+				}
+			}
+			return false;
+		}
+	};
+
+	requestArgs.error = function error(status, statusText) {
+		var scrollingContentEl = document.querySelector('.new-scrolling-content');
+		//scrollingContentEl.innerHTML = '';
+		var loadingEl = document.querySelector('.item-loading') || document.querySelector('.scrolling-content-loading');
+		loadingEl.textContent = 'Error: ' + status + ' ' + statusText;
+		callback();
+	};
+
+	requestArgs.notExist = FileManager.Files.notExist;
+
+	SwiftV1.listFiles(requestArgs);
+};
+
+FileManager.Files.loadMore = function () {
+
+	var loadMoreEl = document.querySelector('.load-more-button');
+
+	if (!loadMoreEl) {
+		return;
+	}
+
+	loadMoreEl.textContent = 'Loading...';
+	loadMoreEl.setAttribute('disabled', 'disabled');
+
+	var filesArgs = {};
+
+	filesArgs.containerName = FileManager.CurrentPath().container();
+	filesArgs.delimiter = '/';
+	filesArgs.format = 'json';
+	filesArgs.limit = FileManager.Files.LIMIT;
+
+	var lastFile = document.querySelector('.item:nth-last-child(2)').getAttribute('title');
+
+	if (FileManager.CurrentPath().isDirectory()) {
+		var prefix = FileManager.CurrentPath().prefix();
+		filesArgs.marker = prefix + lastFile;
+		filesArgs.prefix = prefix;
+	} else {
+		filesArgs.marker = lastFile;
+	}
+
+	if (FileManager.ENABLE_SHARED_CONTAINERS) {
+		filesArgs.account = FileManager.CurrentPath().account();
+	}
+
+	filesArgs.success = function (files) {
+		var loadMoreEl = document.querySelector('.load-more-button');
+
+		if (files.length == 0) {
+			loadMoreEl.setAttribute('hidden', 'hidden');
+			return;
+		}
+
+		//el.insertAdjacentHTML('beforebegin', );
+		var scrollingContentEl = document.querySelector('.scrolling-content');
+		FileManager.Files.listHtml(files, scrollingContentEl);
+		loadMoreEl.textContent = 'Load more';
+		loadMoreEl.removeAttribute('disabled');
+
+		if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
+			FileManager.Files.loadMore();
+		}
+	};
+
+	filesArgs.error =  function (status, statusText) {
+		var loadMoreEl = document.querySelector('.load-more-button');
+		loadMoreEl.textContent = 'Error: ' + status + ' ' + statusText;
+	};
+
+	filesArgs.notExist = FileManager.Files.notExist;
+
+	SwiftV1.listFiles(filesArgs);
+};
+
+FileManager.Files.notExist = function () {
+	var scrollingContentEl = document.querySelector('.new-scrolling-content');
+	//scrollingContentEl.innerHTML = '';
+	if (FileManager.CurrentPath().isContainersList()) {
+		scrollingContentEl.innerHTML = 'Container not exist.';
+	} else {
+		scrollingContentEl.innerHTML = 'Directory not exist.';
+	}
+};
+
+FileManager.Files.listHtml = function (files, scrollingContentEl) {
+	var loadMoreEl = document.querySelector('.load-more-button');
+
+	for (var i = 0; i < files.length; i++) {
+		var file = files[i];
+
+		if (file.hasOwnProperty('subdir') || file.content_type == 'application/directory') {
+			scrollingContentEl.insertBefore(createDirectory(file), loadMoreEl);
+		} else {
+			scrollingContentEl.insertBefore(createFile(file), loadMoreEl);
+		}
+	}
+
+	function createDirectory(file) {
+		var _name;
+
+		if (file.hasOwnProperty('subdir')) {
+			_name = file.subdir;
+		} else {
+			_name = file.name;
+		}
+
+		_name = FileManager.Path(_name).name();
+
+		var name = FileManager.Utils.makeShortName(_name);
+		var title = _name;
+
+		var newEl = document.querySelector('.template-directory').cloneNode(true);
+		newEl.classList.remove('template-directory');
+		newEl.classList.remove('template');
+		newEl.querySelector('.name').textContent = name;
+		newEl.setAttribute('title', title);
+		newEl.querySelector('.default-action').addEventListener('click', function (e) {
+			FileManager.Item.click(e.target.parentNode);
+		});
+		newEl.querySelector('.toggle-actions-menu').addEventListener('click', function (e) {
+			var itemEl = e.target.parentNode;
+			FileManager.selectedItemEl = itemEl;
+			var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
+
+			FileManager.ActionsMenu.removeForms();
+			var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
+
+			if (actionsMenu) {
+				actionsMenu.parentNode.removeChild(actionsMenu);
+			}
+
+			if (!isNext) {
+				var newActionsMenu = document.querySelector('.template-actions-menu').cloneNode(true);
+				newActionsMenu.classList.remove('template-actions-menu');
+				newActionsMenu.classList.remove('template');
+				newActionsMenu.textContent = 'Feature is not implemented yet.'
+				document.querySelector('.scrolling-content').insertBefore(newActionsMenu, itemEl.nextSibling);
+			}
+		});
+
+		return newEl;
+	}
+
+	function createFile(file) {
+		var _name = FileManager.Path(file.name).name();
+		var icon = typeToIcon(file.content_type);
+		var name = makeShortFileName(_name);
+		var title = _name;
+		var size = FileManager.Utils.bytesToSize(file.bytes);
+		var modified = makeDatePretty(file.last_modified);
+		var newEl = document.querySelector('.template-file').cloneNode(true)
+		newEl.classList.remove('template-file');
+		newEl.classList.remove('template');
+		newEl.querySelector('span.file-icon').classList.add(icon);
+		newEl.querySelector('.name').textContent = name;
+		newEl.setAttribute('title', title);
+		newEl.querySelector('.size').textContent = size;
+		newEl.querySelector('.modified').textContent = modified;
+		newEl.querySelector('.default-action').addEventListener('click', function (e) {
+			FileManager.Item.click(e.target.parentNode);
+		});
+		newEl.querySelector('.toggle-actions-menu').addEventListener('click', function (e) {
+			var itemEl = e.target.parentNode;
+			FileManager.selectedItemEl = itemEl;
+			var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
+
+			FileManager.ActionsMenu.removeForms();
+			var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
+
+			if (actionsMenu) {
+				actionsMenu.parentNode.removeChild(actionsMenu);
+			}
+
+			if (!isNext) {
+				var newActionsMenu = document.querySelector('.template-actions-menu').cloneNode(true);
+				newActionsMenu.classList.remove('template-actions-menu');
+				newActionsMenu.classList.remove('template');
+				newActionsMenu.textContent = 'Feature is not implemented yet.'
+				document.querySelector('.scrolling-content').insertBefore(newActionsMenu, itemEl.nextSibling);
+			}
+		});
+		return newEl;
+	}
+
+	function typeToIcon(type) {
+
+		type = type.split(';')[0];
+		var icon;
+
+		if (type.indexOf('audio') == 0) {
+			icon = 'audio';
+
+		} else if (type == 'application/pdf') {
+			icon = 'pdf';
+
+		} else if (type.indexOf('image') == 0) {
+			icon = 'pic';
+
+		} else if (type.indexOf('video') == 0) {
+			icon = 'video';
+
+		} else if (type == 'application/msword' || type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+			icon = 'doc';
+
+		} else if (type == 'application/vnd.ms-excel' || type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+			icon = 'xsl';
+
+		} else if (type == 'application/vnd.ms-powerpoint' || type == 'application/vnd.openxmlformats-officedocument.presentationml.presentation') {
+			icon = 'ppt';
+
+		} else if (type == 'text/html' || type.toLowerCase().indexOf('xml') != -1) {
+			icon = 'xml';
+
+		} else if (type == 'text/x-python') {
+			icon = 'py';
+
+		} else if (type == 'text/x-lua') {
+			icon = 'lua';
+
+		} else if (type == 'application/x-tar' || type == 'application/zip' || type == 'application/gzip' || type == 'application/x-rar' || type == 'application/x-rar-compressed') {
+			icon = 'tar';
+
+		} else if (type == 'text/plain') {
+			icon = 'txt';
+
+		} else if (type == 'text/csv') {
+			icon = 'csv';
+
+		} else if (type == 'application/json') {
+			icon = 'json';
+
+		} else if (type == 'application/x-nexe') {
+			icon = 'nexe';
+
+		} else if (type == 'text/x-csrc' || type == 'text/x-chdr') {
+			icon = 'c';
+
+		} else {
+			icon = 'none';
+		}
+
+		return icon;
+	}
+
+	function makeShortFileName(n, len) {
+		len = len || 30;
+
+		if (n.length <= len) {
+			return n;
+		}
+
+		if (n.indexOf('.') != -1) {
+			var ext = n.substring(n.lastIndexOf("."), n.length);
+			var filename = n.replace(ext, '');
+
+			filename = filename.substr(0, len) + '&raquo;' + ext;
+			return filename;
+		}
+
+		return n.substr(0, len) + '&raquo;';
+	}
+
+	function makeDatePretty(time) {
+		var alternative = (new Date(time)).toDateString();
+
+		var diff = ((new Date()).getTime() - (new Date(time)).getTime()) / 1000,
+			day_diff = Math.floor(diff / 86400);
+
+		if ( isNaN(day_diff) || day_diff < 0 || day_diff >= 31 )
+			return alternative;
+
+		var pretty = day_diff == 0 && (
+			diff < 60 && "just now" ||
+				diff < 120 && "1 minute ago" ||
+				diff < 3600 && Math.floor( diff / 60 ) + " minutes ago" ||
+				diff < 7200 && "1 hour ago" ||
+				diff < 86400 && Math.floor( diff / 3600 ) + " hours ago") ||
+			day_diff == 1 && "Yesterday" ||
+			day_diff < 7 && day_diff + " days ago" ||
+			day_diff < 31 && Math.ceil( day_diff / 7 ) + " weeks ago";
+
+		return pretty || alternative;
+	}
+};
 
