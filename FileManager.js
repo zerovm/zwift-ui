@@ -1211,7 +1211,7 @@ document.addEventListener('click', function (e) {
 	}
 
 	function is(className) {
-		var node1 = e.currentTarget;
+		var node1 = e.target;
 		var node2 = node1.parentNode;
 		var node3 = node2.parentNode;
 
@@ -1239,57 +1239,57 @@ document.addEventListener('click', function (e) {
 
 document.addEventListener('keydown', function (e) {
 
-	if (FileManager.ENABLE_SHARED_CONTAINERS && e.currentTarget.classList.contains('add-shared-input-account')) {
-		FileManager.AddShared.clearErrors(e.currentTarget);
+	if (FileManager.ENABLE_SHARED_CONTAINERS && e.target.classList.contains('add-shared-input-account')) {
+		FileManager.AddShared.clearErrors(e.target);
 	}
 
-	if (FileManager.ENABLE_SHARED_CONTAINERS && e.currentTarget.classList.contains('add-shared-input-container')) {
+	if (FileManager.ENABLE_SHARED_CONTAINERS && e.target.classList.contains('add-shared-input-container')) {
 		if (e.which == 13) {
 			FileManager.AddShared.click();
 			return;
 		}
-		FileManager.AddShared.clearErrors(e.currentTarget);
+		FileManager.AddShared.clearErrors(e.target);
 	}
 
-	if (e.currentTarget.classList.contains('create-file-input-name')) {
+	if (e.target.classList.contains('create-file-input-name')) {
 
 		if (e.which == 13) {
 			document.querySelector('.create-file-input-type').focus();
 		}
 
-		FileManager.CreateFile.clearErrors(e.currentTarget);
+		FileManager.CreateFile.clearErrors(e.target);
 	}
 
-	if (e.currentTarget.classList.contains('create-file-input-type')) {
+	if (e.target.classList.contains('create-file-input-type')) {
 
 		if (e.which == 13) {
 			FileManager.CreateFile.click();
 			return;
 		}
 
-		FileManager.CreateFile.clearErrors(e.currentTarget);
+		FileManager.CreateFile.clearErrors(e.target);
 	}
 
-	if (e.currentTarget.classList.contains('save-as-input-path')) {
+	if (e.target.classList.contains('save-as-input-path')) {
 
 		if (e.which == 13) {
 			document.querySelector('.save-as-input-type').focus();
 		}
 
-		FileManager.SaveAs.clearErrors(e.currentTarget);
+		FileManager.SaveAs.clearErrors(e.target);
 	}
 
-	if (e.currentTarget.classList.contains('save-as-input-type')) {
+	if (e.target.classList.contains('save-as-input-type')) {
 
 		if (e.which == 13) {
 			FileManager.SaveAs.click();
 			return;
 		}
 
-		FileManager.SaveAs.clearErrors(e.currentTarget);
+		FileManager.SaveAs.clearErrors(e.target);
 	}
 
-	if (e.currentTarget.classList.contains('content-type-input')) {
+	if (e.target.classList.contains('content-type-input')) {
 
 		if (e.which == 13) {
 			FileManager.ContentType.click();
@@ -1297,7 +1297,7 @@ document.addEventListener('keydown', function (e) {
 		}
 	}
 
-	if (e.currentTarget.classList.contains('copy-input')) {
+	if (e.target.classList.contains('copy-input')) {
 
 		if (e.which == 13) {
 			FileManager.Copy.click();
@@ -1313,25 +1313,25 @@ document.addEventListener('keydown', function (e) {
 document.addEventListener('keyup', function (e) {
 
 	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		if (e.currentTarget.classList.contains('read-rights-input') || e.currentTarget.classList.contains('write-rights-input')) {
-			FileManager.Rights.keyup(e.currentTarget);
+		if (e.target.classList.contains('read-rights-input') || e.target.classList.contains('write-rights-input')) {
+			FileManager.Rights.keyup(e.target);
 		}
 	}
 });
 
 document.addEventListener('change', function (e) {
-	if (e.currentTarget.parentNode.classList.contains('upload-files')) {
-		FileManager.UploadFiles.change(e.currentTarget.files);
+	if (e.target.parentNode.classList.contains('upload-files')) {
+		FileManager.UploadFiles.change(e.target.files);
 		return;
 	}
 
-	if (e.currentTarget.parentNode.classList.contains('upload-as')) {
-		FileManager.UploadAs.change(e.currentTarget.files);
+	if (e.target.parentNode.classList.contains('upload-as')) {
+		FileManager.UploadAs.change(e.target.files);
 		return;
 	}
 
-	if (e.currentTarget.parentNode.classList.contains('upload-execute')) {
-		FileManager.UploadAndExecute.change(e.currentTarget.files[0]);
+	if (e.target.parentNode.classList.contains('upload-execute')) {
+		FileManager.UploadAndExecute.change(e.target.files[0]);
 		return;
 	}
 });
