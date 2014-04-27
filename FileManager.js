@@ -2395,16 +2395,6 @@ FileManager.Item.click = function (itemEl) {
 	FileManager.Item.showLoading(itemEl);
 	location.hash = FileManager.Item.selectedPath;
 };
-FileManager.Item.deleteclick = function (el) {
-
-	FileManager.Item.unselect();
-
-	var itemConfirmDelete = document.querySelector('#itemConfirmDeleteTemplate').innerHTML;
-
-	var itemEl = el.parentNode.parentNode;
-	itemEl.classList.add('clicked');
-	itemEl.insertAdjacentHTML('afterend', itemConfirmDelete);
-};
 FileManager.Item.unselect = function () {
 
 	var menuItem = document.querySelector('.item-menu');
