@@ -1570,7 +1570,7 @@ FileManager.Files.listHtml = function (files, scrollingContentEl) {
 		var newEl = document.querySelector('.template-file').cloneNode(true)
 		newEl.classList.remove('template-file');
 		newEl.classList.remove('template');
-		newEl.querySelector('img').setAttribute('src', icon);
+		newEl.querySelector('span.file-icon').classList.add(icon);
 		newEl.querySelector('.name').textContent = name;
 		newEl.setAttribute('title', title);
 		newEl.querySelector('.size').textContent = size;
@@ -1607,55 +1607,55 @@ FileManager.Files.listHtml = function (files, scrollingContentEl) {
 		var icon;
 
 		if (type.indexOf('audio') == 0) {
-			icon = 'img/file32_music.png';
+			icon = 'audio';
 
 		} else if (type == 'application/pdf') {
-			icon = 'img/file32_pdf.png';
+			icon = 'pdf';
 
 		} else if (type.indexOf('image') == 0) {
-			icon = 'img/file32_picture.png';
+			icon = 'pic';
 
 		} else if (type.indexOf('video') == 0) {
-			icon = 'img/file32_video.png';
+			icon = 'video';
 
 		} else if (type == 'application/msword' || type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-			icon = 'img/file32_doc.png';
+			icon = 'doc';
 
 		} else if (type == 'application/vnd.ms-excel' || type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-			icon = 'img/file32_xsl.png';
+			icon = 'xsl';
 
 		} else if (type == 'application/vnd.ms-powerpoint' || type == 'application/vnd.openxmlformats-officedocument.presentationml.presentation') {
-			icon = 'img/file32_ppt.png';
+			icon = 'ppt';
 
 		} else if (type == 'text/html' || type.toLowerCase().indexOf('xml') != -1) {
-			icon = 'img/file32_xml.png';
+			icon = 'xml';
 
 		} else if (type == 'text/x-python') {
-			icon = 'img/file32_py.png';
+			icon = 'py';
 
 		} else if (type == 'text/x-lua') {
-			icon = 'img/file32_lua.png';
+			icon = 'lua';
 
 		} else if (type == 'application/x-tar' || type == 'application/zip' || type == 'application/gzip' || type == 'application/x-rar' || type == 'application/x-rar-compressed') {
-			icon = 'img/file32_zip.png';
+			icon = 'tar';
 
 		} else if (type == 'text/plain') {
-			icon = 'img/file32_txt.png';
+			icon = 'txt';
 
 		} else if (type == 'text/csv') {
-			icon = 'img/file32_csv.png';
+			icon = 'csv';
 
 		} else if (type == 'application/json') {
-			icon = 'img/file32_json.png';
+			icon = 'json';
 
 		} else if (type == 'application/x-nexe') {
-			icon = 'img/file32_nexe.png';
+			icon = 'nexe';
 
 		} else if (type == 'text/x-csrc' || type == 'text/x-chdr') {
-			icon = 'img/file32_c.png';
+			icon = 'c';
 
 		} else {
-			icon = 'img/file32.png';
+			icon = 'none';
 		}
 
 		return icon;
