@@ -521,63 +521,6 @@ FileManager.ConfirmDelete.click = function (el) {
 };
 
 
-FileManager.Item = {};
-
-FileManager.Item.selectedPath = null;
-
-FileManager.Item.click = function (itemEl) {
-	var name = itemEl.getAttribute('title');
-	FileManager.Item.selectedPath = FileManager.CurrentPath().add(name);
-
-	FileManager.disableAll();
-	FileManager.Item.showLoading(itemEl);
-	location.hash = FileManager.Item.selectedPath;
-};
-
-FileManager.Item.deleteclick = function (el) {
-
-	FileManager.Item.unselect();
-
-	var itemConfirmDelete = document.querySelector('#itemConfirmDeleteTemplate').innerHTML;
-
-	var itemEl = el.parentNode.parentNode;
-	itemEl.classList.add('clicked');
-	itemEl.insertAdjacentHTML('afterend', itemConfirmDelete);
-};
-
-FileManager.Item.unselect = function () {
-
-	var menuItem = document.querySelector('.item-menu');
-	var confirmDeleteItem = document.querySelector('.item-confirm-delete');
-
-	if (menuItem) {
-		menuItem.parentNode.removeChild(menuItem);
-		document.querySelector('.clicked').classList.remove('clicked');
-	}
-
-	if (confirmDeleteItem) {
-		confirmDeleteItem.parentNode.removeChild(confirmDeleteItem);
-		document.querySelector('.clicked').classList.remove('clicked');
-	}
-
-};
-
-FileManager.Item.showLoading = function (itemEl) {
-	var loadingHtml = document.querySelector('#itemLoadingTemplate').innerHTML;
-	itemEl.classList.add('clicked');
-	itemEl.insertAdjacentHTML('afterbegin', loadingHtml);
-};
-
-FileManager.LoadMoreButton = {};
-
-FileManager.LoadMoreButton.click = function () {
-	if (FileManager.CurrentPath().isContainersList()) {
-		FileManager.Containers.loadMore();
-	} else {
-		FileManager.Files.loadMore();
-	}
-};
-
 
 FileManager.ContentType = {};
 
@@ -2459,6 +2402,63 @@ FileManager.Files.listHtml = function (files, scrollingContentEl) {
 };
 
 
+
+FileManager.Item = {};
+
+FileManager.Item.selectedPath = null;
+
+FileManager.Item.click = function (itemEl) {
+	var name = itemEl.getAttribute('title');
+	FileManager.Item.selectedPath = FileManager.CurrentPath().add(name);
+
+	FileManager.disableAll();
+	FileManager.Item.showLoading(itemEl);
+	location.hash = FileManager.Item.selectedPath;
+};
+
+FileManager.Item.deleteclick = function (el) {
+
+	FileManager.Item.unselect();
+
+	var itemConfirmDelete = document.querySelector('#itemConfirmDeleteTemplate').innerHTML;
+
+	var itemEl = el.parentNode.parentNode;
+	itemEl.classList.add('clicked');
+	itemEl.insertAdjacentHTML('afterend', itemConfirmDelete);
+};
+
+FileManager.Item.unselect = function () {
+
+	var menuItem = document.querySelector('.item-menu');
+	var confirmDeleteItem = document.querySelector('.item-confirm-delete');
+
+	if (menuItem) {
+		menuItem.parentNode.removeChild(menuItem);
+		document.querySelector('.clicked').classList.remove('clicked');
+	}
+
+	if (confirmDeleteItem) {
+		confirmDeleteItem.parentNode.removeChild(confirmDeleteItem);
+		document.querySelector('.clicked').classList.remove('clicked');
+	}
+
+};
+
+FileManager.Item.showLoading = function (itemEl) {
+	var loadingHtml = document.querySelector('#itemLoadingTemplate').innerHTML;
+	itemEl.classList.add('clicked');
+	itemEl.insertAdjacentHTML('afterbegin', loadingHtml);
+};
+
+FileManager.LoadMoreButton = {};
+
+FileManager.LoadMoreButton.click = function () {
+	if (FileManager.CurrentPath().isContainersList()) {
+		FileManager.Containers.loadMore();
+	} else {
+		FileManager.Files.loadMore();
+	}
+};
 
 FileManager.selectedItemEl = null;
 FileManager.ActionsMenu = {};
