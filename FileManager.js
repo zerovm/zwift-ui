@@ -1677,352 +1677,6 @@ FileManager.SignOutButton.el.addEventListener('click', function () {
 
 
 
-FileManager.selectedItemEl = null;
-FileManager.ActionsMenu = {};
-FileManager.ActionsMenu.removeForms = function () {
-	FileManager.ConfirmDeleteForm.removeEl();
-	FileManager.MetadataForm.removeEl();
-};
-FileManager.ActionsMenu.deleteAction = function () {
-	var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
-	FileManager.ActionsMenu.removeForms();
-	FileManager.ConfirmDeleteForm.createAfterActionsMenu(actionsMenu);
-};
-document.addEventListener('click', function (e) {
-	if (e.target.classList.contains('delete-action')) {
-		FileManager.ActionsMenu.deleteAction();
-	}
-});
-FileManager.ActionsMenu.metadataAction = function () {
-	var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
-	FileManager.ActionsMenu.removeForms();
-	FileManager.MetadataForm.createAfterActionsMenu(actionsMenu);
-};
-document.addEventListener('click', function (e) {
-	if (e.target.classList.contains('metadata-action')) {
-		FileManager.ActionsMenu.metadataAction();
-	}
-});
-
-FileManager.ConfirmDeleteForm = {};
-FileManager.ConfirmDeleteForm.removeEl = function () {
-	var actionsMenu = document.querySelector('.scrolling-content .confirm-delete-form');
-
-	if (actionsMenu) {
-		actionsMenu.parentNode.removeChild(actionsMenu);
-	}
-};
-FileManager.ConfirmDeleteForm.createAfterActionsMenu = function (actionsMenuEl) {
-	var newActionsMenu = document.querySelector('.template-confirm-delete-form').cloneNode(true);
-	newActionsMenu.classList.remove('template-confirm-delete-form');
-	newActionsMenu.classList.remove('template');
-	newActionsMenu.addEventListener('submit', function (e) {
-		e.preventDefault();
-		//document.querySelector('.delete-deleting-label').removeAttribute('hidden');
-
-		//var itemEl = el.parentNode.previousElementSibling;
-		var name = FileManager.selectedItemEl.title;
-		var itemPath = FileManager.CurrentPath().add(name);
-
-		SwiftAdvancedFunctionality.delete({
-			path: FileManager.Path(itemPath).withoutAccount(),
-			deleted: function () {
-				FileManager.ContentChange.animate();
-			},
-			error: function(status, statusText) {
-				var el = document.querySelector('.delete-error-ajax');
-				FileManager.AjaxError.show(el, status, statusText);
-			},
-			notExist: function () {
-				FileManager.ContentChange.animate();
-			}
-		});
-		//retur
-	});
-	newActionsMenu.querySelector('.cancel').addEventListener('click', function (e) {
-		e.preventDefault();
-		FileManager.ConfirmDeleteForm.removeEl();
-	});
-	document.querySelector('.scrolling-content').insertBefore(newActionsMenu, actionsMenuEl.nextSibling);
-};
-
-FileManager.MetadataForm = {};
-FileManager.MetadataForm.initialMetadata = null;
-FileManager.MetadataForm.initialContentType = null;
-FileManager.MetadataForm.metadataPath = null;
-FileManager.MetadataForm.removeEl = function () {
-	var actionsMenu = document.querySelector('.scrolling-content .metadata-form');
-
-	if (actionsMenu) {
-		actionsMenu.parentNode.removeChild(actionsMenu);
-	}
-};
-FileManager.MetadataForm.createAfterActionsMenu = function (actionsMenuEl) {
-	var newActionsMenu = document.querySelector('.template-metadata-form').cloneNode(true);
-	newActionsMenu.classList.remove('template-metadata-form');
-	newActionsMenu.classList.remove('template');
-	document.querySelector('.scrolling-content').insertBefore(newActionsMenu, actionsMenuEl.nextSibling);
-	FileManager.MetadataForm.load();
-};
-FileManager.MetadataForm.load = function () {
-
-	var path = SwiftV1.getAccount() + '/' + FileManager.selectedItemEl.getAttribute('title');
-	var formEl = document.querySelector('.scrolling-content .metadata-form');
-	var listEl = formEl.querySelector('.metadata-list');
-
-	FileManager.MetadataForm.metadataPath = new FileManager.Path(path);
-
-	clear();
-	//formEl.getElementsByClassName('metadata-loading')[0].removeAttribute('hidden');
-
-	formEl.removeAttribute('hidden');
-	handleCancelButtonClickEvent();
-	handleSaveButtonClickEvent();
-
-	if (FileManager.CurrentPath().isContainersList()) {
-		loadContainerMetadata();
-	} else {
-		loadFileMetadata();
-	}
-
-	function fillMetadataList(metadata) {
-		var k = Object.keys(metadata);
-		for (var i = 0; i < k.length; i++) {
-			addRow(k[i], metadata[k[i]]);
-		}
-	}
-
-	function addRow(k, v) {
-		var newRow = formEl.getElementsByClassName('template')[0].cloneNode(true);
-		newRow.classList.remove('template');
-		newRow.removeAttribute('hidden');
-		if (arguments.length === 2) {
-			newRow.getElementsByClassName('metadata-key')[0].value = k;
-			newRow.getElementsByClassName('metadata-value')[0].value = v;
-		}
-		newRow.querySelector('.metadata-remove').addEventListener('click', function (e) {
-			var metadataRowEl = e.target.parentNode;
-			document.querySelector('.metadata-list').removeChild(metadataRowEl);
-		});
-		listEl.appendChild(newRow);
-	}
-
-	function clear() {
-		listEl.innerHTML = '';
-		listEl.removeAttribute('hidden');
-		formEl.getElementsByClassName('metadata-loading-error')[0].setAttribute('hidden', 'hidden');
-		formEl.getElementsByClassName('metadata-updating')[0].setAttribute('hidden', 'hidden');
-		formEl.getElementsByClassName('metadata-updated')[0].setAttribute('hidden', 'hidden');
-		formEl.getElementsByClassName('metadata-updating-error')[0].setAttribute('hidden', 'hidden');
-	}
-
-	function loadContainerMetadata() {
-		XHR();
-
-		function XHR() {
-			SwiftV1.getContainerMetadata({
-				containerName: FileManager.MetadataForm.metadataPath.container(),
-				success: XHR_OK,
-				error: XHR_ERROR
-			});
-		}
-	}
-
-	function loadFileMetadata() {
-		XHR();
-
-		function XHR() {
-			SwiftV1.getFileMetadata({
-				path: FileManager.MetadataForm.metadataPath.withoutAccount(),
-				success: XHR_FILE_OK,
-				error: XHR_ERROR
-			});
-		}
-
-		function XHR_FILE_OK(metadata, contentType) {
-			FileManager.MetadataForm.initialContentType = contentType;
-			XHR_OK(metadata);
-		}
-	}
-
-	function XHR_OK(metadata) {
-		FileManager.MetadataForm.initialMetadata = metadata;
-		fillMetadataList(metadata);
-		addRow();
-		formEl.getElementsByClassName('metadata-loading')[0].setAttribute('hidden', 'hidden');
-	}
-
-	function XHR_ERROR(status, statusText) {
-		var errorEl = formEl.getElementsByClassName('metadata-loading-error')[0];
-		errorEl.getElementsByClassName('ajax-error-status-text')[0].textContent = statusText;
-		errorEl.getElementsByClassName('ajax-error-status-code')[0].textContent = status;
-		errorEl.removeAttribute('hidden');
-	}
-
-	function handleCancelButtonClickEvent() {
-		formEl.getElementsByClassName('metadata-cancel')[0].onclick = function () {
-			formEl.setAttribute('hidden', 'hidden');
-		};
-	}
-
-	function handleSaveButtonClickEvent() {
-		formEl.onsubmit = function (e) {
-			e.preventDefault();
-			FileManager.MetadataForm.save();
-		};
-	}
-
-	listEl.onkeyup = function (e) {
-		removeEmptyInputs(e.target);
-		insureLastRowIsEmpty();
-		clearHighlight();
-		highlightDuplicatedKeys();
-
-		function insureLastRowIsEmpty() {
-			var elements = listEl.getElementsByClassName('metadata-key');
-			if (elements[elements.length - 1].value !== '') {
-				addRow();
-			}
-		}
-
-		function clearHighlight() {
-			var elements = listEl.getElementsByClassName('metadata-key');
-
-			for (var i = 0; i < elements.length; i++) {
-				elements[i].classList.remove('error-input');
-			}
-		}
-
-		function highlightDuplicatedKeys() {
-			var elements = listEl.getElementsByClassName('metadata-key');
-
-			for (var i = 0; i < elements.length; i++) {
-				if (elements[i].value === '') {
-					continue;
-				}
-
-				for (var j = 0; j < elements.length; j++) {
-					if (elements[i] == elements[j]) {
-						continue;
-					}
-					if (elements[i].value == elements[j].value) {
-						elements[i].classList.add('error-input');
-						elements[j].classList.add('error-input');
-					}
-				}
-			}
-		}
-
-		function removeEmptyInputs(ignoreEl) {
-			var elements = listEl.getElementsByClassName('metadata-key');
-
-			if (elements.length === 1) {
-				return;
-			}
-
-			for (var i = 0; i < elements.length; i++) {
-				if (elements[i] == ignoreEl) {
-					continue;
-				}
-				if (elements[i].value === '') {
-					removeInputRow(elements[i]);
-				}
-			}
-		}
-
-		function removeInputRow(inputEl) {
-			var rowEl = inputEl;
-			while (!rowEl.classList.contains('metadata-row')) {
-				rowEl = rowEl.parentNode;
-			}
-			listEl.removeChild(rowEl);
-		}
-	};
-};
-FileManager.MetadataForm.save = function () {
-
-	var formEl = document.querySelector('.scrolling-content .metadata-form');
-	var listEl = formEl.querySelector('.metadata-list');
-
-	formEl.getElementsByClassName('metadata-updating')[0].removeAttribute('hidden');
-	listEl.setAttribute('hidden', 'hidden');
-	var metadata = metadataFromMetadataList();
-
-	if (FileManager.CurrentPath().isContainersList()) {
-		updateContainerMetadata(metadata);
-	} else {
-		updateFileMetadata(metadata);
-	}
-
-	function metadataFromMetadataList() {
-		var rows = listEl.getElementsByClassName('metadata-row');
-		var metadata = {}, k, v;
-		for (var i = 0; i < rows.length - 1; i++) {
-			k = rows[i].getElementsByClassName('metadata-key')[0].value;
-			v = rows[i].getElementsByClassName('metadata-value')[0].value;
-			metadata[k] = v;
-		}
-		return metadata;
-	}
-
-	function metadataToRemove(metadata) {
-		var metadataToRemoveList = [];
-		var metadataToAddKeys = Object.keys(metadata);
-		var initialKeys = Object.keys(FileManager.MetadataForm.initialMetadata);
-		for (var i = 0; i < initialKeys.length; i++) {
-			var initialKey = initialKeys[i];
-			if (metadataToAddKeys.indexOf(initialKey) == -1) {
-				metadataToRemoveList.push(initialKey);
-			}
-		}
-		return metadataToRemoveList;
-	}
-
-	function updateContainerMetadata(metadata) {
-		XHR();
-
-		function XHR() {
-			SwiftV1.updateContainerMetadata({
-				containerName: FileManager.MetadataForm.metadataPath.container(),
-				metadata: metadata,
-				removeMetadata: metadataToRemove(metadata),
-				updated: XHR_OK,
-				error: XHR_ERROR
-			});
-		}
-	}
-
-	function updateFileMetadata(metadata) {
-		XHR();
-
-		function XHR() {
-			SwiftV1.updateFileMetadata({
-				path: FileManager.MetadataForm.metadataPath.withoutAccount(),
-				contentType: FileManager.MetadataForm.initialContentType,
-				metadata: metadata,
-				removeMetadata: metadataToRemove(metadata),
-				updated: XHR_OK,
-				error: XHR_ERROR
-			});
-		}
-	}
-
-	function XHR_OK() {
-		formEl.getElementsByClassName('metadata-updated')[0].setAttribute('hidden', 'hidden');
-		setTimeout(function () {
-			formEl.setAttribute('hidden', 'hidden');
-		}, 1000);
-	}
-
-	function XHR_ERROR(status, statusText) {
-		var errorEl = formEl.getElementsByClassName('metadata-updating-error')[0];
-		errorEl.getElementsByClassName('ajax-error-status-text')[0].textContent = statusText;
-		errorEl.getElementsByClassName('ajax-error-status-code')[0].textContent = status;
-		errorEl.removeAttribute('hidden');
-	}
-};
-
-
 
 FileManager.CreateContainerButton = {};
 FileManager.CreateContainerButton.el = document.querySelector('button.create-container');
@@ -2812,3 +2466,349 @@ FileManager.Files.listHtml = function (files, scrollingContentEl) {
 	}
 };
 
+
+
+FileManager.selectedItemEl = null;
+FileManager.ActionsMenu = {};
+FileManager.ActionsMenu.removeForms = function () {
+	FileManager.ConfirmDeleteForm.removeEl();
+	FileManager.MetadataForm.removeEl();
+};
+FileManager.ActionsMenu.deleteAction = function () {
+	var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
+	FileManager.ActionsMenu.removeForms();
+	FileManager.ConfirmDeleteForm.createAfterActionsMenu(actionsMenu);
+};
+document.addEventListener('click', function (e) {
+	if (e.target.classList.contains('delete-action')) {
+		FileManager.ActionsMenu.deleteAction();
+	}
+});
+FileManager.ActionsMenu.metadataAction = function () {
+	var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
+	FileManager.ActionsMenu.removeForms();
+	FileManager.MetadataForm.createAfterActionsMenu(actionsMenu);
+};
+document.addEventListener('click', function (e) {
+	if (e.target.classList.contains('metadata-action')) {
+		FileManager.ActionsMenu.metadataAction();
+	}
+});
+
+FileManager.ConfirmDeleteForm = {};
+FileManager.ConfirmDeleteForm.removeEl = function () {
+	var actionsMenu = document.querySelector('.scrolling-content .confirm-delete-form');
+
+	if (actionsMenu) {
+		actionsMenu.parentNode.removeChild(actionsMenu);
+	}
+};
+FileManager.ConfirmDeleteForm.createAfterActionsMenu = function (actionsMenuEl) {
+	var newActionsMenu = document.querySelector('.template-confirm-delete-form').cloneNode(true);
+	newActionsMenu.classList.remove('template-confirm-delete-form');
+	newActionsMenu.classList.remove('template');
+	newActionsMenu.addEventListener('submit', function (e) {
+		e.preventDefault();
+		//document.querySelector('.delete-deleting-label').removeAttribute('hidden');
+
+		//var itemEl = el.parentNode.previousElementSibling;
+		var name = FileManager.selectedItemEl.title;
+		var itemPath = FileManager.CurrentPath().add(name);
+
+		SwiftAdvancedFunctionality.delete({
+			path: FileManager.Path(itemPath).withoutAccount(),
+			deleted: function () {
+				FileManager.ContentChange.animate();
+			},
+			error: function(status, statusText) {
+				var el = document.querySelector('.delete-error-ajax');
+				FileManager.AjaxError.show(el, status, statusText);
+			},
+			notExist: function () {
+				FileManager.ContentChange.animate();
+			}
+		});
+		//retur
+	});
+	newActionsMenu.querySelector('.cancel').addEventListener('click', function (e) {
+		e.preventDefault();
+		FileManager.ConfirmDeleteForm.removeEl();
+	});
+	document.querySelector('.scrolling-content').insertBefore(newActionsMenu, actionsMenuEl.nextSibling);
+};
+
+FileManager.MetadataForm = {};
+FileManager.MetadataForm.initialMetadata = null;
+FileManager.MetadataForm.initialContentType = null;
+FileManager.MetadataForm.metadataPath = null;
+FileManager.MetadataForm.removeEl = function () {
+	var actionsMenu = document.querySelector('.scrolling-content .metadata-form');
+
+	if (actionsMenu) {
+		actionsMenu.parentNode.removeChild(actionsMenu);
+	}
+};
+FileManager.MetadataForm.createAfterActionsMenu = function (actionsMenuEl) {
+	var newActionsMenu = document.querySelector('.template-metadata-form').cloneNode(true);
+	newActionsMenu.classList.remove('template-metadata-form');
+	newActionsMenu.classList.remove('template');
+	document.querySelector('.scrolling-content').insertBefore(newActionsMenu, actionsMenuEl.nextSibling);
+	FileManager.MetadataForm.load();
+};
+FileManager.MetadataForm.load = function () {
+
+	var path = SwiftV1.getAccount() + '/' + FileManager.selectedItemEl.getAttribute('title');
+	var formEl = document.querySelector('.scrolling-content .metadata-form');
+	var listEl = formEl.querySelector('.metadata-list');
+
+	FileManager.MetadataForm.metadataPath = new FileManager.Path(path);
+
+	clear();
+	//formEl.getElementsByClassName('metadata-loading')[0].removeAttribute('hidden');
+
+	formEl.removeAttribute('hidden');
+	handleCancelButtonClickEvent();
+	handleSaveButtonClickEvent();
+
+	if (FileManager.CurrentPath().isContainersList()) {
+		loadContainerMetadata();
+	} else {
+		loadFileMetadata();
+	}
+
+	function fillMetadataList(metadata) {
+		var k = Object.keys(metadata);
+		for (var i = 0; i < k.length; i++) {
+			addRow(k[i], metadata[k[i]]);
+		}
+	}
+
+	function addRow(k, v) {
+		var newRow = formEl.getElementsByClassName('template')[0].cloneNode(true);
+		newRow.classList.remove('template');
+		newRow.removeAttribute('hidden');
+		if (arguments.length === 2) {
+			newRow.getElementsByClassName('metadata-key')[0].value = k;
+			newRow.getElementsByClassName('metadata-value')[0].value = v;
+		}
+		newRow.querySelector('.metadata-remove').addEventListener('click', function (e) {
+			var metadataRowEl = e.target.parentNode;
+			document.querySelector('.metadata-list').removeChild(metadataRowEl);
+		});
+		listEl.appendChild(newRow);
+	}
+
+	function clear() {
+		listEl.innerHTML = '';
+		listEl.removeAttribute('hidden');
+		formEl.getElementsByClassName('metadata-loading-error')[0].setAttribute('hidden', 'hidden');
+		formEl.getElementsByClassName('metadata-updating')[0].setAttribute('hidden', 'hidden');
+		formEl.getElementsByClassName('metadata-updated')[0].setAttribute('hidden', 'hidden');
+		formEl.getElementsByClassName('metadata-updating-error')[0].setAttribute('hidden', 'hidden');
+	}
+
+	function loadContainerMetadata() {
+		XHR();
+
+		function XHR() {
+			SwiftV1.getContainerMetadata({
+				containerName: FileManager.MetadataForm.metadataPath.container(),
+				success: XHR_OK,
+				error: XHR_ERROR
+			});
+		}
+	}
+
+	function loadFileMetadata() {
+		XHR();
+
+		function XHR() {
+			SwiftV1.getFileMetadata({
+				path: FileManager.MetadataForm.metadataPath.withoutAccount(),
+				success: XHR_FILE_OK,
+				error: XHR_ERROR
+			});
+		}
+
+		function XHR_FILE_OK(metadata, contentType) {
+			FileManager.MetadataForm.initialContentType = contentType;
+			XHR_OK(metadata);
+		}
+	}
+
+	function XHR_OK(metadata) {
+		FileManager.MetadataForm.initialMetadata = metadata;
+		fillMetadataList(metadata);
+		addRow();
+		formEl.getElementsByClassName('metadata-loading')[0].setAttribute('hidden', 'hidden');
+	}
+
+	function XHR_ERROR(status, statusText) {
+		var errorEl = formEl.getElementsByClassName('metadata-loading-error')[0];
+		errorEl.getElementsByClassName('ajax-error-status-text')[0].textContent = statusText;
+		errorEl.getElementsByClassName('ajax-error-status-code')[0].textContent = status;
+		errorEl.removeAttribute('hidden');
+	}
+
+	function handleCancelButtonClickEvent() {
+		formEl.getElementsByClassName('metadata-cancel')[0].onclick = function () {
+			formEl.setAttribute('hidden', 'hidden');
+		};
+	}
+
+	function handleSaveButtonClickEvent() {
+		formEl.onsubmit = function (e) {
+			e.preventDefault();
+			FileManager.MetadataForm.save();
+		};
+	}
+
+	listEl.onkeyup = function (e) {
+		removeEmptyInputs(e.target);
+		insureLastRowIsEmpty();
+		clearHighlight();
+		highlightDuplicatedKeys();
+
+		function insureLastRowIsEmpty() {
+			var elements = listEl.getElementsByClassName('metadata-key');
+			if (elements[elements.length - 1].value !== '') {
+				addRow();
+			}
+		}
+
+		function clearHighlight() {
+			var elements = listEl.getElementsByClassName('metadata-key');
+
+			for (var i = 0; i < elements.length; i++) {
+				elements[i].classList.remove('error-input');
+			}
+		}
+
+		function highlightDuplicatedKeys() {
+			var elements = listEl.getElementsByClassName('metadata-key');
+
+			for (var i = 0; i < elements.length; i++) {
+				if (elements[i].value === '') {
+					continue;
+				}
+
+				for (var j = 0; j < elements.length; j++) {
+					if (elements[i] == elements[j]) {
+						continue;
+					}
+					if (elements[i].value == elements[j].value) {
+						elements[i].classList.add('error-input');
+						elements[j].classList.add('error-input');
+					}
+				}
+			}
+		}
+
+		function removeEmptyInputs(ignoreEl) {
+			var elements = listEl.getElementsByClassName('metadata-key');
+
+			if (elements.length === 1) {
+				return;
+			}
+
+			for (var i = 0; i < elements.length; i++) {
+				if (elements[i] == ignoreEl) {
+					continue;
+				}
+				if (elements[i].value === '') {
+					removeInputRow(elements[i]);
+				}
+			}
+		}
+
+		function removeInputRow(inputEl) {
+			var rowEl = inputEl;
+			while (!rowEl.classList.contains('metadata-row')) {
+				rowEl = rowEl.parentNode;
+			}
+			listEl.removeChild(rowEl);
+		}
+	};
+};
+FileManager.MetadataForm.save = function () {
+
+	var formEl = document.querySelector('.scrolling-content .metadata-form');
+	var listEl = formEl.querySelector('.metadata-list');
+
+	formEl.getElementsByClassName('metadata-updating')[0].removeAttribute('hidden');
+	listEl.setAttribute('hidden', 'hidden');
+	var metadata = metadataFromMetadataList();
+
+	if (FileManager.CurrentPath().isContainersList()) {
+		updateContainerMetadata(metadata);
+	} else {
+		updateFileMetadata(metadata);
+	}
+
+	function metadataFromMetadataList() {
+		var rows = listEl.getElementsByClassName('metadata-row');
+		var metadata = {}, k, v;
+		for (var i = 0; i < rows.length - 1; i++) {
+			k = rows[i].getElementsByClassName('metadata-key')[0].value;
+			v = rows[i].getElementsByClassName('metadata-value')[0].value;
+			metadata[k] = v;
+		}
+		return metadata;
+	}
+
+	function metadataToRemove(metadata) {
+		var metadataToRemoveList = [];
+		var metadataToAddKeys = Object.keys(metadata);
+		var initialKeys = Object.keys(FileManager.MetadataForm.initialMetadata);
+		for (var i = 0; i < initialKeys.length; i++) {
+			var initialKey = initialKeys[i];
+			if (metadataToAddKeys.indexOf(initialKey) == -1) {
+				metadataToRemoveList.push(initialKey);
+			}
+		}
+		return metadataToRemoveList;
+	}
+
+	function updateContainerMetadata(metadata) {
+		XHR();
+
+		function XHR() {
+			SwiftV1.updateContainerMetadata({
+				containerName: FileManager.MetadataForm.metadataPath.container(),
+				metadata: metadata,
+				removeMetadata: metadataToRemove(metadata),
+				updated: XHR_OK,
+				error: XHR_ERROR
+			});
+		}
+	}
+
+	function updateFileMetadata(metadata) {
+		XHR();
+
+		function XHR() {
+			SwiftV1.updateFileMetadata({
+				path: FileManager.MetadataForm.metadataPath.withoutAccount(),
+				contentType: FileManager.MetadataForm.initialContentType,
+				metadata: metadata,
+				removeMetadata: metadataToRemove(metadata),
+				updated: XHR_OK,
+				error: XHR_ERROR
+			});
+		}
+	}
+
+	function XHR_OK() {
+		formEl.getElementsByClassName('metadata-updated')[0].setAttribute('hidden', 'hidden');
+		setTimeout(function () {
+			formEl.setAttribute('hidden', 'hidden');
+		}, 1000);
+	}
+
+	function XHR_ERROR(status, statusText) {
+		var errorEl = formEl.getElementsByClassName('metadata-updating-error')[0];
+		errorEl.getElementsByClassName('ajax-error-status-text')[0].textContent = statusText;
+		errorEl.getElementsByClassName('ajax-error-status-code')[0].textContent = status;
+		errorEl.removeAttribute('hidden');
+	}
+};
