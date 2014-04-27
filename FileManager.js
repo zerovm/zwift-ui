@@ -1533,6 +1533,29 @@ FileManager.Files.listHtml = function (files, scrollingContentEl) {
 		newEl.classList.remove('template');
 		newEl.querySelector('.name').textContent = name;
 		newEl.setAttribute('title', title);
+		newEl.querySelector('.default-action').addEventListener('click', function (e) {
+			FileManager.Item.click(e.target.parentNode);
+		});
+		newEl.querySelector('.toggle-actions-menu').addEventListener('click', function (e) {
+			var itemEl = e.target.parentNode;
+			FileManager.selectedItemEl = itemEl;
+			var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
+
+			FileManager.ActionsMenu.removeForms();
+			var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
+
+			if (actionsMenu) {
+				actionsMenu.parentNode.removeChild(actionsMenu);
+			}
+
+			if (!isNext) {
+				var newActionsMenu = document.querySelector('.template-actions-menu').cloneNode(true);
+				newActionsMenu.classList.remove('template-actions-menu');
+				newActionsMenu.classList.remove('template');
+				newActionsMenu.textContent = 'Feature is not implemented yet.'
+				document.querySelector('.scrolling-content').insertBefore(newActionsMenu, itemEl.nextSibling);
+			}
+		});
 
 		return newEl;
 	}
@@ -1552,6 +1575,29 @@ FileManager.Files.listHtml = function (files, scrollingContentEl) {
 		newEl.setAttribute('title', title);
 		newEl.querySelector('.size').textContent = size;
 		newEl.querySelector('.modified').textContent = modified;
+		newEl.querySelector('.default-action').addEventListener('click', function (e) {
+			FileManager.Item.click(e.target.parentNode);
+		});
+		newEl.querySelector('.toggle-actions-menu').addEventListener('click', function (e) {
+			var itemEl = e.target.parentNode;
+			FileManager.selectedItemEl = itemEl;
+			var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
+
+			FileManager.ActionsMenu.removeForms();
+			var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
+
+			if (actionsMenu) {
+				actionsMenu.parentNode.removeChild(actionsMenu);
+			}
+
+			if (!isNext) {
+				var newActionsMenu = document.querySelector('.template-actions-menu').cloneNode(true);
+				newActionsMenu.classList.remove('template-actions-menu');
+				newActionsMenu.classList.remove('template');
+				newActionsMenu.textContent = 'Feature is not implemented yet.'
+				document.querySelector('.scrolling-content').insertBefore(newActionsMenu, itemEl.nextSibling);
+			}
+		});
 		return newEl;
 	}
 
