@@ -905,6 +905,7 @@ FileManager.ContentChange.animate = function () {
 	//el.textContent = 'Loading...';
 	if (FileManager.CurrentPath().isContainersList()) {
 		FileManager.Containers.list(callback);
+		FileManager.CreateContainerButton.show();
 
 		//FileManager.File.hideMenu();
 		//FileManager.ExecuteButton.hide();
@@ -1902,7 +1903,6 @@ FileManager.CreateFileForm.el.querySelector('button.cancel').addEventListener('c
 FileManager.Containers = {};
 FileManager.Containers.LIMIT = 20;
 FileManager.Containers.list = function (callback) {
-	FileManager.CreateContainerButton.show();
 	var scrollingContentEl = document.querySelector('.new-scrolling-content');
 
 	var xhr = SwiftV1.listContainers({
