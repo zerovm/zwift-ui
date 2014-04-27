@@ -936,7 +936,7 @@ FileManager.ContentChange.transition = function (e) {
 		return;
 	}
 
-	var el = e.currentTarget;
+	var el = e.target;
 
 	if (el.classList.contains('old-scrolling-content')) {
 		el.parentNode.removeChild(el);
@@ -2568,7 +2568,7 @@ FileManager.MetadataForm.load = function () {
 	}
 
 	listEl.onkeyup = function (e) {
-		removeEmptyInputs(e.currentTarget);
+		removeEmptyInputs(e.target);
 		insureLastRowIsEmpty();
 		clearHighlight();
 		highlightDuplicatedKeys();
