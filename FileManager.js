@@ -2673,26 +2673,19 @@ FileManager.MetadataForm.save = function () {
 
 
 FileManager.CreateContainerButton = {};
-
 FileManager.CreateContainerButton.el = document.querySelector('button.create-container');
-
 FileManager.CreateContainerButton.el.addEventListener('click', function () {
 	FileManager.CreateContainerForm.open();
 });
-
 FileManager.CreateContainerButton.show = function () {
 	FileManager.CreateContainerButton.el.removeAttribute('hidden');
 };
-
 FileManager.CreateContainerButton.hide = function () {
 	FileManager.CreateContainerButton.el.setAttribute('hidden', 'hidden');
 };
 
-
 FileManager.CreateContainerForm = {};
-
 FileManager.CreateContainerForm.el = document.querySelector('form.create-container');
-
 FileManager.CreateContainerForm.el.addEventListener('submit', function (e) {
 	e.preventDefault();
 
@@ -2743,16 +2736,13 @@ FileManager.CreateContainerForm.el.addEventListener('submit', function (e) {
 		inputEl.focus();
 	}
 });
-
 FileManager.CreateContainerForm.el.querySelector('button.cancel').addEventListener('click', function () {
 	FileManager.CreateContainerForm.el.setAttribute('hidden', 'hidden');
 	FileManager.Layout.adjust();
 });
-
 FileManager.CreateContainerForm.el.querySelector('input.container-name').onkeydown = function () {
 	FileManager.CreateContainerForm.clearErrors();
 };
-
 FileManager.CreateContainerForm.open = function () {
 	FileManager.CreateContainerForm.clearErrors();
 	var inputEl = FileManager.CreateContainerForm.el.querySelector('input.container-name');
@@ -2761,25 +2751,21 @@ FileManager.CreateContainerForm.open = function () {
 	inputEl.focus();
 	FileManager.Layout.adjust();
 };
-
 FileManager.CreateContainerForm.showRequiredInputError = function () {
 	FileManager.CreateContainerForm.el.querySelector('.err-empty').removeAttribute('hidden');
 	FileManager.Layout.adjust();
 	FileManager.CreateContainerForm.el.querySelector('input.container-name').focus();
 };
-
 FileManager.CreateContainerForm.showInputSizeLimitError = function () {
 	FileManager.CreateContainerForm.el.querySelector('.err-size-limit').removeAttribute('hidden');
 	FileManager.Layout.adjust();
 	FileManager.CreateContainerForm.el.querySelector('input.container-name').focus();
 };
-
 FileManager.CreateContainerForm.showInvalidCharacterError = function () {
 	FileManager.CreateContainerForm.el.querySelector('.err-invalid-character').removeAttribute('hidden');
 	FileManager.Layout.adjust();
 	FileManager.CreateContainerForm.el.querySelector('input.container-name').focus();
 };
-
 FileManager.CreateContainerForm.clearErrors = function () {
 	var errElements = FileManager.CreateContainerForm.el.querySelectorAll('.err');
 	for (var i = 0; i < errElements.length; i++) {
