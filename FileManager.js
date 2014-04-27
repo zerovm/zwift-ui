@@ -2248,26 +2248,7 @@ FileManager.Files.listHtml = function (files, scrollingContentEl) {
 		newEl.querySelector('.size').textContent = size;
 		newEl.querySelector('.modified').textContent = modified;
 		newEl.querySelector('.default-action').addEventListener('click', FileManager.DefaultAction.click);
-		newEl.querySelector('.toggle-actions-menu').addEventListener('click', function (e) {
-			var itemEl = e.target.parentNode;
-			FileManager.Item.selectedEl = itemEl;
-			var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
-
-			FileManager.ActionsMenu.removeForms();
-			var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
-
-			if (actionsMenu) {
-				actionsMenu.parentNode.removeChild(actionsMenu);
-			}
-
-			if (!isNext) {
-				var newActionsMenu = document.querySelector('.template-actions-menu').cloneNode(true);
-				newActionsMenu.classList.remove('template-actions-menu');
-				newActionsMenu.classList.remove('template');
-				newActionsMenu.textContent = 'Feature is not implemented yet.'
-				document.querySelector('.scrolling-content').insertBefore(newActionsMenu, itemEl.nextSibling);
-			}
-		});
+		newEl.querySelector('.toggle-actions-menu').addEventListener('click', FileManager.ActionsMenu.click);
 		return newEl;
 	}
 
@@ -2498,7 +2479,8 @@ FileManager.MetadataForm.createAfterActionsMenu = function (actionsMenuEl) {
 };
 FileManager.MetadataForm.load = function () {
 
-	var path = SwiftV1.getAccount() + '/' + FileManager.Item.selectedEl.getAttribute('title');
+	var name = FileManager.Item.selectedEl.title;
+	var path = FileManager.CurrentPath().add(name);
 	var formEl = document.querySelector('.scrolling-content .metadata-form');
 	var listEl = formEl.querySelector('.metadata-list');
 
