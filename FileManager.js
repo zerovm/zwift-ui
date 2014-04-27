@@ -2454,9 +2454,6 @@ FileManager.ConfirmDeleteForm.createAfterActionsMenu = function (actionsMenuEl) 
 	newActionsMenu.classList.remove('template');
 	newActionsMenu.addEventListener('submit', function (e) {
 		e.preventDefault();
-		//document.querySelector('.delete-deleting-label').removeAttribute('hidden');
-
-		//var itemEl = el.parentNode.previousElementSibling;
 		var name = FileManager.Item.selectedEl.title;
 		var itemPath = FileManager.CurrentPath().add(name);
 
@@ -2473,7 +2470,6 @@ FileManager.ConfirmDeleteForm.createAfterActionsMenu = function (actionsMenuEl) 
 				FileManager.ContentChange.animate();
 			}
 		});
-		//retur
 	});
 	newActionsMenu.querySelector('.cancel').addEventListener('click', function (e) {
 		e.preventDefault();
