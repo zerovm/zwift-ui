@@ -2483,17 +2483,17 @@ FileManager.MetadataForm.initialMetadata = null;
 FileManager.MetadataForm.initialContentType = null;
 FileManager.MetadataForm.metadataPath = null;
 FileManager.MetadataForm.removeEl = function () {
-	var actionsMenu = document.querySelector('.scrolling-content .metadata-form');
+	var metadataForm = document.querySelector('.scrolling-content .metadata-form');
 
-	if (actionsMenu) {
-		actionsMenu.parentNode.removeChild(actionsMenu);
+	if (metadataForm) {
+		metadataForm.parentNode.removeChild(metadataForm);
 	}
 };
 FileManager.MetadataForm.createAfterActionsMenu = function (actionsMenuEl) {
-	var newActionsMenu = document.querySelector('.template-metadata-form').cloneNode(true);
-	newActionsMenu.classList.remove('template-metadata-form');
-	newActionsMenu.classList.remove('template');
-	document.querySelector('.scrolling-content').insertBefore(newActionsMenu, actionsMenuEl.nextSibling);
+	var newMetadataForm = document.querySelector('.template-metadata-form').cloneNode(true);
+	newMetadataForm.classList.remove('template-metadata-form');
+	newMetadataForm.classList.remove('template');
+	document.querySelector('.scrolling-content').insertBefore(newMetadataForm, actionsMenuEl.nextSibling);
 	FileManager.MetadataForm.load();
 };
 FileManager.MetadataForm.load = function () {
