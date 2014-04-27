@@ -2404,9 +2404,7 @@ FileManager.Files.listHtml = function (files, scrollingContentEl) {
 
 
 FileManager.Item = {};
-
 FileManager.Item.selectedPath = null;
-
 FileManager.Item.click = function (itemEl) {
 	var name = itemEl.getAttribute('title');
 	FileManager.Item.selectedPath = FileManager.CurrentPath().add(name);
@@ -2415,7 +2413,6 @@ FileManager.Item.click = function (itemEl) {
 	FileManager.Item.showLoading(itemEl);
 	location.hash = FileManager.Item.selectedPath;
 };
-
 FileManager.Item.deleteclick = function (el) {
 
 	FileManager.Item.unselect();
@@ -2426,7 +2423,6 @@ FileManager.Item.deleteclick = function (el) {
 	itemEl.classList.add('clicked');
 	itemEl.insertAdjacentHTML('afterend', itemConfirmDelete);
 };
-
 FileManager.Item.unselect = function () {
 
 	var menuItem = document.querySelector('.item-menu');
@@ -2443,15 +2439,14 @@ FileManager.Item.unselect = function () {
 	}
 
 };
-
 FileManager.Item.showLoading = function (itemEl) {
 	var loadingHtml = document.querySelector('#itemLoadingTemplate').innerHTML;
 	itemEl.classList.add('clicked');
 	itemEl.insertAdjacentHTML('afterbegin', loadingHtml);
 };
 
-FileManager.LoadMoreButton = {};
 
+FileManager.LoadMoreButton = {};
 FileManager.LoadMoreButton.click = function () {
 	if (FileManager.CurrentPath().isContainersList()) {
 		FileManager.Containers.loadMore();
