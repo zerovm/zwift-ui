@@ -468,8 +468,7 @@ button.sign-out-button {
 	border-color: white !important;
 }
 
-.menu-files .div-button,
-.menu-containers .div-button {
+.menu-files .div-button {
 	display: inline-block;
 	height: 22px;
 	vertical-align: middle;
@@ -479,13 +478,11 @@ button.sign-out-button {
 	font-size: 14px;
 	font-family: arial;
 }
-.menu-files .div-button img,
-.menu-containers .div-button img {
+.menu-files .div-button img {
 	vertical-align: middle;
 	margin-right: 5px;
 }
-.menu-files .div-button span,
-.menu-containers .div-button span {
+.menu-files .div-button span {
 	vertical-align: middle;
 }
 
