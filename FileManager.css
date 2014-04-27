@@ -489,48 +489,6 @@ button.sign-out-button {
 	vertical-align: middle;
 }
 
-.item-menu {
-	background: rgba(141, 140, 140, 0.29);
-	padding: 5px;
-	margin: 1px;
-}
-
-.item-menu menu button,
-.item-confirm-delete button {
-	height: 30px;
-	padding-left: 23px;
-	padding-right: 5px;
-	background: #F3F3F3 no-repeat 5px 7px;
-	border: solid 1px transparent;
-	margin: 1px;
-}
-
-.item-menu menu button:hover,
-.item-confirm-delete button:hover {
-	outline: #dcdcdc 2px solid;
-	background-color: white;
-	border: outset 1px;
-}
-.item-menu menu button:active,
-.item-confirm-delete button:active {
-	background-color: #d3d3d3;
-	outline: none;
-	border: inset 1px;
-}
-.item-confirm-delete {
-	height: 32px;
-	background-color: rgba(255, 153, 153, 0.8);
-	margin: 1px;
-	opacity: 0.8;
-	font-weight: bold;
-	color: rgba(0, 0, 0, 0.8);
-}
-
-.item-confirm-delete button {
-	background-image: url('img/delete.png');
-	background-position: 5px 6px !important;
-}
-
 
 .dialog {
 	transition: all 0.1s;

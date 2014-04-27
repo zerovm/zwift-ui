@@ -2395,22 +2395,6 @@ FileManager.Item.click = function (itemEl) {
 	FileManager.Item.showLoading(itemEl);
 	location.hash = FileManager.Item.selectedPath;
 };
-FileManager.Item.unselect = function () {
-
-	var menuItem = document.querySelector('.item-menu');
-	var confirmDeleteItem = document.querySelector('.item-confirm-delete');
-
-	if (menuItem) {
-		menuItem.parentNode.removeChild(menuItem);
-		document.querySelector('.clicked').classList.remove('clicked');
-	}
-
-	if (confirmDeleteItem) {
-		confirmDeleteItem.parentNode.removeChild(confirmDeleteItem);
-		document.querySelector('.clicked').classList.remove('clicked');
-	}
-
-};
 FileManager.Item.showLoading = function (itemEl) {
 	var loadingHtml = document.querySelector('#itemLoadingTemplate').innerHTML;
 	itemEl.classList.add('clicked');
