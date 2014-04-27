@@ -2311,9 +2311,7 @@ FileManager.CreateFileForm.el.querySelector('button.cancel').addEventListener('c
 
 
 FileManager.Containers = {};
-
 FileManager.Containers.LIMIT = 20;
-
 FileManager.Containers.list = function (callback) {
 	FileManager.CreateContainerButton.show();
 	var scrollingContentEl = document.querySelector('.new-scrolling-content');
@@ -2377,7 +2375,6 @@ FileManager.Containers.list = function (callback) {
 	}
 
 };
-
 FileManager.Containers.loadMore = function () {
 	var loadMoreEl = document.querySelector('.load-more-button');
 	if (!loadMoreEl) {
@@ -2426,7 +2423,6 @@ FileManager.Containers.loadMore = function () {
 		loadMoreEl.textContent = 'Error: ' + status + ' ' + statusText;
 	}
 };
-
 FileManager.Containers.create = function (containerObj) {
 
 	var name = FileManager.Utils.makeShortName(containerObj.name);
@@ -2471,9 +2467,7 @@ FileManager.Containers.create = function (containerObj) {
 
 
 FileManager.Files = {};
-
 FileManager.Files.LIMIT = 20;
-
 FileManager.Files.list = function (callback) {
 	var requestArgs = {};
 
@@ -2548,7 +2542,6 @@ FileManager.Files.list = function (callback) {
 
 	SwiftV1.listFiles(requestArgs);
 };
-
 FileManager.Files.loadMore = function () {
 
 	var loadMoreEl = document.querySelector('.load-more-button');
@@ -2609,7 +2602,6 @@ FileManager.Files.loadMore = function () {
 
 	SwiftV1.listFiles(filesArgs);
 };
-
 FileManager.Files.notExist = function () {
 	var scrollingContentEl = document.querySelector('.new-scrolling-content');
 	//scrollingContentEl.innerHTML = '';
@@ -2619,7 +2611,6 @@ FileManager.Files.notExist = function () {
 		scrollingContentEl.innerHTML = 'Directory not exist.';
 	}
 };
-
 FileManager.Files.listHtml = function (files, scrollingContentEl) {
 	var loadMoreEl = document.querySelector('.load-more-button');
 
