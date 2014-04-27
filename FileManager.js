@@ -2212,7 +2212,7 @@ FileManager.Files.listHtml = function (files, scrollingContentEl) {
 		newEl.querySelector('.default-action').addEventListener('click', FileManager.DefaultAction.click);
 		newEl.querySelector('.toggle-actions-menu').addEventListener('click', function (e) {
 			var itemEl = e.target.parentNode;
-			FileManager.selectedItemEl = itemEl;
+			FileManager.Item.selectedEl = itemEl;
 			var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
 
 			FileManager.ActionsMenu.removeForms();
@@ -2252,7 +2252,7 @@ FileManager.Files.listHtml = function (files, scrollingContentEl) {
 		newEl.querySelector('.default-action').addEventListener('click', FileManager.DefaultAction.click);
 		newEl.querySelector('.toggle-actions-menu').addEventListener('click', function (e) {
 			var itemEl = e.target.parentNode;
-			FileManager.selectedItemEl = itemEl;
+			FileManager.Item.selectedEl = itemEl;
 			var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
 
 			FileManager.ActionsMenu.removeForms();
@@ -2375,8 +2375,8 @@ FileManager.Files.listHtml = function (files, scrollingContentEl) {
 };
 
 
-FileManager.selectedItemEl = null;
 FileManager.Item = {};
+FileManager.Item.selectedEl = null;
 FileManager.Item.selectedPath = null;
 FileManager.Item.showLoading = function (itemEl) {
 	var loadingHtml = document.querySelector('#itemLoadingTemplate').innerHTML;
@@ -2409,7 +2409,7 @@ FileManager.DefaultAction.click = function (e) {
 FileManager.ActionsMenu = {};
 FileManager.ActionsMenu.click = function (e) {
 	var itemEl = e.target.parentNode;
-	FileManager.selectedItemEl = itemEl;
+	FileManager.Item.selectedEl = itemEl;
 	var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
 
 	FileManager.ActionsMenu.removeForms();
@@ -2468,7 +2468,7 @@ FileManager.ConfirmDeleteForm.createAfterActionsMenu = function (actionsMenuEl) 
 		//document.querySelector('.delete-deleting-label').removeAttribute('hidden');
 
 		//var itemEl = el.parentNode.previousElementSibling;
-		var name = FileManager.selectedItemEl.title;
+		var name = FileManager.Item.selectedEl.title;
 		var itemPath = FileManager.CurrentPath().add(name);
 
 		SwiftAdvancedFunctionality.delete({
@@ -2513,7 +2513,7 @@ FileManager.MetadataForm.createAfterActionsMenu = function (actionsMenuEl) {
 };
 FileManager.MetadataForm.load = function () {
 
-	var path = SwiftV1.getAccount() + '/' + FileManager.selectedItemEl.getAttribute('title');
+	var path = SwiftV1.getAccount() + '/' + FileManager.Item.selectedEl.getAttribute('title');
 	var formEl = document.querySelector('.scrolling-content .metadata-form');
 	var listEl = formEl.querySelector('.metadata-list');
 
