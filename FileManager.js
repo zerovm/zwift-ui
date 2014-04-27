@@ -936,7 +936,7 @@ FileManager.ContentChange.transition = function (e) {
 		return;
 	}
 
-	var el = e.target;
+	var el = e.currentTarget;
 
 	if (el.classList.contains('old-scrolling-content')) {
 		el.parentNode.removeChild(el);
@@ -2354,7 +2354,7 @@ FileManager.LoadMoreButton.click = function () {
 
 FileManager.DefaultAction = {};
 FileManager.DefaultAction.click = function (e) {
-	var itemEl = e.target.parentNode;
+	var itemEl = e.currentTarget.parentNode;
 	var name = itemEl.getAttribute('title');
 	FileManager.Item.selectedPath = FileManager.CurrentPath().add(name);
 
@@ -2365,7 +2365,7 @@ FileManager.DefaultAction.click = function (e) {
 
 FileManager.ActionsMenu = {};
 FileManager.ActionsMenu.click = function (e) {
-	var itemEl = e.target.parentNode;
+	var itemEl = e.currentTarget.parentNode;
 	FileManager.Item.selectedEl = itemEl;
 	var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
 
@@ -2496,7 +2496,7 @@ FileManager.MetadataForm.load = function () {
 			newRow.getElementsByClassName('metadata-value')[0].value = v;
 		}
 		newRow.querySelector('.metadata-remove').addEventListener('click', function (e) {
-			var metadataRowEl = e.target.parentNode;
+			var metadataRowEl = e.currentTarget.parentNode;
 			document.querySelector('.metadata-list').removeChild(metadataRowEl);
 		});
 		listEl.appendChild(newRow);
@@ -2568,7 +2568,7 @@ FileManager.MetadataForm.load = function () {
 	}
 
 	listEl.onkeyup = function (e) {
-		removeEmptyInputs(e.target);
+		removeEmptyInputs(e.currentTarget);
 		insureLastRowIsEmpty();
 		clearHighlight();
 		highlightDuplicatedKeys();
