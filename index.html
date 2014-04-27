@@ -275,23 +275,6 @@
 	<span class="error">Error occurred. <span class="error-reason">reason</span> <span class="error-status"></span>.</span>
 </template>
 
-<template id="metadataRowTemplate">
-	<tr>
-		<td><input autocomplete="off" class="metadata-key" placeholder="Key" value="{{key}}"></td>
-		<td><input autocomplete="off" class="metadata-value" placeholder="Value" value="{{value}}"></td>
-		<td class="remove-metadata">x</td>
-	</tr>
-</template>
-
-<template id="itemConfirmDeleteTemplate">
-	<div class="item-confirm-delete">
-		<div class="delete-label" style="margin: 8px;display: inline-block;">Are you sure you want delete?</div>
-		<button autocomplete="off" class="delete-button" style="float: right;">Delete</button>
-		<label class="delete-deleting-label" hidden>Deleting...</label>
-		<label class="delete-error-ajax" hidden>Error: <span class="status"></span> <span class="status-text"></span>.</label>
-	</div>
-</template>
-
 <template id="uploadTemplate">
 	<table class="input-group-table" id="{{upload-id}}">
 		<tr>

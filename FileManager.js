@@ -86,122 +86,6 @@ FileManager.CurrentDirLabel.showLoading = function () {
 };
 
 
-FileManager.CreateContainerButton = {};
-
-FileManager.CreateContainerButton.el = document.querySelector('button.create-container');
-
-FileManager.CreateContainerButton.el.addEventListener('click', function () {
-	FileManager.CreateContainerForm.open();
-});
-
-FileManager.CreateContainerButton.show = function () {
-	FileManager.CreateContainerButton.el.removeAttribute('hidden');
-};
-
-FileManager.CreateContainerButton.hide = function () {
-	FileManager.CreateContainerButton.el.setAttribute('hidden', 'hidden');
-};
-
-
-FileManager.CreateContainerForm = {};
-
-FileManager.CreateContainerForm.el = document.querySelector('form.create-container');
-
-FileManager.CreateContainerForm.el.addEventListener('submit', function (e) {
-	e.preventDefault();
-
-	var inputEl = FileManager.CreateContainerForm.el.querySelector('input.container-name');
-
-	if (inputEl.value.length == 0) {
-		FileManager.CreateContainerForm.showRequiredInputError();
-		return;
-	}
-
-	if (inputEl.value.length > 256) {
-		FileManager.CreateContainerForm.showInputSizeLimitError();
-		return;
-	}
-
-	if (inputEl.value.indexOf('/') != -1) {
-		FileManager.CreateContainerForm.showInvalidCharacterError();
-		return;
-	}
-
-	SwiftV1.createContainer({
-		containerName: inputEl.value,
-		created: function () {
-			FileManager.ContentChange.animate();
-			FileManager.CreateContainerForm.el.setAttribute('hidden', 'hidden');
-			FileManager.Layout.adjust();
-		},
-		alreadyExists: function () {
-			err('err-already-exists');
-		},
-		error: errAjax
-	});
-
-	function err(className) {
-		var errEl = FileManager.CreateContainerForm.el.querySelector('.' + className);
-		errEl.removeAttribute('hidden');
-		inputEl.removeAttribute('disabled');
-		FileManager.Layout.adjust();
-		inputEl.focus();
-	}
-
-	function errAjax(status, statusText) {
-		var errAjaxEl = FileManager.CreateContainerForm.el.querySelector('.err-ajax');
-		errAjaxEl.textContent = 'Ajax Error: ' + statusText + '(' + status + ').';
-		errAjaxEl.removeAttribute('hidden');
-		inputEl.removeAttribute('disabled');
-		FileManager.Layout.adjust();
-		inputEl.focus();
-	}
-});
-
-FileManager.CreateContainerForm.el.querySelector('button.cancel').addEventListener('click', function () {
-	FileManager.CreateContainerForm.el.setAttribute('hidden', 'hidden');
-	FileManager.Layout.adjust();
-});
-
-FileManager.CreateContainerForm.el.querySelector('input.container-name').onkeydown = function () {
-	FileManager.CreateContainerForm.clearErrors();
-};
-
-FileManager.CreateContainerForm.open = function () {
-	FileManager.CreateContainerForm.clearErrors();
-	var inputEl = FileManager.CreateContainerForm.el.querySelector('input.container-name');
-	inputEl.value = '';
-	FileManager.CreateContainerForm.el.removeAttribute('hidden');
-	inputEl.focus();
-	FileManager.Layout.adjust();
-};
-
-FileManager.CreateContainerForm.showRequiredInputError = function () {
-	FileManager.CreateContainerForm.el.querySelector('.err-empty').removeAttribute('hidden');
-	FileManager.Layout.adjust();
-	FileManager.CreateContainerForm.el.querySelector('input.container-name').focus();
-};
-
-FileManager.CreateContainerForm.showInputSizeLimitError = function () {
-	FileManager.CreateContainerForm.el.querySelector('.err-size-limit').removeAttribute('hidden');
-	FileManager.Layout.adjust();
-	FileManager.CreateContainerForm.el.querySelector('input.container-name').focus();
-};
-
-FileManager.CreateContainerForm.showInvalidCharacterError = function () {
-	FileManager.CreateContainerForm.el.querySelector('.err-invalid-character').removeAttribute('hidden');
-	FileManager.Layout.adjust();
-	FileManager.CreateContainerForm.el.querySelector('input.container-name').focus();
-};
-
-FileManager.CreateContainerForm.clearErrors = function () {
-	var errElements = FileManager.CreateContainerForm.el.querySelectorAll('.err');
-	for (var i = 0; i < errElements.length; i++) {
-		errElements[i].setAttribute('hidden', 'hidden');
-	}
-	FileManager.Layout.adjust();
-};
-
 FileManager.OpenButton = {};
 
 FileManager.OpenButton.click = function () {
@@ -637,205 +521,6 @@ FileManager.ConfirmDelete.click = function (el) {
 };
 
 
-FileManager.Item = {};
-
-FileManager.Item.selectedPath = null;
-
-FileManager.Item.click = function (itemEl) {
-	var name = itemEl.getAttribute('title');
-	FileManager.Item.selectedPath = FileManager.CurrentPath().add(name);
-
-	FileManager.disableAll();
-	FileManager.Item.showLoading(itemEl);
-	location.hash = FileManager.Item.selectedPath;
-};
-
-/*
-document.addEventListener('click', function (e) {
-	if (e.target.classList.contains('default-action')) {
-		FileManager.Item.click(e.target.parentNode);
-	}
-});
-*/
-
-FileManager.Item.deleteclick = function (el) {
-
-	FileManager.Item.unselect();
-
-	var itemConfirmDelete = document.querySelector('#itemConfirmDeleteTemplate').innerHTML;
-
-	var itemEl = el.parentNode.parentNode;
-	itemEl.classList.add('clicked');
-	itemEl.insertAdjacentHTML('afterend', itemConfirmDelete);
-};
-
-FileManager.Item.unselect = function () {
-
-	var menuItem = document.querySelector('.item-menu');
-	var confirmDeleteItem = document.querySelector('.item-confirm-delete');
-
-	if (menuItem) {
-		menuItem.parentNode.removeChild(menuItem);
-		document.querySelector('.clicked').classList.remove('clicked');
-	}
-
-	if (confirmDeleteItem) {
-		confirmDeleteItem.parentNode.removeChild(confirmDeleteItem);
-		document.querySelector('.clicked').classList.remove('clicked');
-	}
-
-};
-
-FileManager.Item.showLoading = function (itemEl) {
-	var loadingHtml = document.querySelector('#itemLoadingTemplate').innerHTML;
-	itemEl.classList.add('clicked');
-	itemEl.insertAdjacentHTML('afterbegin', loadingHtml);
-};
-
-FileManager.LoadMoreButton = {};
-
-FileManager.LoadMoreButton.click = function () {
-	if (FileManager.CurrentPath().isContainersList()) {
-		FileManager.Containers.loadMore();
-	} else {
-		FileManager.Files.loadMore();
-	}
-};
-
-
-FileManager.Metadata = {};
-
-FileManager.Metadata.initialMetadata = null;
-
-FileManager.Metadata.showLoading = function () {
-	document.querySelector('.metadata-loading').removeAttribute('hidden');
-};
-
-FileManager.Metadata.hideLoading = function () {
-	document.querySelector('.metadata-loading').setAttribute('hidden', 'hidden');
-};
-
-FileManager.Metadata.load = function (metadata) {
-	FileManager.Metadata.initialMetadata = metadata;
-	document.querySelector('.metadata-table tbody').innerHTML = '';
-	FileManager.Metadata.hideLoading();
-
-	var keys = Object.keys(metadata);
-
-	for (var i = 0; i < keys.length; i++) {
-		var key = keys[i];
-		var value = metadata[key];
-
-		var html = document.querySelector('#metadataRowTemplate').innerHTML;
-
-		html = html.replace('{{key}}', FileManager.Utils.htmlEscape(key));
-		html = html.replace('{{value}}', FileManager.Utils.htmlEscape(value));
-
-		document.querySelector('.metadata-table tbody').insertAdjacentHTML('beforeend', html);
-	}
-
-	FileManager.Metadata.addBlankRow();
-};
-
-FileManager.Metadata.showError = function (status, statusText) {
-	FileManager.Metadata.hideLoading();
-	var el = document.querySelector('.metadata-error-ajax');
-	FileManager.AjaxError.show(el, status, statusText);
-};
-
-FileManager.Metadata.remove = function (removeEl) {
-	removeEl.parentNode.parentNode.removeChild(removeEl.parentNode);
-	document.querySelector('.metadata-table tfoot').removeAttribute('hidden');
-};
-
-FileManager.Metadata.keyup = function (inputEl) {
-	document.querySelector('.metadata-table tfoot').removeAttribute('hidden');
-
-	var thisRow = inputEl.parentNode.parentNode;
-
-	if (!thisRow.querySelector('.metadata-key').value && !thisRow.querySelector('.metadata-value').value) {
-		thisRow.parentNode.removeChild(thisRow);
-	}
-
-	var lastRowEl = document.querySelector('.metadata-table tbody tr:last-child');
-
-	if (lastRowEl.querySelector('.metadata-key:last-child').value ||
-		lastRowEl.querySelector('.metadata-value:last-child').value) {
-
-		lastRowEl.querySelector('.remove-metadata:last-child').textContent = 'X';
-		FileManager.Metadata.addBlankRow();
-	}
-};
-
-FileManager.Metadata.addBlankRow = function () {
-
-	var html = document.querySelector('#metadataRowTemplate').innerHTML;
-
-	html = html.replace('>X<', '>+<');
-	html = html.replace('{{key}}', '');
-	html = html.replace('{{value}}', '');
-
-	document.querySelector('.metadata-table tbody').insertAdjacentHTML('beforeend', html);
-};
-
-FileManager.Metadata.discardChanges = function () {
-	document.querySelector('.metadata-table tfoot').setAttribute('hidden', 'hidden');
-	document.querySelector('.clicked').click();
-};
-
-FileManager.Metadata.save = function () {
-	var path = FileManager.Item.selectedPath;
-	var args = {
-		metadata: metadataToAdd(),
-		removeMetadata: metadataToRemove(),
-		contentType: FileManager.Item.contentType,
-		updated: function () {
-			document.querySelector('.clicked').click();
-		},
-		error: function (status, statusText) {
-			var html = '<tr><td colspan="3">Error: ' + status + ' ' + statusText + '</td></tr>';
-			document.querySelector('.metadata-table tbody').innerHTML = html;
-		}
-	};
-	document.querySelector('.metadata-table tbody').innerHTML = '<tr><td colspan="3">Loading...</td></tr>';
-	document.querySelector('.metadata-table tfoot').setAttribute('hidden', 'hidden');
-
-	if (FileManager.CurrentPath().isContainersList()) {
-		args.containerName = FileManager.Path(path).withoutAccount();
-		SwiftV1.updateContainerMetadata(args);
-	} else {
-		args.path = FileManager.Path(path).withoutAccount();
-		SwiftV1.updateFileMetadata(args);
-	}
-
-	function metadataToAdd() {
-		var metadata = {};
-		var metadataRows = document.querySelectorAll('.metadata-table tbody tr');
-		for (var i = 0; i < metadataRows.length - 1; i++) {
-			var key = metadataRows[i].querySelector('.metadata-key').value;
-			var value = metadataRows[i].querySelector('.metadata-value').value;
-			if (key) {
-				metadata[key] = value;
-			}
-		}
-		return metadata;
-	}
-
-	function metadataToRemove() {
-		var metadataToRemoveList = [];
-		var metadataToAddList = metadataToAdd();
-		var metadataToAddKeys = Object.keys(metadataToAddList);
-		var initialKeys = Object.keys(FileManager.Metadata.initialMetadata);
-		for (var i = 0; i < initialKeys.length; i++) {
-			var initialKey = initialKeys[i];
-			if (metadataToAddKeys.indexOf(initialKey) == -1) {
-				metadataToRemoveList.push(initialKey);
-			}
-		}
-		return metadataToRemoveList;
-	}
-};
-
 
 FileManager.ContentType = {};
 
@@ -1191,518 +876,6 @@ FileManager.SaveAs.clearErrors = function () {
 };
 
 
-FileManager.Containers = {};
-
-FileManager.Containers.LIMIT = 20;
-
-FileManager.Containers.list = function (callback) {
-	FileManager.CreateContainerButton.show();
-	var scrollingContentEl = document.querySelector('.new-scrolling-content');
-
-	var xhr = SwiftV1.listContainers({
-		format: 'json',
-		limit: FileManager.Containers.LIMIT,
-		success: function (containers) {
-			//scrollingContentEl.innerHTML = '';
-
-			if (FileManager.ENABLE_SHARED_CONTAINERS) {
-				var sharedContainers = SharedContainersOnSwift.getFromXhr(xhr);
-				if (containers.length == 0 && sharedContainers.length == 0) {
-					noContainers();
-					callback();
-					return;
-				}
-				FileManager.Shared.listSharedContainers(sharedContainers, scrollingContentEl);
-			}
-
-			list(containers);
-		},
-		error: function (status, statusText) {
-			scrollingContentEl.innerHTML = 'Error occurred: ' + status + ' ' + statusText;
-			callback();
-		}
-	});
-
-	function list(containers) {
-
-		if (containers.length == 0) {
-			noContainers();
-			callback();
-			return;
-		}
-
-		FileManager.UpButton.disable();
-		FileManager.CurrentDirLabel.root();
-		var loadMoreEl = scrollingContentEl.querySelector('.load-more-button');
-
-		for (var i = 0; i < containers.length; i++) {
-			var container = containers[i];
-			var containerEl = FileManager.Containers.create(container);
-			scrollingContentEl.insertBefore(containerEl, loadMoreEl);
-		}
-
-		callback();
-
-		if (containers.length == 20) {
-			loadMoreEl.removeAttribute('hidden');
-		}
-
-		if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
-			FileManager.Containers.loadMore();
-		}
-	}
-
-	function noContainers() {
-		var html = document.querySelector('#noContainersTemplate').innerHTML;
-		scrollingContentEl.insertAdjacentHTML('beforeend', html);
-	}
-
-};
-
-FileManager.Containers.loadMore = function () {
-	var loadMoreEl = document.querySelector('.load-more-button');
-	if (!loadMoreEl) {
-		return;
-	}
-	loadMoreEl.textContent = 'Loading...';
-	loadMoreEl.setAttribute('disabled', 'disabled');
-
-	var marker = document.querySelector('.item:nth-last-child(2)').getAttribute('title');
-
-	SwiftV1.listContainers({
-		marker: marker,
-		format: 'json',
-		limit: FileManager.Containers.LIMIT,
-		success: function (containers) {
-
-			var loadMoreEl = document.querySelector('.load-more-button');
-
-			if (containers.length == 0) {
-				loadMoreEl.setAttribute('hidden', 'hidden')
-				return;
-			}
-
-			if (loadMoreEl) {
-				loadMoreEl.removeAttribute('hidden');
-			}
-			for (var i = 0; i < containers.length; i++) {
-				var container = containers[i];
-				var containerEl = FileManager.Containers.create(container);
-				var scrollingContentEl = document.querySelector('.scrolling-content');
-				scrollingContentEl.insertBefore(containerEl, loadMoreEl);
-			}
-
-			loadMoreEl.textContent = 'Load more';
-			loadMoreEl.removeAttribute('disabled');
-
-			if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
-				FileManager.Containers.loadMore();
-			}
-		},
-		error: error
-	});
-
-	function error(status, statusText) {
-		var loadMoreEl = document.querySelector('.load-more-button');
-		loadMoreEl.textContent = 'Error: ' + status + ' ' + statusText;
-	}
-};
-
-FileManager.Containers.create = function (containerObj) {
-
-	var name = FileManager.Utils.makeShortName(containerObj.name);
-	var title = containerObj.name;
-	var size = FileManager.Utils.bytesToSize(containerObj.bytes);
-	var files = containerObj.count;
-
-	var t = document.querySelector('.template-container').cloneNode(true);
-
-	t.classList.remove('template');
-	t.classList.remove('template-container');
-
-	t.querySelector('.default-action').addEventListener('click', function (e) {
-		FileManager.Item.click(e.target.parentNode);
-	});
-	t.querySelector('.toggle-actions-menu').addEventListener('click', function (e) {
-		var itemEl = e.target.parentNode;
-		FileManager.selectedItemEl = itemEl;
-		var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
-
-		FileManager.ActionsMenu.removeForms();
-		var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
-
-		if (actionsMenu) {
-			actionsMenu.parentNode.removeChild(actionsMenu);
-		}
-
-		if (!isNext) {
-			var newActionsMenu = document.querySelector('.template-actions-menu').cloneNode(true);
-			newActionsMenu.classList.remove('template-actions-menu');
-			newActionsMenu.classList.remove('template');
-			document.querySelector('.scrolling-content').insertBefore(newActionsMenu, itemEl.nextSibling);
-		}
-	});
-	t.querySelector('.name').textContent = name;
-	t.setAttribute('title', title);
-	t.querySelector('.size').textContent = size;
-	t.querySelector('.files').textContent = files;
-
-	return t;
-};
-
-
-FileManager.Files = {};
-
-FileManager.Files.LIMIT = 20;
-
-FileManager.Files.list = function (callback) {
-	var requestArgs = {};
-
-	requestArgs.containerName = FileManager.CurrentPath().container();
-	requestArgs.format = 'json';
-	requestArgs.limit = FileManager.Files.LIMIT;
-	requestArgs.delimiter = '/';
-
-	if (FileManager.CurrentPath().isDirectory()) {
-		requestArgs.prefix = FileManager.CurrentPath().prefix();
-	}
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		requestArgs.account = FileManager.CurrentPath().account();
-	}
-
-	requestArgs.success = function (FILES) {
-		var scrollingContentEl = document.querySelector('.new-scrolling-content');
-		//scrollingContentEl.innerHTML = '';
-
-		var files = FILES.slice(0); // copy (clone) array
-
-		if (checkFirstFile(files)) {
-			files = files.splice(1);
-		}
-
-		if (files.length == 0) {
-			var html = document.querySelector('#noFilesTemplate').innerHTML;
-			scrollingContentEl.insertAdjacentHTML('beforeend', html);
-
-		} else {
-
-			FileManager.Files.listHtml(files, scrollingContentEl);
-
-			if (FILES.length == 20) {
-				document.querySelector('.load-more-button').removeAttribute('hidden');
-			}
-
-			if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
-				FileManager.Files.loadMore();
-			}
-
-		}
-
-		FileManager.UpButton.enable();
-		FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().name());
-		callback();
-
-		function checkFirstFile(files) {
-			var prefix = FileManager.CurrentPath().prefix();
-			if (files.length > 0 && prefix) {
-				var file = files[0];
-				var nameInFiles = file.hasOwnProperty('subdir') ? file.subdir : file.name;
-
-				if (prefix == nameInFiles) {
-					return true;
-				}
-			}
-			return false;
-		}
-	};
-
-	requestArgs.error = function error(status, statusText) {
-		var scrollingContentEl = document.querySelector('.new-scrolling-content');
-		//scrollingContentEl.innerHTML = '';
-		var loadingEl = document.querySelector('.item-loading') || document.querySelector('.scrolling-content-loading');
-		loadingEl.textContent = 'Error: ' + status + ' ' + statusText;
-		callback();
-	};
-
-	requestArgs.notExist = FileManager.Files.notExist;
-
-	SwiftV1.listFiles(requestArgs);
-};
-
-FileManager.Files.loadMore = function () {
-
-	var loadMoreEl = document.querySelector('.load-more-button');
-
-	if (!loadMoreEl) {
-		return;
-	}
-
-	loadMoreEl.textContent = 'Loading...';
-	loadMoreEl.setAttribute('disabled', 'disabled');
-
-	var filesArgs = {};
-
-	filesArgs.containerName = FileManager.CurrentPath().container();
-	filesArgs.delimiter = '/';
-	filesArgs.format = 'json';
-	filesArgs.limit = FileManager.Files.LIMIT;
-
-	var lastFile = document.querySelector('.item:nth-last-child(2)').getAttribute('title');
-
-	if (FileManager.CurrentPath().isDirectory()) {
-		var prefix = FileManager.CurrentPath().prefix();
-		filesArgs.marker = prefix + lastFile;
-		filesArgs.prefix = prefix;
-	} else {
-		filesArgs.marker = lastFile;
-	}
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		filesArgs.account = FileManager.CurrentPath().account();
-	}
-
-	filesArgs.success = function (files) {
-		var loadMoreEl = document.querySelector('.load-more-button');
-
-		if (files.length == 0) {
-			loadMoreEl.setAttribute('hidden', 'hidden');
-			return;
-		}
-
-		//el.insertAdjacentHTML('beforebegin', );
-		var scrollingContentEl = document.querySelector('.scrolling-content');
-		FileManager.Files.listHtml(files, scrollingContentEl);
-		loadMoreEl.textContent = 'Load more';
-		loadMoreEl.removeAttribute('disabled');
-
-		if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
-			FileManager.Files.loadMore();
-		}
-	};
-
-	filesArgs.error =  function (status, statusText) {
-		var loadMoreEl = document.querySelector('.load-more-button');
-		loadMoreEl.textContent = 'Error: ' + status + ' ' + statusText;
-	};
-
-	filesArgs.notExist = FileManager.Files.notExist;
-
-	SwiftV1.listFiles(filesArgs);
-};
-
-FileManager.Files.notExist = function () {
-	var scrollingContentEl = document.querySelector('.new-scrolling-content');
-	//scrollingContentEl.innerHTML = '';
-	if (FileManager.CurrentPath().isContainersList()) {
-		scrollingContentEl.innerHTML = 'Container not exist.';
-	} else {
-		scrollingContentEl.innerHTML = 'Directory not exist.';
-	}
-};
-
-FileManager.Files.listHtml = function (files, scrollingContentEl) {
-	var loadMoreEl = document.querySelector('.load-more-button');
-
-	for (var i = 0; i < files.length; i++) {
-		var file = files[i];
-
-		if (file.hasOwnProperty('subdir') || file.content_type == 'application/directory') {
-			scrollingContentEl.insertBefore(createDirectory(file), loadMoreEl);
-		} else {
-			scrollingContentEl.insertBefore(createFile(file), loadMoreEl);
-		}
-	}
-
-	function createDirectory(file) {
-		var _name;
-
-		if (file.hasOwnProperty('subdir')) {
-			_name = file.subdir;
-		} else {
-			_name = file.name;
-		}
-
-		_name = FileManager.Path(_name).name();
-
-		var name = FileManager.Utils.makeShortName(_name);
-		var title = _name;
-
-		var newEl = document.querySelector('.template-directory').cloneNode(true);
-		newEl.classList.remove('template-directory');
-		newEl.classList.remove('template');
-		newEl.querySelector('.name').textContent = name;
-		newEl.setAttribute('title', title);
-		newEl.querySelector('.default-action').addEventListener('click', function (e) {
-			FileManager.Item.click(e.target.parentNode);
-		});
-		newEl.querySelector('.toggle-actions-menu').addEventListener('click', function (e) {
-			var itemEl = e.target.parentNode;
-			FileManager.selectedItemEl = itemEl;
-			var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
-
-			FileManager.ActionsMenu.removeForms();
-			var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
-
-			if (actionsMenu) {
-				actionsMenu.parentNode.removeChild(actionsMenu);
-			}
-
-			if (!isNext) {
-				var newActionsMenu = document.querySelector('.template-actions-menu').cloneNode(true);
-				newActionsMenu.classList.remove('template-actions-menu');
-				newActionsMenu.classList.remove('template');
-				newActionsMenu.textContent = 'Feature is not implemented yet.'
-				document.querySelector('.scrolling-content').insertBefore(newActionsMenu, itemEl.nextSibling);
-			}
-		});
-
-		return newEl;
-	}
-
-	function createFile(file) {
-		var _name = FileManager.Path(file.name).name();
-		var icon = typeToIcon(file.content_type);
-		var name = makeShortFileName(_name);
-		var title = _name;
-		var size = FileManager.Utils.bytesToSize(file.bytes);
-		var modified = makeDatePretty(file.last_modified);
-		var newEl = document.querySelector('.template-file').cloneNode(true)
-		newEl.classList.remove('template-file');
-		newEl.classList.remove('template');
-		newEl.querySelector('span.file-icon').classList.add(icon);
-		newEl.querySelector('.name').textContent = name;
-		newEl.setAttribute('title', title);
-		newEl.querySelector('.size').textContent = size;
-		newEl.querySelector('.modified').textContent = modified;
-		newEl.querySelector('.default-action').addEventListener('click', function (e) {
-			FileManager.Item.click(e.target.parentNode);
-		});
-		newEl.querySelector('.toggle-actions-menu').addEventListener('click', function (e) {
-			var itemEl = e.target.parentNode;
-			FileManager.selectedItemEl = itemEl;
-			var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
-
-			FileManager.ActionsMenu.removeForms();
-			var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
-
-			if (actionsMenu) {
-				actionsMenu.parentNode.removeChild(actionsMenu);
-			}
-
-			if (!isNext) {
-				var newActionsMenu = document.querySelector('.template-actions-menu').cloneNode(true);
-				newActionsMenu.classList.remove('template-actions-menu');
-				newActionsMenu.classList.remove('template');
-				newActionsMenu.textContent = 'Feature is not implemented yet.'
-				document.querySelector('.scrolling-content').insertBefore(newActionsMenu, itemEl.nextSibling);
-			}
-		});
-		return newEl;
-	}
-
-	function typeToIcon(type) {
-
-		type = type.split(';')[0];
-		var icon;
-
-		if (type.indexOf('audio') == 0) {
-			icon = 'audio';
-
-		} else if (type == 'application/pdf') {
-			icon = 'pdf';
-
-		} else if (type.indexOf('image') == 0) {
-			icon = 'pic';
-
-		} else if (type.indexOf('video') == 0) {
-			icon = 'video';
-
-		} else if (type == 'application/msword' || type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
-			icon = 'doc';
-
-		} else if (type == 'application/vnd.ms-excel' || type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-			icon = 'xsl';
-
-		} else if (type == 'application/vnd.ms-powerpoint' || type == 'application/vnd.openxmlformats-officedocument.presentationml.presentation') {
-			icon = 'ppt';
-
-		} else if (type == 'text/html' || type.toLowerCase().indexOf('xml') != -1) {
-			icon = 'xml';
-
-		} else if (type == 'text/x-python') {
-			icon = 'py';
-
-		} else if (type == 'text/x-lua') {
-			icon = 'lua';
-
-		} else if (type == 'application/x-tar' || type == 'application/zip' || type == 'application/gzip' || type == 'application/x-rar' || type == 'application/x-rar-compressed') {
-			icon = 'tar';
-
-		} else if (type == 'text/plain') {
-			icon = 'txt';
-
-		} else if (type == 'text/csv') {
-			icon = 'csv';
-
-		} else if (type == 'application/json') {
-			icon = 'json';
-
-		} else if (type == 'application/x-nexe') {
-			icon = 'nexe';
-
-		} else if (type == 'text/x-csrc' || type == 'text/x-chdr') {
-			icon = 'c';
-
-		} else {
-			icon = 'none';
-		}
-
-		return icon;
-	}
-
-	function makeShortFileName(n, len) {
-		len = len || 30;
-
-		if (n.length <= len) {
-			return n;
-		}
-
-		if (n.indexOf('.') != -1) {
-			var ext = n.substring(n.lastIndexOf("."), n.length);
-			var filename = n.replace(ext, '');
-
-			filename = filename.substr(0, len) + '&raquo;' + ext;
-			return filename;
-		}
-
-		return n.substr(0, len) + '&raquo;';
-	}
-
-	function makeDatePretty(time) {
-		var alternative = (new Date(time)).toDateString();
-
-		var diff = ((new Date()).getTime() - (new Date(time)).getTime()) / 1000,
-			day_diff = Math.floor(diff / 86400);
-
-		if ( isNaN(day_diff) || day_diff < 0 || day_diff >= 31 )
-			return alternative;
-
-		var pretty = day_diff == 0 && (
-			diff < 60 && "just now" ||
-				diff < 120 && "1 minute ago" ||
-				diff < 3600 && Math.floor( diff / 60 ) + " minutes ago" ||
-				diff < 7200 && "1 hour ago" ||
-				diff < 86400 && Math.floor( diff / 3600 ) + " hours ago") ||
-			day_diff == 1 && "Yesterday" ||
-			day_diff < 7 && day_diff + " days ago" ||
-			day_diff < 31 && Math.ceil( day_diff / 7 ) + " weeks ago";
-
-		return pretty || alternative;
-	}
-};
-
-
 FileManager.ContentChange = {};
 
 FileManager.ContentChange.animate = function () {
@@ -1732,6 +905,7 @@ FileManager.ContentChange.animate = function () {
 	//el.textContent = 'Loading...';
 	if (FileManager.CurrentPath().isContainersList()) {
 		FileManager.Containers.list(callback);
+		FileManager.CreateContainerButton.show();
 
 		//FileManager.File.hideMenu();
 		//FileManager.ExecuteButton.hide();
@@ -1979,9 +1153,6 @@ document.addEventListener('click', function (e) {
 		if (FileManager.ENABLE_ZEROVM) {
 			FileManager.ExecuteButton.click(el);
 		}
-	} else if (el = is('delete')) {
-		FileManager.Item.deleteclick(el);
-		return;
 	} else if (el = is('load-more-button')) {
 		FileManager.LoadMoreButton.click(el);
 	} else if (el = is('add-shared-button')) {
@@ -2140,10 +1311,6 @@ document.addEventListener('keydown', function (e) {
 });
 
 document.addEventListener('keyup', function (e) {
-
-	/*if (e.target.classList.contains('metadata-key') || e.target.classList.contains('metadata-value')) {
-		FileManager.Metadata.keyup(e.target);
-	}*/
 
 	if (FileManager.ENABLE_SHARED_CONTAINERS) {
 		if (e.target.classList.contains('read-rights-input') || e.target.classList.contains('write-rights-input')) {
@@ -2334,33 +1501,15 @@ FileManager.reAuth = function () {
 	setTimeout(FileManager.reAuth, 1000 * 60 * 20);
 };
 
-document.querySelector('#Authentication .v1-auth-url').value = document.location.protocol + '//' + document.location.host + '/auth/v1.0';
-
-document.querySelector('#Authentication .login-with-google').onclick = function () {
-	liteauth.login(liteauth.AUTH_TYPES.GOOGLE);
-};
-
-if (liteauth.getLoginInfo()) {
-	document.querySelector('#Authentication .tenant').value = liteauth.getLoginInfo().split(':')[1];
-	document.querySelector('#Authentication .x-auth-user').value = liteauth.getLoginInfo().split(':')[0];
-
-	liteauth.getProfile({
-		success: function (response) {
-			document.querySelector('#Authentication .x-auth-key').value = JSON.parse(response)['auth'].split('plaintext:')[1];
-		},
-		error: function (status, statusText) {
-			alert(status + ' ' + statusText);
-		}
-	});
-}
-
-document.getElementById('Authentication').onsubmit = function (e) {
+FileManager.Authentication = {};
+FileManager.Authentication.el = document.querySelector('#Authentication');
+FileManager.Authentication.el.onsubmit = function (e) {
 	e.preventDefault();
 
-	var v1AuthUrl = this.getElementsByClassName('v1-auth-url')[0].value;
-	var tenant = this.getElementsByClassName('tenant')[0].value;
-	var xAuthUser = this.getElementsByClassName('x-auth-user')[0].value;
-	var xAuthKey = this.getElementsByClassName('x-auth-key')[0].value;
+	var v1AuthUrl = this.querySelector('input.v1-auth-url').value;
+	var tenant = this.querySelector('input.tenant').value;
+	var xAuthUser = this.querySelector('input.x-auth-user').value;
+	var xAuthKey = this.querySelector('input.x-auth-key').value;
 
 	SwiftV1.retrieveTokens({
 		v1AuthUrl: v1AuthUrl,
@@ -2372,7 +1521,7 @@ document.getElementById('Authentication').onsubmit = function (e) {
 	});
 
 	function XHR_OK() {
-		document.getElementById('Authentication').setAttribute('hidden', 'hidden');
+		FileManager.Authentication.el.setAttribute('hidden', 'hidden');
 		if (!location.hash) {
 			location.hash = SwiftV1.getAccount();
 		} else {
@@ -2386,99 +1535,923 @@ document.getElementById('Authentication').onsubmit = function (e) {
 		alert(arguments[0] + ' ' + arguments[1]);
 	}
 };
+FileManager.Authentication.el.querySelector('input.v1-auth-url').value =
+	document.location.protocol + '//' + document.location.host + '/auth/v1.0';
+FileManager.Authentication.el.querySelector('button.login-with-google').addEventListener('click', function () {
+	liteauth.login(liteauth.AUTH_TYPES.GOOGLE);
+});
+if (liteauth.getLoginInfo()) {
+	FileManager.Authentication.el.querySelector('input.tenant').value = liteauth.getLoginInfo().split(':')[1];
+	FileManager.Authentication.el.querySelector('input.x-auth-user').value = liteauth.getLoginInfo().split(':')[0];
 
-document.querySelector('.sign-out-button').onclick = function () {
+	liteauth.getProfile({
+		success: function (response) {
+			document.querySelector('#Authentication .x-auth-key').value = JSON.parse(response)['auth'].split('plaintext:')[1];
+		},
+		error: function (status, statusText) {
+			alert(status + ' ' + statusText);
+		}
+	});
+}
+
+FileManager.SignOutButton = {};
+FileManager.SignOutButton.el = document.querySelector('.sign-out-button');
+FileManager.SignOutButton.el.addEventListener('click', function () {
 	window.location.reload(true);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+FileManager.CreateContainerButton = {};
+FileManager.CreateContainerButton.el = document.querySelector('button.create-container');
+FileManager.CreateContainerButton.el.addEventListener('click', function () {
+	FileManager.CreateContainerForm.open();
+});
+FileManager.CreateContainerButton.show = function () {
+	FileManager.CreateContainerButton.el.removeAttribute('hidden');
+};
+FileManager.CreateContainerButton.hide = function () {
+	FileManager.CreateContainerButton.el.setAttribute('hidden', 'hidden');
+};
+
+FileManager.CreateContainerForm = {};
+FileManager.CreateContainerForm.el = document.querySelector('form.create-container');
+FileManager.CreateContainerForm.el.addEventListener('submit', function (e) {
+	e.preventDefault();
+
+	var inputEl = FileManager.CreateContainerForm.el.querySelector('input.container-name');
+
+	if (inputEl.value.length == 0) {
+		FileManager.CreateContainerForm.showRequiredInputError();
+		return;
+	}
+
+	if (inputEl.value.length > 256) {
+		FileManager.CreateContainerForm.showInputSizeLimitError();
+		return;
+	}
+
+	if (inputEl.value.indexOf('/') != -1) {
+		FileManager.CreateContainerForm.showInvalidCharacterError();
+		return;
+	}
+
+	SwiftV1.createContainer({
+		containerName: inputEl.value,
+		created: function () {
+			FileManager.ContentChange.animate();
+			FileManager.CreateContainerForm.el.setAttribute('hidden', 'hidden');
+			FileManager.Layout.adjust();
+		},
+		alreadyExists: function () {
+			err('err-already-exists');
+		},
+		error: errAjax
+	});
+
+	function err(className) {
+		var errEl = FileManager.CreateContainerForm.el.querySelector('.' + className);
+		errEl.removeAttribute('hidden');
+		inputEl.removeAttribute('disabled');
+		FileManager.Layout.adjust();
+		inputEl.focus();
+	}
+
+	function errAjax(status, statusText) {
+		var errAjaxEl = FileManager.CreateContainerForm.el.querySelector('.err-ajax');
+		errAjaxEl.textContent = 'Ajax Error: ' + statusText + '(' + status + ').';
+		errAjaxEl.removeAttribute('hidden');
+		inputEl.removeAttribute('disabled');
+		FileManager.Layout.adjust();
+		inputEl.focus();
+	}
+});
+FileManager.CreateContainerForm.el.querySelector('button.cancel').addEventListener('click', function () {
+	FileManager.CreateContainerForm.el.setAttribute('hidden', 'hidden');
+	FileManager.Layout.adjust();
+});
+FileManager.CreateContainerForm.el.querySelector('input.container-name').onkeydown = function () {
+	FileManager.CreateContainerForm.clearErrors();
+};
+FileManager.CreateContainerForm.open = function () {
+	FileManager.CreateContainerForm.clearErrors();
+	var inputEl = FileManager.CreateContainerForm.el.querySelector('input.container-name');
+	inputEl.value = '';
+	FileManager.CreateContainerForm.el.removeAttribute('hidden');
+	inputEl.focus();
+	FileManager.Layout.adjust();
+};
+FileManager.CreateContainerForm.showRequiredInputError = function () {
+	FileManager.CreateContainerForm.el.querySelector('.err-empty').removeAttribute('hidden');
+	FileManager.Layout.adjust();
+	FileManager.CreateContainerForm.el.querySelector('input.container-name').focus();
+};
+FileManager.CreateContainerForm.showInputSizeLimitError = function () {
+	FileManager.CreateContainerForm.el.querySelector('.err-size-limit').removeAttribute('hidden');
+	FileManager.Layout.adjust();
+	FileManager.CreateContainerForm.el.querySelector('input.container-name').focus();
+};
+FileManager.CreateContainerForm.showInvalidCharacterError = function () {
+	FileManager.CreateContainerForm.el.querySelector('.err-invalid-character').removeAttribute('hidden');
+	FileManager.Layout.adjust();
+	FileManager.CreateContainerForm.el.querySelector('input.container-name').focus();
+};
+FileManager.CreateContainerForm.clearErrors = function () {
+	var errElements = FileManager.CreateContainerForm.el.querySelectorAll('.err');
+	for (var i = 0; i < errElements.length; i++) {
+		errElements[i].setAttribute('hidden', 'hidden');
+	}
+	FileManager.Layout.adjust();
+};
+
+FileManager.CreateDirectoryButton = {};
+FileManager.CreateDirectoryButton.el = document.querySelector('button.create-directory');
+FileManager.CreateDirectoryButton.el.addEventListener('click', function (e) {
+	FileManager.CreateFileForm.close();
+	FileManager.CreateDirectoryForm.open();
+});
+FileManager.CreateDirectoryButton.show = function () {
+	FileManager.CreateDirectoryButton.el.removeAttribute('hidden');
+};
+FileManager.CreateDirectoryButton.hide = function () {
+	FileManager.CreateDirectoryButton.el.setAttribute('hidden', 'hidden');
+};
+
+FileManager.CreateDirectoryForm = {};
+FileManager.CreateDirectoryForm.el = document.querySelector('form.create-directory');
+FileManager.CreateDirectoryForm.el.addEventListener('submit', function (e) {
+	e.preventDefault();
+
+	var inputEl = this.querySelector('input.directory-name');
+
+	if (!inputEl.value) {
+		this.querySelector('.err-empty').removeAttribute('hidden');
+		FileManager.Layout.adjust();
+		return;
+	}
+
+	if (inputEl.value.indexOf('/') !== -1) {
+		this.querySelector('.err-invalid-character').removeAttribute('hidden');
+		FileManager.Layout.adjust();
+		return;
+	}
+
+	if (inputEl.value.length > 1024) {
+		this.querySelector('.err-size-limit').removeAttribute('hidden');
+		FileManager.Layout.adjust();
+		return;
+	}
+
+	var dirName = inputEl.value + '/';
+	var dirPath = FileManager.CurrentPath().add(dirName);
+	var dirPathWithoutAccount = FileManager.Path(dirPath).withoutAccount();
+
+	var requestArgs = {};
+
+	requestArgs.path = dirPathWithoutAccount;
+
+	if (FileManager.ENABLE_SHARED_CONTAINERS) {
+		requestArgs.account = FileManager.CurrentPath().account();
+	}
+
+	requestArgs.success = function () {
+		FileManager.CreateDirectoryForm.el.querySelector('.err-already-exists').removeAttribute('hidden');
+		FileManager.Layout.adjust();
+	};
+
+	requestArgs.notExist = function () {
+
+		SwiftV1.createDirectory({
+			path: dirPathWithoutAccount,
+			created: function () {
+				FileManager.ContentChange.animate();
+				FileManager.CreateDirectoryForm.close();
+			},
+			error: function (status, statusText) {
+				var el = document.querySelector('.err-ajax');
+				FileManager.AjaxError.show(el, status, statusText);
+			}
+		});
+
+	};
+
+	requestArgs.error = function (status, statusText) {
+		var el = document.querySelector('.err-ajax');
+		FileManager.AjaxError.show(el, status, statusText);
+	};
+
+	SwiftV1.checkDirectoryExist(requestArgs);
+});
+FileManager.CreateDirectoryForm.open = function () {
+	FileManager.CreateDirectoryForm.el.removeAttribute('hidden');
+	var inputEl = FileManager.CreateDirectoryForm.el.querySelector('input.directory-name');
+	inputEl.value = '';
+	inputEl.focus();
+	FileManager.CreateDirectoryForm.clearErrors();
+	FileManager.Layout.adjust();
+};
+FileManager.CreateDirectoryForm.close = function () {
+	FileManager.CreateDirectoryForm.el.setAttribute('hidden', 'hidden');
+	FileManager.Layout.adjust();
+};
+FileManager.CreateDirectoryForm.el.querySelector('button.cancel').addEventListener('click', function (e) {
+	e.preventDefault();
+	FileManager.CreateDirectoryForm.close();
+});
+FileManager.CreateDirectoryForm.clearErrors = function () {
+	var err = FileManager.CreateDirectoryForm.el.querySelectorAll('.err');
+	for (var i = 0; i < err.length; i++) {
+		err[i].setAttribute('hidden', 'hidden');
+	}
+	FileManager.Layout.adjust();
+};
+FileManager.CreateDirectoryForm.el.querySelector('input.directory-name').addEventListener('keydown', function () {
+	FileManager.CreateDirectoryForm.clearErrors();
+});
+
+FileManager.CreateFileButton = {};
+FileManager.CreateFileButton.el = document.querySelector('button.create-file');
+FileManager.CreateFileButton.show = function () {
+	FileManager.CreateFileButton.el.removeAttribute('hidden');
+};
+FileManager.CreateFileButton.hide = function () {
+	FileManager.CreateFileButton.el.setAttribute('hidden', 'hidden');
+};
+FileManager.CreateFileButton.el.addEventListener('click', function () {
+	FileManager.CreateDirectoryForm.close();
+	FileManager.CreateFileForm.open();
+});
+
+FileManager.CreateFileForm = {};
+FileManager.CreateFileForm.el = document.querySelector('form.create-file');
+FileManager.CreateFileForm.el.addEventListener('submit', function (e) {
+	e.preventDefault();
+
+	var nameEl = this.querySelector('input.file-name');
+	var typeEl = this.querySelector('input.content-type');
+
+	if (nameEl.value === '') {
+		this.querySelector('.err-empty').removeAttribute('hidden');
+		FileManager.Layout.adjust();
+		return;
+	}
+
+
+	var filePath = FileManager.CurrentPath().add(nameEl.value);
+
+	var requestArgs = {};
+	requestArgs.path = FileManager.Path(filePath).withoutAccount();
+	requestArgs.contentType = typeEl.value;
+	requestArgs.data = '';
+
+	if (FileManager.ENABLE_SHARED_CONTAINERS) {
+		requestArgs.account = FileManager.CurrentPath().account();
+	}
+
+	requestArgs.created = function () {
+		FileManager.CreateFileForm.close();
+		FileManager.ContentChange.animate();
+		FileManager.CreateFileForm.clearErrors();
+	};
+
+	requestArgs.error = function (status, statusText) {
+		var el = FileManager.CreateFileForm.el.querySelector('.err-ajax');
+		FileManager.AjaxError.show(el, status, statusText);
+	};
+
+	SwiftV1.createFile(requestArgs);
+});
+FileManager.CreateFileForm.open = function () {
+	FileManager.CreateFileForm.el.removeAttribute('hidden');
+	var nameEl = FileManager.CreateFileForm.el.querySelector('input.file-name');
+	var typeEl = FileManager.CreateFileForm.el.querySelector('input.content-type');
+	nameEl.value = '';
+	typeEl.value = 'text/plain';
+	nameEl.focus();
+	FileManager.CreateFileForm.clearErrors();
+	FileManager.Layout.adjust();
+};
+FileManager.CreateFileForm.close = function () {
+	FileManager.CreateFileForm.el.setAttribute('hidden', 'hidden');
+	FileManager.Layout.adjust();
+};
+FileManager.CreateFileForm.clearErrors = function () {
+	var err = FileManager.CreateFileForm.el.querySelectorAll('.err');
+	for (var i = 0; i < err.length; i++) {
+		err[i].setAttribute('hidden', 'hidden');
+	}
+	FileManager.Layout.adjust();
+};
+FileManager.CreateFileForm.el.querySelector('button.cancel').addEventListener('click', function (e) {
+	e.preventDefault();
+	FileManager.CreateFileForm.close();
+});
+
+
+FileManager.Containers = {};
+FileManager.Containers.LIMIT = 20;
+FileManager.Containers.list = function (callback) {
+	var scrollingContentEl = document.querySelector('.new-scrolling-content');
+
+	var xhr = SwiftV1.listContainers({
+		format: 'json',
+		limit: FileManager.Containers.LIMIT,
+		success: function (containers) {
+			//scrollingContentEl.innerHTML = '';
+
+			if (FileManager.ENABLE_SHARED_CONTAINERS) {
+				var sharedContainers = SharedContainersOnSwift.getFromXhr(xhr);
+				if (containers.length == 0 && sharedContainers.length == 0) {
+					noContainers();
+					callback();
+					return;
+				}
+				FileManager.Shared.listSharedContainers(sharedContainers, scrollingContentEl);
+			}
+
+			list(containers);
+		},
+		error: function (status, statusText) {
+			scrollingContentEl.innerHTML = 'Error occurred: ' + status + ' ' + statusText;
+			callback();
+		}
+	});
+
+	function list(containers) {
+
+		if (containers.length == 0) {
+			noContainers();
+			callback();
+			return;
+		}
+
+		FileManager.UpButton.disable();
+		FileManager.CurrentDirLabel.root();
+		var loadMoreEl = scrollingContentEl.querySelector('.load-more-button');
+
+		for (var i = 0; i < containers.length; i++) {
+			var container = containers[i];
+			var containerEl = FileManager.Containers.create(container);
+			scrollingContentEl.insertBefore(containerEl, loadMoreEl);
+		}
+
+		callback();
+
+		if (containers.length == 20) {
+			loadMoreEl.removeAttribute('hidden');
+		}
+
+		if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
+			FileManager.Containers.loadMore();
+		}
+	}
+
+	function noContainers() {
+		var html = document.querySelector('#noContainersTemplate').innerHTML;
+		scrollingContentEl.insertAdjacentHTML('beforeend', html);
+	}
+
+};
+FileManager.Containers.loadMore = function () {
+	var loadMoreEl = document.querySelector('.load-more-button');
+	if (!loadMoreEl) {
+		return;
+	}
+	loadMoreEl.textContent = 'Loading...';
+	loadMoreEl.setAttribute('disabled', 'disabled');
+
+	var marker = document.querySelector('.item:nth-last-child(2)').getAttribute('title');
+
+	SwiftV1.listContainers({
+		marker: marker,
+		format: 'json',
+		limit: FileManager.Containers.LIMIT,
+		success: function (containers) {
+
+			var loadMoreEl = document.querySelector('.load-more-button');
+
+			if (containers.length == 0) {
+				loadMoreEl.setAttribute('hidden', 'hidden')
+				return;
+			}
+
+			if (loadMoreEl) {
+				loadMoreEl.removeAttribute('hidden');
+			}
+			for (var i = 0; i < containers.length; i++) {
+				var container = containers[i];
+				var containerEl = FileManager.Containers.create(container);
+				var scrollingContentEl = document.querySelector('.scrolling-content');
+				scrollingContentEl.insertBefore(containerEl, loadMoreEl);
+			}
+
+			loadMoreEl.textContent = 'Load more';
+			loadMoreEl.removeAttribute('disabled');
+
+			if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
+				FileManager.Containers.loadMore();
+			}
+		},
+		error: error
+	});
+
+	function error(status, statusText) {
+		var loadMoreEl = document.querySelector('.load-more-button');
+		loadMoreEl.textContent = 'Error: ' + status + ' ' + statusText;
+	}
+};
+FileManager.Containers.create = function (containerObj) {
+
+	var name = FileManager.Utils.makeShortName(containerObj.name);
+	var title = containerObj.name;
+	var size = FileManager.Utils.bytesToSize(containerObj.bytes);
+	var files = containerObj.count;
+
+	var t = document.querySelector('.template-container').cloneNode(true);
+
+	t.classList.remove('template');
+	t.classList.remove('template-container');
+
+	t.querySelector('.default-action').addEventListener('click', FileManager.DefaultAction.click);
+	t.querySelector('.toggle-actions-menu').addEventListener('click', FileManager.ActionsMenu.click);
+	t.querySelector('.name').textContent = name;
+	t.setAttribute('title', title);
+	t.querySelector('.size').textContent = size;
+	t.querySelector('.files').textContent = files;
+
+	return t;
 };
 
 
+FileManager.Files = {};
+FileManager.Files.LIMIT = 20;
+FileManager.Files.list = function (callback) {
+	var requestArgs = {};
+
+	requestArgs.containerName = FileManager.CurrentPath().container();
+	requestArgs.format = 'json';
+	requestArgs.limit = FileManager.Files.LIMIT;
+	requestArgs.delimiter = '/';
+
+	if (FileManager.CurrentPath().isDirectory()) {
+		requestArgs.prefix = FileManager.CurrentPath().prefix();
+	}
+
+	if (FileManager.ENABLE_SHARED_CONTAINERS) {
+		requestArgs.account = FileManager.CurrentPath().account();
+	}
+
+	requestArgs.success = function (FILES) {
+		var scrollingContentEl = document.querySelector('.new-scrolling-content');
+		//scrollingContentEl.innerHTML = '';
+
+		var files = FILES.slice(0); // copy (clone) array
+
+		if (checkFirstFile(files)) {
+			files = files.splice(1);
+		}
+
+		if (files.length == 0) {
+			var html = document.querySelector('#noFilesTemplate').innerHTML;
+			scrollingContentEl.insertAdjacentHTML('beforeend', html);
+
+		} else {
+
+			FileManager.Files.listHtml(files, scrollingContentEl);
+
+			if (FILES.length == 20) {
+				document.querySelector('.load-more-button').removeAttribute('hidden');
+			}
+
+			if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
+				FileManager.Files.loadMore();
+			}
+
+		}
+
+		FileManager.UpButton.enable();
+		FileManager.CurrentDirLabel.setContent(FileManager.CurrentPath().name());
+		callback();
+
+		function checkFirstFile(files) {
+			var prefix = FileManager.CurrentPath().prefix();
+			if (files.length > 0 && prefix) {
+				var file = files[0];
+				var nameInFiles = file.hasOwnProperty('subdir') ? file.subdir : file.name;
+
+				if (prefix == nameInFiles) {
+					return true;
+				}
+			}
+			return false;
+		}
+	};
+
+	requestArgs.error = function error(status, statusText) {
+		var scrollingContentEl = document.querySelector('.new-scrolling-content');
+		//scrollingContentEl.innerHTML = '';
+		var loadingEl = document.querySelector('.item-loading') || document.querySelector('.scrolling-content-loading');
+		loadingEl.textContent = 'Error: ' + status + ' ' + statusText;
+		callback();
+	};
+
+	requestArgs.notExist = FileManager.Files.notExist;
+
+	SwiftV1.listFiles(requestArgs);
+};
+FileManager.Files.loadMore = function () {
+
+	var loadMoreEl = document.querySelector('.load-more-button');
+
+	if (!loadMoreEl) {
+		return;
+	}
+
+	loadMoreEl.textContent = 'Loading...';
+	loadMoreEl.setAttribute('disabled', 'disabled');
+
+	var filesArgs = {};
+
+	filesArgs.containerName = FileManager.CurrentPath().container();
+	filesArgs.delimiter = '/';
+	filesArgs.format = 'json';
+	filesArgs.limit = FileManager.Files.LIMIT;
+
+	var lastFile = document.querySelector('.item:nth-last-child(2)').getAttribute('title');
+
+	if (FileManager.CurrentPath().isDirectory()) {
+		var prefix = FileManager.CurrentPath().prefix();
+		filesArgs.marker = prefix + lastFile;
+		filesArgs.prefix = prefix;
+	} else {
+		filesArgs.marker = lastFile;
+	}
+
+	if (FileManager.ENABLE_SHARED_CONTAINERS) {
+		filesArgs.account = FileManager.CurrentPath().account();
+	}
+
+	filesArgs.success = function (files) {
+		var loadMoreEl = document.querySelector('.load-more-button');
+
+		if (files.length == 0) {
+			loadMoreEl.setAttribute('hidden', 'hidden');
+			return;
+		}
+
+		//el.insertAdjacentHTML('beforebegin', );
+		var scrollingContentEl = document.querySelector('.scrolling-content');
+		FileManager.Files.listHtml(files, scrollingContentEl);
+		loadMoreEl.textContent = 'Load more';
+		loadMoreEl.removeAttribute('disabled');
+
+		if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
+			FileManager.Files.loadMore();
+		}
+	};
+
+	filesArgs.error =  function (status, statusText) {
+		var loadMoreEl = document.querySelector('.load-more-button');
+		loadMoreEl.textContent = 'Error: ' + status + ' ' + statusText;
+	};
+
+	filesArgs.notExist = FileManager.Files.notExist;
+
+	SwiftV1.listFiles(filesArgs);
+};
+FileManager.Files.notExist = function () {
+	var scrollingContentEl = document.querySelector('.new-scrolling-content');
+	//scrollingContentEl.innerHTML = '';
+	if (FileManager.CurrentPath().isContainersList()) {
+		scrollingContentEl.innerHTML = 'Container not exist.';
+	} else {
+		scrollingContentEl.innerHTML = 'Directory not exist.';
+	}
+};
+FileManager.Files.listHtml = function (files, scrollingContentEl) {
+	var loadMoreEl = document.querySelector('.load-more-button');
+
+	for (var i = 0; i < files.length; i++) {
+		var file = files[i];
+
+		if (file.hasOwnProperty('subdir') || file.content_type == 'application/directory') {
+			scrollingContentEl.insertBefore(createDirectory(file), loadMoreEl);
+		} else {
+			scrollingContentEl.insertBefore(createFile(file), loadMoreEl);
+		}
+	}
+
+	function createDirectory(file) {
+		var _name;
+
+		if (file.hasOwnProperty('subdir')) {
+			_name = file.subdir;
+		} else {
+			_name = file.name;
+		}
+
+		_name = FileManager.Path(_name).name();
+
+		var name = FileManager.Utils.makeShortName(_name);
+		var title = _name;
+
+		var newEl = document.querySelector('.template-directory').cloneNode(true);
+		newEl.classList.remove('template-directory');
+		newEl.classList.remove('template');
+		newEl.querySelector('.name').textContent = name;
+		newEl.setAttribute('title', title);
+		newEl.querySelector('.default-action').addEventListener('click', FileManager.DefaultAction.click);
+		newEl.querySelector('.toggle-actions-menu').addEventListener('click', function (e) {
+			var itemEl = e.target.parentNode;
+			FileManager.Item.selectedEl = itemEl;
+			var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
+
+			FileManager.ActionsMenu.removeForms();
+			var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
+
+			if (actionsMenu) {
+				actionsMenu.parentNode.removeChild(actionsMenu);
+			}
+
+			if (!isNext) {
+				var newActionsMenu = document.querySelector('.template-actions-menu').cloneNode(true);
+				newActionsMenu.classList.remove('template-actions-menu');
+				newActionsMenu.classList.remove('template');
+				newActionsMenu.textContent = 'Feature is not implemented yet.'
+				document.querySelector('.scrolling-content').insertBefore(newActionsMenu, itemEl.nextSibling);
+			}
+		});
+
+		return newEl;
+	}
+
+	function createFile(file) {
+		var _name = FileManager.Path(file.name).name();
+		var icon = typeToIcon(file.content_type);
+		var name = makeShortFileName(_name);
+		var title = _name;
+		var size = FileManager.Utils.bytesToSize(file.bytes);
+		var modified = makeDatePretty(file.last_modified);
+		var newEl = document.querySelector('.template-file').cloneNode(true)
+		newEl.classList.remove('template-file');
+		newEl.classList.remove('template');
+		newEl.querySelector('span.file-icon').classList.add(icon);
+		newEl.querySelector('.name').textContent = name;
+		newEl.setAttribute('title', title);
+		newEl.querySelector('.size').textContent = size;
+		newEl.querySelector('.modified').textContent = modified;
+		newEl.querySelector('.default-action').addEventListener('click', FileManager.DefaultAction.click);
+		newEl.querySelector('.toggle-actions-menu').addEventListener('click', function (e) {
+			var itemEl = e.target.parentNode;
+			FileManager.Item.selectedEl = itemEl;
+			var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
+
+			FileManager.ActionsMenu.removeForms();
+			var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
+
+			if (actionsMenu) {
+				actionsMenu.parentNode.removeChild(actionsMenu);
+			}
+
+			if (!isNext) {
+				var newActionsMenu = document.querySelector('.template-actions-menu').cloneNode(true);
+				newActionsMenu.classList.remove('template-actions-menu');
+				newActionsMenu.classList.remove('template');
+				newActionsMenu.textContent = 'Feature is not implemented yet.'
+				document.querySelector('.scrolling-content').insertBefore(newActionsMenu, itemEl.nextSibling);
+			}
+		});
+		return newEl;
+	}
+
+	function typeToIcon(type) {
+
+		type = type.split(';')[0];
+		var icon;
+
+		if (type.indexOf('audio') == 0) {
+			icon = 'audio';
+
+		} else if (type == 'application/pdf') {
+			icon = 'pdf';
+
+		} else if (type.indexOf('image') == 0) {
+			icon = 'pic';
+
+		} else if (type.indexOf('video') == 0) {
+			icon = 'video';
+
+		} else if (type == 'application/msword' || type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+			icon = 'doc';
+
+		} else if (type == 'application/vnd.ms-excel' || type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+			icon = 'xsl';
+
+		} else if (type == 'application/vnd.ms-powerpoint' || type == 'application/vnd.openxmlformats-officedocument.presentationml.presentation') {
+			icon = 'ppt';
+
+		} else if (type == 'text/html' || type.toLowerCase().indexOf('xml') != -1) {
+			icon = 'xml';
+
+		} else if (type == 'text/x-python') {
+			icon = 'py';
+
+		} else if (type == 'text/x-lua') {
+			icon = 'lua';
+
+		} else if (type == 'application/x-tar' || type == 'application/zip' || type == 'application/gzip' || type == 'application/x-rar' || type == 'application/x-rar-compressed') {
+			icon = 'tar';
+
+		} else if (type == 'text/plain') {
+			icon = 'txt';
+
+		} else if (type == 'text/csv') {
+			icon = 'csv';
+
+		} else if (type == 'application/json') {
+			icon = 'json';
+
+		} else if (type == 'application/x-nexe') {
+			icon = 'nexe';
+
+		} else if (type == 'text/x-csrc' || type == 'text/x-chdr') {
+			icon = 'c';
+
+		} else {
+			icon = 'none';
+		}
+
+		return icon;
+	}
+
+	function makeShortFileName(n, len) {
+		len = len || 30;
+
+		if (n.length <= len) {
+			return n;
+		}
+
+		if (n.indexOf('.') != -1) {
+			var ext = n.substring(n.lastIndexOf("."), n.length);
+			var filename = n.replace(ext, '');
+
+			filename = filename.substr(0, len) + '&raquo;' + ext;
+			return filename;
+		}
+
+		return n.substr(0, len) + '&raquo;';
+	}
+
+	function makeDatePretty(time) {
+		var alternative = (new Date(time)).toDateString();
+
+		var diff = ((new Date()).getTime() - (new Date(time)).getTime()) / 1000,
+			day_diff = Math.floor(diff / 86400);
+
+		if ( isNaN(day_diff) || day_diff < 0 || day_diff >= 31 )
+			return alternative;
+
+		var pretty = day_diff == 0 && (
+			diff < 60 && "just now" ||
+				diff < 120 && "1 minute ago" ||
+				diff < 3600 && Math.floor( diff / 60 ) + " minutes ago" ||
+				diff < 7200 && "1 hour ago" ||
+				diff < 86400 && Math.floor( diff / 3600 ) + " hours ago") ||
+			day_diff == 1 && "Yesterday" ||
+			day_diff < 7 && day_diff + " days ago" ||
+			day_diff < 31 && Math.ceil( day_diff / 7 ) + " weeks ago";
+
+		return pretty || alternative;
+	}
+};
 
 
+FileManager.Item = {};
+FileManager.Item.selectedEl = null;
+FileManager.Item.selectedPath = null;
+FileManager.Item.showLoading = function (itemEl) {
+	var loadingHtml = document.querySelector('#itemLoadingTemplate').innerHTML;
+	itemEl.classList.add('clicked');
+	itemEl.insertAdjacentHTML('afterbegin', loadingHtml);
+};
 
 
+FileManager.LoadMoreButton = {};
+FileManager.LoadMoreButton.click = function () {
+	if (FileManager.CurrentPath().isContainersList()) {
+		FileManager.Containers.loadMore();
+	} else {
+		FileManager.Files.loadMore();
+	}
+};
 
 
+FileManager.DefaultAction = {};
+FileManager.DefaultAction.click = function (e) {
+	var itemEl = e.target.parentNode;
+	var name = itemEl.getAttribute('title');
+	FileManager.Item.selectedPath = FileManager.CurrentPath().add(name);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-FileManager.selectedItemEl = null;
+	FileManager.disableAll();
+	FileManager.Item.showLoading(itemEl);
+	location.hash = FileManager.Item.selectedPath;
+};
 
 FileManager.ActionsMenu = {};
+FileManager.ActionsMenu.click = function (e) {
+	var itemEl = e.target.parentNode;
+	FileManager.Item.selectedEl = itemEl;
+	var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
 
+	FileManager.ActionsMenu.removeForms();
+	var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
+
+	if (actionsMenu) {
+		actionsMenu.parentNode.removeChild(actionsMenu);
+	}
+
+	if (!isNext) {
+		var newActionsMenu = document.querySelector('.template-actions-menu').cloneNode(true);
+		newActionsMenu.classList.remove('template-actions-menu');
+		newActionsMenu.classList.remove('template');
+		document.querySelector('.scrolling-content').insertBefore(newActionsMenu, itemEl.nextSibling);
+	}
+};
 FileManager.ActionsMenu.removeForms = function () {
 	FileManager.ConfirmDeleteForm.removeEl();
 	FileManager.MetadataForm.removeEl();
 };
-
-
 FileManager.ActionsMenu.deleteAction = function () {
 	var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
 	FileManager.ActionsMenu.removeForms();
 	FileManager.ConfirmDeleteForm.createAfterActionsMenu(actionsMenu);
 };
-
 document.addEventListener('click', function (e) {
 	if (e.target.classList.contains('delete-action')) {
 		FileManager.ActionsMenu.deleteAction();
 	}
 });
-
 FileManager.ActionsMenu.metadataAction = function () {
 	var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
 	FileManager.ActionsMenu.removeForms();
 	FileManager.MetadataForm.createAfterActionsMenu(actionsMenu);
 };
-
 document.addEventListener('click', function (e) {
 	if (e.target.classList.contains('metadata-action')) {
 		FileManager.ActionsMenu.metadataAction();
 	}
 });
 
-
-
 FileManager.ConfirmDeleteForm = {};
-
 FileManager.ConfirmDeleteForm.removeEl = function () {
 	var actionsMenu = document.querySelector('.scrolling-content .confirm-delete-form');
 
@@ -2486,7 +2459,6 @@ FileManager.ConfirmDeleteForm.removeEl = function () {
 		actionsMenu.parentNode.removeChild(actionsMenu);
 	}
 };
-
 FileManager.ConfirmDeleteForm.createAfterActionsMenu = function (actionsMenuEl) {
 	var newActionsMenu = document.querySelector('.template-confirm-delete-form').cloneNode(true);
 	newActionsMenu.classList.remove('template-confirm-delete-form');
@@ -2496,7 +2468,7 @@ FileManager.ConfirmDeleteForm.createAfterActionsMenu = function (actionsMenuEl) 
 		//document.querySelector('.delete-deleting-label').removeAttribute('hidden');
 
 		//var itemEl = el.parentNode.previousElementSibling;
-		var name = FileManager.selectedItemEl.title;
+		var name = FileManager.Item.selectedEl.title;
 		var itemPath = FileManager.CurrentPath().add(name);
 
 		SwiftAdvancedFunctionality.delete({
@@ -2522,7 +2494,9 @@ FileManager.ConfirmDeleteForm.createAfterActionsMenu = function (actionsMenuEl) 
 };
 
 FileManager.MetadataForm = {};
-
+FileManager.MetadataForm.initialMetadata = null;
+FileManager.MetadataForm.initialContentType = null;
+FileManager.MetadataForm.metadataPath = null;
 FileManager.MetadataForm.removeEl = function () {
 	var actionsMenu = document.querySelector('.scrolling-content .metadata-form');
 
@@ -2530,7 +2504,6 @@ FileManager.MetadataForm.removeEl = function () {
 		actionsMenu.parentNode.removeChild(actionsMenu);
 	}
 };
-
 FileManager.MetadataForm.createAfterActionsMenu = function (actionsMenuEl) {
 	var newActionsMenu = document.querySelector('.template-metadata-form').cloneNode(true);
 	newActionsMenu.classList.remove('template-metadata-form');
@@ -2538,14 +2511,9 @@ FileManager.MetadataForm.createAfterActionsMenu = function (actionsMenuEl) {
 	document.querySelector('.scrolling-content').insertBefore(newActionsMenu, actionsMenuEl.nextSibling);
 	FileManager.MetadataForm.load();
 };
-
-FileManager.MetadataForm.initialMetadata = null;
-FileManager.MetadataForm.initialContentType = null;
-FileManager.MetadataForm.metadataPath = null;
-
 FileManager.MetadataForm.load = function () {
 
-	var path = SwiftV1.getAccount() + '/' + FileManager.selectedItemEl.getAttribute('title');
+	var path = SwiftV1.getAccount() + '/' + FileManager.Item.selectedEl.getAttribute('title');
 	var formEl = document.querySelector('.scrolling-content .metadata-form');
 	var listEl = formEl.querySelector('.metadata-list');
 
@@ -2718,7 +2686,6 @@ FileManager.MetadataForm.load = function () {
 		}
 	};
 };
-
 FileManager.MetadataForm.save = function () {
 
 	var formEl = document.querySelector('.scrolling-content .metadata-form');
@@ -2801,187 +2768,3 @@ FileManager.MetadataForm.save = function () {
 		errorEl.removeAttribute('hidden');
 	}
 };
-
-
-FileManager.CreateDirectoryButton = {};
-FileManager.CreateDirectoryButton.el = document.querySelector('button.create-directory');
-FileManager.CreateDirectoryButton.el.addEventListener('click', function (e) {
-	FileManager.CreateFileForm.close();
-	FileManager.CreateDirectoryForm.open();
-});
-FileManager.CreateDirectoryButton.show = function () {
-	FileManager.CreateDirectoryButton.el.removeAttribute('hidden');
-};
-FileManager.CreateDirectoryButton.hide = function () {
-	FileManager.CreateDirectoryButton.el.setAttribute('hidden', 'hidden');
-};
-
-FileManager.CreateDirectoryForm = {};
-FileManager.CreateDirectoryForm.el = document.querySelector('form.create-directory');
-FileManager.CreateDirectoryForm.el.addEventListener('submit', function (e) {
-	e.preventDefault();
-
-	var inputEl = this.querySelector('input.directory-name');
-
-	if (!inputEl.value) {
-		this.querySelector('.err-empty').removeAttribute('hidden');
-		FileManager.Layout.adjust();
-		return;
-	}
-
-	if (inputEl.value.indexOf('/') !== -1) {
-		this.querySelector('.err-invalid-character').removeAttribute('hidden');
-		FileManager.Layout.adjust();
-		return;
-	}
-
-	if (inputEl.value.length > 1024) {
-		this.querySelector('.err-size-limit').removeAttribute('hidden');
-		FileManager.Layout.adjust();
-		return;
-	}
-
-	var dirName = inputEl.value + '/';
-	var dirPath = FileManager.CurrentPath().add(dirName);
-	var dirPathWithoutAccount = FileManager.Path(dirPath).withoutAccount();
-
-	var requestArgs = {};
-
-	requestArgs.path = dirPathWithoutAccount;
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		requestArgs.account = FileManager.CurrentPath().account();
-	}
-
-	requestArgs.success = function () {
-		FileManager.CreateDirectoryForm.el.querySelector('.err-already-exists').removeAttribute('hidden');
-		FileManager.Layout.adjust();
-	};
-
-	requestArgs.notExist = function () {
-
-		SwiftV1.createDirectory({
-			path: dirPathWithoutAccount,
-			created: function () {
-				FileManager.ContentChange.animate();
-				FileManager.CreateDirectoryForm.close();
-			},
-			error: function (status, statusText) {
-				var el = document.querySelector('.err-ajax');
-				FileManager.AjaxError.show(el, status, statusText);
-			}
-		});
-
-	};
-
-	requestArgs.error = function (status, statusText) {
-		var el = document.querySelector('.err-ajax');
-		FileManager.AjaxError.show(el, status, statusText);
-	};
-
-	SwiftV1.checkDirectoryExist(requestArgs);
-});
-FileManager.CreateDirectoryForm.open = function () {
-	FileManager.CreateDirectoryForm.el.removeAttribute('hidden');
-	var inputEl = FileManager.CreateDirectoryForm.el.querySelector('input.directory-name');
-	inputEl.value = '';
-	inputEl.focus();
-	FileManager.CreateDirectoryForm.clearErrors();
-	FileManager.Layout.adjust();
-};
-FileManager.CreateDirectoryForm.close = function () {
-	FileManager.CreateDirectoryForm.el.setAttribute('hidden', 'hidden');
-	FileManager.Layout.adjust();
-};
-FileManager.CreateDirectoryForm.el.querySelector('button.cancel').addEventListener('click', function (e) {
-	e.preventDefault();
-	FileManager.CreateDirectoryForm.close();
-});
-FileManager.CreateDirectoryForm.clearErrors = function () {
-	var err = FileManager.CreateDirectoryForm.el.querySelectorAll('.err');
-	for (var i = 0; i < err.length; i++) {
-		err[i].setAttribute('hidden', 'hidden');
-	}
-	FileManager.Layout.adjust();
-};
-FileManager.CreateDirectoryForm.el.querySelector('input.directory-name').addEventListener('keydown', function () {
-	FileManager.CreateDirectoryForm.clearErrors();
-});
-
-FileManager.CreateFileButton = {};
-FileManager.CreateFileButton.el = document.querySelector('button.create-file');
-FileManager.CreateFileButton.show = function () {
-	FileManager.CreateFileButton.el.removeAttribute('hidden');
-};
-FileManager.CreateFileButton.hide = function () {
-	FileManager.CreateFileButton.el.setAttribute('hidden', 'hidden');
-};
-FileManager.CreateFileButton.el.addEventListener('click', function () {
-	FileManager.CreateDirectoryForm.close();
-	FileManager.CreateFileForm.open();
-});
-FileManager.CreateFileForm = {};
-FileManager.CreateFileForm.el = document.querySelector('form.create-file');
-FileManager.CreateFileForm.el.addEventListener('submit', function (e) {
-	e.preventDefault();
-
-	var nameEl = this.querySelector('input.file-name');
-	var typeEl = this.querySelector('input.content-type');
-
-	if (nameEl.value === '') {
-		this.querySelector('.err-empty').removeAttribute('hidden');
-		FileManager.Layout.adjust();
-		return;
-	}
-
-
-	var filePath = FileManager.CurrentPath().add(nameEl.value);
-
-	var requestArgs = {};
-	requestArgs.path = FileManager.Path(filePath).withoutAccount();
-	requestArgs.contentType = typeEl.value;
-	requestArgs.data = '';
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		requestArgs.account = FileManager.CurrentPath().account();
-	}
-
-	requestArgs.created = function () {
-		FileManager.CreateFileForm.close();
-		FileManager.ContentChange.animate();
-		FileManager.CreateFileForm.clearErrors();
-	};
-
-	requestArgs.error = function (status, statusText) {
-		var el = FileManager.CreateFileForm.el.querySelector('.err-ajax');
-		FileManager.AjaxError.show(el, status, statusText);
-	};
-
-	SwiftV1.createFile(requestArgs);
-});
-FileManager.CreateFileForm.open = function () {
-	FileManager.CreateFileForm.el.removeAttribute('hidden');
-	var nameEl = FileManager.CreateFileForm.el.querySelector('input.file-name');
-	var typeEl = FileManager.CreateFileForm.el.querySelector('input.content-type');
-	nameEl.value = '';
-	typeEl.value = 'text/plain';
-	nameEl.focus();
-	FileManager.CreateFileForm.clearErrors();
-	FileManager.Layout.adjust();
-};
-FileManager.CreateFileForm.close = function () {
-	FileManager.CreateFileForm.el.setAttribute('hidden', 'hidden');
-	FileManager.Layout.adjust();
-};
-FileManager.CreateFileForm.clearErrors = function () {
-	var err = FileManager.CreateFileForm.el.querySelectorAll('.err');
-	for (var i = 0; i < err.length; i++) {
-		err[i].setAttribute('hidden', 'hidden');
-	}
-	FileManager.Layout.adjust();
-};
-FileManager.CreateFileForm.el.querySelector('button.cancel').addEventListener('click', function (e) {
-	e.preventDefault();
-	FileManager.CreateFileForm.close();
-});
-
