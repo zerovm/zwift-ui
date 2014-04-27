@@ -2208,26 +2208,7 @@ FileManager.Files.listHtml = function (files, scrollingContentEl) {
 		newEl.querySelector('.name').textContent = name;
 		newEl.setAttribute('title', title);
 		newEl.querySelector('.default-action').addEventListener('click', FileManager.DefaultAction.click);
-		newEl.querySelector('.toggle-actions-menu').addEventListener('click', function (e) {
-			var itemEl = e.target.parentNode;
-			FileManager.Item.selectedEl = itemEl;
-			var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
-
-			FileManager.ActionsMenu.removeForms();
-			var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
-
-			if (actionsMenu) {
-				actionsMenu.parentNode.removeChild(actionsMenu);
-			}
-
-			if (!isNext) {
-				var newActionsMenu = document.querySelector('.template-actions-menu').cloneNode(true);
-				newActionsMenu.classList.remove('template-actions-menu');
-				newActionsMenu.classList.remove('template');
-				newActionsMenu.textContent = 'Feature is not implemented yet.'
-				document.querySelector('.scrolling-content').insertBefore(newActionsMenu, itemEl.nextSibling);
-			}
-		});
+		newEl.querySelector('.toggle-actions-menu').addEventListener('click', FileManager.ActionsMenu.click);
 
 		return newEl;
 	}
