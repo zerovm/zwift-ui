@@ -936,7 +936,7 @@ FileManager.ContentChange.transition = function (e) {
 		return;
 	}
 
-	var el = e.target;
+	var el = e.currentTarget;
 
 	if (el.classList.contains('old-scrolling-content')) {
 		el.parentNode.removeChild(el);
@@ -1211,7 +1211,7 @@ document.addEventListener('click', function (e) {
 	}
 
 	function is(className) {
-		var node1 = e.target;
+		var node1 = e.currentTarget;
 		var node2 = node1.parentNode;
 		var node3 = node2.parentNode;
 
@@ -1239,57 +1239,57 @@ document.addEventListener('click', function (e) {
 
 document.addEventListener('keydown', function (e) {
 
-	if (FileManager.ENABLE_SHARED_CONTAINERS && e.target.classList.contains('add-shared-input-account')) {
-		FileManager.AddShared.clearErrors(e.target);
+	if (FileManager.ENABLE_SHARED_CONTAINERS && e.currentTarget.classList.contains('add-shared-input-account')) {
+		FileManager.AddShared.clearErrors(e.currentTarget);
 	}
 
-	if (FileManager.ENABLE_SHARED_CONTAINERS && e.target.classList.contains('add-shared-input-container')) {
+	if (FileManager.ENABLE_SHARED_CONTAINERS && e.currentTarget.classList.contains('add-shared-input-container')) {
 		if (e.which == 13) {
 			FileManager.AddShared.click();
 			return;
 		}
-		FileManager.AddShared.clearErrors(e.target);
+		FileManager.AddShared.clearErrors(e.currentTarget);
 	}
 
-	if (e.target.classList.contains('create-file-input-name')) {
+	if (e.currentTarget.classList.contains('create-file-input-name')) {
 
 		if (e.which == 13) {
 			document.querySelector('.create-file-input-type').focus();
 		}
 
-		FileManager.CreateFile.clearErrors(e.target);
+		FileManager.CreateFile.clearErrors(e.currentTarget);
 	}
 
-	if (e.target.classList.contains('create-file-input-type')) {
+	if (e.currentTarget.classList.contains('create-file-input-type')) {
 
 		if (e.which == 13) {
 			FileManager.CreateFile.click();
 			return;
 		}
 
-		FileManager.CreateFile.clearErrors(e.target);
+		FileManager.CreateFile.clearErrors(e.currentTarget);
 	}
 
-	if (e.target.classList.contains('save-as-input-path')) {
+	if (e.currentTarget.classList.contains('save-as-input-path')) {
 
 		if (e.which == 13) {
 			document.querySelector('.save-as-input-type').focus();
 		}
 
-		FileManager.SaveAs.clearErrors(e.target);
+		FileManager.SaveAs.clearErrors(e.currentTarget);
 	}
 
-	if (e.target.classList.contains('save-as-input-type')) {
+	if (e.currentTarget.classList.contains('save-as-input-type')) {
 
 		if (e.which == 13) {
 			FileManager.SaveAs.click();
 			return;
 		}
 
-		FileManager.SaveAs.clearErrors(e.target);
+		FileManager.SaveAs.clearErrors(e.currentTarget);
 	}
 
-	if (e.target.classList.contains('content-type-input')) {
+	if (e.currentTarget.classList.contains('content-type-input')) {
 
 		if (e.which == 13) {
 			FileManager.ContentType.click();
@@ -1297,7 +1297,7 @@ document.addEventListener('keydown', function (e) {
 		}
 	}
 
-	if (e.target.classList.contains('copy-input')) {
+	if (e.currentTarget.classList.contains('copy-input')) {
 
 		if (e.which == 13) {
 			FileManager.Copy.click();
@@ -1313,25 +1313,25 @@ document.addEventListener('keydown', function (e) {
 document.addEventListener('keyup', function (e) {
 
 	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		if (e.target.classList.contains('read-rights-input') || e.target.classList.contains('write-rights-input')) {
-			FileManager.Rights.keyup(e.target);
+		if (e.currentTarget.classList.contains('read-rights-input') || e.currentTarget.classList.contains('write-rights-input')) {
+			FileManager.Rights.keyup(e.currentTarget);
 		}
 	}
 });
 
 document.addEventListener('change', function (e) {
-	if (e.target.parentNode.classList.contains('upload-files')) {
-		FileManager.UploadFiles.change(e.target.files);
+	if (e.currentTarget.parentNode.classList.contains('upload-files')) {
+		FileManager.UploadFiles.change(e.currentTarget.files);
 		return;
 	}
 
-	if (e.target.parentNode.classList.contains('upload-as')) {
-		FileManager.UploadAs.change(e.target.files);
+	if (e.currentTarget.parentNode.classList.contains('upload-as')) {
+		FileManager.UploadAs.change(e.currentTarget.files);
 		return;
 	}
 
-	if (e.target.parentNode.classList.contains('upload-execute')) {
-		FileManager.UploadAndExecute.change(e.target.files[0]);
+	if (e.currentTarget.parentNode.classList.contains('upload-execute')) {
+		FileManager.UploadAndExecute.change(e.currentTarget.files[0]);
 		return;
 	}
 });
@@ -2354,7 +2354,7 @@ FileManager.LoadMoreButton.click = function () {
 
 FileManager.DefaultAction = {};
 FileManager.DefaultAction.click = function (e) {
-	var itemEl = e.target.parentNode;
+	var itemEl = e.currentTarget.parentNode;
 	var name = itemEl.getAttribute('title');
 	FileManager.Item.selectedPath = FileManager.CurrentPath().add(name);
 
@@ -2365,7 +2365,7 @@ FileManager.DefaultAction.click = function (e) {
 
 FileManager.ActionsMenu = {};
 FileManager.ActionsMenu.click = function (e) {
-	var itemEl = e.target.parentNode;
+	var itemEl = e.currentTarget.parentNode;
 	FileManager.Item.selectedEl = itemEl;
 	var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
 
@@ -2496,7 +2496,7 @@ FileManager.MetadataForm.load = function () {
 			newRow.getElementsByClassName('metadata-value')[0].value = v;
 		}
 		newRow.querySelector('.metadata-remove').addEventListener('click', function (e) {
-			var metadataRowEl = e.target.parentNode;
+			var metadataRowEl = e.currentTarget.parentNode;
 			document.querySelector('.metadata-list').removeChild(metadataRowEl);
 		});
 		listEl.appendChild(newRow);
@@ -2568,7 +2568,7 @@ FileManager.MetadataForm.load = function () {
 	}
 
 	listEl.onkeyup = function (e) {
-		removeEmptyInputs(e.target);
+		removeEmptyInputs(e.currentTarget);
 		insureLastRowIsEmpty();
 		clearHighlight();
 		highlightDuplicatedKeys();
