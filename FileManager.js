@@ -1896,7 +1896,6 @@ FileManager.CreateFileForm.el.querySelector('button.cancel').addEventListener('c
 	FileManager.CreateFileForm.close();
 });
 
-
 FileManager.Containers = {};
 FileManager.Containers.LIMIT = 20;
 FileManager.Containers.list = function (callback) {
@@ -2030,7 +2029,6 @@ FileManager.Containers.create = function (containerObj) {
 
 	return t;
 };
-
 
 FileManager.Files = {};
 FileManager.Files.LIMIT = 20;
@@ -2210,26 +2208,7 @@ FileManager.Files.listHtml = function (files, scrollingContentEl) {
 		newEl.querySelector('.name').textContent = name;
 		newEl.setAttribute('title', title);
 		newEl.querySelector('.default-action').addEventListener('click', FileManager.DefaultAction.click);
-		newEl.querySelector('.toggle-actions-menu').addEventListener('click', function (e) {
-			var itemEl = e.target.parentNode;
-			FileManager.Item.selectedEl = itemEl;
-			var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
-
-			FileManager.ActionsMenu.removeForms();
-			var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
-
-			if (actionsMenu) {
-				actionsMenu.parentNode.removeChild(actionsMenu);
-			}
-
-			if (!isNext) {
-				var newActionsMenu = document.querySelector('.template-actions-menu').cloneNode(true);
-				newActionsMenu.classList.remove('template-actions-menu');
-				newActionsMenu.classList.remove('template');
-				newActionsMenu.textContent = 'Feature is not implemented yet.'
-				document.querySelector('.scrolling-content').insertBefore(newActionsMenu, itemEl.nextSibling);
-			}
-		});
+		newEl.querySelector('.toggle-actions-menu').addEventListener('click', FileManager.ActionsMenu.click);
 
 		return newEl;
 	}
@@ -2250,26 +2229,7 @@ FileManager.Files.listHtml = function (files, scrollingContentEl) {
 		newEl.querySelector('.size').textContent = size;
 		newEl.querySelector('.modified').textContent = modified;
 		newEl.querySelector('.default-action').addEventListener('click', FileManager.DefaultAction.click);
-		newEl.querySelector('.toggle-actions-menu').addEventListener('click', function (e) {
-			var itemEl = e.target.parentNode;
-			FileManager.Item.selectedEl = itemEl;
-			var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
-
-			FileManager.ActionsMenu.removeForms();
-			var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
-
-			if (actionsMenu) {
-				actionsMenu.parentNode.removeChild(actionsMenu);
-			}
-
-			if (!isNext) {
-				var newActionsMenu = document.querySelector('.template-actions-menu').cloneNode(true);
-				newActionsMenu.classList.remove('template-actions-menu');
-				newActionsMenu.classList.remove('template');
-				newActionsMenu.textContent = 'Feature is not implemented yet.'
-				document.querySelector('.scrolling-content').insertBefore(newActionsMenu, itemEl.nextSibling);
-			}
-		});
+		newEl.querySelector('.toggle-actions-menu').addEventListener('click', FileManager.ActionsMenu.click);
 		return newEl;
 	}
 
@@ -2374,7 +2334,6 @@ FileManager.Files.listHtml = function (files, scrollingContentEl) {
 	}
 };
 
-
 FileManager.Item = {};
 FileManager.Item.selectedEl = null;
 FileManager.Item.selectedPath = null;
@@ -2384,7 +2343,6 @@ FileManager.Item.showLoading = function (itemEl) {
 	itemEl.insertAdjacentHTML('afterbegin', loadingHtml);
 };
 
-
 FileManager.LoadMoreButton = {};
 FileManager.LoadMoreButton.click = function () {
 	if (FileManager.CurrentPath().isContainersList()) {
@@ -2393,7 +2351,6 @@ FileManager.LoadMoreButton.click = function () {
 		FileManager.Files.loadMore();
 	}
 };
-
 
 FileManager.DefaultAction = {};
 FileManager.DefaultAction.click = function (e) {
@@ -2423,6 +2380,10 @@ FileManager.ActionsMenu.click = function (e) {
 		var newActionsMenu = document.querySelector('.template-actions-menu').cloneNode(true);
 		newActionsMenu.classList.remove('template-actions-menu');
 		newActionsMenu.classList.remove('template');
+		newActionsMenu.querySelector('button.metadata-action').addEventListener('click',
+			FileManager.ActionsMenu.metadataAction);
+		newActionsMenu.querySelector('button.delete-action').addEventListener('click',
+			FileManager.ActionsMenu.deleteAction);
 		document.querySelector('.scrolling-content').insertBefore(newActionsMenu, itemEl.nextSibling);
 	}
 };
@@ -2435,39 +2396,26 @@ FileManager.ActionsMenu.deleteAction = function () {
 	FileManager.ActionsMenu.removeForms();
 	FileManager.ConfirmDeleteForm.createAfterActionsMenu(actionsMenu);
 };
-document.addEventListener('click', function (e) {
-	if (e.target.classList.contains('delete-action')) {
-		FileManager.ActionsMenu.deleteAction();
-	}
-});
 FileManager.ActionsMenu.metadataAction = function () {
 	var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
 	FileManager.ActionsMenu.removeForms();
 	FileManager.MetadataForm.createAfterActionsMenu(actionsMenu);
 };
-document.addEventListener('click', function (e) {
-	if (e.target.classList.contains('metadata-action')) {
-		FileManager.ActionsMenu.metadataAction();
-	}
-});
 
 FileManager.ConfirmDeleteForm = {};
 FileManager.ConfirmDeleteForm.removeEl = function () {
-	var actionsMenu = document.querySelector('.scrolling-content .confirm-delete-form');
+	var confirmDeleteForm = document.querySelector('.scrolling-content .confirm-delete-form');
 
-	if (actionsMenu) {
-		actionsMenu.parentNode.removeChild(actionsMenu);
+	if (confirmDeleteForm) {
+		confirmDeleteForm.parentNode.removeChild(confirmDeleteForm);
 	}
 };
 FileManager.ConfirmDeleteForm.createAfterActionsMenu = function (actionsMenuEl) {
-	var newActionsMenu = document.querySelector('.template-confirm-delete-form').cloneNode(true);
-	newActionsMenu.classList.remove('template-confirm-delete-form');
-	newActionsMenu.classList.remove('template');
-	newActionsMenu.addEventListener('submit', function (e) {
+	var newConfirmDeleteForm = document.querySelector('.template-confirm-delete-form').cloneNode(true);
+	newConfirmDeleteForm.classList.remove('template-confirm-delete-form');
+	newConfirmDeleteForm.classList.remove('template');
+	newConfirmDeleteForm.addEventListener('submit', function (e) {
 		e.preventDefault();
-		//document.querySelector('.delete-deleting-label').removeAttribute('hidden');
-
-		//var itemEl = el.parentNode.previousElementSibling;
 		var name = FileManager.Item.selectedEl.title;
 		var itemPath = FileManager.CurrentPath().add(name);
 
@@ -2484,13 +2432,12 @@ FileManager.ConfirmDeleteForm.createAfterActionsMenu = function (actionsMenuEl) 
 				FileManager.ContentChange.animate();
 			}
 		});
-		//retur
 	});
-	newActionsMenu.querySelector('.cancel').addEventListener('click', function (e) {
+	newConfirmDeleteForm.querySelector('.cancel').addEventListener('click', function (e) {
 		e.preventDefault();
 		FileManager.ConfirmDeleteForm.removeEl();
 	});
-	document.querySelector('.scrolling-content').insertBefore(newActionsMenu, actionsMenuEl.nextSibling);
+	document.querySelector('.scrolling-content').insertBefore(newConfirmDeleteForm, actionsMenuEl.nextSibling);
 };
 
 FileManager.MetadataForm = {};
@@ -2498,22 +2445,23 @@ FileManager.MetadataForm.initialMetadata = null;
 FileManager.MetadataForm.initialContentType = null;
 FileManager.MetadataForm.metadataPath = null;
 FileManager.MetadataForm.removeEl = function () {
-	var actionsMenu = document.querySelector('.scrolling-content .metadata-form');
+	var metadataForm = document.querySelector('.scrolling-content .metadata-form');
 
-	if (actionsMenu) {
-		actionsMenu.parentNode.removeChild(actionsMenu);
+	if (metadataForm) {
+		metadataForm.parentNode.removeChild(metadataForm);
 	}
 };
 FileManager.MetadataForm.createAfterActionsMenu = function (actionsMenuEl) {
-	var newActionsMenu = document.querySelector('.template-metadata-form').cloneNode(true);
-	newActionsMenu.classList.remove('template-metadata-form');
-	newActionsMenu.classList.remove('template');
-	document.querySelector('.scrolling-content').insertBefore(newActionsMenu, actionsMenuEl.nextSibling);
+	var newMetadataForm = document.querySelector('.template-metadata-form').cloneNode(true);
+	newMetadataForm.classList.remove('template-metadata-form');
+	newMetadataForm.classList.remove('template');
+	document.querySelector('.scrolling-content').insertBefore(newMetadataForm, actionsMenuEl.nextSibling);
 	FileManager.MetadataForm.load();
 };
 FileManager.MetadataForm.load = function () {
 
-	var path = SwiftV1.getAccount() + '/' + FileManager.Item.selectedEl.getAttribute('title');
+	var name = FileManager.Item.selectedEl.title;
+	var path = FileManager.CurrentPath().add(name);
 	var formEl = document.querySelector('.scrolling-content .metadata-form');
 	var listEl = formEl.querySelector('.metadata-list');
 
