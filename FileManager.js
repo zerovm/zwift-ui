@@ -2027,25 +2027,7 @@ FileManager.Containers.create = function (containerObj) {
 	t.querySelector('.default-action').addEventListener('click', function (e) {
 		FileManager.Item.click(e.target.parentNode);
 	});
-	t.querySelector('.toggle-actions-menu').addEventListener('click', function (e) {
-		var itemEl = e.target.parentNode;
-		FileManager.selectedItemEl = itemEl;
-		var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
-
-		FileManager.ActionsMenu.removeForms();
-		var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
-
-		if (actionsMenu) {
-			actionsMenu.parentNode.removeChild(actionsMenu);
-		}
-
-		if (!isNext) {
-			var newActionsMenu = document.querySelector('.template-actions-menu').cloneNode(true);
-			newActionsMenu.classList.remove('template-actions-menu');
-			newActionsMenu.classList.remove('template');
-			document.querySelector('.scrolling-content').insertBefore(newActionsMenu, itemEl.nextSibling);
-		}
-	});
+	t.querySelector('.toggle-actions-menu').addEventListener('click', FileManager.ActionsMenu.click);
 	t.querySelector('.name').textContent = name;
 	t.setAttribute('title', title);
 	t.querySelector('.size').textContent = size;
@@ -2457,6 +2439,25 @@ FileManager.LoadMoreButton.click = function () {
 
 FileManager.selectedItemEl = null;
 FileManager.ActionsMenu = {};
+FileManager.ActionsMenu.click = function (e) {
+	var itemEl = e.target.parentNode;
+	FileManager.selectedItemEl = itemEl;
+	var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
+
+	FileManager.ActionsMenu.removeForms();
+	var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
+
+	if (actionsMenu) {
+		actionsMenu.parentNode.removeChild(actionsMenu);
+	}
+
+	if (!isNext) {
+		var newActionsMenu = document.querySelector('.template-actions-menu').cloneNode(true);
+		newActionsMenu.classList.remove('template-actions-menu');
+		newActionsMenu.classList.remove('template');
+		document.querySelector('.scrolling-content').insertBefore(newActionsMenu, itemEl.nextSibling);
+	}
+};
 FileManager.ActionsMenu.removeForms = function () {
 	FileManager.ConfirmDeleteForm.removeEl();
 	FileManager.MetadataForm.removeEl();
