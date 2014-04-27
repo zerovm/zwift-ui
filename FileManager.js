@@ -534,14 +534,6 @@ FileManager.Item.click = function (itemEl) {
 	location.hash = FileManager.Item.selectedPath;
 };
 
-/*
-document.addEventListener('click', function (e) {
-	if (e.target.classList.contains('default-action')) {
-		FileManager.Item.click(e.target.parentNode);
-	}
-});
-*/
-
 FileManager.Item.deleteclick = function (el) {
 
 	FileManager.Item.unselect();
