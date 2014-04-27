@@ -2024,9 +2024,7 @@ FileManager.Containers.create = function (containerObj) {
 	t.classList.remove('template');
 	t.classList.remove('template-container');
 
-	t.querySelector('.default-action').addEventListener('click', function (e) {
-		FileManager.Item.click(e.target.parentNode);
-	});
+	t.querySelector('.default-action').addEventListener('click', FileManager.DefaultAction.click);
 	t.querySelector('.toggle-actions-menu').addEventListener('click', FileManager.ActionsMenu.click);
 	t.querySelector('.name').textContent = name;
 	t.setAttribute('title', title);
@@ -2214,9 +2212,7 @@ FileManager.Files.listHtml = function (files, scrollingContentEl) {
 		newEl.classList.remove('template');
 		newEl.querySelector('.name').textContent = name;
 		newEl.setAttribute('title', title);
-		newEl.querySelector('.default-action').addEventListener('click', function (e) {
-			FileManager.Item.click(e.target.parentNode);
-		});
+		newEl.querySelector('.default-action').addEventListener('click', FileManager.DefaultAction.click);
 		newEl.querySelector('.toggle-actions-menu').addEventListener('click', function (e) {
 			var itemEl = e.target.parentNode;
 			FileManager.selectedItemEl = itemEl;
@@ -2256,9 +2252,7 @@ FileManager.Files.listHtml = function (files, scrollingContentEl) {
 		newEl.setAttribute('title', title);
 		newEl.querySelector('.size').textContent = size;
 		newEl.querySelector('.modified').textContent = modified;
-		newEl.querySelector('.default-action').addEventListener('click', function (e) {
-			FileManager.Item.click(e.target.parentNode);
-		});
+		newEl.querySelector('.default-action').addEventListener('click', FileManager.DefaultAction.click);
 		newEl.querySelector('.toggle-actions-menu').addEventListener('click', function (e) {
 			var itemEl = e.target.parentNode;
 			FileManager.selectedItemEl = itemEl;
@@ -2384,17 +2378,9 @@ FileManager.Files.listHtml = function (files, scrollingContentEl) {
 };
 
 
-
+FileManager.selectedItemEl = null;
 FileManager.Item = {};
 FileManager.Item.selectedPath = null;
-FileManager.Item.click = function (itemEl) {
-	var name = itemEl.getAttribute('title');
-	FileManager.Item.selectedPath = FileManager.CurrentPath().add(name);
-
-	FileManager.disableAll();
-	FileManager.Item.showLoading(itemEl);
-	location.hash = FileManager.Item.selectedPath;
-};
 FileManager.Item.showLoading = function (itemEl) {
 	var loadingHtml = document.querySelector('#itemLoadingTemplate').innerHTML;
 	itemEl.classList.add('clicked');
@@ -2411,7 +2397,18 @@ FileManager.LoadMoreButton.click = function () {
 	}
 };
 
-FileManager.selectedItemEl = null;
+
+FileManager.DefaultAction = {};
+FileManager.DefaultAction.click = function (e) {
+	var itemEl = e.target.parentNode;
+	var name = itemEl.getAttribute('title');
+	FileManager.Item.selectedPath = FileManager.CurrentPath().add(name);
+
+	FileManager.disableAll();
+	FileManager.Item.showLoading(itemEl);
+	location.hash = FileManager.Item.selectedPath;
+};
+
 FileManager.ActionsMenu = {};
 FileManager.ActionsMenu.click = function (e) {
 	var itemEl = e.target.parentNode;
