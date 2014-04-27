@@ -166,14 +166,6 @@ button.sign-out-button {
 	margin: 0;
 	float: right;
 }
-.edit-button {
-	background: url('img/pencil.png') no-repeat 7px 8px;
-}
-.done-button {
-	background: url('img/pencil.png') no-repeat 7px 8px;
-	background-color: rgba(0, 0, 0, 0.35) !important;
-	border-width: 1px !important;
-}
 .execute-button {
 	background: url('img/execute.png') no-repeat 7px 8px;
 }
@@ -231,7 +223,6 @@ button.sign-out-button {
 .load-more-button {
 	display: -webkit-flex;
 	display: flex;
-
 	margin-bottom: 1px;
 	font-size: small;
 	height: 35px;
@@ -252,7 +243,6 @@ button.sign-out-button {
 
 .toggle-actions-menu {
 	width: 20px;
-
 	height: 35px;
 	margin-left: 1px;
 	background-image: url('img/menu.png');
@@ -269,6 +259,7 @@ button.sign-out-button {
 .toggle-actions-menu {
 	background-color: rgba(248,248,248,0.6);
 }
+
 .default-action:hover,
 .toggle-actions-menu:hover,
 .load-more-button:hover {
@@ -332,6 +323,123 @@ button.sign-out-button {
 	border-radius: 10px;
 	background-color: rgba(235,235,235, 0.3);
 	padding: 2px;
+}
+.item span.container-icon {
+	background-image: url("img/container.png");
+	width: 32px;
+	height: 32px;
+}
+.item span.file-icon,
+.item span.directory-icon {
+	background-image: url("img/file_type.png");
+	background-size: 1051px 35px;
+	background-repeat: no-repeat;
+	width: 32px;
+	height: 32px;
+}
+
+.item span.file-icon.xsl {
+	background-position: -3px center;
+}
+
+.item span.file-icon.xml {
+	background-position: -36px center;
+}
+
+.item span.file-icon.doc {
+	background-position: -68px center;
+}
+
+.item span.file-icon.rar {
+	background-position: -103px center;
+}
+
+.item span.file-icon.txt {
+	background-position: -136px center;
+}
+
+.item span.file-icon.pic {
+	background-position: -169px center;
+}
+
+.item span.file-icon.pdf {
+	background-position: -201px center;
+}
+
+.item span.file-icon.nexe {
+	background-position: -235px center;
+}
+
+.item span.file-icon.ppt {
+	background-position: -269px center;
+}
+
+.item span.file-icon.zip {
+	background-position: -302px center;
+}
+
+.item span.file-icon.csv {
+	background-position: -335px center;
+}
+
+.item span.file-icon.php {
+	background-position: -369px center;
+}
+
+.item span.file-icon.py {
+	background-position: -402px center;
+}
+
+.item span.file-icon.json {
+	background-position: -434px center;
+}
+
+.item span.file-icon.lua {
+	background-position: -467px center;
+}
+
+.item span.file-icon.video {
+	background-position: -501px center;
+}
+
+.item span.file-icon.css {
+	background-position: -533px center;
+}
+
+.item span.file-icon.audio {
+	background-position: -566px center;
+}
+
+.item span.file-icon.none {
+	background-position: -598px center;
+}
+
+.item span.file-icon.c {
+	background-position: -633px center;
+}
+
+.item span.file-icon.java {
+	background-position: -669px center;
+}
+
+.item span.file-icon.tar {
+	background-position: -703px center;
+}
+
+.item span.file-icon.rtf {
+	background-position: -736px center;
+}
+
+.item span.file-icon.md {
+	background-position: -772px center;
+}
+
+.item span.file-icon.js {
+	background-position: -806px center;
+}
+
+.item span.directory-icon {
+	background-position: -885px center;
 }
 
 .empty-list {
@@ -409,41 +517,6 @@ button.sign-out-button {
 	outline: none;
 	border: inset 1px;
 }
-
-.item-menu .execute-button {
-	background-image: url('img/execute.png');
-}
-.item-menu .open-button {
-	background-image: url('img/arrowright.png');
-	background-position: 5px 6px !important;
-}
-.item-menu .board-button {
-	background-image: url('img/board.png');
-}
-.item-menu .download-button {
-	background-image: url('img/download.png');
-	background-position: 5px 6px !important;
-}
-.item-menu .delete-button,
-.item-menu .remove-button {
-	background-image: url('img/delete.png');
-	background-position: 5px 6px !important;
-}
-.item-menu .copy-button {
-	background-image: url('img/copy.png');
-}
-.item-menu .metadata-button {
-	background-image: url('img/metadata.png');
-	background-position: 5px 6px !important;
-}
-.item-menu .rights-button {
-	background-image: url('img/rights.png');
-}
-.item-menu .type-button {
-	background-image: url('img/file_type.png');
-	background-position: 5px 5px !important;
-}
-
 .item-confirm-delete {
 	height: 32px;
 	background-color: rgba(255, 153, 153, 0.8);
@@ -994,3 +1067,4 @@ form.create-file input {
 	margin: 0 0 5px;
 	font-size: .7em;
 }
+
