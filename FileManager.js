@@ -885,6 +885,7 @@ FileManager.ContentChange.animate = function () {
 	FileManager.CreateContainerButton.hide();
 	FileManager.CreateDirectoryButton.hide();
 	FileManager.CreateFileButton.hide();
+	document.querySelector('.menu-file').setAttribute('hidden', 'hidden');
 
 	var parentEl, newEl, oldEl, template;
 
@@ -922,7 +923,8 @@ FileManager.ContentChange.animate = function () {
 		//FileManager.OpenButton.hide();
 	} else {
 		// load file
-		//FileManager.File.open(el, callback);
+		document.querySelector('.menu-file').removeAttribute('hidden');
+		FileManager.File.open(el, callback);
 	}
 	FileManager.Layout.adjust();
 
