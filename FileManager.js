@@ -1896,7 +1896,6 @@ FileManager.CreateFileForm.el.querySelector('button.cancel').addEventListener('c
 	FileManager.CreateFileForm.close();
 });
 
-
 FileManager.Containers = {};
 FileManager.Containers.LIMIT = 20;
 FileManager.Containers.list = function (callback) {
@@ -2030,7 +2029,6 @@ FileManager.Containers.create = function (containerObj) {
 
 	return t;
 };
-
 
 FileManager.Files = {};
 FileManager.Files.LIMIT = 20;
@@ -2374,7 +2372,6 @@ FileManager.Files.listHtml = function (files, scrollingContentEl) {
 	}
 };
 
-
 FileManager.Item = {};
 FileManager.Item.selectedEl = null;
 FileManager.Item.selectedPath = null;
@@ -2384,7 +2381,6 @@ FileManager.Item.showLoading = function (itemEl) {
 	itemEl.insertAdjacentHTML('afterbegin', loadingHtml);
 };
 
-
 FileManager.LoadMoreButton = {};
 FileManager.LoadMoreButton.click = function () {
 	if (FileManager.CurrentPath().isContainersList()) {
@@ -2393,7 +2389,6 @@ FileManager.LoadMoreButton.click = function () {
 		FileManager.Files.loadMore();
 	}
 };
-
 
 FileManager.DefaultAction = {};
 FileManager.DefaultAction.click = function (e) {
