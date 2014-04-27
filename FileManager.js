@@ -2442,43 +2442,33 @@ document.querySelector('.sign-out-button').onclick = function () {
 
 
 FileManager.selectedItemEl = null;
-
 FileManager.ActionsMenu = {};
-
 FileManager.ActionsMenu.removeForms = function () {
 	FileManager.ConfirmDeleteForm.removeEl();
 	FileManager.MetadataForm.removeEl();
 };
-
-
 FileManager.ActionsMenu.deleteAction = function () {
 	var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
 	FileManager.ActionsMenu.removeForms();
 	FileManager.ConfirmDeleteForm.createAfterActionsMenu(actionsMenu);
 };
-
 document.addEventListener('click', function (e) {
 	if (e.target.classList.contains('delete-action')) {
 		FileManager.ActionsMenu.deleteAction();
 	}
 });
-
 FileManager.ActionsMenu.metadataAction = function () {
 	var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
 	FileManager.ActionsMenu.removeForms();
 	FileManager.MetadataForm.createAfterActionsMenu(actionsMenu);
 };
-
 document.addEventListener('click', function (e) {
 	if (e.target.classList.contains('metadata-action')) {
 		FileManager.ActionsMenu.metadataAction();
 	}
 });
 
-
-
 FileManager.ConfirmDeleteForm = {};
-
 FileManager.ConfirmDeleteForm.removeEl = function () {
 	var actionsMenu = document.querySelector('.scrolling-content .confirm-delete-form');
 
@@ -2486,7 +2476,6 @@ FileManager.ConfirmDeleteForm.removeEl = function () {
 		actionsMenu.parentNode.removeChild(actionsMenu);
 	}
 };
-
 FileManager.ConfirmDeleteForm.createAfterActionsMenu = function (actionsMenuEl) {
 	var newActionsMenu = document.querySelector('.template-confirm-delete-form').cloneNode(true);
 	newActionsMenu.classList.remove('template-confirm-delete-form');
@@ -2522,7 +2511,9 @@ FileManager.ConfirmDeleteForm.createAfterActionsMenu = function (actionsMenuEl) 
 };
 
 FileManager.MetadataForm = {};
-
+FileManager.MetadataForm.initialMetadata = null;
+FileManager.MetadataForm.initialContentType = null;
+FileManager.MetadataForm.metadataPath = null;
 FileManager.MetadataForm.removeEl = function () {
 	var actionsMenu = document.querySelector('.scrolling-content .metadata-form');
 
@@ -2530,7 +2521,6 @@ FileManager.MetadataForm.removeEl = function () {
 		actionsMenu.parentNode.removeChild(actionsMenu);
 	}
 };
-
 FileManager.MetadataForm.createAfterActionsMenu = function (actionsMenuEl) {
 	var newActionsMenu = document.querySelector('.template-metadata-form').cloneNode(true);
 	newActionsMenu.classList.remove('template-metadata-form');
@@ -2538,11 +2528,6 @@ FileManager.MetadataForm.createAfterActionsMenu = function (actionsMenuEl) {
 	document.querySelector('.scrolling-content').insertBefore(newActionsMenu, actionsMenuEl.nextSibling);
 	FileManager.MetadataForm.load();
 };
-
-FileManager.MetadataForm.initialMetadata = null;
-FileManager.MetadataForm.initialContentType = null;
-FileManager.MetadataForm.metadataPath = null;
-
 FileManager.MetadataForm.load = function () {
 
 	var path = SwiftV1.getAccount() + '/' + FileManager.selectedItemEl.getAttribute('title');
@@ -2718,7 +2703,6 @@ FileManager.MetadataForm.load = function () {
 		}
 	};
 };
-
 FileManager.MetadataForm.save = function () {
 
 	var formEl = document.querySelector('.scrolling-content .metadata-form');
@@ -2920,6 +2904,7 @@ FileManager.CreateFileButton.el.addEventListener('click', function () {
 	FileManager.CreateDirectoryForm.close();
 	FileManager.CreateFileForm.open();
 });
+
 FileManager.CreateFileForm = {};
 FileManager.CreateFileForm.el = document.querySelector('form.create-file');
 FileManager.CreateFileForm.el.addEventListener('submit', function (e) {
