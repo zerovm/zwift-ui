@@ -2727,10 +2727,7 @@ FileManager.ContentTypeForm.createAfterActionsMenu = function (actionsMenuEl) {
 	newContentTypeForm.classList.remove('template-content-type-form');
 	newContentTypeForm.classList.remove('template');
 	newContentTypeForm.addEventListener('submit', FileManager.ContentTypeForm.submit);
-	newContentTypeForm.querySelector('button.cancel').addEventListener('click', function (e) {
-		e.preventDefault();
-		FileManager.ContentTypeForm.removeEl();
-	});
+	newContentTypeForm.querySelector('button.cancel').addEventListener('click', FileManager.ContentTypeForm.cancel);
 	newContentTypeForm.querySelector('input.content-type').value = '';
 	newContentTypeForm.querySelector('input.content-type').addEventListener('keydown', function () {
 		var contentTypeForm = document.querySelector('.scrolling-content form.content-type');
@@ -2787,4 +2784,8 @@ FileManager.ContentTypeForm.submit = function (e) {
 			contentTypeForm.querySelector('.updating').setAttribute('hidden', 'hidden');
 		}
 	});
+};
+FileManager.ContentTypeForm.cancel = function (e) {
+	e.preventDefault();
+	FileManager.ContentTypeForm.removeEl();
 };
