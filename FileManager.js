@@ -14,16 +14,6 @@ FileManager.disableAll = function () {
 	document.body.classList.add('disabled');
 };
 
-FileManager.setViewMode = function () {
-	document.body.classList.remove('edit-mode');
-	document.body.classList.add('view-mode');
-};
-
-FileManager.setEditMode = function () {
-	document.body.classList.remove('view-mode');
-	document.body.classList.add('edit-mode');
-};
-
 FileManager.UpButton = {};
 
 FileManager.UpButton.el = document.querySelector('.up-button');
@@ -453,70 +443,6 @@ FileManager.UploadAndExecute = {};
 
 FileManager.UploadAndExecute.change = function (file) {
 	FileManager.execute(file, file.type);
-};
-
-FileManager.ConfirmDelete = {};
-
-FileManager.ConfirmDelete.click = function (el) {
-	document.querySelector('.delete-deleting-label').removeAttribute('hidden');
-
-	var itemEl = el.parentNode.previousElementSibling;
-	var name = itemEl.title;
-	var itemPath = FileManager.CurrentPath().add(name);
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS
-			&& FileManager.Shared.isShared(itemPath)
-			&& FileManager.Path(itemPath).isContainer()) {
-
-		SharedContainersOnSwift.removeSharedContainer({
-			account: FileManager.Path(name).account(),
-			container: FileManager.Path(name).container(),
-			removed: function () {
-				FileManager.ContentChange.animate();
-			},
-			error: function (status, statusText) {
-				var el = document.querySelector('.delete-error-ajax');
-				FileManager.AjaxError.show(el, status, statusText);
-			}
-		});
-		return;
-	}
-
-	if (FileManager.Path(itemPath).isFile()) {
-
-		SwiftAdvancedFunctionality.delete({
-			path: FileManager.Path(itemPath).withoutAccount(),
-			deleted: function () {
-				FileManager.ContentChange.animate();
-			},
-			error: function(status, statusText) {
-				var el = document.querySelector('.delete-error-ajax');
-				FileManager.AjaxError.show(el, status, statusText);
-			},
-			notExist: function () {
-				FileManager.ContentChange.animate();
-			}
-		});
-		return;
-	}
-
-	SwiftAdvancedFunctionality.deleteAll({
-		path: FileManager.Path(itemPath).withoutAccount(),
-		account: FileManager.CurrentPath().account(),
-		deleted: function () {
-			FileManager.ContentChange.animate();
-		},
-		progress: function (totalFiles, deletedFiles, message) {
-			var percentComplete = totalFiles / deletedFiles * 100;
-			var progressMsg = 'Deleting... (' + deletedFiles + '/' + totalFiles + ') ' + percentComplete + '% complete.';
-			document.querySelector('.delete-label').textContent = progressMsg;
-		},
-		error: function (status, statusText) {
-			var el = document.querySelector('.delete-error-ajax');
-			FileManager.AjaxError.show(el, status, statusText);
-		}
-	});
-
 };
 
 
