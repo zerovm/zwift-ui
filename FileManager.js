@@ -1263,6 +1263,56 @@ FileManager.AddShared.clearErrors = function (inputEl1, inputEl2) {
 };
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 FileManager.Authentication = {};
 FileManager.Authentication.el = document.querySelector('#Authentication');
 FileManager.Authentication.el.onsubmit = function (e) {
@@ -1329,57 +1379,6 @@ FileManager.SignOutButton.el = document.querySelector('.sign-out-button');
 FileManager.SignOutButton.el.addEventListener('click', function () {
 	window.location.reload(true);
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 FileManager.UpButton = {};
 FileManager.UpButton.el = document.querySelector('.up-button');
