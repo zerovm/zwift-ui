@@ -1023,8 +1023,6 @@ document.addEventListener('click', function (e) {
 	} else if (el = is('add-shared-button')) {
 		//SHARED-CONTAINERS
 		FileManager.AddShared.click(el);
-	} else if (el = is('create-file-button')) {
-		FileManager.CreateFile.click(el);
 	} else if (el = is('undo')) {
 		FileManager.File.undo();
 	} else if (el = is('redo')) {
@@ -1035,8 +1033,6 @@ document.addEventListener('click', function (e) {
 		FileManager.File.saveAs(el);
 	} else if (el = is('save-as-button')) {
 		FileManager.SaveAs.click(el);
-	} else if (el = is('content-type-button')) {
-		FileManager.ContentType.click(el);
 	} else if (el = is('cancel-upload-button')) {
 		FileManager.UploadFiles.cancelClick(el);
 	} else if (el = is('execute-close-button')) {
