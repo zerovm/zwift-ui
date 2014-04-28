@@ -309,18 +309,6 @@ button.sign-out-button {
 	width: 140px;
 }
 
-.view-mode .item label.delete {
-	display: none;
-}
-
-.edit-mode .item label.delete {
-	width: 15px;
-	z-index: 999;
-	border: 1px solid;
-	border-radius: 10px;
-	background-color: rgba(235,235,235, 0.3);
-	padding: 2px;
-}
 .item span.container-icon {
 	background-image: url("img/container.png");
 	width: 32px;
