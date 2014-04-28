@@ -212,14 +212,14 @@ var ZeroAppsOnSwift = {};
 		xhr.addEventListener('load', function (e) {
 			if (e.target.status == 401) {
 				unauthorized();
-			} else if (e.target.status == 404) {
+			} else if (e.target.status == 404 && args.hasOwnProperty('notExist')) {
 				args.notExist();
 			} else if (e.target.status >= 200 && e.target.status <= 299) {
 				var headers = parseResponseHeaders(e.target.getAllResponseHeaders());
 				var metadata = headersToMetadata(headers, METADATA_PREFIX.CONTAINER);
 				var objectCount = e.target.getResponseHeader('X-Container-Object-Count');
 				var bytesUsed = e.target.getResponseHeader('X-Container-Bytes-Used');
-				args.success(metadata, objectCount, bytesUsed);
+				args.success(metadata, objectCount, bytesUsed, e.target);
 			} else {
 				args.error(e.target.status, e.target.statusText);
 			}
@@ -356,6 +356,40 @@ var ZeroAppsOnSwift = {};
 				args.notExist();
 			} else if (e.target.status >= 200 && e.target.status <= 299) {
 				args.deleted();
+			} else {
+				args.error(e.target.status, e.target.statusText);
+			}
+		});
+		xhr.send();
+	};
+
+	SwiftV1.Container.getRights = function (args) {
+		var newArgs = {};
+		if (args.hasOwnProperty('account')) {
+			newArgs.account = args.account;
+		}
+		newArgs.containerName = args.containerName;
+		newArgs.error = args.error;
+		newArgs.success = function (metadata, objectCount, bytesUsed, xhr) {
+			args.success({
+				read: xhr.getResponseHeader('X-Container-Read') || '',
+				write: xhr.getResponseHeader('X-Container-Write') || ''
+			})
+		};
+		SwiftV1.Container.head(newArgs);
+	};
+
+	SwiftV1.Container.updateRights = function (args) {
+		var xhr = new XMLHttpRequest();
+		var url = xStorageUrl + account + '/' + args.containerName;
+		xhr.open('POST', url);
+		xhr.setRequestHeader('X-Container-Read', args.readRights);
+		xhr.setRequestHeader('X-Container-Write', args.writeRights);
+		xhr.addEventListener('load', function (e) {
+			if (e.target.status == 401) {
+				unauthorized();
+			} else if (e.target.status >= 200 && e.target.status <= 299) {
+				args.updated();
 			} else {
 				args.error(e.target.status, e.target.statusText);
 			}
@@ -709,31 +743,6 @@ var ZeroAppsOnSwift = {};
 		}
 	};
 
-
-	SharedContainersOnSwift.updateRights = function (args) {
-		var xhr = new XMLHttpRequest();
-		var url = xStorageUrl + account + '/' + args.containerName;
-		xhr.open('POST', url);
-		xhr.setRequestHeader('X-Container-Read', args.readRights);
-		xhr.setRequestHeader('X-Container-Write', args.writeRights);
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status == 401) {
-				unauthorized();
-			} else if (e.target.status >= 200 && e.target.status <= 299) {
-				args.updated();
-			} else {
-				args.error(e.target.status, e.target.statusText);
-			}
-		});
-		xhr.send();
-	};
-
-	SharedContainersOnSwift.getRights = function (xhr) {
-		return {
-			read: xhr.getResponseHeader('X-Container-Read') || '',
-			write: xhr.getResponseHeader('X-Container-Write') || ''
-		};
-	};
 
 	SharedContainersOnSwift.addSharedContainer = function (args) {
 		var xhr = new XMLHttpRequest();

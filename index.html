@@ -159,6 +159,7 @@
 	<button class="metadata-action">Metadata</button>
 	<button class="delete-action">Delete</button>
 	<button class="content-type-action">Content Type</button>
+	<button class="rights-action">Rights</button>
 </div>
 
 <form class="template template-confirm-delete-form confirm-delete-form blue-form">
@@ -205,13 +206,28 @@
 	<div class="err-ajax err" hidden></div>
 	<button type="submit" class="blue-button">Save</button>
 	<button class="cancel blue-button">Cancel</button>
-	<span class="loading" hidden>Loading...</span>
-	<span class="loading-error" hidden>
+	<span class="loading full-size" hidden>Loading...</span>
+	<span class="loading-error full-size" hidden>
 		Loading Error:
 		<span class="status"></span>
 		<span class="status-text"></span>
 	</span>
-	<span class="updating" hidden>Updating...</span>
+	<span class="updating full-size" hidden>Updating...</span>
+</form>
+
+<form class="template template-rights rights blue-form">
+	<input class="read-rights one-input blue-input" placeholder="Read Rights">
+	<input class="write-rights one-input blue-input" placeholder="Write Rights">
+	<div class="err-ajax err" hidden></div>
+	<button type="submit" class="blue-button">Save</button>
+	<button class="cancel blue-button">Cancel</button>
+	<span class="loading full-size" hidden>Loading...</span>
+	<span class="loading-error full-size" hidden>
+		Loading Error:
+		<span class="status"></span>
+		<span class="status-text"></span>
+	</span>
+	<span class="updating full-size" hidden>Updating...</span>
 </form>
 
 <template id="sharedContainerTemplate">

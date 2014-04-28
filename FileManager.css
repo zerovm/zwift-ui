@@ -602,9 +602,7 @@ button.sign-out-button {
 }
 
 .metadata-save,
-.metadata-discard-changes,
-.rights-save,
-.rights-discard-changes {
+.metadata-discard-changes {
 	width: 120px;
 	height: 30px;
 	padding: 5px;
@@ -617,10 +615,6 @@ button.sign-out-button {
 
 .metadata-save {
 	float: right;
-}
-
-.rights-table tfoot td {
-	text-align: center;
 }
 
 .err-msg {
@@ -655,18 +649,6 @@ button.sign-out-button {
 
 .download-link {
 	color: rgba(0, 0, 0, 0.35);
-}
-
-.rights-table tr td:first-child {
-	font-size: small;
-	font-weight: bold;
-}
-
-.read-rights-input,
-.write-rights-input {
-	width: 98%;
-	border: 0;
-	padding: 5px;
 }
 
 .save-as-dialog {
@@ -1008,9 +990,7 @@ form.create-file input {
 	font-size: .7em;
 }
 
-form.content-type .loading,
-form.content-type .loading-error,
-form.content-type .updating {
+.blue-form span.full-size {
 	position: absolute;
 	left: 0;
 	right: 0;
