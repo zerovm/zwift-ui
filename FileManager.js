@@ -2424,30 +2424,31 @@ FileManager.ConfirmDeleteForm.createAfterActionsMenu = function (actionsMenuEl) 
 	var newConfirmDeleteForm = document.querySelector('.template-confirm-delete-form').cloneNode(true);
 	newConfirmDeleteForm.classList.remove('template-confirm-delete-form');
 	newConfirmDeleteForm.classList.remove('template');
-	newConfirmDeleteForm.addEventListener('submit', function (e) {
-		e.preventDefault();
-		var name = FileManager.Item.selectedEl.title;
-		var itemPath = FileManager.CurrentPath().add(name);
-
-		SwiftAdvancedFunctionality.delete({
-			path: FileManager.Path(itemPath).withoutAccount(),
-			deleted: function () {
-				FileManager.ContentChange.animate();
-			},
-			error: function(status, statusText) {
-				var el = document.querySelector('.delete-error-ajax');
-				FileManager.AjaxError.show(el, status, statusText);
-			},
-			notExist: function () {
-				FileManager.ContentChange.animate();
-			}
-		});
-	});
+	newConfirmDeleteForm.addEventListener('submit', FileManager.ConfirmDeleteForm.submit);
 	newConfirmDeleteForm.querySelector('.cancel').addEventListener('click', function (e) {
 		e.preventDefault();
 		FileManager.ConfirmDeleteForm.removeEl();
 	});
 	document.querySelector('.scrolling-content').insertBefore(newConfirmDeleteForm, actionsMenuEl.nextSibling);
+};
+FileManager.ConfirmDeleteForm.submit = function (e) {
+	e.preventDefault();
+	var name = FileManager.Item.selectedEl.title;
+	var itemPath = FileManager.CurrentPath().add(name);
+
+	SwiftAdvancedFunctionality.delete({
+		path: FileManager.Path(itemPath).withoutAccount(),
+		deleted: function () {
+			FileManager.ContentChange.animate();
+		},
+		error: function(status, statusText) {
+			var el = document.querySelector('.delete-error-ajax');
+			FileManager.AjaxError.show(el, status, statusText);
+		},
+		notExist: function () {
+			FileManager.ContentChange.animate();
+		}
+	});
 };
 
 FileManager.MetadataForm = {};
