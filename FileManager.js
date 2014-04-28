@@ -1262,9 +1262,9 @@ FileManager.AddShared.clearErrors = function (inputEl1, inputEl2) {
 	}
 };
 
-FileManager.reAuth = function () {
+FileManager.Authentication.refresh = function () {
 	SwiftV1.Account.head({success:function(){},error:function(){}});
-	setTimeout(FileManager.reAuth, 1000 * 60 * 20);
+	setTimeout(FileManager.Authentication.refresh, 1000 * 60 * 20);
 };
 
 FileManager.Authentication = {};
@@ -1294,7 +1294,7 @@ FileManager.Authentication.el.onsubmit = function (e) {
 			FileManager.ContentChange.animate();
 		}
 		FileManager.Layout.adjust();
-		FileManager.reAuth();
+		FileManager.Authentication.refresh();
 	}
 
 	function XHR_ERROR() {
