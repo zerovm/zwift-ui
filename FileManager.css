@@ -182,11 +182,8 @@ button.sign-out-button {
 }
 
 .disabled .up-button,
-.disabled .edit-button,
 .disabled .up-button:hover,
-.disabled .edit-button:hover,
-.disabled .up-button:active,
-.disabled .edit-button:active {
+.disabled .up-button:active {
 	opacity: 0.5 !important;
 	border: none !important;
 	background-color: transparent !important;

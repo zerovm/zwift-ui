@@ -120,7 +120,6 @@ FileManager.execute = function (data, contentType) {
 	FileManager.ExecuteButton.hide();
 	FileManager.ExecuteTimer.start();
 	FileManager.OpenButton.hide();
-	FileManager.DoneButton.hide();
 	FileManager.FilesMenu.hide();
 
 	ZeroVmOnSwift.execute({
@@ -855,7 +854,6 @@ FileManager.SaveAs.click = function () {
 		contentType: typeEl.value,
 		data: FileManager.File.codeMirror.getValue(),
 		created: function () {
-			FileManager.DoneButton.click();
 			location.hash = path;
 		},
 		error: function (status, statusText) {
@@ -1147,11 +1145,7 @@ document.addEventListener('click', function (e) {
 		return;
 	}
 
-	if (el = is('edit-button')) {
-		FileManager.EditButton.click(el);
-	} else if (el = is('done-button')) {
-		FileManager.DoneButton.click(el);
-	} else if (el = is('execute-button')) {
+	if (el = is('execute-button')) {
 		if (FileManager.ENABLE_ZEROVM) {
 			FileManager.ExecuteButton.click(el);
 		}
