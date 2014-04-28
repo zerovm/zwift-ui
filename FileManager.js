@@ -2729,10 +2729,8 @@ FileManager.ContentTypeForm.createAfterActionsMenu = function (actionsMenuEl) {
 	newContentTypeForm.addEventListener('submit', FileManager.ContentTypeForm.submit);
 	newContentTypeForm.querySelector('button.cancel').addEventListener('click', FileManager.ContentTypeForm.cancel);
 	newContentTypeForm.querySelector('input.content-type').value = '';
-	newContentTypeForm.querySelector('input.content-type').addEventListener('keydown', function () {
-		var contentTypeForm = document.querySelector('.scrolling-content form.content-type');
-		contentTypeForm.querySelector('.err-ajax').setAttribute('hidden', 'hidden');
-	});
+	newContentTypeForm.querySelector('input.content-type').addEventListener('keydown',
+		FileManager.ContentTypeForm.inputKeydown);
 	document.querySelector('.scrolling-content').insertBefore(newContentTypeForm, actionsMenuEl.nextSibling);
 	FileManager.ContentTypeForm.load();
 };
@@ -2788,4 +2786,8 @@ FileManager.ContentTypeForm.submit = function (e) {
 FileManager.ContentTypeForm.cancel = function (e) {
 	e.preventDefault();
 	FileManager.ContentTypeForm.removeEl();
+};
+FileManager.ContentTypeForm.inputKeydown = function () {
+	var contentTypeForm = document.querySelector('.scrolling-content form.content-type');
+	contentTypeForm.querySelector('.err-ajax').setAttribute('hidden', 'hidden');
 };
