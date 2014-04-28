@@ -1477,19 +1477,15 @@ FileManager.SignOutButton.el.addEventListener('click', function () {
 
 
 FileManager.UpButton = {};
-
 FileManager.UpButton.el = document.querySelector('.up-button');
-
 FileManager.UpButton.el.addEventListener('click', function () {
 	FileManager.disableAll();
 	FileManager.CurrentDirLabel.showLoading();
 	location.hash = FileManager.CurrentPath().up();
 });
-
 FileManager.UpButton.enable = function () {
 	FileManager.UpButton.el.removeAttribute('disabled');
 };
-
 FileManager.UpButton.disable = function () {
 	FileManager.UpButton.el.setAttribute('disabled', 'disabled');
 };
