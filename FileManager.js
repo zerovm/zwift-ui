@@ -2424,30 +2424,31 @@ FileManager.ConfirmDeleteForm.createAfterActionsMenu = function (actionsMenuEl) 
 	var newConfirmDeleteForm = document.querySelector('.template-confirm-delete-form').cloneNode(true);
 	newConfirmDeleteForm.classList.remove('template-confirm-delete-form');
 	newConfirmDeleteForm.classList.remove('template');
-	newConfirmDeleteForm.addEventListener('submit', function (e) {
-		e.preventDefault();
-		var name = FileManager.Item.selectedEl.title;
-		var itemPath = FileManager.CurrentPath().add(name);
-
-		SwiftAdvancedFunctionality.delete({
-			path: FileManager.Path(itemPath).withoutAccount(),
-			deleted: function () {
-				FileManager.ContentChange.animate();
-			},
-			error: function(status, statusText) {
-				var el = document.querySelector('.delete-error-ajax');
-				FileManager.AjaxError.show(el, status, statusText);
-			},
-			notExist: function () {
-				FileManager.ContentChange.animate();
-			}
-		});
-	});
+	newConfirmDeleteForm.addEventListener('submit', FileManager.ConfirmDeleteForm.submit);
 	newConfirmDeleteForm.querySelector('.cancel').addEventListener('click', function (e) {
 		e.preventDefault();
 		FileManager.ConfirmDeleteForm.removeEl();
 	});
 	document.querySelector('.scrolling-content').insertBefore(newConfirmDeleteForm, actionsMenuEl.nextSibling);
+};
+FileManager.ConfirmDeleteForm.submit = function (e) {
+	e.preventDefault();
+	var name = FileManager.Item.selectedEl.title;
+	var itemPath = FileManager.CurrentPath().add(name);
+
+	SwiftAdvancedFunctionality.delete({
+		path: FileManager.Path(itemPath).withoutAccount(),
+		deleted: function () {
+			FileManager.ContentChange.animate();
+		},
+		error: function(status, statusText) {
+			var el = document.querySelector('.delete-error-ajax');
+			FileManager.AjaxError.show(el, status, statusText);
+		},
+		notExist: function () {
+			FileManager.ContentChange.animate();
+		}
+	});
 };
 
 FileManager.MetadataForm = {};
@@ -2465,6 +2466,8 @@ FileManager.MetadataForm.createAfterActionsMenu = function (actionsMenuEl) {
 	var newMetadataForm = document.querySelector('.template-metadata-form').cloneNode(true);
 	newMetadataForm.classList.remove('template-metadata-form');
 	newMetadataForm.classList.remove('template');
+	newMetadataForm.addEventListener('submit', FileManager.MetadataForm.submit);
+	newMetadataForm.querySelector('button.metadata-cancel').addEventListener('click', FileManager.MetadataForm.cancel);
 	document.querySelector('.scrolling-content').insertBefore(newMetadataForm, actionsMenuEl.nextSibling);
 	FileManager.MetadataForm.load();
 };
@@ -2481,8 +2484,6 @@ FileManager.MetadataForm.load = function () {
 	//formEl.getElementsByClassName('metadata-loading')[0].removeAttribute('hidden');
 
 	formEl.removeAttribute('hidden');
-	handleCancelButtonClickEvent();
-	handleSaveButtonClickEvent();
 
 	if (FileManager.CurrentPath().isContainersList()) {
 		loadContainerMetadata();
@@ -2564,19 +2565,6 @@ FileManager.MetadataForm.load = function () {
 		errorEl.removeAttribute('hidden');
 	}
 
-	function handleCancelButtonClickEvent() {
-		formEl.getElementsByClassName('metadata-cancel')[0].onclick = function () {
-			formEl.setAttribute('hidden', 'hidden');
-		};
-	}
-
-	function handleSaveButtonClickEvent() {
-		formEl.onsubmit = function (e) {
-			e.preventDefault();
-			FileManager.MetadataForm.save();
-		};
-	}
-
 	listEl.onkeyup = function (e) {
 		removeEmptyInputs(e.target);
 		insureLastRowIsEmpty();
@@ -2644,7 +2632,8 @@ FileManager.MetadataForm.load = function () {
 		}
 	};
 };
-FileManager.MetadataForm.save = function () {
+FileManager.MetadataForm.submit = function (e) {
+	e.preventDefault();
 
 	var formEl = document.querySelector('.scrolling-content .metadata-form');
 	var listEl = formEl.querySelector('.metadata-list');
@@ -2725,6 +2714,10 @@ FileManager.MetadataForm.save = function () {
 		errorEl.getElementsByClassName('ajax-error-status-code')[0].textContent = status;
 		errorEl.removeAttribute('hidden');
 	}
+};
+FileManager.MetadataForm.cancel = function (e) {
+	e.preventDefault();
+	FileManager.MetadataForm.removeEl();
 };
 
 FileManager.ContentTypeForm = {};
