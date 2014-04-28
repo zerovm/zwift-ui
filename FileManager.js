@@ -2425,10 +2425,7 @@ FileManager.ConfirmDeleteForm.createAfterActionsMenu = function (actionsMenuEl) 
 	newConfirmDeleteForm.classList.remove('template-confirm-delete-form');
 	newConfirmDeleteForm.classList.remove('template');
 	newConfirmDeleteForm.addEventListener('submit', FileManager.ConfirmDeleteForm.submit);
-	newConfirmDeleteForm.querySelector('.cancel').addEventListener('click', function (e) {
-		e.preventDefault();
-		FileManager.ConfirmDeleteForm.removeEl();
-	});
+	newConfirmDeleteForm.querySelector('.cancel').addEventListener('click', FileManager.ConfirmDeleteForm.cancel);
 	document.querySelector('.scrolling-content').insertBefore(newConfirmDeleteForm, actionsMenuEl.nextSibling);
 };
 FileManager.ConfirmDeleteForm.submit = function (e) {
@@ -2449,6 +2446,10 @@ FileManager.ConfirmDeleteForm.submit = function (e) {
 			FileManager.ContentChange.animate();
 		}
 	});
+};
+FileManager.ConfirmDeleteForm.cancel = function (e) {
+	e.preventDefault();
+	FileManager.ConfirmDeleteForm.removeEl();
 };
 
 FileManager.MetadataForm = {};
