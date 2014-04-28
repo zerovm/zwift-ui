@@ -1063,14 +1063,6 @@ document.addEventListener('click', function (e) {
 		document.querySelector('.wide-button').removeAttribute('hidden');
 	}
 
-	else if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		if (el = is('rights-save')) {
-			FileManager.Rights.save();
-		} else if (el = is('rights-discard-changes')) {
-			FileManager.Rights.discardChanges();
-		}
-	}
-
 	function is(className) {
 		var node1 = e.target;
 		var node2 = node1.parentNode;
@@ -1142,15 +1134,6 @@ document.addEventListener('keydown', function (e) {
 		document.querySelector('.copy-error-ajax').setAttribute('hidden', 'hidden');
 	}
 
-});
-
-document.addEventListener('keyup', function (e) {
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		if (e.target.classList.contains('read-rights-input') || e.target.classList.contains('write-rights-input')) {
-			FileManager.Rights.keyup(e.target);
-		}
-	}
 });
 
 document.addEventListener('change', function (e) {
@@ -1277,57 +1260,6 @@ FileManager.AddShared.clearErrors = function (inputEl1, inputEl2) {
 	for (var i = 0; i < errElArr.length; i++) {
 		errElArr[i].setAttribute('hidden', 'hidden');
 	}
-};
-
-FileManager.Rights = {};
-
-FileManager.Rights.showLoading = function () {
-	document.querySelector('.rights-table').removeAttribute('hidden');
-};
-
-FileManager.Rights.showError = function (status, statusText) {
-	var el = document.querySelector('.rights-error-ajax');
-	FileManager.AjaxError.show(el, status, statusText);
-};
-
-FileManager.Rights.load = function (rights) {
-	document.querySelector('.read-rights-input').value = rights.read;
-	document.querySelector('.write-rights-input').value = rights.write;
-	document.querySelector('.rights-table .loading').setAttribute('hidden', 'hidden');
-	document.querySelector('.rights-table tbody').removeAttribute('hidden');
-};
-
-FileManager.Rights.sharedContainers = function () {
-	var html = '<tr><td colspan="3">Cannot show metadata for shared container.</td></tr>';
-	document.querySelector('.rights-table tbody').innerHTML = html;
-	document.querySelector('.rights-table .loading').setAttribute('hidden', 'hidden');
-	document.querySelector('.rights-table tbody').removeAttribute('hidden');
-};
-
-FileManager.Rights.hide = function () {
-	document.querySelector('.rights-table').setAttribute('hidden', 'hidden');
-};
-
-FileManager.Rights.keyup = function () {
-	document.querySelector('.rights-table tfoot').removeAttribute('hidden');
-};
-
-FileManager.Rights.save = function () {
-	SharedContainersOnSwift.updateRights({
-		containerName: FileManager.Path(FileManager.Item.selectedPath).container(),
-		readRights: document.querySelector('.read-rights-input').value,
-		writeRights: document.querySelector('.write-rights-input').value,
-		updated: function () {
-			document.querySelector('.clicked').click();
-		},
-		error: function (status, statusText) {
-			FileManager.Rights.showError(status, statusText);
-		}
-	});
-};
-
-FileManager.Rights.discardChanges = function () {
-	document.querySelector('.clicked').click();
 };
 
 FileManager.reAuth = function () {
@@ -2231,12 +2163,16 @@ FileManager.ActionsMenu.click = function (e) {
 			FileManager.ActionsMenu.metadataAction);
 		newActionsMenu.querySelector('button.delete-action').addEventListener('click',
 			FileManager.ActionsMenu.deleteAction);
+		var contentTypeActionEl = newActionsMenu.querySelector('button.content-type-action');
+		var rightsActionEl = newActionsMenu.querySelector('button.rights-action');
+		contentTypeActionEl.setAttribute('hidden', 'hidden');
+		rightsActionEl.setAttribute('hidden', 'hidden');
 		if (FileManager.Item.selectedEl.classList.contains('file')) {
-			newActionsMenu.querySelector('button.content-type-action').removeAttribute('hidden');
-			newActionsMenu.querySelector('button.content-type-action').addEventListener('click',
-				FileManager.ActionsMenu.contentTypeAction);
-		} else {
-			newActionsMenu.querySelector('button.content-type-action').setAttribute('hidden', 'hidden');
+			contentTypeActionEl.removeAttribute('hidden');
+			contentTypeActionEl.addEventListener('click', FileManager.ActionsMenu.contentTypeAction);
+		} else if (FileManager.Item.selectedEl.classList.contains('container')) {
+			rightsActionEl.removeAttribute('hidden');
+			rightsActionEl.addEventListener('click', FileManager.ActionsMenu.rightsAction);
 		}
 		document.querySelector('.scrolling-content').insertBefore(newActionsMenu, itemEl.nextSibling);
 	}
@@ -2245,6 +2181,7 @@ FileManager.ActionsMenu.removeForms = function () {
 	FileManager.ConfirmDeleteForm.removeEl();
 	FileManager.MetadataForm.removeEl();
 	FileManager.ContentTypeForm.removeEl();
+	FileManager.RightsForm.removeEl();
 };
 FileManager.ActionsMenu.deleteAction = function () {
 	FileManager.ActionsMenu.removeForms();
@@ -2262,6 +2199,12 @@ FileManager.ActionsMenu.contentTypeAction = function() {
 	var newEl = FileManager.ContentTypeForm.createNewEl();
 	FileManager.ActionsMenu.insertForm(newEl);
 	FileManager.ContentTypeForm.load();
+};
+FileManager.ActionsMenu.rightsAction = function () {
+	FileManager.ActionsMenu.removeForms();
+	var newEl = FileManager.RightsForm.createNewEl();
+	FileManager.ActionsMenu.insertForm(newEl);
+	FileManager.RightsForm.load();
 };
 FileManager.ActionsMenu.insertForm = function (formEl) {
 	var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
@@ -2644,4 +2587,72 @@ FileManager.ContentTypeForm.cancel = function (e) {
 FileManager.ContentTypeForm.inputKeydown = function () {
 	var contentTypeForm = document.querySelector('.scrolling-content form.content-type');
 	contentTypeForm.querySelector('.err-ajax').setAttribute('hidden', 'hidden');
+};
+
+FileManager.RightsForm = {};
+FileManager.RightsForm.createNewEl = function () {
+	var newEl = document.querySelector('form.template-rights').cloneNode(true);
+	newEl.classList.remove('template');
+	newEl.classList.remove('template-rights');
+	newEl.addEventListener('submit', FileManager.RightsForm.submit);
+	newEl.querySelector('button.cancel').addEventListener('click', FileManager.RightsForm.cancel);
+	newEl.querySelector('input.read-rights').addEventListener('keydown', FileManager.RightsForm.inputKeydown);
+	newEl.querySelector('input.write-rights').addEventListener('keydown', FileManager.RightsForm.inputKeydown);
+	return newEl;
+};
+FileManager.RightsForm.load = function () {
+	var rightsFormEl = document.querySelector('.scrolling-content form.rights');
+	rightsFormEl.querySelector('.loading').removeAttribute('hidden');
+	var containerName = FileManager.Item.selectedEl.title;
+	SwiftV1.Container.getRights({
+		containerName: containerName,
+		success: function (rights) {
+			rightsFormEl.querySelector('.loading').setAttribute('hidden', 'hidden');
+			rightsFormEl.querySelector('input.read-rights').value = rights.read;
+			rightsFormEl.querySelector('input.write-rights').value = rights.write;
+		},
+		error: function (status, statusText) {
+			rightsFormEl.querySelector('.loading-error .status').textContent = status;
+			rightsFormEl.querySelector('.loading-error .status-text').textContent = statusText;
+			rightsFormEl.querySelector('.loading-error').removeAttribute('hidden');
+			rightsFormEl.querySelector('.loading').setAttribute('hidden', 'hidden');
+		}
+	});
+};
+FileManager.RightsForm.submit = function (e) {
+	e.preventDefault();
+	var rightsFormEl = document.querySelector('.scrolling-content form.rights');
+	rightsFormEl.querySelector('.updating').removeAttribute('hidden');
+	var containerName = FileManager.Item.selectedEl.title;
+	var readRights = rightsFormEl.querySelector('input.read-rights').value;
+	var writeRights = rightsFormEl.querySelector('input.write-rights').value;
+	SwiftV1.Container.updateRights({
+		containerName: containerName,
+		readRights: readRights,
+		writeRights: writeRights,
+		updated: function () {
+			FileManager.RightsForm.removeEl();
+		},
+		error: function (status, statusText) {
+			rightsFormEl.querySelector('.updating').setAttribute('hidden', 'hidden');
+			var el = rightsFormEl.querySelector('.err-ajax');
+			el.textContent = 'Error: ' + status + ' ' + statusText;
+			el.removeAttribute('hidden');
+		}
+	});
+};
+FileManager.RightsForm.cancel = function (e) {
+	e.preventDefault();
+	FileManager.RightsForm.removeEl();
+};
+FileManager.RightsForm.removeEl = function () {
+	var formEl = document.querySelector('.scrolling-content form.rights');
+
+	if (formEl) {
+		formEl.parentNode.removeChild(formEl);
+	}
+};
+FileManager.RightsForm.inputKeydown = function () {
+	var rightsFormEl = document.querySelector('.scrolling-content form.rights');
+	rightsFormEl.querySelector('.err-ajax').setAttribute('hidden', 'hidden');
 };
