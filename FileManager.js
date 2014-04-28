@@ -1112,25 +1112,6 @@ document.addEventListener('keydown', function (e) {
 		FileManager.AddShared.clearErrors(e.target);
 	}
 
-	if (e.target.classList.contains('create-file-input-name')) {
-
-		if (e.which == 13) {
-			document.querySelector('.create-file-input-type').focus();
-		}
-
-		FileManager.CreateFile.clearErrors(e.target);
-	}
-
-	if (e.target.classList.contains('create-file-input-type')) {
-
-		if (e.which == 13) {
-			FileManager.CreateFile.click();
-			return;
-		}
-
-		FileManager.CreateFile.clearErrors(e.target);
-	}
-
 	if (e.target.classList.contains('save-as-input-path')) {
 
 		if (e.which == 13) {
@@ -1148,14 +1129,6 @@ document.addEventListener('keydown', function (e) {
 		}
 
 		FileManager.SaveAs.clearErrors(e.target);
-	}
-
-	if (e.target.classList.contains('content-type-input')) {
-
-		if (e.which == 13) {
-			FileManager.ContentType.click();
-			return;
-		}
 	}
 
 	if (e.target.classList.contains('copy-input')) {
