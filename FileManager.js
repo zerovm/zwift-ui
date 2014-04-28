@@ -14,24 +14,6 @@ FileManager.disableAll = function () {
 	document.body.classList.add('disabled');
 };
 
-FileManager.UpButton = {};
-
-FileManager.UpButton.el = document.querySelector('.up-button');
-
-FileManager.UpButton.el.addEventListener('click', function () {
-	FileManager.disableAll();
-	FileManager.CurrentDirLabel.showLoading();
-	location.hash = FileManager.CurrentPath().up();
-});
-
-FileManager.UpButton.enable = function () {
-	FileManager.UpButton.el.removeAttribute('disabled');
-};
-
-FileManager.UpButton.disable = function () {
-	FileManager.UpButton.el.setAttribute('disabled', 'disabled');
-};
-
 
 FileManager.CurrentDirLabel = {};
 
@@ -1041,8 +1023,6 @@ document.addEventListener('click', function (e) {
 	} else if (el = is('add-shared-button')) {
 		//SHARED-CONTAINERS
 		FileManager.AddShared.click(el);
-	} else if (el = is('create-file-button')) {
-		FileManager.CreateFile.click(el);
 	} else if (el = is('undo')) {
 		FileManager.File.undo();
 	} else if (el = is('redo')) {
@@ -1053,8 +1033,6 @@ document.addEventListener('click', function (e) {
 		FileManager.File.saveAs(el);
 	} else if (el = is('save-as-button')) {
 		FileManager.SaveAs.click(el);
-	} else if (el = is('content-type-button')) {
-		FileManager.ContentType.click(el);
 	} else if (el = is('cancel-upload-button')) {
 		FileManager.UploadFiles.cancelClick(el);
 	} else if (el = is('execute-close-button')) {
@@ -1134,25 +1112,6 @@ document.addEventListener('keydown', function (e) {
 		FileManager.AddShared.clearErrors(e.target);
 	}
 
-	if (e.target.classList.contains('create-file-input-name')) {
-
-		if (e.which == 13) {
-			document.querySelector('.create-file-input-type').focus();
-		}
-
-		FileManager.CreateFile.clearErrors(e.target);
-	}
-
-	if (e.target.classList.contains('create-file-input-type')) {
-
-		if (e.which == 13) {
-			FileManager.CreateFile.click();
-			return;
-		}
-
-		FileManager.CreateFile.clearErrors(e.target);
-	}
-
 	if (e.target.classList.contains('save-as-input-path')) {
 
 		if (e.which == 13) {
@@ -1170,14 +1129,6 @@ document.addEventListener('keydown', function (e) {
 		}
 
 		FileManager.SaveAs.clearErrors(e.target);
-	}
-
-	if (e.target.classList.contains('content-type-input')) {
-
-		if (e.which == 13) {
-			FileManager.ContentType.click();
-			return;
-		}
 	}
 
 	if (e.target.classList.contains('copy-input')) {
@@ -1493,6 +1444,20 @@ FileManager.SignOutButton.el.addEventListener('click', function () {
 
 
 
+
+FileManager.UpButton = {};
+FileManager.UpButton.el = document.querySelector('.up-button');
+FileManager.UpButton.el.addEventListener('click', function () {
+	FileManager.disableAll();
+	FileManager.CurrentDirLabel.showLoading();
+	location.hash = FileManager.CurrentPath().up();
+});
+FileManager.UpButton.enable = function () {
+	FileManager.UpButton.el.removeAttribute('disabled');
+};
+FileManager.UpButton.disable = function () {
+	FileManager.UpButton.el.setAttribute('disabled', 'disabled');
+};
 
 FileManager.CreateContainerButton = {};
 FileManager.CreateContainerButton.el = document.querySelector('button.create-container');
@@ -2241,7 +2206,6 @@ FileManager.DefaultAction.click = function (e) {
 	var name = itemEl.getAttribute('title');
 	FileManager.Item.selectedPath = FileManager.CurrentPath().add(name);
 
-	FileManager.disableAll();
 	FileManager.Item.showLoading(itemEl);
 	location.hash = FileManager.Item.selectedPath;
 };
