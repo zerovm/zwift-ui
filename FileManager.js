@@ -14,24 +14,6 @@ FileManager.disableAll = function () {
 	document.body.classList.add('disabled');
 };
 
-FileManager.UpButton = {};
-
-FileManager.UpButton.el = document.querySelector('.up-button');
-
-FileManager.UpButton.el.addEventListener('click', function () {
-	FileManager.disableAll();
-	FileManager.CurrentDirLabel.showLoading();
-	location.hash = FileManager.CurrentPath().up();
-});
-
-FileManager.UpButton.enable = function () {
-	FileManager.UpButton.el.removeAttribute('disabled');
-};
-
-FileManager.UpButton.disable = function () {
-	FileManager.UpButton.el.setAttribute('disabled', 'disabled');
-};
-
 
 FileManager.CurrentDirLabel = {};
 
@@ -1493,6 +1475,24 @@ FileManager.SignOutButton.el.addEventListener('click', function () {
 
 
 
+
+FileManager.UpButton = {};
+
+FileManager.UpButton.el = document.querySelector('.up-button');
+
+FileManager.UpButton.el.addEventListener('click', function () {
+	FileManager.disableAll();
+	FileManager.CurrentDirLabel.showLoading();
+	location.hash = FileManager.CurrentPath().up();
+});
+
+FileManager.UpButton.enable = function () {
+	FileManager.UpButton.el.removeAttribute('disabled');
+};
+
+FileManager.UpButton.disable = function () {
+	FileManager.UpButton.el.setAttribute('disabled', 'disabled');
+};
 
 FileManager.CreateContainerButton = {};
 FileManager.CreateContainerButton.el = document.querySelector('button.create-container');
