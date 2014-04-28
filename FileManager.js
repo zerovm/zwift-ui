@@ -2397,19 +2397,25 @@ FileManager.ActionsMenu.removeForms = function () {
 	FileManager.ContentTypeForm.removeEl();
 };
 FileManager.ActionsMenu.deleteAction = function () {
-	var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
 	FileManager.ActionsMenu.removeForms();
-	FileManager.ConfirmDeleteForm.createAfterActionsMenu(actionsMenu);
+	var newEl = FileManager.ConfirmDeleteForm.createNewEl();
+	FileManager.ActionsMenu.insertForm(newEl);
 };
 FileManager.ActionsMenu.metadataAction = function () {
-	var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
 	FileManager.ActionsMenu.removeForms();
-	FileManager.MetadataForm.createAfterActionsMenu(actionsMenu);
+	var newEl = FileManager.MetadataForm.createNewEl();
+	FileManager.ActionsMenu.insertForm(newEl);
+	FileManager.MetadataForm.load();
 };
 FileManager.ActionsMenu.contentTypeAction = function() {
-	var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
 	FileManager.ActionsMenu.removeForms();
-	FileManager.ContentTypeForm.createAfterActionsMenu(actionsMenu);
+	var newEl = FileManager.ContentTypeForm.createNewEl();
+	FileManager.ActionsMenu.insertForm(newEl);
+	FileManager.ContentTypeForm.load();
+};
+FileManager.ActionsMenu.insertForm = function (formEl) {
+	var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
+	document.querySelector('.scrolling-content').insertBefore(formEl, actionsMenu.nextSibling);
 };
 
 FileManager.ConfirmDeleteForm = {};
@@ -2420,13 +2426,13 @@ FileManager.ConfirmDeleteForm.removeEl = function () {
 		confirmDeleteForm.parentNode.removeChild(confirmDeleteForm);
 	}
 };
-FileManager.ConfirmDeleteForm.createAfterActionsMenu = function (actionsMenuEl) {
+FileManager.ConfirmDeleteForm.createNewEl = function () {
 	var newConfirmDeleteForm = document.querySelector('.template-confirm-delete-form').cloneNode(true);
 	newConfirmDeleteForm.classList.remove('template-confirm-delete-form');
 	newConfirmDeleteForm.classList.remove('template');
 	newConfirmDeleteForm.addEventListener('submit', FileManager.ConfirmDeleteForm.submit);
 	newConfirmDeleteForm.querySelector('.cancel').addEventListener('click', FileManager.ConfirmDeleteForm.cancel);
-	document.querySelector('.scrolling-content').insertBefore(newConfirmDeleteForm, actionsMenuEl.nextSibling);
+	return newConfirmDeleteForm;
 };
 FileManager.ConfirmDeleteForm.submit = function (e) {
 	e.preventDefault();
@@ -2463,14 +2469,13 @@ FileManager.MetadataForm.removeEl = function () {
 		metadataForm.parentNode.removeChild(metadataForm);
 	}
 };
-FileManager.MetadataForm.createAfterActionsMenu = function (actionsMenuEl) {
+FileManager.MetadataForm.createNewEl = function () {
 	var newMetadataForm = document.querySelector('.template-metadata-form').cloneNode(true);
 	newMetadataForm.classList.remove('template-metadata-form');
 	newMetadataForm.classList.remove('template');
 	newMetadataForm.addEventListener('submit', FileManager.MetadataForm.submit);
 	newMetadataForm.querySelector('button.metadata-cancel').addEventListener('click', FileManager.MetadataForm.cancel);
-	document.querySelector('.scrolling-content').insertBefore(newMetadataForm, actionsMenuEl.nextSibling);
-	FileManager.MetadataForm.load();
+	return newMetadataForm;
 };
 FileManager.MetadataForm.load = function () {
 
@@ -2722,7 +2727,7 @@ FileManager.MetadataForm.cancel = function (e) {
 };
 
 FileManager.ContentTypeForm = {};
-FileManager.ContentTypeForm.createAfterActionsMenu = function (actionsMenuEl) {
+FileManager.ContentTypeForm.createNewEl = function () {
 	var newContentTypeForm = document.querySelector('.template-content-type-form').cloneNode(true);
 	newContentTypeForm.classList.remove('template-content-type-form');
 	newContentTypeForm.classList.remove('template');
@@ -2731,8 +2736,7 @@ FileManager.ContentTypeForm.createAfterActionsMenu = function (actionsMenuEl) {
 	newContentTypeForm.querySelector('input.content-type').value = '';
 	newContentTypeForm.querySelector('input.content-type').addEventListener('keydown',
 		FileManager.ContentTypeForm.inputKeydown);
-	document.querySelector('.scrolling-content').insertBefore(newContentTypeForm, actionsMenuEl.nextSibling);
-	FileManager.ContentTypeForm.load();
+	return newContentTypeForm;
 };
 FileManager.ContentTypeForm.removeEl = function () {
 	var contentTypeForm = document.querySelector('.scrolling-content form.content-type');
