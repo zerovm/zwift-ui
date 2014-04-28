@@ -2632,7 +2632,8 @@ FileManager.MetadataForm.load = function () {
 		}
 	};
 };
-FileManager.MetadataForm.save = function () {
+FileManager.MetadataForm.submit = function (e) {
+	e.preventDefault();
 
 	var formEl = document.querySelector('.scrolling-content .metadata-form');
 	var listEl = formEl.querySelector('.metadata-list');
@@ -2713,10 +2714,6 @@ FileManager.MetadataForm.save = function () {
 		errorEl.getElementsByClassName('ajax-error-status-code')[0].textContent = status;
 		errorEl.removeAttribute('hidden');
 	}
-};
-FileManager.MetadataForm.submit = function (e) {
-	e.preventDefault();
-	FileManager.MetadataForm.save();
 };
 FileManager.MetadataForm.cancel = function (e) {
 	e.preventDefault();
