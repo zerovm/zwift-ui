@@ -1262,10 +1262,6 @@ FileManager.AddShared.clearErrors = function (inputEl1, inputEl2) {
 	}
 };
 
-FileManager.Authentication.refresh = function () {
-	SwiftV1.Account.head({success:function(){},error:function(){}});
-	setTimeout(FileManager.Authentication.refresh, 1000 * 60 * 20);
-};
 
 FileManager.Authentication = {};
 FileManager.Authentication.el = document.querySelector('#Authentication');
@@ -1319,6 +1315,10 @@ if (liteauth.getLoginInfo()) {
 		}
 	});
 }
+FileManager.Authentication.refresh = function () {
+	SwiftV1.Account.head({success:function(){},error:function(){}});
+	setTimeout(FileManager.Authentication.refresh, 1000 * 60 * 20);
+};
 
 FileManager.SignOutButton = {};
 FileManager.SignOutButton.el = document.querySelector('.sign-out-button');
