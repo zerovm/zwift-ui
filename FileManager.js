@@ -2466,6 +2466,8 @@ FileManager.MetadataForm.createAfterActionsMenu = function (actionsMenuEl) {
 	var newMetadataForm = document.querySelector('.template-metadata-form').cloneNode(true);
 	newMetadataForm.classList.remove('template-metadata-form');
 	newMetadataForm.classList.remove('template');
+	newMetadataForm.addEventListener('submit', FileManager.MetadataForm.submit);
+	newMetadataForm.querySelector('button.metadata-cancel').addEventListener('click', FileManager.MetadataForm.cancel);
 	document.querySelector('.scrolling-content').insertBefore(newMetadataForm, actionsMenuEl.nextSibling);
 	FileManager.MetadataForm.load();
 };
@@ -2482,8 +2484,6 @@ FileManager.MetadataForm.load = function () {
 	//formEl.getElementsByClassName('metadata-loading')[0].removeAttribute('hidden');
 
 	formEl.removeAttribute('hidden');
-	handleCancelButtonClickEvent();
-	handleSaveButtonClickEvent();
 
 	if (FileManager.CurrentPath().isContainersList()) {
 		loadContainerMetadata();
@@ -2563,19 +2563,6 @@ FileManager.MetadataForm.load = function () {
 		errorEl.getElementsByClassName('ajax-error-status-text')[0].textContent = statusText;
 		errorEl.getElementsByClassName('ajax-error-status-code')[0].textContent = status;
 		errorEl.removeAttribute('hidden');
-	}
-
-	function handleCancelButtonClickEvent() {
-		formEl.getElementsByClassName('metadata-cancel')[0].onclick = function () {
-			formEl.setAttribute('hidden', 'hidden');
-		};
-	}
-
-	function handleSaveButtonClickEvent() {
-		formEl.onsubmit = function (e) {
-			e.preventDefault();
-			FileManager.MetadataForm.save();
-		};
 	}
 
 	listEl.onkeyup = function (e) {
@@ -2726,6 +2713,14 @@ FileManager.MetadataForm.save = function () {
 		errorEl.getElementsByClassName('ajax-error-status-code')[0].textContent = status;
 		errorEl.removeAttribute('hidden');
 	}
+};
+FileManager.MetadataForm.submit = function (e) {
+	e.preventDefault();
+	FileManager.MetadataForm.save();
+};
+FileManager.MetadataForm.cancel = function (e) {
+	e.preventDefault();
+	FileManager.MetadataForm.removeEl();
 };
 
 FileManager.ContentTypeForm = {};
