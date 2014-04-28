@@ -1297,24 +1297,28 @@ FileManager.Authentication.el.onsubmit = function (e) {
 		alert(arguments[0] + ' ' + arguments[1]);
 	}
 };
-FileManager.Authentication.el.querySelector('input.v1-auth-url').value =
-	document.location.protocol + '//' + document.location.host + '/auth/v1.0';
 FileManager.Authentication.el.querySelector('button.login-with-google').addEventListener('click', function () {
 	liteauth.login(liteauth.AUTH_TYPES.GOOGLE);
 });
-if (liteauth.getLoginInfo()) {
-	FileManager.Authentication.el.querySelector('input.tenant').value = liteauth.getLoginInfo().split(':')[1];
-	FileManager.Authentication.el.querySelector('input.x-auth-user').value = liteauth.getLoginInfo().split(':')[0];
+FileManager.Authentication.load = function () {
+	FileManager.Authentication.el.querySelector('input.v1-auth-url').value =
+		document.location.protocol + '//' + document.location.host + '/auth/v1.0';
+	if (liteauth.getLoginInfo()) {
+		FileManager.Authentication.el.querySelector('input.tenant').value = liteauth.getLoginInfo().split(':')[1];
+		FileManager.Authentication.el.querySelector('input.x-auth-user').value = liteauth.getLoginInfo().split(':')[0];
 
-	liteauth.getProfile({
-		success: function (response) {
-			document.querySelector('#Authentication .x-auth-key').value = JSON.parse(response)['auth'].split('plaintext:')[1];
-		},
-		error: function (status, statusText) {
-			alert(status + ' ' + statusText);
-		}
-	});
-}
+		liteauth.getProfile({
+			success: function (response) {
+				FileManager.Authentication.el.querySelector('input.x-auth-key').value =
+					JSON.parse(response)['auth'].split('plaintext:')[1];
+			},
+			error: function (status, statusText) {
+				alert(status + ' ' + statusText);
+			}
+		});
+	}
+};
+FileManager.Authentication.load();
 FileManager.Authentication.refresh = function () {
 	SwiftV1.Account.head({success:function(){},error:function(){}});
 	setTimeout(FileManager.Authentication.refresh, 1000 * 60 * 20);
