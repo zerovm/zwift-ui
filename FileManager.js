@@ -2241,7 +2241,6 @@ FileManager.DefaultAction.click = function (e) {
 	var name = itemEl.getAttribute('title');
 	FileManager.Item.selectedPath = FileManager.CurrentPath().add(name);
 
-	FileManager.disableAll();
 	FileManager.Item.showLoading(itemEl);
 	location.hash = FileManager.Item.selectedPath;
 };
