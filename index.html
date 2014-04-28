@@ -37,25 +37,34 @@
 
 	<!-- header -->
 	<div class="fixed-top center">
+		<div id="Row1">
+			<span class="logo">File Manager</span>
+			<button class="sign-out-button blue-button" title="Sign Out">Sign Out</button>
+		</div>
 		<div id="header" class="center">
 			<span class="left">
 				<button class="up-button icon-button" title="Up" disabled></button>
 				<label class="current-dir-label"></label>
 			</span>
 			<span class="right">
+
+				<button class="icon-button create-directory" hidden></button>
+				<button class="icon-button create-file" hidden></button>
+
+				<span class="icon-button upload-files"><input type="file" multiple></span>
+				<span class="icon-button upload-as"><input type="file" multiple></span>
+				<span class="icon-button upload-execute"><input type="file"></span>
+
 				<button class="open-button icon-button" title="Open" hidden></button>
 				<label class="execute-label" hidden></label>
 				<button class="execute-button icon-button" title="Execute" hidden></button>
-				<button class="toolbar-create-container icon-button" title="Create Container"></button>
-				<button class="edit-button icon-button" title="Edit"></button>
-				<button class="done-button icon-button" title="Done" hidden></button>
-				<button class="wide-button icon-button" title="Wide"></button>
+				<button class="create-container icon-button" title="Create Container"></button>
+				<button class="wide-button icon-button" title="Wide" hidden></button>
 				<button class="unwide-button icon-button" title="Unwide" hidden></button>
-				<button class="sign-out-button icon-button" title="Sign Out"></button>
 			</span>
 		</div>
 
-		<form id="CreateContainerForm" class="blue-form dialog" hidden>
+		<form class="create-container blue-form dialog" hidden>
 			<input placeholder="Container Name" class="container-name blue-input one-input">
 			<div class="err-empty err" hidden>Please type container name.</div>
 			<div class="err-size-limit err" hidden>Container name must be less than 256 bytes.</div>
@@ -66,93 +75,29 @@
 			<button type="button" class="cancel btn btn-primary blue-button">Cancel</button>
 		</form>
 
-		<div class="menu-containers dialog" hidden>
-			<table class="input-group-table create-container">
-				<tr>
-					<td><img src="img/box.png"></td>
-					<td><input autocomplete="off" class="create-container-input" placeholder="Container Name"></td>
-					<td class="create-container-button">+</td>
-				</tr>
-				<tr class="err-msg create-container-error-ajax" hidden>
-					<td></td>
-					<td>Error: <span class="status"></span> <span class="status-text"></span>.</td>
-					<td></td>
-				</tr>
-				<tr class="err-msg create-container-error-max-length" hidden>
-					<td></td>
-					<td>Container name must be until 256 characters.</td>
-					<td></td>
-				</tr>
-				<tr class="err-msg create-container-error-invalid-character" hidden>
-					<td></td>
-					<td>Container name cannot have a slash (/) character.</td>
-					<td></td>
-				</tr>
-				<tr class="err-msg create-container-error-already-exist" hidden>
-					<td></td>
-					<td>Container is already exists.</td>
-					<td></td>
-				</tr>
-			</table>
-			<table class="input-group-table add-shared">
-				<tr>
-					<td><img src="img/shared-box.png"></td>
-					<td><input autocomplete="off" class="add-shared-input-account" placeholder="Account Name"></td>
-					<td><input autocomplete="off" class="add-shared-input-container" placeholder="Container Name"></td>
-					<td class="add-shared-button">+</td>
-				</tr>
-				<tr class="err-msg add-shared-error-ajax" hidden>
-					<td></td>
-					<td>Error: <span class="status"></span> <span class="status-text"></span>.</td>
-					<td></td>
-				</tr>
-				<tr class="err-msg add-shared-error" hidden>
-					<td></td>
-					<td colspan="2">Cannot add specified container.</td>
-					<td></td>
-				</tr>
-			</table>
-		</div>
-		<div class="menu-files dialog" hidden>
-			<table class="input-group-table create-directory">
-				<tr>
-					<td><img src="img/folder.png"></td>
-					<td><input autocomplete="off" class="create-directory-input" placeholder="Directory Name"></td>
-					<td class="create-directory-button">+</td>
-				</tr>
-				<tr class="err-msg create-directory-error-ajax" hidden>
-					<td></td>
-					<td>Error: <span class="status"></span> <span class="status-text"></span>.</td>
-					<td></td>
-				</tr>
-				<tr class="err-msg create-directory-error-invalid-character" hidden>
-					<td></td>
-					<td>Directory name cannot have a slash (/) character.</td>
-					<td></td>
-				</tr>
-				<tr class="err-msg create-directory-error-already-exist" hidden>
-					<td></td>
-					<td>Directory is already exists.</td>
-					<td></td>
-				</tr>
-			</table>
-			<table class="input-group-table">
-				<tr>
-					<td><img src="img/file_txt.png"></td>
-					<td><input autocomplete="off" class="create-file-input-name" placeholder="File Name"></td>
-					<td><input autocomplete="off" class="create-file-input-type" placeholder="Content Type" value="text/plain"></td>
-					<td class="create-file-button">+</td>
-				</tr>
-				<tr class="err-msg create-file-error-ajax" hidden>
-					<td></td>
-					<td>Error: <span class="status"></span> <span class="status-text"></span>.</td>
-					<td></td>
-				</tr>
-			</table>
+		<form class="create-directory blue-form dialog" hidden>
+			<input placeholder="Directory Name" class="directory-name blue-input one-input">
+			<div class="err-empty err" hidden>Please type directory name.</div>
+			<div class="err-size-limit err" hidden>Directory name must be less than 256 bytes.</div>
+			<div class="err-invalid-character err" hidden>Directory name cannot contain a forward slash '/' character.</div>
+			<div class="err-ajax err" hidden><span class="status"></span> <span class="status-text"></span></div>
+			<div class="err-already-exists err" hidden>Directory is already exists.</div>
+			<button type="submit" class="btn btn-primary blue-button">Create</button>
+			<button type="button" class="cancel btn btn-primary blue-button">Cancel</button>
+		</form>
 
-			<div class="div-button upload-files" style="width: 33%;"><input autocomplete="off" type="file" multiple><img src="img/upload.png"><span>Upload Files</span></div>
-			<div class="div-button upload-as" style="width: 32%;"><input autocomplete="off" type="file" multiple><img src="img/upload-as.png"><span>Upload As</span></div>
-			<div class="div-button upload-execute" style="width: 33%;"><input autocomplete="off" type="file"><img src="img/execute.png"><span>Upload & Execute</span></div>
+		<form class="create-file blue-form dialog" hidden>
+			<div style="display: flex;">
+				<input placeholder="File Name" class="file-name blue-input" style="flex-grow: 1;">
+				<input placeholder="Content Type" value="text/plain" class="content-type blue-input" style="flex-grow: 1;">
+			</div>
+			<button type="submit" class="blue-button">Create</button>
+			<button type="button" class="cancel blue-button">Cancel</button>
+			<div class="err-empty err" hidden>Please type file name.</div>
+			<div class="err-ajax err" hidden><span class="status"></span> <span class="status-text"></span></div>
+		</form>
+
+		<div class="menu-files">
 		</div>
 		<div class="menu-file dialog" hidden>
 			<button autocomplete="off" class="undo txt-btn" disabled></button><button autocomplete="off" class="redo txt-btn" disabled></button><button autocomplete="off" class="save txt-btn" disabled></button><button autocomplete="off" class="save-as">Save As...</button>
@@ -197,64 +142,113 @@
 
 <!-- templates -->
 <div class="template template-container item" title>
-	<span class="left">
-		<img src="img/container.png">
-		<label class="name"></label>
-	</span>
-	<span class="right">
-		<label class="size"></label>
-		<label class="files"></label>
-		<label class="open-item-menu"></label>
-		<label class="delete">X</label>
-	</span>
+	<div class="default-action">
+		<span class="left">
+			<span class="container-icon"></span>
+			<label class="name"></label>
+		</span>
+		<span class="right">
+			<label class="size"></label>
+			<label class="files"></label>
+			<label class="delete">X</label>
+		</span>
+	</div>
+	<div class="toggle-actions-menu"></div>
 </div>
 
+<div class="template template-actions-menu actions-menu">
+	<button class="metadata-action">Metadata</button>
+	<button class="delete-action">Delete</button>
+</div>
+
+<form class="template template-confirm-delete-form confirm-delete-form blue-form">
+	<label class="one-label">Are you sure you want to delete?</label>
+	<button type="submit" class="blue-button">Delete</button>
+	<button class="cancel blue-button">Cancel</button>
+</form>
+
+<form class="template template-metadata-form metadata-form blue-form">
+
+	<div class="metadata-loading" hidden>Loading Metadata...</div>
+	<div class="metadata-loading-error" hidden>
+		Error occurred while loading metadata. Ajax Error:
+		<span class="ajax-error-status-text"></span>
+		<span class="ajax-error-status-code"></span>
+	</div>
+	<div class="metadata-updating" hidden>Updating Metadata...</div>
+	<div class="metadata-updated" hidden>Metadata is uploaded successfully.</div>
+	<div class="metadata-updating-error" hidden>
+		Error occurred while uploading metadata. Ajax Error:
+		<span class="ajax-error-status-text"></span>
+		<span class="ajax-error-status-code"></span>
+	</div>
+
+
+	<!-- metadata-row template -->
+	<div class="template metadata-row">
+		<input class="metadata-key blue-input" type="text" placeholder="Meta key">
+		<input class="metadata-value blue-input" type="text" placeholder="Meta value">
+		<button class="metadata-remove" tabindex="-1" type="button"></button>
+	</div>
+	<!-- metadata-list -->
+	<div class="metadata-list">
+	</div>
+	<!-- OK and Cancel buttons -->
+	<div class="metadata-footer">
+		<button class="metadata-ok blue-button" type="submit">OK</button>
+		<button class="metadata-cancel blue-button" type="button">Cancel</button>
+	</div>
+</form>
+
 <template id="sharedContainerTemplate">
-	<div class="item" title="{{title}}">
-			<span class="left">
-				<img src="img/shared-box32.png">
-				<label class="name">{{name}}</label>
-			</span>
-			<span class="right">
-				<label class="size">...</label>
-				<label class="files">...</label>
-				<label class="delete">X</label>
-			</span>
+	<div class="item default-action" title="{{title}}">
+		<span class="left">
+			<img src="img/shared-box32.png">
+			<label class="name">{{name}}</label>
+		</span>
+		<span class="right">
+			<label class="size">...</label>
+			<label class="files">...</label>
+			<label class="delete">X</label>
+		</span>
 	</div>
 </template>
 
-<template id="fileTemplate">
-	<div class="item" title="{{title}}">
-			<span class="left">
-				<img src="{{icon}}">
-				<label class="name">{{name}}</label>
-			</span>
-			<span class="right">
-				<label class="size">{{size}}</label>
-				<label class="modified">{{modified}}</label>
-				<label class="delete">X</label>
-			</span>
+<div class="template template-file item" title>
+	<div class="default-action">
+		<span class="left">
+			<span class="file-icon"></span>
+			<label class="name"></label>
+		</span>
+		<span class="right">
+			<label class="size"></label>
+			<label class="modified"></label>
+		</span>
 	</div>
-</template>
+	<div class="toggle-actions-menu"></div>
+</div>
 
-<template id="directoryTemplate">
-	<div class="item" title="{{title}}">
-			<span class="left">
-				<img src="img/folder32.png">
-				<label class="name">{{name}}</label>
-			</span>
-			<span class="right">
-				<label class="delete">X</label>
-			</span>
+<div class="template template-directory item" title>
+	<div class="default-action">
+		<span class="left">
+			<span class="directory-icon"></span>
+			<label class="name"></label>
+		</span>
+		<span class="right">
+
+		</span>
 	</div>
-</template>
+	<div class="toggle-actions-menu"></div>
+</div>
 
 <template id="newScrollingContentTemplate">
-	<div class="new-scrolling-content scrolling-content"></div>
+	<div class="new-scrolling-content scrolling-content">
+		<div class="load-more-button" hidden>Load More</div>
+	</div>
 </template>
 
 <template id="itemLoadingTemplate">
-	<span class="item-loading">Loading...</span>
+	<span class="item-loading" hidden>Loading...</span>
 </template>
 
 <template id="noContainersTemplate">
@@ -273,135 +267,12 @@
 	<label class="empty-list">File is too large.</label>
 </template>
 
-<template id="loadMoreButtonTemplate">
-	<div class="load-more-button">Load More</div>
-</template>
-
 <template id="scrollingContentLoadingTemplate">
 	<label class="scrolling-content-loading">Loading...</label>
 </template>
 
 <template id="errorTemplate">
 	<span class="error">Error occurred. <span class="error-reason">reason</span> <span class="error-status"></span>.</span>
-</template>
-
-<template id="itemMenuTemplate">
-	<div class="item-menu">
-		<table class="rights-table" hidden>
-			<thead>
-				<tr>
-					<th colspan="3">Rights</th>
-				</tr>
-				<tr class="loading">
-					<td colspan="3">Loading...</td>
-				</tr>
-				<tr class="rights-error-ajax" hidden>
-					<td colspan="3">Error: <span class="status"></span> <span class="status-text"></span>.</td>
-				</tr>
-			</thead>
-			<tbody hidden>
-			<tr>
-				<td style="width: 1px;">Read</td>
-				<td><input autocomplete="off" class="read-rights-input" placeholder="Read Rights"></td>
-			</tr>
-			<tr style="width: 1px;">
-				<td>Write</td>
-				<td><input autocomplete="off" class="write-rights-input" placeholder="Write Rights"></td>
-			</tr>
-			</tbody>
-			<tfoot hidden>
-			<tr>
-				<td colspan="2"><button autocomplete="off" class="rights-save">Save</button><button autocomplete="off" class="rights-discard-changes">Discard Changes</button></td>
-			</tr>
-			</tfoot>
-		</table>
-
-		<table class="content-type-table" hidden>
-			<thead>
-				<tr>
-					<th colspan="3">Content Type</th>
-				</tr>
-				<tr class="loading">
-					<td colspan="3">Loading...</td>
-				</tr>
-				<tr class="content-type-error-ajax" hidden>
-					<td colspan="3">Error: <span class="status"></span> <span class="status-text"></span>.</td>
-				</tr>
-			</thead>
-			<tbody class="input-group-table" style="background: transparent;" hidden>
-			<tr>
-				<td><img src="img/file_type.png"></td>
-				<td><input autocomplete="off" class="content-type-input" placeholder="Content Type"></td>
-				<td class="content-type-button">></td>
-			</tr>
-			</tbody>
-		</table>
-
-		<table class="metadata-table">
-			<thead>
-				<tr>
-					<th colspan="2">Metadata</th>
-					<td></td>
-				</tr>
-				<tr class="metadata-loading">
-					<td colspan="3">Loading...</td>
-				</tr>
-				<tr class="metadata-error-ajax" hidden>
-					<td colspan="3">Error: <span class="status"></span> <span class="status-text"></span>.</td>
-				</tr>
-			</thead>
-			<tbody>
-			</tbody>
-			<tfoot hidden>
-				<tr>
-					<td><button autocomplete="off" class="metadata-save">Save</button></td>
-					<td><button autocomplete="off" class="metadata-discard-changes">Discard Changes</button></td>
-					<td></td>
-				</tr>
-			</tfoot>
-		</table>
-
-		<table class="copy-table" hidden>
-			<thead>
-				<tr>
-					<th colspan="3">Copy</th>
-				</tr>
-				<tr class="copy-loading" hidden="">
-					<td colspan="3">Loading...</td>
-				</tr>
-				<tr class="copy-ok" hidden>
-					<td colspan="3">File is copied successfully.</td>
-				</tr>
-				<tr class="copy-error-ajax" hidden>
-					<td colspan="3">Error: <span class="status"></span> <span class="status-text"></span>.</td>
-				</tr>
-			</thead>
-			<tbody class="input-group-table" style="background: transparent;">
-			<tr>
-				<td><img src="img/copy.png"></td>
-				<td><input autocomplete="off" class="copy-input" placeholder="Copy to..."></td>
-				<td class="copy-button">+</td>
-			</tr>
-			</tbody>
-		</table>
-	</div>
-</template>
-
-<template id="metadataRowTemplate">
-	<tr>
-		<td><input autocomplete="off" class="metadata-key" placeholder="Key" value="{{key}}"></td>
-		<td><input autocomplete="off" class="metadata-value" placeholder="Value" value="{{value}}"></td>
-		<td class="remove-metadata">x</td>
-	</tr>
-</template>
-
-<template id="itemConfirmDeleteTemplate">
-	<div class="item-confirm-delete">
-		<div class="delete-label" style="margin: 8px;display: inline-block;">Are you sure you want delete?</div>
-		<button autocomplete="off" class="delete-button" style="float: right;">Delete</button>
-		<label class="delete-deleting-label" hidden>Deleting...</label>
-		<label class="delete-error-ajax" hidden>Error: <span class="status"></span> <span class="status-text"></span>.</label>
-	</div>
 </template>
 
 <template id="uploadTemplate">
