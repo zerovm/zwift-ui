@@ -2386,12 +2386,20 @@ FileManager.ActionsMenu.click = function (e) {
 			FileManager.ActionsMenu.metadataAction);
 		newActionsMenu.querySelector('button.delete-action').addEventListener('click',
 			FileManager.ActionsMenu.deleteAction);
+		if (FileManager.Item.selectedEl.classList.contains('file')) {
+			newActionsMenu.querySelector('button.content-type-action').removeAttribute('hidden');
+			newActionsMenu.querySelector('button.content-type-action').addEventListener('click',
+				FileManager.ActionsMenu.contentTypeAction);
+		} else {
+			newActionsMenu.querySelector('button.content-type-action').setAttribute('hidden', 'hidden');
+		}
 		document.querySelector('.scrolling-content').insertBefore(newActionsMenu, itemEl.nextSibling);
 	}
 };
 FileManager.ActionsMenu.removeForms = function () {
 	FileManager.ConfirmDeleteForm.removeEl();
 	FileManager.MetadataForm.removeEl();
+	FileManager.ContentTypeForm.removeEl();
 };
 FileManager.ActionsMenu.deleteAction = function () {
 	var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
@@ -2402,6 +2410,11 @@ FileManager.ActionsMenu.metadataAction = function () {
 	var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
 	FileManager.ActionsMenu.removeForms();
 	FileManager.MetadataForm.createAfterActionsMenu(actionsMenu);
+};
+FileManager.ActionsMenu.contentTypeAction = function() {
+	var actionsMenu = document.querySelector('.scrolling-content .actions-menu');
+	FileManager.ActionsMenu.removeForms();
+	FileManager.ContentTypeForm.createAfterActionsMenu(actionsMenu);
 };
 
 FileManager.ConfirmDeleteForm = {};
@@ -2717,4 +2730,72 @@ FileManager.MetadataForm.save = function () {
 		errorEl.getElementsByClassName('ajax-error-status-code')[0].textContent = status;
 		errorEl.removeAttribute('hidden');
 	}
+};
+
+FileManager.ContentTypeForm = {};
+FileManager.ContentTypeForm.createAfterActionsMenu = function (actionsMenuEl) {
+	var newContentTypeForm = document.querySelector('.template-content-type-form').cloneNode(true);
+	newContentTypeForm.classList.remove('template-content-type-form');
+	newContentTypeForm.classList.remove('template');
+	newContentTypeForm.addEventListener('submit', FileManager.ContentTypeForm.submit);
+	newContentTypeForm.querySelector('button.cancel').addEventListener('click', function (e) {
+		e.preventDefault();
+		FileManager.ContentTypeForm.removeEl();
+	});
+	newContentTypeForm.querySelector('input.content-type').value = '';
+	newContentTypeForm.querySelector('input.content-type').addEventListener('keydown', function () {
+		var contentTypeForm = document.querySelector('.scrolling-content form.content-type');
+		contentTypeForm.querySelector('.err-ajax').setAttribute('hidden', 'hidden');
+	});
+	document.querySelector('.scrolling-content').insertBefore(newContentTypeForm, actionsMenuEl.nextSibling);
+	FileManager.ContentTypeForm.load();
+};
+FileManager.ContentTypeForm.removeEl = function () {
+	var contentTypeForm = document.querySelector('.scrolling-content form.content-type');
+
+	if (contentTypeForm) {
+		contentTypeForm.parentNode.removeChild(contentTypeForm);
+	}
+};
+FileManager.ContentTypeForm.load = function () {
+	var contentTypeForm = document.querySelector('.scrolling-content form.content-type');
+	contentTypeForm.querySelector('.loading').removeAttribute('hidden');
+	contentTypeForm.querySelector('.loading-error').setAttribute('hidden', 'hidden');
+	var name = FileManager.Item.selectedEl.title;
+	var path = FileManager.CurrentPath().add(name);
+	SwiftV1.File.head({
+		path: FileManager.Path(path).withoutAccount(),
+		success: function (metadata, contentType, contentLength, lastModified) {
+			contentTypeForm.querySelector('input.content-type').value = contentType;
+			contentTypeForm.querySelector('.loading').setAttribute('hidden', 'hidden');
+		},
+		error: function (status, statusText) {
+			contentTypeForm.querySelector('.loading-error .status').textContent = status;
+			contentTypeForm.querySelector('.loading-error .status-text').textContent = statusText;
+			contentTypeForm.querySelector('.loading-error').removeAttribute('hidden');
+			contentTypeForm.querySelector('.loading').setAttribute('hidden', 'hidden');
+		}
+	 });
+};
+FileManager.ContentTypeForm.submit = function (e) {
+	var contentTypeForm = document.querySelector('.scrolling-content form.content-type');
+	contentTypeForm.querySelector('.updating').removeAttribute('hidden');
+	var name = FileManager.Item.selectedEl.title;
+	var path = FileManager.CurrentPath().add(name);
+	var contentType = contentTypeForm.querySelector('input.content-type').value;
+	e.preventDefault();
+	SwiftV1.File.post({
+		path: FileManager.Path(path).withoutAccount(),
+		contentType: contentType,
+		updated: function () {
+			contentTypeForm.querySelector('.updating').setAttribute('hidden', 'hidden');
+			FileManager.ContentTypeForm.removeEl();
+			FileManager.ContentChange.animate();
+		},
+		error: function (status, statusText) {
+			contentTypeForm.querySelector('.err-ajax').textContent = 'Error: ' + status + ' ' + statusText;
+			contentTypeForm.querySelector('.err-ajax').removeAttribute('hidden');
+			contentTypeForm.querySelector('.updating').setAttribute('hidden', 'hidden');
+		}
+	});
 };

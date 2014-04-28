@@ -1023,3 +1023,19 @@ form.create-file input {
 	font-size: .7em;
 }
 
+form.content-type .loading,
+form.content-type .loading-error,
+form.content-type .updating {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(255, 255, 255, 0.75);
+	padding: 20px;
+	box-sizing: border-box;-moz-box-sizing: border-box;-webkit-box-sizing: border-box;
+	font-weight: bold;
+	font-size: large;
+}

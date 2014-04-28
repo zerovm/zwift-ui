@@ -376,7 +376,7 @@ var ZeroAppsOnSwift = {};
 		xhr.addEventListener('load', function (e) {
 			if (e.target.status == 401) {
 				unauthorized();
-			} else if (e.target.status == 404) {
+			} else if (e.target.status == 404 && args.hasOwnProperty('notExist')) {
 				args.notExist();
 			} else if (e.target.status >= 200 && e.target.status <= 299) {
 				var headers = parseResponseHeaders(e.target.getAllResponseHeaders());
@@ -453,7 +453,7 @@ var ZeroAppsOnSwift = {};
 		xhr.addEventListener('load', function (e) {
 			if (e.target.status == 401) {
 				unauthorized();
-			} else if (e.target.status == 404) {
+			} else if (e.target.status == 404 && args.hasOwnProperty('notExist')) {
 				args.notExist();
 			} else if (e.target.status >= 200 && e.target.status <= 299) {
 				args.updated();
