@@ -446,46 +446,6 @@ FileManager.UploadAndExecute.change = function (file) {
 };
 
 
-
-FileManager.ContentType = {};
-
-FileManager.ContentType.showLoading = function () {
-	document.querySelector('.content-type-table').removeAttribute('hidden');
-};
-
-FileManager.ContentType.showError = function (status, statusText) {
-	var el = document.querySelector('.content-type-error-ajax');
-	FileManager.AjaxError.show(el, status, statusText);
-};
-
-FileManager.ContentType.load = function (contentType) {
-
-	document.querySelector('.content-type-table .content-type-input').value = contentType;
-	document.querySelector('.content-type-table .loading').setAttribute('hidden', 'hidden');
-	document.querySelector('.content-type-table .input-group-table').removeAttribute('hidden');
-};
-
-FileManager.ContentType.click = function () {
-	document.querySelector('.content-type-table .loading').removeAttribute('hidden');
-	document.querySelector('.content-type-table .input-group-table').setAttribute('hidden', 'hidden');
-	var input = document.querySelector('.content-type-table .content-type-input').value;
-	var path = FileManager.Item.selectedPath;
-
-	SwiftV1.File.post({
-		account: FileManager.CurrentPath().account(),
-		path: FileManager.Path(path).withoutAccount(),
-		contentType: input,
-		metadata: FileManager.Item.metadata,
-		updated: function () {
-			FileManager.ContentChange.animate();
-		},
-		error: function (status, statusText) {
-			FileManager.ContentType.showError(status, statusText);
-		}
-	});
-};
-
-
 FileManager.Copy = {};
 
 FileManager.Copy.show = function () {
