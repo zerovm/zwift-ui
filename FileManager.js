@@ -104,7 +104,7 @@ FileManager.execute = function (data, contentType) {
 			if (report) {
 				FileManager.ExecuteReport.create(report);
 			} else {
-				//alert('JS Error: report object is undefined');
+				alert('JS Error: report object is undefined');
 			}
 
 			FileManager.enableAll();
@@ -121,14 +121,10 @@ FileManager.execute = function (data, contentType) {
 
 	function showResult(result) {
 		FileManager.File.hideMenu();
-		var el = document.querySelector('.scrolling-content').textContent = result;
+		var el = document.querySelector('.scrolling-content');
 
-		//FileManager.File.codeMirror = CodeMirror(el, {
-		//	value: result,
-		//	mode: 'text/plain',
-		//	lineNumbers: false
-		//});
-		//FileManager.Layout.adjust();
+		FileManager.File.codeMirror.setValue(result);
+		FileManager.Layout.adjust();
 
 	}
 };
@@ -233,7 +229,7 @@ FileManager.ExecuteReport.create = function (report) {
 
 	var scrollingContentEl = document.querySelector('.scrolling-content');
 	var reportTemplate = document.querySelector('#reportTemplate').innerHTML;
-	scrollingContentEl.innerHTML = reportTemplate;
+	scrollingContentEl.innerHTML += reportTemplate;
 
 
 	executionReport();
