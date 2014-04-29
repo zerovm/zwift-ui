@@ -749,6 +749,7 @@ FileManager.ContentChange.animate = function () {
 	FileManager.CreateFileButton.hide();
 	document.querySelector('.menu-file').setAttribute('hidden', 'hidden');
 	FileManager.OpenButton.hide();
+	FileManager.ExecuteButton.hide();
 
 	var parentEl, newEl, oldEl, template;
 
