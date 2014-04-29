@@ -827,10 +827,10 @@ FileManager.Layout.adjust = function () {
 	document.querySelector('#content').style.paddingTop = paddingTop;
 
 
-	if (FileManager.File.codeMirror) {
-		var pageHeight = getComputedStyle(document.querySelector('.fixed-background'), null).getPropertyValue("height");
-		FileManager.File.codeMirror.setSize('auto', parseInt(pageHeight, 10) - parseInt(paddingTop, 10) + 'px');
-	}
+	//if (FileManager.File.codeMirror) {
+	//	var pageHeight = getComputedStyle(document.querySelector('.fixed-background'), null).getPropertyValue("height");
+	//	FileManager.File.codeMirror.setSize('auto', parseInt(pageHeight, 10) - parseInt(paddingTop, 10) + 'px');
+	//}
 };
 
 FileManager.Utils = {};
