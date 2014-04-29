@@ -986,7 +986,7 @@ button.create-file {
 form.create-file input {
 	height: 24px;
 	padding: 5px;
-	margin: 0 0 5px;
+	margin: 0 1px 5px;
 	font-size: .7em;
 }
 
