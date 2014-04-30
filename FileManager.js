@@ -160,20 +160,6 @@ FileManager.executePython = function (pythonFilePath) {
 	FileManager.execute(JSON.stringify(json), 'application/json');
 };
 
-FileManager.ExecuteButton = {};
-
-FileManager.ExecuteButton.click = function () {
-	FileManager.execute(FileManager.File.codeMirror.getValue(), FileManager.File.contentType);
-};
-
-FileManager.ExecuteButton.hide = function () {
-	document.querySelector('.execute-button').setAttribute('hidden', 'hidden');
-};
-
-FileManager.ExecuteButton.show = function () {
-	document.querySelector('.execute-button').removeAttribute('hidden');
-};
-
 
 FileManager.ExecuteTimer = {};
 
@@ -2655,4 +2641,18 @@ FileManager.RightsForm.removeEl = function () {
 FileManager.RightsForm.inputKeydown = function () {
 	var rightsFormEl = document.querySelector('.scrolling-content form.rights');
 	rightsFormEl.querySelector('.err-ajax').setAttribute('hidden', 'hidden');
+};
+
+FileManager.ExecuteButton = {};
+
+FileManager.ExecuteButton.click = function () {
+	FileManager.execute(FileManager.File.codeMirror.getValue(), FileManager.File.contentType);
+};
+
+FileManager.ExecuteButton.hide = function () {
+	document.querySelector('.execute-button').setAttribute('hidden', 'hidden');
+};
+
+FileManager.ExecuteButton.show = function () {
+	document.querySelector('.execute-button').removeAttribute('hidden');
 };
