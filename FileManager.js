@@ -58,31 +58,6 @@ FileManager.CurrentDirLabel.showLoading = function () {
 };
 
 
-FileManager.OpenButton = {};
-
-FileManager.OpenButton.click = function () {
-
-	var options = {
-		path: FileManager.CurrentPath().withoutAccount(),
-		callback: function (message) {
-			FileManager.ExecuteButton.hide();
-		}
-	};
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		options.account = FileManager.CurrentPath().account();
-	}
-
-	ZeroVmOnSwift.open(options);
-};
-
-FileManager.OpenButton.show = function () {
-	document.querySelector('.open-button').removeAttribute('hidden');
-};
-
-FileManager.OpenButton.hide = function () {
-	document.querySelector('.open-button').setAttribute('hidden', 'hidden');
-};
 
 
 
@@ -2637,6 +2612,32 @@ FileManager.RightsForm.removeEl = function () {
 FileManager.RightsForm.inputKeydown = function () {
 	var rightsFormEl = document.querySelector('.scrolling-content form.rights');
 	rightsFormEl.querySelector('.err-ajax').setAttribute('hidden', 'hidden');
+};
+
+FileManager.OpenButton = {};
+
+FileManager.OpenButton.click = function () {
+
+	var options = {
+		path: FileManager.CurrentPath().withoutAccount(),
+		callback: function (message) {
+			FileManager.ExecuteButton.hide();
+		}
+	};
+
+	if (FileManager.ENABLE_SHARED_CONTAINERS) {
+		options.account = FileManager.CurrentPath().account();
+	}
+
+	ZeroVmOnSwift.open(options);
+};
+
+FileManager.OpenButton.show = function () {
+	document.querySelector('.open-button').removeAttribute('hidden');
+};
+
+FileManager.OpenButton.hide = function () {
+	document.querySelector('.open-button').setAttribute('hidden', 'hidden');
 };
 
 FileManager.ExecuteButton = {};
