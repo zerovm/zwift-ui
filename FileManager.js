@@ -62,7 +62,7 @@ FileManager.execute = function (data, contentType) {
 
 	FileManager.disableAll();
 	FileManager.ExecuteButton.hide();
-	FileManager.ExecuteTimer.start();
+	FileManager.ExecutingLabel.show();
 	FileManager.OpenButton.hide();
 	FileManager.FilesMenu.hide();
 
@@ -70,8 +70,7 @@ FileManager.execute = function (data, contentType) {
 		data: data,
 		contentType: contentType,
 		success: function (result, report) {
-			FileManager.ExecuteTimer.stop();
-			FileManager.ExecuteTimer.hide();
+			FileManager.ExecutingLabel.hide();
 			showResult(result);
 			if (report) {
 				FileManager.ExecuteReport.create(report);
@@ -84,8 +83,7 @@ FileManager.execute = function (data, contentType) {
 		error: function (status, statusText, result) {
 			alert(status + ' ' + statusText + ' ' + result);
 			console.log(status + ' ' + statusText + ' ' + result);
-			FileManager.ExecuteTimer.stop();
-			FileManager.ExecuteTimer.hide();
+			FileManager.ExecutingLabel.hide();
 			showResult(result);
 			FileManager.enableAll();
 		}
@@ -2602,39 +2600,51 @@ FileManager.ExecuteButton.show = function () {
 	FileManager.ExecuteButton.el.removeAttribute('hidden');
 };
 
-FileManager.ExecuteTimer = {};
-FileManager.ExecuteTimer.el = document.querySelector('.execute-label');
-FileManager.ExecuteTimer.secondsCounter = -1;
-FileManager.ExecuteTimer.start = function () {
-	FileManager.ExecuteTimer.secondsCounter = 0;
-	FileManager.ExecuteTimer.next();
-	FileManager.ExecuteTimer.show();
+FileManager.ExecutingLabel = {};
+FileManager.ExecutingLabel.el = document.querySelector('label.executing');
+FileManager.ExecutingLabel.show = function () {
+	FileManager.ExecutingLabel.el.removeAttribute('hidden');
+	FileManager.ExecutingLabel.timer.start();
+	FileManager.ExecutingLabel.update();
 };
-FileManager.ExecuteTimer.stop = function () {
-	FileManager.ExecuteTimer.secondsCounter = -1;
+FileManager.ExecutingLabel.hide = function () {
+	FileManager.ExecutingLabel.el.setAttribute('hidden', 'hidden');
+	FileManager.ExecutingLabel.timer.stop();
 };
-FileManager.ExecuteTimer.next = function () {
-	if (FileManager.ExecuteTimer.secondsCounter == -1) {
+FileManager.ExecutingLabel.update = function () {
+	if (FileManager.ExecutingLabel.timer.isStopped()) {
 		return;
 	}
-	FileManager.ExecuteTimer.secondsCounter++;
-	var minutes = Math.floor(FileManager.ExecuteTimer.secondsCounter / 60);
-	var seconds = FileManager.ExecuteTimer.secondsCounter % 60;
-	FileManager.ExecuteTimer.updateExecutingClock(minutes, seconds);
-	setTimeout(FileManager.ExecuteTimer.next, 1000);
+	var content = 'Executing... ' + FileManager.ExecutingLabel.timer.getTimeString();
+	FileManager.ExecutingLabel.el.textContent = content;
+	FileManager.ExecutingLabel.timer.next();
+	setTimeout(FileManager.ExecutingLabel.update, 1000);
 };
-FileManager.ExecuteTimer.show = function () {
-	FileManager.ExecuteTimer.el.removeAttribute('hidden');
-};
-FileManager.ExecuteTimer.hide = function () {
-	FileManager.ExecuteTimer.el.setAttribute('hidden', 'hidden');
-};
-FileManager.ExecuteTimer.updateExecutingClock = function (minutes, seconds) {
-	var secondsStr = seconds < 10 ? '0' + String(seconds) : String(seconds);
-	var minutesStr = minutes < 10 ? '0' + String(minutes) : String(minutes);
-	FileManager.ExecuteTimer.setContent('Executing... ' + minutesStr + ':' + secondsStr);
-};
-FileManager.ExecuteTimer.setContent = function (content) {
-	FileManager.ExecuteTimer.el.textContent = content;
-};
+FileManager.ExecutingLabel.Timer = function () {
+	var secondsCounter = -1;
+	
+	this.start = function () {
+		secondsCounter = 0;
+	};
 
+	this.stop = function () {
+		secondsCounter = -1;
+	};
+
+	this.isStopped = function () {
+		return secondsCounter ==  -1;
+	};
+	
+	this.next = function () {
+		secondsCounter++;
+	};
+
+	this.getTimeString = function () {
+		var minutes = Math.floor(secondsCounter / 60);
+		var seconds = secondsCounter % 60;
+		var secondsStr = seconds < 10 ? '0' + String(seconds) : String(seconds);
+		var minutesStr = minutes < 10 ? '0' + String(minutes) : String(minutes);
+		return minutesStr + ':' + secondsStr;
+	};
+};
+FileManager.ExecutingLabel.timer = new FileManager.ExecutingLabel.Timer();
