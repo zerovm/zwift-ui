@@ -6,1310 +6,6 @@ FileManager.ENABLE_SHARED_CONTAINERS = false;
 FileManager.ENABLE_ZEROVM = true;
 FileManager.ENABLE_EMAILS = false;
 
-FileManager.enableAll = function () {
-	document.body.classList.remove('disabled');
-};
-
-FileManager.disableAll = function () {
-	document.body.classList.add('disabled');
-};
-
-
-FileManager.CurrentDirLabel = {};
-
-FileManager.CurrentDirLabel.MAX_LENGTH = 30;
-
-FileManager.CurrentDirLabel.setContent = function (content) {
-	var el = document.querySelector('.current-dir-label');
-	if (content.length > FileManager.CurrentDirLabel.MAX_LENGTH) {
-		el.textContent = content.substr(0, FileManager.CurrentDirLabel.MAX_LENGTH);
-		el.innerHTML += '&raquo;';
-	} else {
-		el.textContent = content;
-	}
-};
-
-FileManager.CurrentDirLabel.setTooltip = function (content) {
-	document.querySelector('.current-dir-label').title = content;
-};
-
-FileManager.CurrentDirLabel.removeTooltip = function () {
-	document.querySelector('.current-dir-label').removeAttribute('title');
-};
-
-FileManager.CurrentDirLabel.root = function () {
-
-	if (FileManager.ENABLE_EMAILS) {
-		/*Auth.getEmail(function (email) {
-			FileManager.CurrentDirLabel.setContent(email);
-			FileManager.CurrentDirLabel.setTooltip(email);
-		});*/
-		return;
-	}
-
-	var account = SwiftV1.getAccount();
-	FileManager.CurrentDirLabel.setContent(account);
-	FileManager.CurrentDirLabel.setTooltip(account);
-};
-
-FileManager.CurrentDirLabel.showLoading = function () {
-	FileManager.CurrentDirLabel.setContent('Loading...');
-	FileManager.CurrentDirLabel.removeTooltip();
-};
-
-
-FileManager.OpenButton = {};
-
-FileManager.OpenButton.click = function () {
-
-	var options = {
-		path: FileManager.CurrentPath().withoutAccount(),
-		callback: function (message) {
-			FileManager.ExecuteButton.hide();
-		}
-	};
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		options.account = FileManager.CurrentPath().account();
-	}
-
-	ZeroVmOnSwift.open(options);
-};
-
-FileManager.OpenButton.show = function () {
-	document.querySelector('.open-button').removeAttribute('hidden');
-};
-
-FileManager.OpenButton.hide = function () {
-	document.querySelector('.open-button').setAttribute('hidden', 'hidden');
-};
-
-
-
-FileManager.execute = function (data, contentType) {
-
-	FileManager.disableAll();
-	FileManager.ExecuteButton.hide();
-	FileManager.ExecuteTimer.start();
-	FileManager.OpenButton.hide();
-	FileManager.FilesMenu.hide();
-
-	ZeroVmOnSwift.execute({
-		data: data,
-		contentType: contentType,
-		success: function (result, report) {
-			FileManager.ExecuteTimer.stop();
-			FileManager.ExecuteTimer.hide();
-			showResult(result);
-			if (report) {
-				FileManager.ExecuteReport.create(report);
-			} else {
-				alert('JS Error: report object is undefined');
-			}
-
-			FileManager.enableAll();
-		},
-		error: function (status, statusText, result) {
-			alert(status + ' ' + statusText + ' ' + result);
-			console.log(status + ' ' + statusText + ' ' + result);
-			FileManager.ExecuteTimer.stop();
-			FileManager.ExecuteTimer.hide();
-			showResult(result);
-			FileManager.enableAll();
-		}
-	});
-
-	function showResult(result) {
-		FileManager.File.hideMenu();
-		var el = document.querySelector('.scrolling-content');
-
-		FileManager.File.codeMirror.setValue(result);
-		FileManager.Layout.adjust();
-
-	}
-};
-
-FileManager.executePython = function (pythonFilePath) {
-	var json = [{
-		exec: {
-			path: 'file://python:python',
-			args: '/dev/input'
-		},
-		file_list: [
-			{
-				device: 'input',
-				path: 'swift://' + SwiftV1.getAccount() + '/' + pythonFilePath
-			},
-			{
-				device: 'stdout',
-				content_type: 'text/plain'
-			},
-			{
-				device: 'stderr',
-				path: 'swift://' + SwiftV1.getAccount() + '/' + pythonFilePath + '.log',
-				content_type: 'text/plain'
-			},
-			{
-				device: 'python'
-			}
-		],
-		name: 'python'
-	}];
-	console.log(json);
-	console.log(JSON.stringify(json));
-	FileManager.execute(JSON.stringify(json), 'application/json');
-};
-
-FileManager.ExecuteButton = {};
-
-FileManager.ExecuteButton.click = function () {
-	FileManager.execute(FileManager.File.codeMirror.getValue(), FileManager.File.contentType);
-};
-
-FileManager.ExecuteButton.hide = function () {
-	document.querySelector('.execute-button').setAttribute('hidden', 'hidden');
-};
-
-FileManager.ExecuteButton.show = function () {
-	document.querySelector('.execute-button').removeAttribute('hidden');
-};
-
-
-FileManager.ExecuteTimer = {};
-
-FileManager.ExecuteTimer.secondsCounter = -1;
-
-FileManager.ExecuteTimer.start = function () {
-	FileManager.ExecuteTimer.secondsCounter = 0;
-	FileManager.ExecuteTimer.next();
-	FileManager.ExecuteTimer.show();
-};
-
-FileManager.ExecuteTimer.stop = function () {
-	FileManager.ExecuteTimer.secondsCounter = -1;
-};
-
-FileManager.ExecuteTimer.next = function () {
-	if (FileManager.ExecuteTimer.secondsCounter == -1) {
-		return;
-	}
-	FileManager.ExecuteTimer.secondsCounter++;
-	var minutes = Math.floor(FileManager.ExecuteTimer.secondsCounter / 60);
-	var seconds = FileManager.ExecuteTimer.secondsCounter % 60;
-	FileManager.ExecuteTimer.updateExecutingClock(minutes, seconds);
-	setTimeout(FileManager.ExecuteTimer.next, 1000);
-};
-
-FileManager.ExecuteTimer.show = function () {
-	document.querySelector('.execute-label').removeAttribute('hidden');
-};
-
-FileManager.ExecuteTimer.hide = function () {
-	document.querySelector('.execute-label').setAttribute('hidden', 'hidden');
-};
-
-FileManager.ExecuteTimer.updateExecutingClock = function (minutes, seconds) {
-	var secondsStr = seconds < 10 ? '0' + String(seconds) : String(seconds);
-	var minutesStr = minutes < 10 ? '0' + String(minutes) : String(minutes);
-	FileManager.ExecuteTimer.setContent('Executing... ' + minutesStr + ':' + secondsStr);
-};
-
-FileManager.ExecuteTimer.setContent = function (content) {
-	document.querySelector('.execute-label').textContent = content;
-};
-
-
-FileManager.ExecuteReport = {};
-
-FileManager.ExecuteReport.report = null;
-
-FileManager.ExecuteReport.create = function (report) {
-
-	FileManager.ExecuteReport.report = report;
-
-	var scrollingContentEl = document.querySelector('.scrolling-content');
-	var reportTemplate = document.querySelector('#reportTemplate').innerHTML;
-	scrollingContentEl.innerHTML += reportTemplate;
-
-
-	executionReport();
-	billingReport();
-	
-	function executionReport() {
-		if (report.execution.status) {
-			document.querySelector('#execute-status-val').textContent = report.execution.status;
-			document.querySelector('#execute-status-tr').removeAttribute('hidden');
-		}
-
-		if (report.execution.error) {
-			document.querySelector('#execute-error-val').textContent = report.execution.error;
-			document.querySelector('#execute-error-tr').removeAttribute('hidden');
-		}
-	}
-
-	function billingReport() {
-
-		document.querySelector('#total-time-tr').insertAdjacentHTML('beforeend', td(report.billing.totalServerTime));
-
-		var nodesLength = report.billing.nodes.length;
-		for (var i = 0; i < nodesLength; i++) {
-			document.querySelector('#node-number-tr').insertAdjacentHTML('beforeend', td(i+1));
-			document.querySelector('#node-server-time-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['nodeServerTime'] || '-'));
-
-			document.querySelector('#system-time-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['systemTime'] || '-'));
-			document.querySelector('#user-time-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['userTime'] || '-'));
-
-
-			document.querySelector('#reads-from-disk-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['readsFromDisk'] || '-'));
-			document.querySelector('#bytes-read-from-disk-tr').insertAdjacentHTML('beforeend', td(FileManager.Utils.bytesToSize(report.billing.nodes[i]['bytesReadFromDisk']) || '-'));
-
-			document.querySelector('#writes-to-disk-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['writesToDisk'] || '-'));
-			document.querySelector('#bytes-written-to-disk-tr').insertAdjacentHTML('beforeend', td(FileManager.Utils.bytesToSize(report.billing.nodes[i]['bytesWrittenToDisk']) || '-'));
-			document.querySelector('#reads-from-network-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['readsFromNetwork'] || '-'));
-
-			document.querySelector('#bytes-read-from-network-tr').insertAdjacentHTML('beforeend', td(FileManager.Utils.bytesToSize(report.billing.nodes[i]['bytesReadFromNetwork']) || '-'));
-			document.querySelector('#writes-to-network-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['writesToNetwork'] || '-'));
-			document.querySelector('#bytes-written-to-network-tr').insertAdjacentHTML('beforeend', td(FileManager.Utils.bytesToSize(report.billing.nodes[i]['bytesWrittenToNetwork']) || '-'));
-		}
-		document.querySelector('#billing-report-title').setAttribute('colspan', String(1+nodesLength));
-		if (nodesLength > 3) {
-			document.querySelector('#billing-tbody').style.fontSize = 'x-small';
-		} else {
-			document.querySelector('#billing-tbody').style.fontSize = 'medium';
-		}
-
-		function td(txt) {
-			return '<td class="auto-created-report-td">' + txt + '</td>';
-		}
-	}
-};
-
-FileManager.ExecuteReport.remove = function () {
-	var billingEl = document.querySelector('#report');
-	billingEl.parentNode.removeChild(billingEl);
-};
-
-FileManager.ExecuteReport.showFullReport = function (el) {
-
-	var executionReport = FileManager.ExecuteReport.report.execution;
-
-	el.setAttribute('hidden', 'hidden');
-
-	var html = '';
-	for (var key in executionReport) {
-		if (key != 'status' && key != 'error') {
-			html += '<tr class="execute-report-row"><td class="execute-report-part-name">' + key + '</td></tr><tr><td>' + executionReport[key] + '</td></tr>';
-		}
-	}
-
-	document.querySelector('#execute-tbody').innerHTML += html;
-};
-
-
-FileManager.FilesMenu = {};
-
-FileManager.FilesMenu.show = function () {
-	document.querySelector('.menu-files').removeAttribute('hidden');
-	FileManager.Layout.adjust();
-};
-
-FileManager.FilesMenu.hide = function () {
-	document.querySelector('.menu-files').setAttribute('hidden', 'hidden');
-	FileManager.Layout.adjust();
-};
-
-
-FileManager.UploadFiles = {};
-
-FileManager.UploadFiles.uploadRequests = [];
-
-FileManager.UploadFiles.change = function (files) {
-	var el = document.querySelector('.upload-files');
-	el.value = null;
-
-	for (var i = 0; i < files.length; i++) {
-		FileManager.UploadFiles.uploadFile(files[i], files[i].name, files[i].type);
-	}
-
-	FileManager.Layout.adjust();
-};
-
-FileManager.UploadFiles.uploadFile = function (file, name, contentType) {
-
-	createUploadEl(name);
-	var index = FileManager.UploadFiles.uploadRequests.length;
-	var path = FileManager.CurrentPath().add(name);
-	FileManager.UploadFiles.uploadRequests[index] = SwiftV1.createFile({
-		path: FileManager.Path(path).withoutAccount(),
-		data: file,
-		contentType: contentType,
-		created: function () {
-			var el = document.querySelector('#upload-' + index);
-			el.parentNode.removeChild(el);
-			FileManager.ContentChange.animate();
-			FileManager.Layout.adjust();
-		},
-		progress: function (percent, loaded, total) {
-			document.querySelector('#upload-' + index + ' progress').value = percent;
-			var percentStr = '&nbsp;0%&nbsp;';
-			if (percent < 10) {
-				percentStr = '&nbsp;' + percent + '%&nbsp;';
-			} else if (percent < 100) {
-				percentStr = '&nbsp;' + percent + '%';
-			} else {
-				percentStr = percent + '%';
-			}
-			document.querySelector('#upload-' + index + ' .progresslabel').innerHTML = percentStr;
-		},
-		error: function (status, statusText) {
-			var el = document.querySelector('#upload-' + index + ' .error');
-			FileManager.AjaxError.show(el, status, statusText);
-		}
-	});
-
-	function createUploadEl(name) {
-		var index = FileManager.UploadFiles.uploadRequests.length;
-		var template = document.querySelector('#uploadTemplate').innerHTML;
-		template = template.replace('{{upload-label-name}}', name);
-		template = template.replace('{{upload-id}}', 'upload-' + index);
-		document.querySelector('.menu-files').insertAdjacentHTML('beforeend', template);
-	}
-};
-
-FileManager.UploadFiles.cancelClick  = function (el) {
-	var index = parseInt(el.parentNode.parentNode.parentNode.id.substr('upload-'.length));
-	FileManager.UploadFiles.uploadRequests[index].abort();
-	el.parentNode.parentNode.parentNode.parentNode.removeChild(el.parentNode.parentNode.parentNode);
-	FileManager.Layout.adjust();
-};
-
-
-FileManager.UploadAs = {};
-
-FileManager.UploadAs.files = [];
-
-FileManager.UploadAs.change = function (files) {
-
-	for (var i = 0; i < files.length; i++) {
-		FileManager.UploadAs.files.push(files[i]);
-		var index = FileManager.UploadAs.files.length - 1;
-		var template = document.querySelector('#uploadAsTemplate').innerHTML;
-		var find = '{{index}}', re = new RegExp(find, 'g');
-		template = template.replace(re, String(index));
-		if (files[i].hasOwnProperty('override_name')) {}
-		template = template.replace('{{upload-input-name}}', files[i].name);
-		template = template.replace('{{upload-input-type}}', files[i].type);
-		document.querySelector('.menu-files').insertAdjacentHTML('beforeend', template);
-	}
-
-	FileManager.Layout.adjust();
-};
-
-FileManager.UploadAs.click = function (el) {
-	var indexStr = el.getAttribute('data-index');
-	var index = Number(indexStr);
-	var uploadAsEl = document.querySelector('#upload-as-' + indexStr);
-	var name = uploadAsEl.querySelector('.upload-as-input-name').value;
-	var contentType = uploadAsEl.querySelector('.upload-as-input-type').value;
-	uploadAsEl.parentNode.removeChild(uploadAsEl);
-	FileManager.UploadFiles.uploadFile(FileManager.UploadAs.files[index], name, contentType);
-	FileManager.UploadAs.files[index] = null;
-};
-
-
-FileManager.UploadAndExecute = {};
-
-FileManager.UploadAndExecute.change = function (file) {
-	FileManager.execute(file, file.type);
-};
-
-
-FileManager.Copy = {};
-
-FileManager.Copy.show = function () {
-	document.querySelector('.copy-input').value = FileManager.Item.selectedPath;
-	document.querySelector('.copy-table').removeAttribute('hidden');
-};
-
-FileManager.Copy.click = function () {
-	document.querySelector('.copy-table tbody').setAttribute('hidden', 'hidden');
-	document.querySelector('.copy-loading').removeAttribute('hidden');
-
-	SharedContainersOnSwift.copy
-
-	var copyTo = FileManager.Path(document.querySelector('.copy-input').value).withoutAccount();
-	SwiftV1.copyFile({
-		path: copyTo,
-		copyFrom: FileManager.Path(FileManager.Item.selectedPath).withoutAccount(),
-		copied: function () {
-			document.querySelector('.copy-ok').removeAttribute('hidden');
-			document.querySelector('.copy-loading').setAttribute('hidden', 'hidden');
-			document.querySelector('.copy-table tbody').removeAttribute('hidden');
-		},
-		error: function (status, statusText) {
-			document.querySelector('.copy-loading').setAttribute('hidden', 'hidden');
-			document.querySelector('.copy-table tbody').removeAttribute('hidden');
-			var el = document.querySelector('.content-type-error-ajax');
-			FileManager.AjaxError.show(el, status, statusText);
-		}
-	});
-};
-
-
-FileManager.File = {};
-
-FileManager.File.codeMirror = null;
-
-FileManager.File.contentType = '';
-
-FileManager.File.open = function (el, callback) {
-
-	function fileExist(metadata, contentType, contentLength, lastModified) {
-		var Current = FileManager.CurrentPath();
-		var href = SwiftV1.getStorageUrl() + Current.get();
-		var filename = Current.name();
-
-		if (isTextFile(contentType)) {
-			FileManager.File.edit(el);
-		} else {
-			FileManager.File.notTextFile(el);
-		}
-
-		FileManager.OpenButton.show();
-
-		if (isExecutable(contentType)) {
-			FileManager.ExecuteButton.show();
-		}
-
-		document.querySelector('.download-link').setAttribute('href', href);
-		document.querySelector('.download-link').setAttribute('download', filename);
-
-		callback();
-
-		function isExecutable(contentType) {
-			return contentType === 'application/json' || contentType === 'application/x-tar' || contentType === 'application/gtar' || contentType === 'text/x-python';
-		}
-
-		function isTextFile(contentType) {
-
-			if (!contentType) {
-				return false;
-			}
-
-			contentType = contentType.split(';')[0];
-
-			return (contentType == 'application/javascript'
-				|| contentType == 'application/xml'
-				|| contentType == 'application/x-httpd-php'
-				|| contentType == 'application/json'
-				|| contentType == 'application/php'
-				|| contentType == 'application/x-php'
-				|| contentType.indexOf('text') == 0);
-		}
-	}
-
-	function fileNotExist() {
-		FileManager.UpButton.enable();
-		el.textContent = "File not found.";
-		callback();
-	}
-
-	function ajaxError(status, statusText) {
-		FileManager.UpButton.enable();
-		el.textContent = 'Error: ' + status + ' ' + statusText;
-		callback();
-	}
-
-	var args = {
-		path: FileManager.CurrentPath().withoutAccount(),
-		success: fileExist,
-		notExist: fileNotExist,
-		error: ajaxError
-	};
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		args.account = FileManager.CurrentPath().account();
-	}
-
-	SwiftV1.checkFileExist(args);
-};
-
-FileManager.File.getFileXhr = null;
-
-FileManager.File.edit = function (el) {
-	var args = {
-		path: FileManager.CurrentPath().withoutAccount(),
-		success: handleResponse,
-		error: function (status, statusText) {
-			el.innerHTML = '';
-			el.textContent = 'Error occurred: ' + status + ' ' + statusText;
-			FileManager.UpButton.enable();
-		},
-		notExist: function () {
-			el.innerHTML = '';
-			el.textContent = 'File Not Found.';
-			FileManager.UpButton.enable();
-		},
-		progress: function (loaded) {
-			el.innerHTML = loaded + ' bytes loaded... <button autocomplete="off" onclick="FileManager.File.getFileXhr.abort();">Cancel</button>';
-			if (loaded > 2097152) {
-				FileManager.File.getFileXhr.abort();
-				el.innerHTML = 'File is too large (2MB+).';
-				FileManager.UpButton.enable();
-			}
-		}
-	};
-	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		args.account = FileManager.CurrentPath().account();
-	}
-	FileManager.File.getFileXhr = SwiftV1.getFile(args);
-
-	function handleResponse(data, contentType) {
-		el.innerHTML = '';
-
-		var fileName = FileManager.CurrentPath().name();
-		var filePath = FileManager.CurrentPath().get();
-		FileManager.CurrentDirLabel.setContent(fileName);
-		FileManager.CurrentDirLabel.setTooltip(filePath);
-
-		FileManager.File.contentType = contentType;
-		FileManager.File.codeMirror = CodeMirror(el, {
-			value: data,
-			mode: contentType,
-			lineNumbers: true
-		});
-
-		FileManager.File.showTxtButton();
-		FileManager.File.showMenu();
-		FileManager.UpButton.disable();
-		document.querySelector('.menu-file button.save').setAttribute('disabled', 'disabled');
-		document.querySelector('.menu-file button.undo').setAttribute('disabled', 'disabled');
-		document.querySelector('.menu-file button.redo').setAttribute('disabled', 'disabled');
-
-		FileManager.File.codeMirror.on('change', function () {
-			document.querySelector('.menu-file button.undo').removeAttribute('disabled');
-			document.querySelector('.menu-file button.save').removeAttribute('disabled');
-		});
-
-		document.querySelector('.menu-file button.save-as').classList.remove('selected');
-		document.querySelector('.save-as-dialog').setAttribute('hidden', 'hidden');
-
-		FileManager.Layout.adjust();
-		FileManager.UpButton.enable();
-	}
-};
-
-FileManager.File.notTextFile = function (el) {
-	el.innerHTML = '';
-	var fileName = FileManager.CurrentPath().name();
-	FileManager.CurrentDirLabel.setContent(fileName);
-	el.innerHTML = document.querySelector('#notTextFileTemplate').innerHTML;
-	FileManager.File.hideTxtButton();
-	FileManager.File.showMenu();
-	FileManager.Layout.adjust();
-	FileManager.UpButton.enable();
-};
-
-FileManager.File.showMenu = function () {
-	document.querySelector('.menu-file').removeAttribute('hidden');
-	FileManager.Layout.adjust();
-};
-
-FileManager.File.hideMenu = function () {
-	document.querySelector('.menu-file').setAttribute('hidden', 'hidden');
-	FileManager.Layout.adjust();
-};
-
-FileManager.File.showTxtButton = function () {
-	var txtBtnArr = document.querySelectorAll('.txt-btn');
-	for (var i = 0; i < txtBtnArr.length; i++) {
-		txtBtnArr[i].removeAttribute('hidden');
-	}
-};
-
-FileManager.File.hideTxtButton = function () {
-	var txtBtnArr = document.querySelectorAll('.txt-btn');
-	for (var i = 0; i < txtBtnArr.length; i++) {
-		txtBtnArr[i].setAttribute('hidden', 'hidden');
-	}
-};
-
-FileManager.File.undo = function () {
-	FileManager.File.codeMirror.undo();
-	document.querySelector('.menu-file button.redo').removeAttribute('disabled');
-	if (FileManager.File.codeMirror.historySize().undo == 0) {
-		document.querySelector('.menu-file button.undo').setAttribute('disabled', 'disabled');
-	}
-};
-
-FileManager.File.redo = function () {
-	FileManager.File.codeMirror.redo();
-	document.querySelector('.menu-file button.undo').removeAttribute('disabled');
-	if (FileManager.File.codeMirror.historySize().redo == 0) {
-		document.querySelector('.menu-file button.redo').setAttribute('disabled', 'disabled');
-	}
-};
-
-FileManager.File.save = function () {
-	document.querySelector('.menu-file button.save').setAttribute('disabled', 'disabled');
-	document.querySelector('.menu-file button.undo').setAttribute('disabled', 'disabled');
-	document.querySelector('.menu-file button.redo').setAttribute('disabled', 'disabled');
-
-	var requestArgs = {};
-
-	requestArgs.path = FileManager.CurrentPath().withoutAccount();
-	requestArgs.contentType = FileManager.File.contentType;
-	requestArgs.data = FileManager.File.codeMirror.getValue();
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		requestArgs.account = FileManager.CurrentPath().account();
-	}
-
-	requestArgs.created = function () {
-		FileManager.File.codeMirror.clearHistory();
-	};
-
-	requestArgs.error = function (status, statusText) {
-		var el = document.querySelector('.editor-toolbar-error');
-		FileManager.AjaxError.show(el, status, statusText);
-
-		document.querySelector('.menu-file button.save').removeAttribute('disabled');
-		if (FileManager.File.codeMirror.historySize().undo > 0) {
-			document.querySelector('.menu-file button.undo').removeAttribute('disabled');
-		}
-		if (FileManager.File.codeMirror.historySize().redo > 0) {
-			document.querySelector('.menu-file button.redo').removeAttribute('disabled');
-		}
-	};
-
-	SwiftV1.createFile(requestArgs);
-};
-
-FileManager.File.saveAs = function (el) {
-	if (el.classList.contains('selected')) {
-		el.classList.remove('selected');
-		document.querySelector('.save-as-dialog').setAttribute('hidden', 'hidden');
-		FileManager.Layout.adjust();
-	} else {
-		el.classList.add('selected');
-		document.querySelector('.save-as-dialog').removeAttribute('hidden');
-		FileManager.Layout.adjust();
-		document.querySelector('.save-as-input-path').value = FileManager.CurrentPath().get();
-		document.querySelector('.save-as-input-type').value = FileManager.File.contentType;
-	}
-};
-
-
-
-FileManager.SaveAs = {};
-
-FileManager.SaveAs.click = function () {
-	var pathEl = document.querySelector('.save-as-input-path');
-	var typeEl = document.querySelector('.save-as-input-type');
-	var path = pathEl.value;
-
-	if (!path) {
-		pathEl.classList.add('invalid-input');
-		return;
-	}
-
-	var args = {
-		path: FileManager.Path(path).withoutAccount(),
-		contentType: typeEl.value,
-		data: FileManager.File.codeMirror.getValue(),
-		created: function () {
-			location.hash = path;
-		},
-		error: function (status, statusText) {
-			var el = document.querySelector('.save-as-error-ajax');
-			FileManager.AjaxError.show(el, status, statusText);
-		}
-	};
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS) {
-		args.account = FileManager.Path(path).account();
-	}
-
-	SwiftV1.createFile(args);
-};
-
-FileManager.SaveAs.clearErrors = function () {
-	document.querySelector('.save-as-input-path').classList.remove('invalid-input');
-};
-
-
-FileManager.ContentChange = {};
-
-FileManager.ContentChange.animate = function () {
-	document.querySelector('span.upload-files').setAttribute('hidden', 'hidden');
-	document.querySelector('span.upload-as').setAttribute('hidden', 'hidden');
-	document.querySelector('span.upload-execute').setAttribute('hidden', 'hidden');
-	FileManager.CreateContainerButton.hide();
-	FileManager.CreateDirectoryButton.hide();
-	FileManager.CreateFileButton.hide();
-	document.querySelector('.menu-file').setAttribute('hidden', 'hidden');
-	FileManager.OpenButton.hide();
-	FileManager.ExecuteButton.hide();
-
-	var parentEl, newEl, oldEl, template;
-
-	oldEl = document.querySelector('.scrolling-content');
-	parentEl = oldEl.parentNode;
-
-	template = document.querySelector('#newScrollingContentTemplate').innerHTML;
-	parentEl.insertAdjacentHTML('afterbegin', template);
-	newEl = document.querySelector('.new-scrolling-content');
-	newEl.style.paddingTop = window.scrollY + 'px';
-
-	var el = newEl;
-	var callback = function () {
-		oldEl.classList.add('old-scrolling-content');
-		newEl.classList.remove('new-scrolling-content');
-	};
-
-	//el.textContent = 'Loading...';
-	if (FileManager.CurrentPath().isContainersList()) {
-		FileManager.Containers.list(callback);
-		FileManager.CreateContainerButton.show();
-
-		//FileManager.File.hideMenu();
-		//FileManager.ExecuteButton.hide();
-		//FileManager.OpenButton.hide();
-	} else if (FileManager.CurrentPath().isFilesList()) {
-		FileManager.Files.list(callback);
-		FileManager.CreateDirectoryButton.show();
-		FileManager.CreateFileButton.show();
-		document.querySelector('span.upload-files').removeAttribute('hidden');
-		document.querySelector('span.upload-as').removeAttribute('hidden');
-		document.querySelector('span.upload-execute').removeAttribute('hidden');
-		//FileManager.File.hideMenu();
-		//FileManager.ExecuteButton.hide();
-		//FileManager.OpenButton.hide();
-	} else {
-		// load file
-		document.querySelector('.menu-file').removeAttribute('hidden');
-		FileManager.File.open(el, callback);
-	}
-	FileManager.Layout.adjust();
-
-	var loadingEl = document.querySelector('.scrolling-content-loading');
-	loadingEl && loadingEl.parentNode.removeChild(loadingEl);
-
-};
-
-FileManager.ContentChange.transition = function (e) {
-	if (e.propertyName == 'padding-top') {
-		return;
-	}
-
-	var el = e.target;
-
-	if (el.classList.contains('old-scrolling-content')) {
-		el.parentNode.removeChild(el);
-
-		var newEl = document.querySelector('.scrolling-content');
-		newEl.classList.add('no-transition');
-		newEl.style.paddingTop = '';
-		window.scrollTo(0,0);
-		newEl.classList.remove('no-transition');
-
-		document.body.classList.remove('disabled');
-	}
-};
-
-document.addEventListener('transitionend', FileManager.ContentChange.transition);
-document.addEventListener('webkitTransitionEnd', FileManager.ContentChange.transition);
-
-FileManager.Layout = {};
-
-FileManager.Layout.adjust = function () {
-	var paddingTop = getComputedStyle(document.querySelector('.fixed-top'), null).getPropertyValue("height");
-	document.querySelector('#content').style.paddingTop = paddingTop;
-
-
-	//if (FileManager.File.codeMirror) {
-	//	var pageHeight = getComputedStyle(document.querySelector('.fixed-background'), null).getPropertyValue("height");
-	//	FileManager.File.codeMirror.setSize('auto', parseInt(pageHeight, 10) - parseInt(paddingTop, 10) + 'px');
-	//}
-};
-
-FileManager.Utils = {};
-FileManager.Utils.htmlEscape = function (str) {
-	return String(str)
-		.replace('&raquo;', '///')
-		.replace(/&/g, '&amp;')
-		.replace(/"/g, '&quot;')
-		.replace(/'/g, '&#39;')
-		.replace(/</g, '&lt;')
-		.replace(/>/g, '&gt;')
-		.replace('///', '&raquo;');
-};
-
-FileManager.Utils.makeShortName = function (name, len) {
-	if (!name) {
-		return '';
-	}
-
-	len = len || 30;
-
-	if (name.length <= len) {
-		return name;
-	}
-
-	return name.substr(0, len) + '&raquo;';
-};
-
-FileManager.Utils.bytesToSize = function (bytes, precision) {
-	bytes = Number(bytes);
-	if (typeof bytes != 'number') {
-		return '-';
-	}
-	var kilobyte = 1024;
-	var megabyte = kilobyte * 1024;
-	var gigabyte = megabyte * 1024;
-	var terabyte = gigabyte * 1024;
-
-	if ((bytes >= 0) && (bytes < kilobyte)) {
-		return bytes + ' B';
-
-	} else if ((bytes >= kilobyte) && (bytes < megabyte)) {
-		return (bytes / kilobyte).toFixed(precision) + ' KB';
-
-	} else if ((bytes >= megabyte) && (bytes < gigabyte)) {
-		return (bytes / megabyte).toFixed(precision) + ' MB';
-
-	} else if ((bytes >= gigabyte) && (bytes < terabyte)) {
-		return (bytes / gigabyte).toFixed(precision) + ' GB';
-
-	} else if (bytes >= terabyte) {
-		return (bytes / terabyte).toFixed(precision) + ' TB';
-
-	} else {
-		return bytes + ' B';
-	}
-};
-
-FileManager.AjaxError = {};
-
-FileManager.AjaxError.show = function (el, status, statusText) {
-	el.querySelector('.status').textContent = status;
-	el.querySelector('.status-text').textContent = statusText;
-	el.removeAttribute('hidden');
-	FileManager.Layout.adjust();
-};
-
-FileManager.Path = function (path) {
-	this.get = function () {
-		return path;
-	};
-	this.account = function () {
-		return path.split('/')[0];
-	};
-	this.container = function () {
-		return path.split('/')[1];
-	};
-	this.withoutAccount = function () {
-		return path.split('/').splice(1).join('/');
-	};
-	this.prefix = function () {
-		return path.split('/').splice(2).join('/');
-	};
-	this.name = function () {
-		var pathParts = path.split('/');
-		if (this.isDirectory()) {
-			return pathParts.splice(-2).join('/');
-		}
-		return pathParts[pathParts.length - 1];
-	};
-	this.isContainersList = function () {
-		return path.indexOf('/') == -1;
-	};
-	this.isFilesList = function () {
-		return this.isContainer() || this.isDirectory();
-	};
-	this.isContainer = function () {
-		return path.split('/').length == 2;
-	};
-	this.isDirectory = function () {
-		return path.lastIndexOf('/') == path.length - 1
-	};
-	this.isFile = function () {
-		return !this.isContainer() && !this.isDirectory();
-	};
-	this.up = function () {
-		var newPathParts = path.split('/');
-
-		if (newPathParts[newPathParts.length - 1] == '') {
-			newPathParts.splice(-2);
-		} else {
-			newPathParts.splice(-1);
-		}
-
-		if (newPathParts.length == 1) {
-
-			if (FileManager.ENABLE_SHARED_CONTAINERS && FileManager.Shared.isShared(newPathParts[0])) {
-				return SwiftV1.getAccount();
-			}
-
-			return newPathParts[0];
-		}
-
-		if (newPathParts.length == 2) {
-			return newPathParts.join('/');
-		}
-
-		return newPathParts.join('/') + '/';
-	};
-	this.add = function (name) {
-
-		if (FileManager.ENABLE_SHARED_CONTAINERS && this.isContainersList() && name.indexOf('/') != -1) {
-			return name;
-		}
-
-		/*if (location.hash === '' && this.isContainersList()) {
-			return '/' + name;
-		}*/
-
-		if (path.lastIndexOf('/') == path.length - 1) {
-			return path + name;
-		}
-		return  path + '/' + name;
-	};
-	return this;
-};
-
-FileManager.CurrentPath = function () {
-	return FileManager.Path(location.hash.substr(1));
-};
-
-
-window.addEventListener('hashchange', function (e) {
-	FileManager.ContentChange.animate();
-});
-
-window.addEventListener('scroll', function (e) {
-	var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-	var position = window.scrollY;
-
-	if (position == height) {
-		if (FileManager.CurrentPath().isContainersList()) {
-			FileManager.Containers.loadMore();
-		} else {
-			FileManager.Files.loadMore();
-		}
-	}
-});
-
-window.addEventListener('resize', function (e) {
-	FileManager.Layout.adjust();
-});
-
-document.addEventListener('click', function (e) {
-	var el;
-
-	if (document.body.classList.contains('disabled')) {
-		return;
-	}
-
-	if (el = is('execute-button')) {
-		if (FileManager.ENABLE_ZEROVM) {
-			FileManager.ExecuteButton.click(el);
-		}
-	} else if (el = is('load-more-button')) {
-		FileManager.LoadMoreButton.click(el);
-	} else if (el = is('add-shared-button')) {
-		//SHARED-CONTAINERS
-		FileManager.AddShared.click(el);
-	} else if (el = is('undo')) {
-		FileManager.File.undo();
-	} else if (el = is('redo')) {
-		FileManager.File.redo();
-	} else if (el = is('save')) {
-		FileManager.File.save();
-	} else if (el = is('save-as')) {
-		FileManager.File.saveAs(el);
-	} else if (el = is('save-as-button')) {
-		FileManager.SaveAs.click(el);
-	} else if (el = is('cancel-upload-button')) {
-		FileManager.UploadFiles.cancelClick(el);
-	} else if (el = is('execute-close-button')) {
-		FileManager.ExecuteReport.remove();
-	} else if (el = is('execute-full-button')) {
-		FileManager.ExecuteReport.showFullReport(el);
-	} else if (el = is('copy-button')) {
-		FileManager.Copy.click(el);
-	} else if (el = is('upload-as-button')) {
-		FileManager.UploadAs.click(el);
-	} else if (el = is('open-button')) {
-		FileManager.OpenButton.click(el);
-	} else if (el = is('wide-button')) {
-		var centerEls = document.querySelectorAll('.center');
-		for (var i = 0; i < centerEls.length; i++) {
-			centerEls[i].style.maxWidth = '100%';
-		}
-		el.setAttribute('hidden', 'hidden');
-		document.querySelector('.fixed-background').style.width = '100%';
-		document.querySelector('.unwide-button').removeAttribute('hidden');
-	} else if (el = is('unwide-button')) {
-		var centerEls = document.querySelectorAll('.center');
-		for (var i = 0; i < centerEls.length; i++) {
-			centerEls[i].style.maxWidth = '800px';
-		}
-		el.setAttribute('hidden', 'hidden');
-		document.querySelector('.fixed-background').style.width = '800px';
-		document.querySelector('.wide-button').removeAttribute('hidden');
-	}
-
-	function is(className) {
-		var node1 = e.target;
-		var node2 = node1.parentNode;
-		var node3 = node2.parentNode;
-
-		if (node1.classList.contains(className) && !node1.hasAttribute('disabled')) {
-			return node1;
-		}
-
-		if (!node2.classList) {
-			return;
-		}
-
-		if (node2.classList.contains(className) && !node2.hasAttribute('disabled')) {
-			return node2;
-		}
-
-		if (!node3.classList) {
-			return;
-		}
-
-		if (node3.classList.contains(className) && !node3.hasAttribute('disabled')) {
-			return node3;
-		}
-	}
-}, true);
-
-document.addEventListener('keydown', function (e) {
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS && e.target.classList.contains('add-shared-input-account')) {
-		FileManager.AddShared.clearErrors(e.target);
-	}
-
-	if (FileManager.ENABLE_SHARED_CONTAINERS && e.target.classList.contains('add-shared-input-container')) {
-		if (e.which == 13) {
-			FileManager.AddShared.click();
-			return;
-		}
-		FileManager.AddShared.clearErrors(e.target);
-	}
-
-	if (e.target.classList.contains('save-as-input-path')) {
-
-		if (e.which == 13) {
-			document.querySelector('.save-as-input-type').focus();
-		}
-
-		FileManager.SaveAs.clearErrors(e.target);
-	}
-
-	if (e.target.classList.contains('save-as-input-type')) {
-
-		if (e.which == 13) {
-			FileManager.SaveAs.click();
-			return;
-		}
-
-		FileManager.SaveAs.clearErrors(e.target);
-	}
-
-	if (e.target.classList.contains('copy-input')) {
-
-		if (e.which == 13) {
-			FileManager.Copy.click();
-			return;
-		}
-
-		document.querySelector('.copy-ok').setAttribute('hidden', 'hidden');
-		document.querySelector('.copy-error-ajax').setAttribute('hidden', 'hidden');
-	}
-
-});
-
-document.addEventListener('change', function (e) {
-	if (e.target.parentNode.classList.contains('upload-files')) {
-		FileManager.UploadFiles.change(e.target.files);
-		return;
-	}
-
-	if (e.target.parentNode.classList.contains('upload-as')) {
-		FileManager.UploadAs.change(e.target.files);
-		return;
-	}
-
-	if (e.target.parentNode.classList.contains('upload-execute')) {
-		FileManager.UploadAndExecute.change(e.target.files[0]);
-		return;
-	}
-});
-
-document.addEventListener('load', function () {
-	FileManager.Layout.adjust();
-	setTimeout(FileManager.Layout.adjust, 1000);
-});
-
-//SHARED-CONTAINERS
-FileManager.Shared = {};
-FileManager.Shared.isShared = function (path) {
-	return path.split('/')[0] != SwiftV1.getAccount();
-};
-FileManager.Shared.listSharedContainers = function (sharedContainers, scrollingContentEl) {
-
-	for (var i = 0; i < sharedContainers.length; i++) {
-		add(sharedContainers[i]);
-		update(sharedContainers[i]);
-	}
-
-	function add(sharedContainer) {
-		var name = FileManager.Utils.makeShortName(sharedContainer);
-		var title = sharedContainer;
-		var html = document.querySelector('#sharedContainerTemplate').innerHTML;
-		html = html.replace('{{name}}', FileManager.Utils.htmlEscape(name));
-		html = html.replace('{{title}}', FileManager.Utils.htmlEscape(title));
-		scrollingContentEl.insertAdjacentHTML('afterbegin', html);
-	}
-
-	function update(path) {
-		SharedContainersOnSwift.getContainerSize({
-			account: FileManager.Path(path).account(),
-			container: FileManager.Path(path).container(),
-			success: function (bytes, count) {
-				var size = FileManager.Utils.bytesToSize(bytes);
-				var files = count;
-
-				var selector = '.item[title="' + path + '"]';
-				var el = scrollingContentEl.querySelector(selector);
-
-				el.querySelector('.size').textContent = size;
-				el.querySelector('.files').textContent = files;
-			},
-			error: function (status, statusText) {
-				var selector = '.item[title="' + path + '"]';
-				var el = scrollingContentEl.querySelector(selector);
-				el.querySelector('.size').textContent = 'Error: ' + status + ' ' + statusText;
-			}
-		});
-	}
-};
-
-//SHARED-CONTAINERS
-FileManager.AddShared = {};
-
-//SHARED-CONTAINERS
-FileManager.AddShared.click = function () {
-
-	var sharedAccountEl = document.querySelector('.add-shared-input-account');
-	var sharedContainerEl = document.querySelector('.add-shared-input-container');
-	if (!sharedAccountEl.value) {
-		sharedAccountEl.classList.add('invalid-input');
-		return;
-	}
-	if (!sharedContainerEl.value) {
-		sharedContainerEl.classList.add('invalid-input');
-		return;
-	}
-
-	var account = sharedAccountEl.value;
-	var container =  sharedContainerEl.value;
-
-	SharedContainersOnSwift.addSharedContainer({
-		account: account,
-		container: container,
-		added: function () {
-			FileManager.ContentChange.animate();
-			FileManager.AddShared.clear();
-		},
-		notAuthorized: function () {
-			sharedContainerEl.classList.add('invalid-input');
-			document.querySelector('#shared-container-error').removeAttribute('hidden');
-		},
-		error: function (status, statusText) {
-			var el = document.querySelector('.add-shared-error-ajax');
-			FileManager.AjaxError.show(el, status, statusText);
-		}
-	});
-};
-
-//SHARED-CONTAINERS
-FileManager.AddShared.clear = function () {
-	var inputAccountEl = document.querySelector('.add-shared-input-account');
-	var inputContainerEl = document.querySelector('.add-shared-input-container');
-	inputAccountEl.value = '';
-	inputContainerEl.value = '';
-	FileManager.AddShared.clearErrors(inputAccountEl, inputContainerEl);
-};
-
-//SHARED-CONTAINERS
-FileManager.AddShared.clearErrors = function (inputEl1, inputEl2) {
-	inputEl1.classList.remove('invalid-input');
-	if (inputEl2) {
-		inputEl2.classList.remove('invalid-input');
-	}
-
-	var errElArr = document.querySelectorAll('.add-shared .err-msg');
-	for (var i = 0; i < errElArr.length; i++) {
-		errElArr[i].setAttribute('hidden', 'hidden');
-	}
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 FileManager.Authentication = {};
 FileManager.Authentication.el = document.querySelector('#Authentication');
 FileManager.Authentication.el.onsubmit = function (e) {
@@ -2556,7 +1252,7 @@ FileManager.ContentTypeForm.load = function () {
 			contentTypeForm.querySelector('.loading-error').removeAttribute('hidden');
 			contentTypeForm.querySelector('.loading').setAttribute('hidden', 'hidden');
 		}
-	 });
+	});
 };
 FileManager.ContentTypeForm.submit = function (e) {
 	var contentTypeForm = document.querySelector('.scrolling-content form.content-type');
@@ -2655,4 +1351,1255 @@ FileManager.RightsForm.removeEl = function () {
 FileManager.RightsForm.inputKeydown = function () {
 	var rightsFormEl = document.querySelector('.scrolling-content form.rights');
 	rightsFormEl.querySelector('.err-ajax').setAttribute('hidden', 'hidden');
+};
+
+FileManager.OpenButton = {};
+FileManager.OpenButton.el = document.querySelector('button.open-button');
+FileManager.OpenButton.el.addEventListener('click', function () {
+	var options = {
+		path: FileManager.CurrentPath().withoutAccount(),
+		callback: function (message) {
+			FileManager.ExecuteButton.hide();
+		}
+	};
+
+	if (FileManager.ENABLE_SHARED_CONTAINERS) {
+		options.account = FileManager.CurrentPath().account();
+	}
+
+	ZeroVmOnSwift.open(options);
+});
+FileManager.OpenButton.show = function () {
+	FileManager.OpenButton.el.removeAttribute('hidden');
+};
+FileManager.OpenButton.hide = function () {
+	FileManager.OpenButton.el.setAttribute('hidden', 'hidden');
+};
+
+FileManager.ExecuteButton = {};
+FileManager.ExecuteButton.el = document.querySelector('button.execute-button');
+FileManager.ExecuteButton.el.addEventListener('click', function () {
+	if (FileManager.ENABLE_ZEROVM) {
+		FileManager.execute(FileManager.File.codeMirror.getValue(), FileManager.File.contentType);
+	}
+});
+FileManager.ExecuteButton.hide = function () {
+	FileManager.ExecuteButton.el.setAttribute('hidden', 'hidden');
+};
+FileManager.ExecuteButton.show = function () {
+	FileManager.ExecuteButton.el.removeAttribute('hidden');
+};
+
+FileManager.ExecutingLabel = {};
+FileManager.ExecutingLabel.el = document.querySelector('label.executing');
+FileManager.ExecutingLabel.show = function () {
+	FileManager.ExecutingLabel.el.removeAttribute('hidden');
+	FileManager.ExecutingLabel.timer.start();
+	FileManager.ExecutingLabel.update();
+};
+FileManager.ExecutingLabel.hide = function () {
+	FileManager.ExecutingLabel.el.setAttribute('hidden', 'hidden');
+	FileManager.ExecutingLabel.timer.stop();
+};
+FileManager.ExecutingLabel.update = function () {
+	if (FileManager.ExecutingLabel.timer.isStopped()) {
+		return;
+	}
+	var content = 'Executing... ' + FileManager.ExecutingLabel.timer.getTimeString();
+	FileManager.ExecutingLabel.el.textContent = content;
+	FileManager.ExecutingLabel.timer.next();
+	setTimeout(FileManager.ExecutingLabel.update, 1000);
+};
+FileManager.ExecutingLabel.Timer = function () {
+	var secondsCounter = -1;
+
+	this.start = function () {
+		secondsCounter = 0;
+	};
+
+	this.stop = function () {
+		secondsCounter = -1;
+	};
+
+	this.isStopped = function () {
+		return secondsCounter ==  -1;
+	};
+
+	this.next = function () {
+		secondsCounter++;
+	};
+
+	this.getTimeString = function () {
+		var minutes = Math.floor(secondsCounter / 60);
+		var seconds = secondsCounter % 60;
+		var secondsStr = seconds < 10 ? '0' + String(seconds) : String(seconds);
+		var minutesStr = minutes < 10 ? '0' + String(minutes) : String(minutes);
+		return minutesStr + ':' + secondsStr;
+	};
+};
+FileManager.ExecutingLabel.timer = new FileManager.ExecutingLabel.Timer();
+
+FileManager.Path = function (path) {
+	this.get = function () {
+		return path;
+	};
+	this.account = function () {
+		return path.split('/')[0];
+	};
+	this.container = function () {
+		return path.split('/')[1];
+	};
+	this.withoutAccount = function () {
+		return path.split('/').splice(1).join('/');
+	};
+	this.prefix = function () {
+		return path.split('/').splice(2).join('/');
+	};
+	this.name = function () {
+		var pathParts = path.split('/');
+		if (this.isDirectory()) {
+			return pathParts.splice(-2).join('/');
+		}
+		return pathParts[pathParts.length - 1];
+	};
+	this.isContainersList = function () {
+		return path.indexOf('/') == -1;
+	};
+	this.isFilesList = function () {
+		return this.isContainer() || this.isDirectory();
+	};
+	this.isContainer = function () {
+		return path.split('/').length == 2;
+	};
+	this.isDirectory = function () {
+		return path.lastIndexOf('/') == path.length - 1
+	};
+	this.isFile = function () {
+		return !this.isContainer() && !this.isDirectory();
+	};
+	this.up = function () {
+		var newPathParts = path.split('/');
+
+		if (newPathParts[newPathParts.length - 1] == '') {
+			newPathParts.splice(-2);
+		} else {
+			newPathParts.splice(-1);
+		}
+
+		if (newPathParts.length == 1) {
+
+			if (FileManager.ENABLE_SHARED_CONTAINERS && FileManager.Shared.isShared(newPathParts[0])) {
+				return SwiftV1.getAccount();
+			}
+
+			return newPathParts[0];
+		}
+
+		if (newPathParts.length == 2) {
+			return newPathParts.join('/');
+		}
+
+		return newPathParts.join('/') + '/';
+	};
+	this.add = function (name) {
+
+		if (FileManager.ENABLE_SHARED_CONTAINERS && this.isContainersList() && name.indexOf('/') != -1) {
+			return name;
+		}
+
+		/*if (location.hash === '' && this.isContainersList()) {
+		 return '/' + name;
+		 }*/
+
+		if (path.lastIndexOf('/') == path.length - 1) {
+			return path + name;
+		}
+		return  path + '/' + name;
+	};
+	return this;
+};
+FileManager.CurrentPath = function () {
+	return FileManager.Path(location.hash.substr(1));
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+FileManager.enableAll = function () {
+	document.body.classList.remove('disabled');
+};
+
+FileManager.disableAll = function () {
+	document.body.classList.add('disabled');
+};
+
+
+FileManager.CurrentDirLabel = {};
+
+FileManager.CurrentDirLabel.MAX_LENGTH = 30;
+
+FileManager.CurrentDirLabel.setContent = function (content) {
+	var el = document.querySelector('.current-dir-label');
+	if (content.length > FileManager.CurrentDirLabel.MAX_LENGTH) {
+		el.textContent = content.substr(0, FileManager.CurrentDirLabel.MAX_LENGTH);
+		el.innerHTML += '&raquo;';
+	} else {
+		el.textContent = content;
+	}
+};
+
+FileManager.CurrentDirLabel.setTooltip = function (content) {
+	document.querySelector('.current-dir-label').title = content;
+};
+
+FileManager.CurrentDirLabel.removeTooltip = function () {
+	document.querySelector('.current-dir-label').removeAttribute('title');
+};
+
+FileManager.CurrentDirLabel.root = function () {
+
+	if (FileManager.ENABLE_EMAILS) {
+		/*Auth.getEmail(function (email) {
+			FileManager.CurrentDirLabel.setContent(email);
+			FileManager.CurrentDirLabel.setTooltip(email);
+		});*/
+		return;
+	}
+
+	var account = SwiftV1.getAccount();
+	FileManager.CurrentDirLabel.setContent(account);
+	FileManager.CurrentDirLabel.setTooltip(account);
+};
+
+FileManager.CurrentDirLabel.showLoading = function () {
+	FileManager.CurrentDirLabel.setContent('Loading...');
+	FileManager.CurrentDirLabel.removeTooltip();
+};
+
+
+FileManager.execute = function (data, contentType) {
+
+	FileManager.disableAll();
+	FileManager.ExecuteButton.hide();
+	FileManager.ExecutingLabel.show();
+	FileManager.OpenButton.hide();
+	FileManager.FilesMenu.hide();
+
+	ZeroVmOnSwift.execute({
+		data: data,
+		contentType: contentType,
+		success: function (result, report) {
+			FileManager.ExecutingLabel.hide();
+			showResult(result);
+			if (report) {
+				FileManager.ExecuteReport.create(report);
+			} else {
+				alert('JS Error: report object is undefined');
+			}
+
+			FileManager.enableAll();
+		},
+		error: function (status, statusText, result) {
+			alert(status + ' ' + statusText + ' ' + result);
+			console.log(status + ' ' + statusText + ' ' + result);
+			FileManager.ExecutingLabel.hide();
+			showResult(result);
+			FileManager.enableAll();
+		}
+	});
+
+	function showResult(result) {
+		FileManager.File.hideMenu();
+		var el = document.querySelector('.scrolling-content');
+
+		FileManager.File.codeMirror.setValue(result);
+		FileManager.Layout.adjust();
+
+	}
+};
+
+FileManager.executePython = function (pythonFilePath) {
+	var json = [{
+		exec: {
+			path: 'file://python:python',
+			args: '/dev/input'
+		},
+		file_list: [
+			{
+				device: 'input',
+				path: 'swift://' + SwiftV1.getAccount() + '/' + pythonFilePath
+			},
+			{
+				device: 'stdout',
+				content_type: 'text/plain'
+			},
+			{
+				device: 'stderr',
+				path: 'swift://' + SwiftV1.getAccount() + '/' + pythonFilePath + '.log',
+				content_type: 'text/plain'
+			},
+			{
+				device: 'python'
+			}
+		],
+		name: 'python'
+	}];
+	console.log(json);
+	console.log(JSON.stringify(json));
+	FileManager.execute(JSON.stringify(json), 'application/json');
+};
+
+
+FileManager.ExecuteReport = {};
+
+FileManager.ExecuteReport.report = null;
+
+FileManager.ExecuteReport.create = function (report) {
+
+	FileManager.ExecuteReport.report = report;
+
+	var scrollingContentEl = document.querySelector('.scrolling-content');
+	var reportTemplate = document.querySelector('#reportTemplate').innerHTML;
+	scrollingContentEl.innerHTML += reportTemplate;
+
+
+	executionReport();
+	billingReport();
+	
+	function executionReport() {
+		if (report.execution.status) {
+			document.querySelector('#execute-status-val').textContent = report.execution.status;
+			document.querySelector('#execute-status-tr').removeAttribute('hidden');
+		}
+
+		if (report.execution.error) {
+			document.querySelector('#execute-error-val').textContent = report.execution.error;
+			document.querySelector('#execute-error-tr').removeAttribute('hidden');
+		}
+	}
+
+	function billingReport() {
+
+		document.querySelector('#total-time-tr').insertAdjacentHTML('beforeend', td(report.billing.totalServerTime));
+
+		var nodesLength = report.billing.nodes.length;
+		for (var i = 0; i < nodesLength; i++) {
+			document.querySelector('#node-number-tr').insertAdjacentHTML('beforeend', td(i+1));
+			document.querySelector('#node-server-time-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['nodeServerTime'] || '-'));
+
+			document.querySelector('#system-time-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['systemTime'] || '-'));
+			document.querySelector('#user-time-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['userTime'] || '-'));
+
+
+			document.querySelector('#reads-from-disk-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['readsFromDisk'] || '-'));
+			document.querySelector('#bytes-read-from-disk-tr').insertAdjacentHTML('beforeend', td(FileManager.Utils.bytesToSize(report.billing.nodes[i]['bytesReadFromDisk']) || '-'));
+
+			document.querySelector('#writes-to-disk-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['writesToDisk'] || '-'));
+			document.querySelector('#bytes-written-to-disk-tr').insertAdjacentHTML('beforeend', td(FileManager.Utils.bytesToSize(report.billing.nodes[i]['bytesWrittenToDisk']) || '-'));
+			document.querySelector('#reads-from-network-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['readsFromNetwork'] || '-'));
+
+			document.querySelector('#bytes-read-from-network-tr').insertAdjacentHTML('beforeend', td(FileManager.Utils.bytesToSize(report.billing.nodes[i]['bytesReadFromNetwork']) || '-'));
+			document.querySelector('#writes-to-network-tr').insertAdjacentHTML('beforeend', td(report.billing.nodes[i]['writesToNetwork'] || '-'));
+			document.querySelector('#bytes-written-to-network-tr').insertAdjacentHTML('beforeend', td(FileManager.Utils.bytesToSize(report.billing.nodes[i]['bytesWrittenToNetwork']) || '-'));
+		}
+		document.querySelector('#billing-report-title').setAttribute('colspan', String(1+nodesLength));
+		if (nodesLength > 3) {
+			document.querySelector('#billing-tbody').style.fontSize = 'x-small';
+		} else {
+			document.querySelector('#billing-tbody').style.fontSize = 'medium';
+		}
+
+		function td(txt) {
+			return '<td class="auto-created-report-td">' + txt + '</td>';
+		}
+	}
+};
+
+FileManager.ExecuteReport.remove = function () {
+	var billingEl = document.querySelector('#report');
+	billingEl.parentNode.removeChild(billingEl);
+};
+
+FileManager.ExecuteReport.showFullReport = function (el) {
+
+	var executionReport = FileManager.ExecuteReport.report.execution;
+
+	el.setAttribute('hidden', 'hidden');
+
+	var html = '';
+	for (var key in executionReport) {
+		if (key != 'status' && key != 'error') {
+			html += '<tr class="execute-report-row"><td class="execute-report-part-name">' + key + '</td></tr><tr><td>' + executionReport[key] + '</td></tr>';
+		}
+	}
+
+	document.querySelector('#execute-tbody').innerHTML += html;
+};
+
+
+FileManager.FilesMenu = {};
+
+FileManager.FilesMenu.show = function () {
+	document.querySelector('.menu-files').removeAttribute('hidden');
+	FileManager.Layout.adjust();
+};
+
+FileManager.FilesMenu.hide = function () {
+	document.querySelector('.menu-files').setAttribute('hidden', 'hidden');
+	FileManager.Layout.adjust();
+};
+
+
+FileManager.UploadFiles = {};
+
+FileManager.UploadFiles.uploadRequests = [];
+
+FileManager.UploadFiles.change = function (files) {
+	var el = document.querySelector('.upload-files');
+	el.value = null;
+
+	for (var i = 0; i < files.length; i++) {
+		FileManager.UploadFiles.uploadFile(files[i], files[i].name, files[i].type);
+	}
+
+	FileManager.Layout.adjust();
+};
+
+FileManager.UploadFiles.uploadFile = function (file, name, contentType) {
+
+	createUploadEl(name);
+	var index = FileManager.UploadFiles.uploadRequests.length;
+	var path = FileManager.CurrentPath().add(name);
+	FileManager.UploadFiles.uploadRequests[index] = SwiftV1.createFile({
+		path: FileManager.Path(path).withoutAccount(),
+		data: file,
+		contentType: contentType,
+		created: function () {
+			var el = document.querySelector('#upload-' + index);
+			el.parentNode.removeChild(el);
+			FileManager.ContentChange.animate();
+			FileManager.Layout.adjust();
+		},
+		progress: function (percent, loaded, total) {
+			document.querySelector('#upload-' + index + ' progress').value = percent;
+			var percentStr = '&nbsp;0%&nbsp;';
+			if (percent < 10) {
+				percentStr = '&nbsp;' + percent + '%&nbsp;';
+			} else if (percent < 100) {
+				percentStr = '&nbsp;' + percent + '%';
+			} else {
+				percentStr = percent + '%';
+			}
+			document.querySelector('#upload-' + index + ' .progresslabel').innerHTML = percentStr;
+		},
+		error: function (status, statusText) {
+			var el = document.querySelector('#upload-' + index + ' .error');
+			FileManager.AjaxError.show(el, status, statusText);
+		}
+	});
+
+	function createUploadEl(name) {
+		var index = FileManager.UploadFiles.uploadRequests.length;
+		var template = document.querySelector('#uploadTemplate').innerHTML;
+		template = template.replace('{{upload-label-name}}', name);
+		template = template.replace('{{upload-id}}', 'upload-' + index);
+		document.querySelector('.menu-files').insertAdjacentHTML('beforeend', template);
+	}
+};
+
+FileManager.UploadFiles.cancelClick  = function (el) {
+	var index = parseInt(el.parentNode.parentNode.parentNode.id.substr('upload-'.length));
+	FileManager.UploadFiles.uploadRequests[index].abort();
+	el.parentNode.parentNode.parentNode.parentNode.removeChild(el.parentNode.parentNode.parentNode);
+	FileManager.Layout.adjust();
+};
+
+
+FileManager.UploadAs = {};
+
+FileManager.UploadAs.files = [];
+
+FileManager.UploadAs.change = function (files) {
+
+	for (var i = 0; i < files.length; i++) {
+		FileManager.UploadAs.files.push(files[i]);
+		var index = FileManager.UploadAs.files.length - 1;
+		var template = document.querySelector('#uploadAsTemplate').innerHTML;
+		var find = '{{index}}', re = new RegExp(find, 'g');
+		template = template.replace(re, String(index));
+		if (files[i].hasOwnProperty('override_name')) {}
+		template = template.replace('{{upload-input-name}}', files[i].name);
+		template = template.replace('{{upload-input-type}}', files[i].type);
+		document.querySelector('.menu-files').insertAdjacentHTML('beforeend', template);
+	}
+
+	FileManager.Layout.adjust();
+};
+
+FileManager.UploadAs.click = function (el) {
+	var indexStr = el.getAttribute('data-index');
+	var index = Number(indexStr);
+	var uploadAsEl = document.querySelector('#upload-as-' + indexStr);
+	var name = uploadAsEl.querySelector('.upload-as-input-name').value;
+	var contentType = uploadAsEl.querySelector('.upload-as-input-type').value;
+	uploadAsEl.parentNode.removeChild(uploadAsEl);
+	FileManager.UploadFiles.uploadFile(FileManager.UploadAs.files[index], name, contentType);
+	FileManager.UploadAs.files[index] = null;
+};
+
+
+FileManager.UploadAndExecute = {};
+
+FileManager.UploadAndExecute.change = function (file) {
+	FileManager.execute(file, file.type);
+};
+
+
+FileManager.File = {};
+
+FileManager.File.codeMirror = null;
+
+FileManager.File.contentType = '';
+
+FileManager.File.open = function (el, callback) {
+
+	function fileExist(metadata, contentType, contentLength, lastModified) {
+		var Current = FileManager.CurrentPath();
+		var href = SwiftV1.getStorageUrl() + Current.get();
+		var filename = Current.name();
+
+		if (isTextFile(contentType)) {
+			FileManager.File.edit(el);
+		} else {
+			FileManager.File.notTextFile(el);
+		}
+
+		FileManager.OpenButton.show();
+
+		if (isExecutable(contentType)) {
+			FileManager.ExecuteButton.show();
+		}
+
+		document.querySelector('.download-link').setAttribute('href', href);
+		document.querySelector('.download-link').setAttribute('download', filename);
+
+		callback();
+
+		function isExecutable(contentType) {
+			return contentType === 'application/json' || contentType === 'application/x-tar' || contentType === 'application/gtar' || contentType === 'text/x-python';
+		}
+
+		function isTextFile(contentType) {
+
+			if (!contentType) {
+				return false;
+			}
+
+			contentType = contentType.split(';')[0];
+
+			return (contentType == 'application/javascript'
+				|| contentType == 'application/xml'
+				|| contentType == 'application/x-httpd-php'
+				|| contentType == 'application/json'
+				|| contentType == 'application/php'
+				|| contentType == 'application/x-php'
+				|| contentType.indexOf('text') == 0);
+		}
+	}
+
+	function fileNotExist() {
+		FileManager.UpButton.enable();
+		el.textContent = "File not found.";
+		callback();
+	}
+
+	function ajaxError(status, statusText) {
+		FileManager.UpButton.enable();
+		el.textContent = 'Error: ' + status + ' ' + statusText;
+		callback();
+	}
+
+	var args = {
+		path: FileManager.CurrentPath().withoutAccount(),
+		success: fileExist,
+		notExist: fileNotExist,
+		error: ajaxError
+	};
+
+	if (FileManager.ENABLE_SHARED_CONTAINERS) {
+		args.account = FileManager.CurrentPath().account();
+	}
+
+	SwiftV1.checkFileExist(args);
+};
+
+FileManager.File.getFileXhr = null;
+
+FileManager.File.edit = function (el) {
+	var args = {
+		path: FileManager.CurrentPath().withoutAccount(),
+		success: handleResponse,
+		error: function (status, statusText) {
+			el.innerHTML = '';
+			el.textContent = 'Error occurred: ' + status + ' ' + statusText;
+			FileManager.UpButton.enable();
+		},
+		notExist: function () {
+			el.innerHTML = '';
+			el.textContent = 'File Not Found.';
+			FileManager.UpButton.enable();
+		},
+		progress: function (loaded) {
+			el.innerHTML = loaded + ' bytes loaded... <button autocomplete="off" onclick="FileManager.File.getFileXhr.abort();">Cancel</button>';
+			if (loaded > 2097152) {
+				FileManager.File.getFileXhr.abort();
+				el.innerHTML = 'File is too large (2MB+).';
+				FileManager.UpButton.enable();
+			}
+		}
+	};
+	if (FileManager.ENABLE_SHARED_CONTAINERS) {
+		args.account = FileManager.CurrentPath().account();
+	}
+	FileManager.File.getFileXhr = SwiftV1.getFile(args);
+
+	function handleResponse(data, contentType) {
+		el.innerHTML = '';
+
+		var fileName = FileManager.CurrentPath().name();
+		var filePath = FileManager.CurrentPath().get();
+		FileManager.CurrentDirLabel.setContent(fileName);
+		FileManager.CurrentDirLabel.setTooltip(filePath);
+
+		FileManager.File.contentType = contentType;
+		FileManager.File.codeMirror = CodeMirror(el, {
+			value: data,
+			mode: contentType,
+			lineNumbers: true
+		});
+
+		FileManager.File.showTxtButton();
+		FileManager.File.showMenu();
+		FileManager.UpButton.disable();
+		document.querySelector('.menu-file button.save').setAttribute('disabled', 'disabled');
+		document.querySelector('.menu-file button.undo').setAttribute('disabled', 'disabled');
+		document.querySelector('.menu-file button.redo').setAttribute('disabled', 'disabled');
+
+		FileManager.File.codeMirror.on('change', function () {
+			document.querySelector('.menu-file button.undo').removeAttribute('disabled');
+			document.querySelector('.menu-file button.save').removeAttribute('disabled');
+		});
+
+		document.querySelector('.menu-file button.save-as').classList.remove('selected');
+		document.querySelector('.save-as-dialog').setAttribute('hidden', 'hidden');
+
+		FileManager.Layout.adjust();
+		FileManager.UpButton.enable();
+	}
+};
+
+FileManager.File.notTextFile = function (el) {
+	el.innerHTML = '';
+	var fileName = FileManager.CurrentPath().name();
+	FileManager.CurrentDirLabel.setContent(fileName);
+	el.innerHTML = document.querySelector('#notTextFileTemplate').innerHTML;
+	FileManager.File.hideTxtButton();
+	FileManager.File.showMenu();
+	FileManager.Layout.adjust();
+	FileManager.UpButton.enable();
+};
+
+FileManager.File.showMenu = function () {
+	document.querySelector('.menu-file').removeAttribute('hidden');
+	FileManager.Layout.adjust();
+};
+
+FileManager.File.hideMenu = function () {
+	document.querySelector('.menu-file').setAttribute('hidden', 'hidden');
+	FileManager.Layout.adjust();
+};
+
+FileManager.File.showTxtButton = function () {
+	var txtBtnArr = document.querySelectorAll('.txt-btn');
+	for (var i = 0; i < txtBtnArr.length; i++) {
+		txtBtnArr[i].removeAttribute('hidden');
+	}
+};
+
+FileManager.File.hideTxtButton = function () {
+	var txtBtnArr = document.querySelectorAll('.txt-btn');
+	for (var i = 0; i < txtBtnArr.length; i++) {
+		txtBtnArr[i].setAttribute('hidden', 'hidden');
+	}
+};
+
+FileManager.File.undo = function () {
+	FileManager.File.codeMirror.undo();
+	document.querySelector('.menu-file button.redo').removeAttribute('disabled');
+	if (FileManager.File.codeMirror.historySize().undo == 0) {
+		document.querySelector('.menu-file button.undo').setAttribute('disabled', 'disabled');
+	}
+};
+
+FileManager.File.redo = function () {
+	FileManager.File.codeMirror.redo();
+	document.querySelector('.menu-file button.undo').removeAttribute('disabled');
+	if (FileManager.File.codeMirror.historySize().redo == 0) {
+		document.querySelector('.menu-file button.redo').setAttribute('disabled', 'disabled');
+	}
+};
+
+FileManager.File.save = function () {
+	document.querySelector('.menu-file button.save').setAttribute('disabled', 'disabled');
+	document.querySelector('.menu-file button.undo').setAttribute('disabled', 'disabled');
+	document.querySelector('.menu-file button.redo').setAttribute('disabled', 'disabled');
+
+	var requestArgs = {};
+
+	requestArgs.path = FileManager.CurrentPath().withoutAccount();
+	requestArgs.contentType = FileManager.File.contentType;
+	requestArgs.data = FileManager.File.codeMirror.getValue();
+
+	if (FileManager.ENABLE_SHARED_CONTAINERS) {
+		requestArgs.account = FileManager.CurrentPath().account();
+	}
+
+	requestArgs.created = function () {
+		FileManager.File.codeMirror.clearHistory();
+	};
+
+	requestArgs.error = function (status, statusText) {
+		var el = document.querySelector('.editor-toolbar-error');
+		FileManager.AjaxError.show(el, status, statusText);
+
+		document.querySelector('.menu-file button.save').removeAttribute('disabled');
+		if (FileManager.File.codeMirror.historySize().undo > 0) {
+			document.querySelector('.menu-file button.undo').removeAttribute('disabled');
+		}
+		if (FileManager.File.codeMirror.historySize().redo > 0) {
+			document.querySelector('.menu-file button.redo').removeAttribute('disabled');
+		}
+	};
+
+	SwiftV1.createFile(requestArgs);
+};
+
+FileManager.File.saveAs = function (el) {
+	if (el.classList.contains('selected')) {
+		el.classList.remove('selected');
+		document.querySelector('.save-as-dialog').setAttribute('hidden', 'hidden');
+		FileManager.Layout.adjust();
+	} else {
+		el.classList.add('selected');
+		document.querySelector('.save-as-dialog').removeAttribute('hidden');
+		FileManager.Layout.adjust();
+		document.querySelector('.save-as-input-path').value = FileManager.CurrentPath().get();
+		document.querySelector('.save-as-input-type').value = FileManager.File.contentType;
+	}
+};
+
+
+
+FileManager.SaveAs = {};
+
+FileManager.SaveAs.click = function () {
+	var pathEl = document.querySelector('.save-as-input-path');
+	var typeEl = document.querySelector('.save-as-input-type');
+	var path = pathEl.value;
+
+	if (!path) {
+		pathEl.classList.add('invalid-input');
+		return;
+	}
+
+	var args = {
+		path: FileManager.Path(path).withoutAccount(),
+		contentType: typeEl.value,
+		data: FileManager.File.codeMirror.getValue(),
+		created: function () {
+			location.hash = path;
+		},
+		error: function (status, statusText) {
+			var el = document.querySelector('.save-as-error-ajax');
+			FileManager.AjaxError.show(el, status, statusText);
+		}
+	};
+
+	if (FileManager.ENABLE_SHARED_CONTAINERS) {
+		args.account = FileManager.Path(path).account();
+	}
+
+	SwiftV1.createFile(args);
+};
+
+FileManager.SaveAs.clearErrors = function () {
+	document.querySelector('.save-as-input-path').classList.remove('invalid-input');
+};
+
+
+FileManager.ContentChange = {};
+
+FileManager.ContentChange.animate = function () {
+	document.querySelector('span.upload-files').setAttribute('hidden', 'hidden');
+	document.querySelector('span.upload-as').setAttribute('hidden', 'hidden');
+	document.querySelector('span.upload-execute').setAttribute('hidden', 'hidden');
+	FileManager.CreateContainerButton.hide();
+	FileManager.CreateDirectoryButton.hide();
+	FileManager.CreateFileButton.hide();
+	document.querySelector('.menu-file').setAttribute('hidden', 'hidden');
+	FileManager.OpenButton.hide();
+	FileManager.ExecuteButton.hide();
+
+	var parentEl, newEl, oldEl, template;
+
+	oldEl = document.querySelector('.scrolling-content');
+	parentEl = oldEl.parentNode;
+
+	template = document.querySelector('#newScrollingContentTemplate').innerHTML;
+	parentEl.insertAdjacentHTML('afterbegin', template);
+	newEl = document.querySelector('.new-scrolling-content');
+	newEl.style.paddingTop = window.scrollY + 'px';
+
+	var el = newEl;
+	var callback = function () {
+		oldEl.classList.add('old-scrolling-content');
+		newEl.classList.remove('new-scrolling-content');
+	};
+
+	//el.textContent = 'Loading...';
+	if (FileManager.CurrentPath().isContainersList()) {
+		FileManager.Containers.list(callback);
+		FileManager.CreateContainerButton.show();
+
+		//FileManager.File.hideMenu();
+		//FileManager.ExecuteButton.hide();
+		//FileManager.OpenButton.hide();
+	} else if (FileManager.CurrentPath().isFilesList()) {
+		FileManager.Files.list(callback);
+		FileManager.CreateDirectoryButton.show();
+		FileManager.CreateFileButton.show();
+		document.querySelector('span.upload-files').removeAttribute('hidden');
+		document.querySelector('span.upload-as').removeAttribute('hidden');
+		document.querySelector('span.upload-execute').removeAttribute('hidden');
+		//FileManager.File.hideMenu();
+		//FileManager.ExecuteButton.hide();
+		//FileManager.OpenButton.hide();
+	} else {
+		// load file
+		document.querySelector('.menu-file').removeAttribute('hidden');
+		FileManager.File.open(el, callback);
+	}
+	FileManager.Layout.adjust();
+
+	var loadingEl = document.querySelector('.scrolling-content-loading');
+	loadingEl && loadingEl.parentNode.removeChild(loadingEl);
+
+};
+
+FileManager.ContentChange.transition = function (e) {
+	if (e.propertyName == 'padding-top') {
+		return;
+	}
+
+	var el = e.target;
+
+	if (el.classList.contains('old-scrolling-content')) {
+		el.parentNode.removeChild(el);
+
+		var newEl = document.querySelector('.scrolling-content');
+		newEl.classList.add('no-transition');
+		newEl.style.paddingTop = '';
+		window.scrollTo(0,0);
+		newEl.classList.remove('no-transition');
+
+		document.body.classList.remove('disabled');
+	}
+};
+
+document.addEventListener('transitionend', FileManager.ContentChange.transition);
+document.addEventListener('webkitTransitionEnd', FileManager.ContentChange.transition);
+
+FileManager.Layout = {};
+
+FileManager.Layout.adjust = function () {
+	var paddingTop = getComputedStyle(document.querySelector('.fixed-top'), null).getPropertyValue("height");
+	document.querySelector('#content').style.paddingTop = paddingTop;
+
+
+	//if (FileManager.File.codeMirror) {
+	//	var pageHeight = getComputedStyle(document.querySelector('.fixed-background'), null).getPropertyValue("height");
+	//	FileManager.File.codeMirror.setSize('auto', parseInt(pageHeight, 10) - parseInt(paddingTop, 10) + 'px');
+	//}
+};
+
+FileManager.Utils = {};
+FileManager.Utils.htmlEscape = function (str) {
+	return String(str)
+		.replace('&raquo;', '///')
+		.replace(/&/g, '&amp;')
+		.replace(/"/g, '&quot;')
+		.replace(/'/g, '&#39;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;')
+		.replace('///', '&raquo;');
+};
+
+FileManager.Utils.makeShortName = function (name, len) {
+	if (!name) {
+		return '';
+	}
+
+	len = len || 30;
+
+	if (name.length <= len) {
+		return name;
+	}
+
+	return name.substr(0, len) + '&raquo;';
+};
+
+FileManager.Utils.bytesToSize = function (bytes, precision) {
+	bytes = Number(bytes);
+	if (typeof bytes != 'number') {
+		return '-';
+	}
+	var kilobyte = 1024;
+	var megabyte = kilobyte * 1024;
+	var gigabyte = megabyte * 1024;
+	var terabyte = gigabyte * 1024;
+
+	if ((bytes >= 0) && (bytes < kilobyte)) {
+		return bytes + ' B';
+
+	} else if ((bytes >= kilobyte) && (bytes < megabyte)) {
+		return (bytes / kilobyte).toFixed(precision) + ' KB';
+
+	} else if ((bytes >= megabyte) && (bytes < gigabyte)) {
+		return (bytes / megabyte).toFixed(precision) + ' MB';
+
+	} else if ((bytes >= gigabyte) && (bytes < terabyte)) {
+		return (bytes / gigabyte).toFixed(precision) + ' GB';
+
+	} else if (bytes >= terabyte) {
+		return (bytes / terabyte).toFixed(precision) + ' TB';
+
+	} else {
+		return bytes + ' B';
+	}
+};
+
+FileManager.AjaxError = {};
+
+FileManager.AjaxError.show = function (el, status, statusText) {
+	el.querySelector('.status').textContent = status;
+	el.querySelector('.status-text').textContent = statusText;
+	el.removeAttribute('hidden');
+	FileManager.Layout.adjust();
+};
+
+
+window.addEventListener('hashchange', function (e) {
+	FileManager.ContentChange.animate();
+});
+
+window.addEventListener('scroll', function (e) {
+	var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+	var position = window.scrollY;
+
+	if (position == height) {
+		if (FileManager.CurrentPath().isContainersList()) {
+			FileManager.Containers.loadMore();
+		} else {
+			FileManager.Files.loadMore();
+		}
+	}
+});
+
+window.addEventListener('resize', function (e) {
+	FileManager.Layout.adjust();
+});
+
+document.addEventListener('click', function (e) {
+	var el;
+
+	if (document.body.classList.contains('disabled')) {
+		return;
+	}
+
+	if (el = is('load-more-button')) {
+		FileManager.LoadMoreButton.click(el);
+	} else if (el = is('add-shared-button')) {
+		//SHARED-CONTAINERS
+		FileManager.AddShared.click(el);
+	} else if (el = is('undo')) {
+		FileManager.File.undo();
+	} else if (el = is('redo')) {
+		FileManager.File.redo();
+	} else if (el = is('save')) {
+		FileManager.File.save();
+	} else if (el = is('save-as')) {
+		FileManager.File.saveAs(el);
+	} else if (el = is('save-as-button')) {
+		FileManager.SaveAs.click(el);
+	} else if (el = is('cancel-upload-button')) {
+		FileManager.UploadFiles.cancelClick(el);
+	} else if (el = is('execute-close-button')) {
+		FileManager.ExecuteReport.remove();
+	} else if (el = is('execute-full-button')) {
+		FileManager.ExecuteReport.showFullReport(el);
+	} else if (el = is('upload-as-button')) {
+		FileManager.UploadAs.click(el);
+	} else if (el = is('wide-button')) {
+		var centerEls = document.querySelectorAll('.center');
+		for (var i = 0; i < centerEls.length; i++) {
+			centerEls[i].style.maxWidth = '100%';
+		}
+		el.setAttribute('hidden', 'hidden');
+		document.querySelector('.fixed-background').style.width = '100%';
+		document.querySelector('.unwide-button').removeAttribute('hidden');
+	} else if (el = is('unwide-button')) {
+		var centerEls = document.querySelectorAll('.center');
+		for (var i = 0; i < centerEls.length; i++) {
+			centerEls[i].style.maxWidth = '800px';
+		}
+		el.setAttribute('hidden', 'hidden');
+		document.querySelector('.fixed-background').style.width = '800px';
+		document.querySelector('.wide-button').removeAttribute('hidden');
+	}
+
+	function is(className) {
+		var node1 = e.target;
+		var node2 = node1.parentNode;
+		var node3 = node2.parentNode;
+
+		if (node1.classList.contains(className) && !node1.hasAttribute('disabled')) {
+			return node1;
+		}
+
+		if (!node2.classList) {
+			return;
+		}
+
+		if (node2.classList.contains(className) && !node2.hasAttribute('disabled')) {
+			return node2;
+		}
+
+		if (!node3.classList) {
+			return;
+		}
+
+		if (node3.classList.contains(className) && !node3.hasAttribute('disabled')) {
+			return node3;
+		}
+	}
+}, true);
+
+document.addEventListener('keydown', function (e) {
+
+	if (FileManager.ENABLE_SHARED_CONTAINERS && e.target.classList.contains('add-shared-input-account')) {
+		FileManager.AddShared.clearErrors(e.target);
+	}
+
+	if (FileManager.ENABLE_SHARED_CONTAINERS && e.target.classList.contains('add-shared-input-container')) {
+		if (e.which == 13) {
+			FileManager.AddShared.click();
+			return;
+		}
+		FileManager.AddShared.clearErrors(e.target);
+	}
+
+	if (e.target.classList.contains('save-as-input-path')) {
+
+		if (e.which == 13) {
+			document.querySelector('.save-as-input-type').focus();
+		}
+
+		FileManager.SaveAs.clearErrors(e.target);
+	}
+
+	if (e.target.classList.contains('save-as-input-type')) {
+
+		if (e.which == 13) {
+			FileManager.SaveAs.click();
+			return;
+		}
+
+		FileManager.SaveAs.clearErrors(e.target);
+	}
+
+});
+
+document.addEventListener('change', function (e) {
+	if (e.target.parentNode.classList.contains('upload-files')) {
+		FileManager.UploadFiles.change(e.target.files);
+		return;
+	}
+
+	if (e.target.parentNode.classList.contains('upload-as')) {
+		FileManager.UploadAs.change(e.target.files);
+		return;
+	}
+
+	if (e.target.parentNode.classList.contains('upload-execute')) {
+		FileManager.UploadAndExecute.change(e.target.files[0]);
+		return;
+	}
+});
+
+document.addEventListener('load', function () {
+	FileManager.Layout.adjust();
+	setTimeout(FileManager.Layout.adjust, 1000);
+});
+
+//SHARED-CONTAINERS
+FileManager.Shared = {};
+FileManager.Shared.isShared = function (path) {
+	return path.split('/')[0] != SwiftV1.getAccount();
+};
+FileManager.Shared.listSharedContainers = function (sharedContainers, scrollingContentEl) {
+
+	for (var i = 0; i < sharedContainers.length; i++) {
+		add(sharedContainers[i]);
+		update(sharedContainers[i]);
+	}
+
+	function add(sharedContainer) {
+		var name = FileManager.Utils.makeShortName(sharedContainer);
+		var title = sharedContainer;
+		var html = document.querySelector('#sharedContainerTemplate').innerHTML;
+		html = html.replace('{{name}}', FileManager.Utils.htmlEscape(name));
+		html = html.replace('{{title}}', FileManager.Utils.htmlEscape(title));
+		scrollingContentEl.insertAdjacentHTML('afterbegin', html);
+	}
+
+	function update(path) {
+		SharedContainersOnSwift.getContainerSize({
+			account: FileManager.Path(path).account(),
+			container: FileManager.Path(path).container(),
+			success: function (bytes, count) {
+				var size = FileManager.Utils.bytesToSize(bytes);
+				var files = count;
+
+				var selector = '.item[title="' + path + '"]';
+				var el = scrollingContentEl.querySelector(selector);
+
+				el.querySelector('.size').textContent = size;
+				el.querySelector('.files').textContent = files;
+			},
+			error: function (status, statusText) {
+				var selector = '.item[title="' + path + '"]';
+				var el = scrollingContentEl.querySelector(selector);
+				el.querySelector('.size').textContent = 'Error: ' + status + ' ' + statusText;
+			}
+		});
+	}
+};
+
+//SHARED-CONTAINERS
+FileManager.AddShared = {};
+
+//SHARED-CONTAINERS
+FileManager.AddShared.click = function () {
+
+	var sharedAccountEl = document.querySelector('.add-shared-input-account');
+	var sharedContainerEl = document.querySelector('.add-shared-input-container');
+	if (!sharedAccountEl.value) {
+		sharedAccountEl.classList.add('invalid-input');
+		return;
+	}
+	if (!sharedContainerEl.value) {
+		sharedContainerEl.classList.add('invalid-input');
+		return;
+	}
+
+	var account = sharedAccountEl.value;
+	var container =  sharedContainerEl.value;
+
+	SharedContainersOnSwift.addSharedContainer({
+		account: account,
+		container: container,
+		added: function () {
+			FileManager.ContentChange.animate();
+			FileManager.AddShared.clear();
+		},
+		notAuthorized: function () {
+			sharedContainerEl.classList.add('invalid-input');
+			document.querySelector('#shared-container-error').removeAttribute('hidden');
+		},
+		error: function (status, statusText) {
+			var el = document.querySelector('.add-shared-error-ajax');
+			FileManager.AjaxError.show(el, status, statusText);
+		}
+	});
+};
+
+//SHARED-CONTAINERS
+FileManager.AddShared.clear = function () {
+	var inputAccountEl = document.querySelector('.add-shared-input-account');
+	var inputContainerEl = document.querySelector('.add-shared-input-container');
+	inputAccountEl.value = '';
+	inputContainerEl.value = '';
+	FileManager.AddShared.clearErrors(inputAccountEl, inputContainerEl);
+};
+
+//SHARED-CONTAINERS
+FileManager.AddShared.clearErrors = function (inputEl1, inputEl2) {
+	inputEl1.classList.remove('invalid-input');
+	if (inputEl2) {
+		inputEl2.classList.remove('invalid-input');
+	}
+
+	var errElArr = document.querySelectorAll('.add-shared .err-msg');
+	for (var i = 0; i < errElArr.length; i++) {
+		errElArr[i].setAttribute('hidden', 'hidden');
+	}
 };
