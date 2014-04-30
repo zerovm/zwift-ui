@@ -167,7 +167,13 @@ button.sign-out-button {
 	float: right;
 }
 .execute-button {
-	background: url('img/execute.png') no-repeat 7px 8px;
+	background-image: url(img/white_icon.png);
+	width: 32px;
+	height: 32px;
+	background-repeat: no-repeat;
+	background-color: transparent;
+	background-size: auto 35px;
+	background-position: -60px center;
 }
 .open-button {
 	background: url('img/arrowright.png') no-repeat 7px 8px;
