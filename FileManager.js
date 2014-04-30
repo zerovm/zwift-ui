@@ -58,9 +58,6 @@ FileManager.CurrentDirLabel.showLoading = function () {
 };
 
 
-
-
-
 FileManager.execute = function (data, contentType) {
 
 	FileManager.disableAll();
@@ -2615,7 +2612,6 @@ FileManager.RightsForm.inputKeydown = function () {
 };
 
 FileManager.OpenButton = {};
-
 FileManager.OpenButton.click = function () {
 
 	var options = {
@@ -2631,11 +2627,9 @@ FileManager.OpenButton.click = function () {
 
 	ZeroVmOnSwift.open(options);
 };
-
 FileManager.OpenButton.show = function () {
 	document.querySelector('.open-button').removeAttribute('hidden');
 };
-
 FileManager.OpenButton.hide = function () {
 	document.querySelector('.open-button').setAttribute('hidden', 'hidden');
 };
