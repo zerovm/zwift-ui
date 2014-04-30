@@ -2644,7 +2644,6 @@ FileManager.Path = function (path) {
 	};
 	return this;
 };
-
 FileManager.CurrentPath = function () {
 	return FileManager.Path(location.hash.substr(1));
 };
