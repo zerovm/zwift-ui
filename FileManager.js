@@ -2612,6 +2612,7 @@ FileManager.RightsForm.inputKeydown = function () {
 };
 
 FileManager.OpenButton = {};
+FileManager.OpenButton.el = document.querySelector('button.open-button');
 FileManager.OpenButton.click = function () {
 
 	var options = {
@@ -2628,10 +2629,10 @@ FileManager.OpenButton.click = function () {
 	ZeroVmOnSwift.open(options);
 };
 FileManager.OpenButton.show = function () {
-	document.querySelector('.open-button').removeAttribute('hidden');
+	FileManager.OpenButton.el.removeAttribute('hidden');
 };
 FileManager.OpenButton.hide = function () {
-	document.querySelector('.open-button').setAttribute('hidden', 'hidden');
+	FileManager.OpenButton.el.setAttribute('hidden', 'hidden');
 };
 
 FileManager.ExecuteButton = {};
