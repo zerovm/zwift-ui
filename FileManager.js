@@ -336,38 +336,6 @@ FileManager.UploadAndExecute.change = function (file) {
 };
 
 
-FileManager.Copy = {};
-
-FileManager.Copy.show = function () {
-	document.querySelector('.copy-input').value = FileManager.Item.selectedPath;
-	document.querySelector('.copy-table').removeAttribute('hidden');
-};
-
-FileManager.Copy.click = function () {
-	document.querySelector('.copy-table tbody').setAttribute('hidden', 'hidden');
-	document.querySelector('.copy-loading').removeAttribute('hidden');
-
-	SharedContainersOnSwift.copy
-
-	var copyTo = FileManager.Path(document.querySelector('.copy-input').value).withoutAccount();
-	SwiftV1.copyFile({
-		path: copyTo,
-		copyFrom: FileManager.Path(FileManager.Item.selectedPath).withoutAccount(),
-		copied: function () {
-			document.querySelector('.copy-ok').removeAttribute('hidden');
-			document.querySelector('.copy-loading').setAttribute('hidden', 'hidden');
-			document.querySelector('.copy-table tbody').removeAttribute('hidden');
-		},
-		error: function (status, statusText) {
-			document.querySelector('.copy-loading').setAttribute('hidden', 'hidden');
-			document.querySelector('.copy-table tbody').removeAttribute('hidden');
-			var el = document.querySelector('.content-type-error-ajax');
-			FileManager.AjaxError.show(el, status, statusText);
-		}
-	});
-};
-
-
 FileManager.File = {};
 
 FileManager.File.codeMirror = null;
@@ -860,8 +828,6 @@ document.addEventListener('click', function (e) {
 		FileManager.ExecuteReport.remove();
 	} else if (el = is('execute-full-button')) {
 		FileManager.ExecuteReport.showFullReport(el);
-	} else if (el = is('copy-button')) {
-		FileManager.Copy.click(el);
 	} else if (el = is('upload-as-button')) {
 		FileManager.UploadAs.click(el);
 	} else if (el = is('wide-button')) {
@@ -940,17 +906,6 @@ document.addEventListener('keydown', function (e) {
 		}
 
 		FileManager.SaveAs.clearErrors(e.target);
-	}
-
-	if (e.target.classList.contains('copy-input')) {
-
-		if (e.which == 13) {
-			FileManager.Copy.click();
-			return;
-		}
-
-		document.querySelector('.copy-ok').setAttribute('hidden', 'hidden');
-		document.querySelector('.copy-error-ajax').setAttribute('hidden', 'hidden');
 	}
 
 });
