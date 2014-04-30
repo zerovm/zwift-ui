@@ -2644,15 +2644,12 @@ FileManager.RightsForm.inputKeydown = function () {
 };
 
 FileManager.ExecuteButton = {};
-
 FileManager.ExecuteButton.click = function () {
 	FileManager.execute(FileManager.File.codeMirror.getValue(), FileManager.File.contentType);
 };
-
 FileManager.ExecuteButton.hide = function () {
 	document.querySelector('.execute-button').setAttribute('hidden', 'hidden');
 };
-
 FileManager.ExecuteButton.show = function () {
 	document.querySelector('.execute-button').removeAttribute('hidden');
 };
