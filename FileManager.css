@@ -167,7 +167,13 @@ button.sign-out-button {
 	float: right;
 }
 .execute-button {
-	background: url('img/execute.png') no-repeat 7px 8px;
+	background-image: url(img/white_icon.png);
+	width: 32px;
+	height: 32px;
+	background-repeat: no-repeat;
+	background-color: transparent;
+	background-size: auto 35px;
+	background-position: -60px center;
 }
 .open-button {
 	background: url('img/arrowright.png') no-repeat 7px 8px;
@@ -986,7 +992,7 @@ button.create-file {
 form.create-file input {
 	height: 24px;
 	padding: 5px;
-	margin: 0 0 5px;
+	margin: 0 1px 5px;
 	font-size: .7em;
 }
 
@@ -998,9 +1004,13 @@ form.create-file input {
 	bottom: 0;
 	width: 100%;
 	height: 100%;
-	background: rgba(255, 255, 255, 0.75);
+	background: rgba(224, 227, 232, 0.75);
 	padding: 20px;
 	box-sizing: border-box;-moz-box-sizing: border-box;-webkit-box-sizing: border-box;
 	font-weight: bold;
 	font-size: large;
+}
+
+label.executing {
+	color: white;
 }

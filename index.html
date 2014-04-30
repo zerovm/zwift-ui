@@ -56,7 +56,7 @@
 				<span class="icon-button upload-execute"><input type="file"></span>
 
 				<button class="open-button icon-button" title="Open" hidden></button>
-				<label class="execute-label" hidden></label>
+				<label class="executing" hidden></label>
 				<button class="execute-button icon-button" title="Execute" hidden></button>
 				<button class="create-container icon-button" title="Create Container"></button>
 				<button class="wide-button icon-button" title="Wide" hidden></button>
@@ -276,9 +276,7 @@
 	</div>
 </template>
 
-<template id="itemLoadingTemplate">
-	<span class="item-loading" hidden>Loading...</span>
-</template>
+<span class="template template-item-loading item-loading">Loading...</span>
 
 <template id="noContainersTemplate">
 	<label class="empty-list">There are no containers.</label>
