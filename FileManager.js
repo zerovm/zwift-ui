@@ -810,90 +810,6 @@ FileManager.AjaxError.show = function (el, status, statusText) {
 	FileManager.Layout.adjust();
 };
 
-FileManager.Path = function (path) {
-	this.get = function () {
-		return path;
-	};
-	this.account = function () {
-		return path.split('/')[0];
-	};
-	this.container = function () {
-		return path.split('/')[1];
-	};
-	this.withoutAccount = function () {
-		return path.split('/').splice(1).join('/');
-	};
-	this.prefix = function () {
-		return path.split('/').splice(2).join('/');
-	};
-	this.name = function () {
-		var pathParts = path.split('/');
-		if (this.isDirectory()) {
-			return pathParts.splice(-2).join('/');
-		}
-		return pathParts[pathParts.length - 1];
-	};
-	this.isContainersList = function () {
-		return path.indexOf('/') == -1;
-	};
-	this.isFilesList = function () {
-		return this.isContainer() || this.isDirectory();
-	};
-	this.isContainer = function () {
-		return path.split('/').length == 2;
-	};
-	this.isDirectory = function () {
-		return path.lastIndexOf('/') == path.length - 1
-	};
-	this.isFile = function () {
-		return !this.isContainer() && !this.isDirectory();
-	};
-	this.up = function () {
-		var newPathParts = path.split('/');
-
-		if (newPathParts[newPathParts.length - 1] == '') {
-			newPathParts.splice(-2);
-		} else {
-			newPathParts.splice(-1);
-		}
-
-		if (newPathParts.length == 1) {
-
-			if (FileManager.ENABLE_SHARED_CONTAINERS && FileManager.Shared.isShared(newPathParts[0])) {
-				return SwiftV1.getAccount();
-			}
-
-			return newPathParts[0];
-		}
-
-		if (newPathParts.length == 2) {
-			return newPathParts.join('/');
-		}
-
-		return newPathParts.join('/') + '/';
-	};
-	this.add = function (name) {
-
-		if (FileManager.ENABLE_SHARED_CONTAINERS && this.isContainersList() && name.indexOf('/') != -1) {
-			return name;
-		}
-
-		/*if (location.hash === '' && this.isContainersList()) {
-			return '/' + name;
-		}*/
-
-		if (path.lastIndexOf('/') == path.length - 1) {
-			return path + name;
-		}
-		return  path + '/' + name;
-	};
-	return this;
-};
-
-FileManager.CurrentPath = function () {
-	return FileManager.Path(location.hash.substr(1));
-};
-
 
 window.addEventListener('hashchange', function (e) {
 	FileManager.ContentChange.animate();
@@ -2648,3 +2564,87 @@ FileManager.ExecutingLabel.Timer = function () {
 	};
 };
 FileManager.ExecutingLabel.timer = new FileManager.ExecutingLabel.Timer();
+
+FileManager.Path = function (path) {
+	this.get = function () {
+		return path;
+	};
+	this.account = function () {
+		return path.split('/')[0];
+	};
+	this.container = function () {
+		return path.split('/')[1];
+	};
+	this.withoutAccount = function () {
+		return path.split('/').splice(1).join('/');
+	};
+	this.prefix = function () {
+		return path.split('/').splice(2).join('/');
+	};
+	this.name = function () {
+		var pathParts = path.split('/');
+		if (this.isDirectory()) {
+			return pathParts.splice(-2).join('/');
+		}
+		return pathParts[pathParts.length - 1];
+	};
+	this.isContainersList = function () {
+		return path.indexOf('/') == -1;
+	};
+	this.isFilesList = function () {
+		return this.isContainer() || this.isDirectory();
+	};
+	this.isContainer = function () {
+		return path.split('/').length == 2;
+	};
+	this.isDirectory = function () {
+		return path.lastIndexOf('/') == path.length - 1
+	};
+	this.isFile = function () {
+		return !this.isContainer() && !this.isDirectory();
+	};
+	this.up = function () {
+		var newPathParts = path.split('/');
+
+		if (newPathParts[newPathParts.length - 1] == '') {
+			newPathParts.splice(-2);
+		} else {
+			newPathParts.splice(-1);
+		}
+
+		if (newPathParts.length == 1) {
+
+			if (FileManager.ENABLE_SHARED_CONTAINERS && FileManager.Shared.isShared(newPathParts[0])) {
+				return SwiftV1.getAccount();
+			}
+
+			return newPathParts[0];
+		}
+
+		if (newPathParts.length == 2) {
+			return newPathParts.join('/');
+		}
+
+		return newPathParts.join('/') + '/';
+	};
+	this.add = function (name) {
+
+		if (FileManager.ENABLE_SHARED_CONTAINERS && this.isContainersList() && name.indexOf('/') != -1) {
+			return name;
+		}
+
+		/*if (location.hash === '' && this.isContainersList()) {
+		 return '/' + name;
+		 }*/
+
+		if (path.lastIndexOf('/') == path.length - 1) {
+			return path + name;
+		}
+		return  path + '/' + name;
+	};
+	return this;
+};
+
+FileManager.CurrentPath = function () {
+	return FileManager.Path(location.hash.substr(1));
+};
