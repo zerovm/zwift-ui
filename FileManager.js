@@ -780,11 +780,11 @@ FileManager.Files.listHtml = function (files, scrollingContentEl) {
 			var ext = n.substring(n.lastIndexOf("."), n.length);
 			var filename = n.replace(ext, '');
 
-			filename = filename.substr(0, len) + '&raquo;' + ext;
+			filename = filename.substr(0, len) + '[...]' + ext;
 			return filename;
 		}
 
-		return n.substr(0, len) + '&raquo;';
+		return n.substr(0, len) + '[...]';
 	}
 
 	function makeDatePretty(time) {
