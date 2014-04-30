@@ -814,9 +814,11 @@ FileManager.Item = {};
 FileManager.Item.selectedEl = null;
 FileManager.Item.selectedPath = null;
 FileManager.Item.showLoading = function (itemEl) {
-	var loadingHtml = document.querySelector('#itemLoadingTemplate').innerHTML;
+	var loadingEl = document.querySelector('.template-item-loading').cloneNode(true);
+	loadingEl.classList.remove('template');
+	loadingEl.classList.remove('template-item-loading');
 	itemEl.classList.add('clicked');
-	itemEl.insertAdjacentHTML('afterbegin', loadingHtml);
+	itemEl.appendChild(loadingEl);
 };
 
 FileManager.LoadMoreButton = {};
