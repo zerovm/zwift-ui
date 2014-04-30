@@ -994,8 +994,6 @@ document.addEventListener('click', function (e) {
 		FileManager.Copy.click(el);
 	} else if (el = is('upload-as-button')) {
 		FileManager.UploadAs.click(el);
-	} else if (el = is('open-button')) {
-		FileManager.OpenButton.click(el);
 	} else if (el = is('wide-button')) {
 		var centerEls = document.querySelectorAll('.center');
 		for (var i = 0; i < centerEls.length; i++) {
@@ -2613,8 +2611,7 @@ FileManager.RightsForm.inputKeydown = function () {
 
 FileManager.OpenButton = {};
 FileManager.OpenButton.el = document.querySelector('button.open-button');
-FileManager.OpenButton.click = function () {
-
+FileManager.OpenButton.el.addEventListener('click', function () {
 	var options = {
 		path: FileManager.CurrentPath().withoutAccount(),
 		callback: function (message) {
@@ -2627,7 +2624,7 @@ FileManager.OpenButton.click = function () {
 	}
 
 	ZeroVmOnSwift.open(options);
-};
+});
 FileManager.OpenButton.show = function () {
 	FileManager.OpenButton.el.removeAttribute('hidden');
 };
