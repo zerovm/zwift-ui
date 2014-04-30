@@ -133,50 +133,6 @@ FileManager.executePython = function (pythonFilePath) {
 };
 
 
-FileManager.ExecuteTimer = {};
-
-FileManager.ExecuteTimer.secondsCounter = -1;
-
-FileManager.ExecuteTimer.start = function () {
-	FileManager.ExecuteTimer.secondsCounter = 0;
-	FileManager.ExecuteTimer.next();
-	FileManager.ExecuteTimer.show();
-};
-
-FileManager.ExecuteTimer.stop = function () {
-	FileManager.ExecuteTimer.secondsCounter = -1;
-};
-
-FileManager.ExecuteTimer.next = function () {
-	if (FileManager.ExecuteTimer.secondsCounter == -1) {
-		return;
-	}
-	FileManager.ExecuteTimer.secondsCounter++;
-	var minutes = Math.floor(FileManager.ExecuteTimer.secondsCounter / 60);
-	var seconds = FileManager.ExecuteTimer.secondsCounter % 60;
-	FileManager.ExecuteTimer.updateExecutingClock(minutes, seconds);
-	setTimeout(FileManager.ExecuteTimer.next, 1000);
-};
-
-FileManager.ExecuteTimer.show = function () {
-	document.querySelector('.execute-label').removeAttribute('hidden');
-};
-
-FileManager.ExecuteTimer.hide = function () {
-	document.querySelector('.execute-label').setAttribute('hidden', 'hidden');
-};
-
-FileManager.ExecuteTimer.updateExecutingClock = function (minutes, seconds) {
-	var secondsStr = seconds < 10 ? '0' + String(seconds) : String(seconds);
-	var minutesStr = minutes < 10 ? '0' + String(minutes) : String(minutes);
-	FileManager.ExecuteTimer.setContent('Executing... ' + minutesStr + ':' + secondsStr);
-};
-
-FileManager.ExecuteTimer.setContent = function (content) {
-	document.querySelector('.execute-label').textContent = content;
-};
-
-
 FileManager.ExecuteReport = {};
 
 FileManager.ExecuteReport.report = null;
@@ -2645,3 +2601,47 @@ FileManager.ExecuteButton.hide = function () {
 FileManager.ExecuteButton.show = function () {
 	FileManager.ExecuteButton.el.removeAttribute('hidden');
 };
+
+FileManager.ExecuteTimer = {};
+
+FileManager.ExecuteTimer.secondsCounter = -1;
+
+FileManager.ExecuteTimer.start = function () {
+	FileManager.ExecuteTimer.secondsCounter = 0;
+	FileManager.ExecuteTimer.next();
+	FileManager.ExecuteTimer.show();
+};
+
+FileManager.ExecuteTimer.stop = function () {
+	FileManager.ExecuteTimer.secondsCounter = -1;
+};
+
+FileManager.ExecuteTimer.next = function () {
+	if (FileManager.ExecuteTimer.secondsCounter == -1) {
+		return;
+	}
+	FileManager.ExecuteTimer.secondsCounter++;
+	var minutes = Math.floor(FileManager.ExecuteTimer.secondsCounter / 60);
+	var seconds = FileManager.ExecuteTimer.secondsCounter % 60;
+	FileManager.ExecuteTimer.updateExecutingClock(minutes, seconds);
+	setTimeout(FileManager.ExecuteTimer.next, 1000);
+};
+
+FileManager.ExecuteTimer.show = function () {
+	document.querySelector('.execute-label').removeAttribute('hidden');
+};
+
+FileManager.ExecuteTimer.hide = function () {
+	document.querySelector('.execute-label').setAttribute('hidden', 'hidden');
+};
+
+FileManager.ExecuteTimer.updateExecutingClock = function (minutes, seconds) {
+	var secondsStr = seconds < 10 ? '0' + String(seconds) : String(seconds);
+	var minutesStr = minutes < 10 ? '0' + String(minutes) : String(minutes);
+	FileManager.ExecuteTimer.setContent('Executing... ' + minutesStr + ':' + secondsStr);
+};
+
+FileManager.ExecuteTimer.setContent = function (content) {
+	document.querySelector('.execute-label').textContent = content;
+};
+
