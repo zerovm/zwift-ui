@@ -2603,6 +2603,7 @@ FileManager.ExecuteButton.show = function () {
 };
 
 FileManager.ExecuteTimer = {};
+FileManager.ExecuteTimer.el = document.querySelector('.execute-label');
 FileManager.ExecuteTimer.secondsCounter = -1;
 FileManager.ExecuteTimer.start = function () {
 	FileManager.ExecuteTimer.secondsCounter = 0;
@@ -2623,10 +2624,10 @@ FileManager.ExecuteTimer.next = function () {
 	setTimeout(FileManager.ExecuteTimer.next, 1000);
 };
 FileManager.ExecuteTimer.show = function () {
-	document.querySelector('.execute-label').removeAttribute('hidden');
+	FileManager.ExecuteTimer.el.removeAttribute('hidden');
 };
 FileManager.ExecuteTimer.hide = function () {
-	document.querySelector('.execute-label').setAttribute('hidden', 'hidden');
+	FileManager.ExecuteTimer.el.setAttribute('hidden', 'hidden');
 };
 FileManager.ExecuteTimer.updateExecutingClock = function (minutes, seconds) {
 	var secondsStr = seconds < 10 ? '0' + String(seconds) : String(seconds);
@@ -2634,6 +2635,6 @@ FileManager.ExecuteTimer.updateExecutingClock = function (minutes, seconds) {
 	FileManager.ExecuteTimer.setContent('Executing... ' + minutesStr + ':' + secondsStr);
 };
 FileManager.ExecuteTimer.setContent = function (content) {
-	document.querySelector('.execute-label').textContent = content;
+	FileManager.ExecuteTimer.el.textContent = content;
 };
 
