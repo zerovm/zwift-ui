@@ -997,11 +997,7 @@ document.addEventListener('click', function (e) {
 		return;
 	}
 
-	if (el = is('execute-button')) {
-		if (FileManager.ENABLE_ZEROVM) {
-			FileManager.ExecuteButton.click(el);
-		}
-	} else if (el = is('load-more-button')) {
+	if (el = is('load-more-button')) {
 		FileManager.LoadMoreButton.click(el);
 	} else if (el = is('add-shared-button')) {
 		//SHARED-CONTAINERS
@@ -2645,9 +2641,11 @@ FileManager.RightsForm.inputKeydown = function () {
 
 FileManager.ExecuteButton = {};
 FileManager.ExecuteButton.el = document.querySelector('button.execute-button');
-FileManager.ExecuteButton.click = function () {
-	FileManager.execute(FileManager.File.codeMirror.getValue(), FileManager.File.contentType);
-};
+FileManager.ExecuteButton.el.addEventListener('click', function () {
+	if (FileManager.ENABLE_ZEROVM) {
+		FileManager.execute(FileManager.File.codeMirror.getValue(), FileManager.File.contentType);
+	}
+});
 FileManager.ExecuteButton.hide = function () {
 	FileManager.ExecuteButton.el.setAttribute('hidden', 'hidden');
 };
