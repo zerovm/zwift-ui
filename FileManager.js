@@ -2306,7 +2306,7 @@ FileManager.Utils.makeShortName = function (name, len) {
 		return name;
 	}
 
-	return name.substr(0, len) + '&raquo;';
+	return name.substr(0, len) + '[..]';
 };
 
 FileManager.Utils.bytesToSize = function (bytes, precision) {
