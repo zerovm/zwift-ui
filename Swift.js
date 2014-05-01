@@ -14,7 +14,9 @@ var ZeroAppsOnSwift = {};
 	var xStorageUrl = null;
 	var xAuthToken = null;
 	var account = '';
-	var unauthorized = function () {};
+	var unauthorized = function () {
+		window.location.reload(true);
+	};
 
 	var METADATA_PREFIX = {
 		ACCOUNT: 'X-Account-Meta-',
