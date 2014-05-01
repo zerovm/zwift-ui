@@ -1382,7 +1382,11 @@ FileManager.ExecuteButton = {};
 FileManager.ExecuteButton.el = document.querySelector('button.execute-button');
 FileManager.ExecuteButton.el.addEventListener('click', function () {
 	if (FileManager.ENABLE_ZEROVM) {
-		FileManager.execute(FileManager.File.codeMirror.getValue(), FileManager.File.contentType);
+		if (FileManager.File.contentType === 'text/x-python') {
+			FileManager.executePython(FileManager.CurrentPath().get());
+		} else {
+			FileManager.execute(FileManager.File.codeMirror.getValue(), FileManager.File.contentType);
+		}
 	}
 });
 FileManager.ExecuteButton.hide = function () {
@@ -1678,7 +1682,7 @@ FileManager.executePython = function (pythonFilePath) {
 		file_list: [
 			{
 				device: 'input',
-				path: 'swift://' + SwiftV1.getAccount() + '/' + pythonFilePath
+				path: 'swift://' + pythonFilePath,
 			},
 			{
 				device: 'stdout',
@@ -1686,7 +1690,7 @@ FileManager.executePython = function (pythonFilePath) {
 			},
 			{
 				device: 'stderr',
-				path: 'swift://' + SwiftV1.getAccount() + '/' + pythonFilePath + '.log',
+				path: 'swift://' + pythonFilePath + '.log',
 				content_type: 'text/plain'
 			},
 			{
