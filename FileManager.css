@@ -203,23 +203,8 @@ button.sign-out-button {
 	position: absolute;
 	width: 100%;
 	margin: 0;
-	transition: all 0.4s;
-	-webkit-transition: all 0.4s;
 	background: rgba(255, 255, 255, 0.3);
 	-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;user-select: none;
-}
-
-.new-scrolling-content {
-	opacity: 0;
-}
-
-.old-scrolling-content {
-	opacity: 0;
-}
-
-.no-transition {
-	transition: none !important;
-	-webkit-transition: none !important;
 }
 
 .item,

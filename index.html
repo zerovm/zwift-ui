@@ -120,6 +120,11 @@
 	<!-- content -->
 	<div id="content">
 		<div class="scrolling-content">
+			<div class="containers-list" hidden></div>
+			<div class="files-list" hidden></div>
+			<div class="load-more-button" hidden>Load More</div>
+			<div class="file-editor" hidden></div>
+			<div class="execution-result" hidden></div>
 		</div>
 	</div>
 </div>
@@ -166,6 +171,7 @@
 	<label class="one-label">Are you sure you want to delete?</label>
 	<button type="submit" class="blue-button">Delete</button>
 	<button class="cancel blue-button">Cancel</button>
+	<div class="delete-error-ajax" hidden>Ajax Error: <span class="status"></span> <span class="status-text"></span></div>
 </form>
 
 <form class="template template-metadata-form metadata-form blue-form">
@@ -269,12 +275,6 @@
 	</div>
 	<div class="toggle-actions-menu"></div>
 </div>
-
-<template id="newScrollingContentTemplate">
-	<div class="new-scrolling-content scrolling-content">
-		<div class="load-more-button" hidden>Load More</div>
-	</div>
-</template>
 
 <span class="template template-item-loading item-loading">Loading...</span>
 
