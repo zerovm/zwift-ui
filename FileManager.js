@@ -402,13 +402,13 @@ FileManager.ContainersList.list = function () {
 
 	function list(containers) {
 
+		FileManager.UpButton.disable();
+		FileManager.CurrentDirLabel.root();
+
 		if (containers.length == 0) {
 			noContainers();
 			return;
 		}
-
-		FileManager.UpButton.disable();
-		FileManager.CurrentDirLabel.root();
 
 		for (var i = 0; i < containers.length; i++) {
 			var container = containers[i];
