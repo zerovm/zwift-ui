@@ -150,10 +150,8 @@ FileManager.CreateContainerForm.el.addEventListener('submit', function (e) {
 		inputEl.focus();
 	}
 });
-FileManager.CreateContainerForm.el.querySelector('button.cancel').addEventListener('click', function () {
-	FileManager.CreateContainerForm.el.setAttribute('hidden', 'hidden');
-	FileManager.Layout.adjust();
-});
+FileManager.CreateContainerForm.el.querySelector('button.cancel').addEventListener('click',
+	FileManager.CreateContainerForm.close);
 FileManager.CreateContainerForm.el.querySelector('input.container-name').onkeydown = function () {
 	FileManager.CreateContainerForm.clearErrors();
 };
@@ -163,6 +161,10 @@ FileManager.CreateContainerForm.open = function () {
 	inputEl.value = '';
 	FileManager.CreateContainerForm.el.removeAttribute('hidden');
 	inputEl.focus();
+	FileManager.Layout.adjust();
+};
+FileManager.CreateContainerForm.close = function () {
+	FileManager.CreateContainerForm.el.setAttribute('hidden', 'hidden');
 	FileManager.Layout.adjust();
 };
 FileManager.CreateContainerForm.showRequiredInputError = function () {
@@ -2215,6 +2217,9 @@ FileManager.changeContent = function () {
 	FileManager.CreateContainerButton.hide();
 	FileManager.CreateDirectoryButton.hide();
 	FileManager.CreateFileButton.hide();
+	FileManager.CreateContainerForm.close();
+	FileManager.CreateDirectoryForm.close();
+	FileManager.CreateFileForm.close();
 	document.querySelector('.menu-file').setAttribute('hidden', 'hidden');
 	FileManager.OpenButton.hide();
 	FileManager.ExecuteButton.hide();
