@@ -136,7 +136,7 @@ span.upload-execute {
 	opacity: 0.5;
 }
 #header .icon-button:enabled:hover {
-	border-width: 1px;
+	cursor: pointer;
 }
 #header .icon-button:enabled:active {
 	background-color: rgba(0, 0, 0, 0.35);
