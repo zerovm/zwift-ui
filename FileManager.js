@@ -924,20 +924,40 @@ FileManager.ConfirmDeleteForm.submit = function (e) {
 	e.preventDefault();
 	var name = FileManager.Item.selectedEl.title;
 	var itemPath = FileManager.CurrentPath().add(name);
+	var formEl = e.target;
 
-	SwiftAdvancedFunctionality.delete({
-		path: FileManager.Path(itemPath).withoutAccount(),
-		deleted: function () {
-			FileManager.changeContent();
-		},
-		error: function(status, statusText) {
-			var el = document.querySelector('.delete-error-ajax');
-			FileManager.AjaxError.show(el, status, statusText);
-		},
-		notExist: function () {
-			FileManager.changeContent();
-		}
-	});
+	if (FileManager.Path(itemPath).isFile()) {
+		SwiftAdvancedFunctionality.delete({
+			path: FileManager.Path(itemPath).withoutAccount(),
+			deleted: function () {
+				FileManager.changeContent();
+			},
+			error: function(status, statusText) {
+				var el = document.querySelector('.delete-error-ajax');
+				FileManager.AjaxError.show(el, status, statusText);
+			},
+			notExist: function () {
+				FileManager.changeContent();
+			}
+		});
+	} else {
+		SwiftAdvancedFunctionality.deleteAll({
+			path: FileManager.Path(itemPath).withoutAccount(),
+			deleted: function () {
+				FileManager.changeContent();
+			},
+			progress: function (total, deleted, status) {
+				formEl.querySelector('.delete-status').innerHTML += total + '/' + deleted + ': ' + status + '<br>';
+			},
+			error: function(status, statusText) {
+				var el = document.querySelector('.delete-error-ajax');
+				FileManager.AjaxError.show(el, status, statusText);
+			},
+			notExist: function () {
+				FileManager.changeContent();
+			}
+		});
+	}
 };
 FileManager.ConfirmDeleteForm.cancel = function (e) {
 	e.preventDefault();
