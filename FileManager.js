@@ -2215,6 +2215,9 @@ FileManager.changeContent = function () {
 	FileManager.CreateContainerButton.hide();
 	FileManager.CreateDirectoryButton.hide();
 	FileManager.CreateFileButton.hide();
+	FileManager.CreateContainerForm.hide();
+	FileManager.CreateDirectoryForm.hide();
+	FileManager.CreateFileForm.hide();
 	document.querySelector('.menu-file').setAttribute('hidden', 'hidden');
 	FileManager.OpenButton.hide();
 	FileManager.ExecuteButton.hide();
