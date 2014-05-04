@@ -150,8 +150,9 @@ FileManager.CreateContainerForm.el.addEventListener('submit', function (e) {
 		inputEl.focus();
 	}
 });
-FileManager.CreateContainerForm.el.querySelector('button.cancel').addEventListener('click',
-	FileManager.CreateContainerForm.close);
+FileManager.CreateContainerForm.el.querySelector('button.cancel').addEventListener('click', function () {
+	FileManager.CreateContainerForm.close();
+});
 FileManager.CreateContainerForm.el.querySelector('input.container-name').onkeydown = function () {
 	FileManager.CreateContainerForm.clearErrors();
 };
