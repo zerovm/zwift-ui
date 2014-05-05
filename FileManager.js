@@ -2237,6 +2237,7 @@ FileManager.changeContent = function () {
 	containersList.innerHTML = '';
 	fileEditor.setAttribute('hidden', 'hidden');
 	fileEditor.innerHTML = '';
+	FileManager.LoadMoreButton.hide();
 
 	if (FileManager.CurrentPath().isContainersList()) {
 		FileManager.ContainersList.list();
