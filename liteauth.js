@@ -1,6 +1,6 @@
 var liteauth = (function () {
 
-	var AUTH_ENDPOINT = 'zebra.zerovm.org';
+	var AUTH_ENDPOINT = config.authEndpoint || 'zauth.rax.io';
 	var AUTH_TYPES = {
 		GOOGLE: '/login/google',
 		FACEBOOK: '/login/fb'
