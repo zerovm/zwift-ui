@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html class="blue-background">
+  <head>
+    <meta charset="utf-8">
+    <title>Register for Zebra</title>
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico"/>
+
+    <!-- for mobile devices -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, user-scalable=no" />
+
+    <!-- For iOS devices -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="apple-touch-icon" sizes="57x57" href="apple-touch-icon-57x57-fm.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="apple-touch-icon-72x72-fm.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="apple-touch-icon-114x114-fm.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon-144x144-fm.png">
+    <script src="config.js"></script>
+    <link rel="stylesheet" href="FileManager.css">
+  </head>
+  <body class="view-mode blue-background">
+    <form id="main" class="blue-background full-stretch">
+      <div class="center-content">
+	<div class="window ">
+	  <h3 style="text-align: center">Zebra is in Private Beta</h3>
+	  <p>At present, we are only accepting registration from a
+	    limited user base.</p>
+	  <p>If you are interested in gaining access,
+	    please <a href="mailto:zebra-requests@zerovm.org">contact
+	    us</a>.</p>
+	  <p>We're interested in hearing what you'd like to
+	    accomplish with zebra!</p>
+	  <label>Invite Code (optional)</label>
+	  <input class="blue-input" value="" id="invite_code"><br />
+	  <button type="button" class="blue-button" id="register">
+	    Register with your Google Account
+	  </button>
+	</div>
+      </div>
+    </form>
+    <script src="register.js"></script>
+    <script src="liteauth.js"></script>
+    <script src="Swift.js"></script>
+    <!--<script src="mock.js"></script>-->
+  </body>
+</html>

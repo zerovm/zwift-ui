@@ -1,0 +1,2 @@
+var config = {};
+config.authEndpoint = "zebra.zerovm.org";

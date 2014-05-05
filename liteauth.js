@@ -1,6 +1,6 @@
 var liteauth = (function () {
 
-	var AUTH_ENDPOINT = 'zauth.rax.io';
+	var AUTH_ENDPOINT = config.authEndpoint || 'zauth.rax.io';
 	var AUTH_TYPES = {
 		GOOGLE: '/login/google',
 		FACEBOOK: '/login/fb'
@@ -40,11 +40,23 @@ var liteauth = (function () {
 
 	function getProfile(args) {
 		var xhr = new XMLHttpRequest();
-		xhr.open('GET', 'https://' + AUTH_ENDPOINT + '/profile');
+	        var profile_url = "https://" + AUTH_ENDPOINT + "/profile";
+		xhr.open('GET', profile_url);
 		xhr.withCredentials = true;
 		xhr.onload = function (e) {
 			if (e.target.status == 200) {
 				args.success(e.target.responseText);
+			} else if (e.target.status == 404) {
+			    var pxhr = new XMLHttpRequest();
+			    pxhr.open('PUT', profile_url);
+			    pxhr.withCredentials = true;
+			    pxhr.onload = function (e) {
+				if (e.target.status == 201) {
+				    args.success(e.target.responseText);
+				} else {
+				    args.error(e.target.status, e.target.statusText);
+				}};
+			    pxhr.send();
 			} else {
 				args.error(e.target.status, e.target.statusText);
 			}
