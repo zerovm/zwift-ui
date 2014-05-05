@@ -1400,7 +1400,7 @@ FileManager.ExecuteButton = {};
 FileManager.ExecuteButton.el = document.querySelector('button.execute-button');
 FileManager.ExecuteButton.el.addEventListener('click', function () {
 	if (FileManager.ENABLE_ZEROVM) {
-		if (FileManager.File.contentType === 'text/x-python') {
+		if (FileManager.File.contentType.indexOf('text/x-python') != -1) {
 			FileManager.executePython(FileManager.CurrentPath().get());
 		} else {
 			FileManager.execute(FileManager.File.codeMirror.getValue(), FileManager.File.contentType);
@@ -1962,7 +1962,11 @@ FileManager.File.open = function () {
 		document.querySelector('.download-link').setAttribute('download', filename);
 
 		function isExecutable(contentType) {
-			return contentType === 'application/json' || contentType === 'application/x-tar' || contentType === 'application/gtar' || contentType === 'text/x-python';
+			contentType = contentType.split(';')[0];
+			return contentType === 'application/json' ||
+				contentType === 'application/x-tar' ||
+				contentType === 'application/gtar' ||
+				contentType === 'text/x-python';
 		}
 
 		function isTextFile(contentType) {
@@ -2048,7 +2052,7 @@ FileManager.File.edit = function (el) {
 		FileManager.File.contentType = contentType;
 		FileManager.File.codeMirror = CodeMirror(el, {
 			value: data,
-			mode: contentType,
+			mode: contentType.split(';')[0],
 			lineNumbers: true
 		});
 
