@@ -24,19 +24,22 @@ Last time tested on:
 
 Files Description
 -----------------
+
 * Swift.js - implementation in JavaScript of Swift V1 API (http://docs.openstack.org/api/openstack-object-storage/1.0/content/) and Zwift (https://github.com/zerovm/zerocloud).
 * FileManager.js - The UI itself.
 liteauth.js - implementation in JavaScript of Liteauth (https://github.com/zerovm/liteauth)
 
 Third-party dependencies
 ------------------------
+
 * CodeMirror (http://codemirror.net/) - JavaScript library used for the editor.
 
 Backend
 -------
-OpenStack Swift - https://github.com/openstack/swift
-Zwift - https://github.com/zerovm/zerocloud
-Liteauth - https://github.com/zerovm/liteauth
+
+* OpenStack Swift - https://github.com/openstack/swift
+* Zwift - https://github.com/zerovm/zerocloud
+* Liteauth - https://github.com/zerovm/liteauth
 
 Enable and Disable Execute Feature
 The Execute feature can be enabled/disabled by changing the following variable in FileManager.js file:
