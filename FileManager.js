@@ -2,7 +2,7 @@
 
 var FileManager = {};
 
-FileManager.ENABLE_SHARED_CONTAINERS = false;
+FileManager.ENABLE_SHARED_CONTAINERS = true;
 FileManager.ENABLE_ZEROVM = true;
 FileManager.ENABLE_EMAILS = false;
 
@@ -116,6 +116,21 @@ FileManager.CreateContainerForm.el.addEventListener('submit', function (e) {
 	}
 
 	if (inputEl.value.indexOf('/') != -1) {
+
+		if (FileManager.ENABLE_SHARED_CONTAINERS) {
+			SharedContainersOnSwift.addSharedContainer({
+				account: inputEl.value.split('/')[0],
+				container: inputEl.value.split('/')[1],
+				added: function () {
+					FileManager.changeContent();
+					FileManager.CreateContainerForm.el.setAttribute('hidden', 'hidden');
+					FileManager.Layout.adjust();
+				},
+				error: errAjax
+			});
+			return;
+		}
+
 		FileManager.CreateContainerForm.showInvalidCharacterError();
 		return;
 	}

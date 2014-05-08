@@ -756,7 +756,7 @@ var ZeroAppsOnSwift = {};
 				unauthorized();
 			} else if (e.target.status == 200) {
 				args.added();
-			} else if (e.target.status == 403) {
+			} else if (e.target.status == 403 && args.hasOwnProperty('notAuthorized')) {
 				args.notAuthorized();
 			} else {
 				args.error(e.target.status, e.target.statusText);
