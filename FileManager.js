@@ -2,7 +2,7 @@
 
 var FileManager = {};
 
-FileManager.ENABLE_SHARED_CONTAINERS = true;
+FileManager.ENABLE_SHARED_CONTAINERS = false;
 FileManager.ENABLE_ZEROVM = true;
 FileManager.ENABLE_EMAILS = false;
 
