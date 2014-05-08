@@ -42,8 +42,12 @@ Backend
 * Liteauth - https://github.com/zerovm/liteauth
 
 Enable and Disable Execute Feature
+----------------------------------
+
 The Execute feature can be enabled/disabled by changing the following variable in FileManager.js file:
+```
 FileManager.ENABLE_ZEROVM = true;
+```
 
 Screenshots
 -----------
