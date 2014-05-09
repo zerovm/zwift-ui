@@ -505,6 +505,16 @@ var recursiveDelete;
 		xhr.send();
 	};
 
+	SwiftV1.createDirectory = function (args) {
+		SwiftV1.File.put({
+			path: args.path,
+			data: '',
+			contentType: 'application/directory',
+			created: args.created,
+			error: args.error
+		});
+	};
+
 	SwiftV1.getAccountMetadata = SwiftV1.Account.head;
 	SwiftV1.updateAccountMetadata = SwiftV1.Account.post;
 	SwiftV1.listContainers = SwiftV1.Account.get;
@@ -524,16 +534,6 @@ var recursiveDelete;
 	SwiftV1.createFile = SwiftV1.File.put;
 	SwiftV1.deleteFile = SwiftV1.File.delete;
 	SwiftV1.copyFile = SwiftV1.File.copy;
-
-	SwiftV1.createDirectory = function (args) {
-		SwiftV1.File.put({
-			path: args.path,
-			data: '',
-			contentType: 'application/directory',
-			created: args.created,
-			error: args.error
-		});
-	};
 
 	function parseResponseHeaders(headerStr) {
 		var headers = {};
