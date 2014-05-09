@@ -463,7 +463,7 @@ var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
 		}
 	};
 
-	SwiftAdvancedFunctionality.delete = function (args) {
+	SwiftV1.delete = function (args) {
 		if (args.path.split('/').length == 1) {
 			SwiftV1.deleteContainer({
 				containerName: args.path,
@@ -485,7 +485,7 @@ var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
 
 	SwiftAdvancedFunctionality.deleteAll = function (args) {
 		var accountId = args.hasOwnProperty('account') ? args.account : account;
-		SwiftAdvancedFunctionality.delete({
+		SwiftV1.delete({
 			account: accountId,
 			path: args.path,
 			deleted: function () {

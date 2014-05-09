@@ -1,3 +1,5 @@
+var ZeroAppsOnSwift = {};
+
 ZeroAppsOnSwift.createAppLocations = function () {
 
 };

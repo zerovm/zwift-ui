@@ -945,7 +945,7 @@ FileManager.ConfirmDeleteForm.submit = function (e) {
 	var formEl = e.target;
 
 	if (FileManager.Path(itemPath).isFile()) {
-		SwiftAdvancedFunctionality.delete({
+		SwiftV1.delete({
 			path: FileManager.Path(itemPath).withoutAccount(),
 			deleted: function () {
 				FileManager.changeContent();
