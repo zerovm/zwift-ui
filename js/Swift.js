@@ -637,7 +637,7 @@ var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
 		return headers;
 	}
 
-	SwiftAdvancedFunctionality.delete = function (args) {
+	SwiftV1.delete = function (args) {
 		if (args.path.split('/').length == 1) {
 			SwiftV1.deleteContainer({
 				containerName: args.path,
@@ -689,7 +689,7 @@ var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
 
 		function deleteLevel(level) {
 			if (level == 0) {
-				SwiftAdvancedFunctionality.delete({
+				SwiftV1.delete({
 					account: accountId,
 					path: args.path,
 					deleted: function () {
@@ -715,7 +715,7 @@ var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
 			var levelAmountLast = levels[level].length;
 
 			for (var  i = 0; i < levels[level].length; i++) {
-				SwiftAdvancedFunctionality.delete({
+				SwiftV1.delete({
 					account: accountId,
 					path: levels[level][i],
 					deleted: function () {
