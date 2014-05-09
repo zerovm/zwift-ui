@@ -859,7 +859,6 @@ template {
 
 
 button.create-container {
-	/*background: url('img/plus.png') no-repeat 7px 8px;*/
 	background-image: url('img/white_icon.png');
 	background-repeat: no-repeat;
 	background-size: auto 35px;
