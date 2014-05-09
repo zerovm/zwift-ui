@@ -4,7 +4,8 @@
  */
 var SwiftV1 = {};
 var ZeroVmOnSwift = {};
-var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
+var recursiveDelete; // recursive delete, rename, move, etc.
+var liteauth = {};
 
 (function () {
 	'use strict';
@@ -483,7 +484,7 @@ var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
 		}
 	};
 
-	SwiftAdvancedFunctionality.deleteAll = function (args) {
+	recursiveDelete = function (args) {
 		var accountId = args.hasOwnProperty('account') ? args.account : account;
 		SwiftV1.delete({
 			account: accountId,
@@ -507,4 +508,12 @@ var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
 		}
 		return metadata;
 	}
+
+	liteauth.getLoginInfo = function () {
+		return 'id_example_123456:example@example.com';
+	};
+
+	liteauth.getProfile = function (args) {
+		args.success('{"auth": "plaintext:blah blah blah"}');
+	};
 })();

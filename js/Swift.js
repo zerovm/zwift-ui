@@ -3,7 +3,7 @@
 * http://docs.openstack.org/api/openstack-object-storage/1.0/content/
 */
 var SwiftV1 = {};
-var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
+var recursiveDelete;
 
 (function () {
 	'use strict';
@@ -11,9 +11,7 @@ var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
 	var xStorageUrl = null;
 	var xAuthToken = null;
 	var account = '';
-	var unauthorized = function () {
-		window.location.reload(true);
-	};
+	var unauthorized = function () {};
 
 	var METADATA_PREFIX = {
 		ACCOUNT: 'X-Account-Meta-',
@@ -25,88 +23,6 @@ var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
 		ACCOUNT: 'X-Remove-Account-Meta-',
 		CONTAINER: 'X-Remove-Container-Meta-',
 		OBJECT: 'X-Remove-Object-Meta-'
-	};
-
-	function headersToMetadata(headers, prefix) {
-		var metadata = {};
-		for (var header in headers) {
-			if (header.indexOf(prefix) === 0) {
-				metadata[header.substr(prefix.length)] = headers[header];
-			}
-		}
-		return metadata;
-	}
-
-	function setHeadersMetadata(xhr, metadata, prefix) {
-		for (var metadataKey in metadata) {
-			xhr.setRequestHeader(prefix + metadataKey, metadata[metadataKey]);
-		}
-	}
-
-	function setHeadersRemoveMetadata(xhr, removeMetadataArr, prefixRemove) {
-		for (var i = 0; i < removeMetadataArr.length; i++) {
-			xhr.setRequestHeader(prefixRemove + removeMetadataArr[i], 'x');
-		}
-	}
-
-	SwiftV1.retrieveTokens = function (args) {
-		var xhr = new XMLHttpRequest();
-		xhr.open('GET', args.v1AuthUrl);
-		xhr.setRequestHeader('X-Auth-User', args.tenant + ':' + args.xAuthUser);
-		SwiftV1.account = args.xAuthUser;
-		xhr.setRequestHeader('X-Auth-Key', args.xAuthKey);
-		xhr.addEventListener('load', function (e) {
-			if (e.target.status >= 200 && e.target.status <= 299) {
-				xAuthToken = e.target.getResponseHeader('X-Auth-Token');
-				xStorageUrl = e.target.getResponseHeader('X-Storage-Url');
-
-				// TODO: check if the following lines are okay, consult Swift V1 API
-				account = xStorageUrl.split('/').pop();
-				xStorageUrl = xStorageUrl.substring(0, xStorageUrl.lastIndexOf('/')) + '/';
-
-				args.ok();
-			} else {
-				args.error(e.target.status, e.target.statusText);
-			}
-		});
-		xhr.send();
-	};
-
-	SwiftV1.getAccount = function () {
-		return account;
-	};
-
-	SwiftV1.setStorageUrl = function (url) {
-		xStorageUrl = url;
-	};
-
-	SwiftV1.getStorageUrl = function () {
-		return xStorageUrl;
-	};
-
-	SwiftV1.getAuthToken = function () {
-		return xAuthToken;
-	};
-
-	SwiftV1.unauthorized = function () {
-		unauthorized();
-	};
-
-	SwiftV1.setUnauthorizedCallback = function (callback) {
-		unauthorized = callback;
-	};
-
-	SwiftV1.setAuthData = function (args) {
-		if (args.xStorageUrl.lastIndexOf('/') == args.xStorageUrl.length - 1) {
-			xStorageUrl = args.xStorageUrl;
-		} else {
-			xStorageUrl = args.xStorageUrl + '/';
-		}
-		account = args.account;
-		unauthorized = args.unauthorized;
-		if (args.hasOwnProperty('xAuthToken')) {
-			xAuthToken = args.xAuthToken;
-		}
 	};
 
 	SwiftV1.Account = {};
@@ -587,26 +503,6 @@ var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
 		xhr.send();
 	};
 
-	SwiftV1.getAccountMetadata = SwiftV1.Account.head;
-	SwiftV1.updateAccountMetadata = SwiftV1.Account.post;
-	SwiftV1.listContainers = SwiftV1.Account.get;
-
-	SwiftV1.getContainerMetadata = SwiftV1.Container.head;
-	SwiftV1.checkContainerExist = SwiftV1.Container.head;
-	SwiftV1.listFiles = SwiftV1.Container.get;
-	SwiftV1.updateContainerMetadata = SwiftV1.Container.post;
-	SwiftV1.createContainer = SwiftV1.Container.put;
-	SwiftV1.deleteContainer = SwiftV1.Container.delete;
-
-	SwiftV1.getFileMetadata = SwiftV1.File.head;
-	SwiftV1.checkFileExist = SwiftV1.File.head;
-	SwiftV1.checkDirectoryExist = SwiftV1.File.head;
-	SwiftV1.getFile = SwiftV1.File.get;
-	SwiftV1.updateFileMetadata = SwiftV1.File.post;
-	SwiftV1.createFile = SwiftV1.File.put;
-	SwiftV1.deleteFile = SwiftV1.File.delete;
-	SwiftV1.copyFile = SwiftV1.File.copy;
-
 	SwiftV1.createDirectory = function (args) {
 		SwiftV1.File.put({
 			path: args.path,
@@ -616,26 +512,6 @@ var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
 			error: args.error
 		});
 	};
-
-	function parseResponseHeaders(headerStr) {
-		var headers = {};
-		if (!headerStr) {
-			return headers;
-		}
-		var headerPairs = headerStr.split('\u000d\u000a');
-		for (var i = 0; i < headerPairs.length; i++) {
-			var headerPair = headerPairs[i];
-			// Can't use split() here because it does the wrong thing
-			// if the header value has the string ": " in it.
-			var index = headerPair.indexOf('\u003a\u0020');
-			if (index > 0) {
-				var key = headerPair.substring(0, index);
-				var val = headerPair.substring(index + 2);
-				headers[key] = val;
-			}
-		}
-		return headers;
-	}
 
 	SwiftV1.delete = function (args) {
 		if (args.path.split('/').length == 1) {
@@ -657,7 +533,129 @@ var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
 		}
 	};
 
-	SwiftAdvancedFunctionality.deleteAll = function (args) {
+	SwiftV1.getAccountMetadata = SwiftV1.Account.head;
+	SwiftV1.updateAccountMetadata = SwiftV1.Account.post;
+	SwiftV1.listContainers = SwiftV1.Account.get;
+
+	SwiftV1.getContainerMetadata = SwiftV1.Container.head;
+	SwiftV1.checkContainerExist = SwiftV1.Container.head;
+	SwiftV1.listFiles = SwiftV1.Container.get;
+	SwiftV1.updateContainerMetadata = SwiftV1.Container.post;
+	SwiftV1.createContainer = SwiftV1.Container.put;
+	SwiftV1.deleteContainer = SwiftV1.Container.delete;
+
+	SwiftV1.getFileMetadata = SwiftV1.File.head;
+	SwiftV1.checkFileExist = SwiftV1.File.head;
+	SwiftV1.checkDirectoryExist = SwiftV1.File.head;
+	SwiftV1.getFile = SwiftV1.File.get;
+	SwiftV1.updateFileMetadata = SwiftV1.File.post;
+	SwiftV1.createFile = SwiftV1.File.put;
+	SwiftV1.deleteFile = SwiftV1.File.delete;
+	SwiftV1.copyFile = SwiftV1.File.copy;
+
+	function parseResponseHeaders(headerStr) {
+		var headers = {};
+		if (!headerStr) {
+			return headers;
+		}
+		var headerPairs = headerStr.split('\u000d\u000a');
+		for (var i = 0; i < headerPairs.length; i++) {
+			var headerPair = headerPairs[i];
+			// Can't use split() here because it does the wrong thing
+			// if the header value has the string ": " in it.
+			var index = headerPair.indexOf('\u003a\u0020');
+			if (index > 0) {
+				var key = headerPair.substring(0, index);
+				var val = headerPair.substring(index + 2);
+				headers[key] = val;
+			}
+		}
+		return headers;
+	}
+
+	function headersToMetadata(headers, prefix) {
+		var metadata = {};
+		for (var header in headers) {
+			if (header.indexOf(prefix) === 0) {
+				metadata[header.substr(prefix.length)] = headers[header];
+			}
+		}
+		return metadata;
+	}
+
+	function setHeadersMetadata(xhr, metadata, prefix) {
+		for (var metadataKey in metadata) {
+			xhr.setRequestHeader(prefix + metadataKey, metadata[metadataKey]);
+		}
+	}
+
+	function setHeadersRemoveMetadata(xhr, removeMetadataArr, prefixRemove) {
+		for (var i = 0; i < removeMetadataArr.length; i++) {
+			xhr.setRequestHeader(prefixRemove + removeMetadataArr[i], 'x');
+		}
+	}
+
+	SwiftV1.retrieveTokens = function (args) {
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', args.v1AuthUrl);
+		xhr.setRequestHeader('X-Auth-User', args.tenant + ':' + args.xAuthUser);
+		SwiftV1.account = args.xAuthUser;
+		xhr.setRequestHeader('X-Auth-Key', args.xAuthKey);
+		xhr.addEventListener('load', function (e) {
+			if (e.target.status >= 200 && e.target.status <= 299) {
+				xAuthToken = e.target.getResponseHeader('X-Auth-Token');
+				xStorageUrl = e.target.getResponseHeader('X-Storage-Url');
+
+				// TODO: check if the following lines are okay, consult Swift V1 API
+				account = xStorageUrl.split('/').pop();
+				xStorageUrl = xStorageUrl.substring(0, xStorageUrl.lastIndexOf('/')) + '/';
+
+				args.ok();
+			} else {
+				args.error(e.target.status, e.target.statusText);
+			}
+		});
+		xhr.send();
+	};
+
+	SwiftV1.getAccount = function () {
+		return account;
+	};
+
+	SwiftV1.setStorageUrl = function (url) {
+		xStorageUrl = url;
+	};
+
+	SwiftV1.getStorageUrl = function () {
+		return xStorageUrl;
+	};
+
+	SwiftV1.getAuthToken = function () {
+		return xAuthToken;
+	};
+
+	SwiftV1.unauthorized = function () {
+		unauthorized();
+	};
+
+	SwiftV1.setUnauthorizedCallback = function (callback) {
+		unauthorized = callback;
+	};
+
+	SwiftV1.setAuthData = function (args) {
+		if (args.xStorageUrl.lastIndexOf('/') == args.xStorageUrl.length - 1) {
+			xStorageUrl = args.xStorageUrl;
+		} else {
+			xStorageUrl = args.xStorageUrl + '/';
+		}
+		account = args.account;
+		unauthorized = args.unauthorized;
+		if (args.hasOwnProperty('xAuthToken')) {
+			xAuthToken = args.xAuthToken;
+		}
+	};
+
+	recursiveDelete = function (args) {
 		var accountId = args.hasOwnProperty('account') ? args.account : account;
 		var levels = [];
 		var files;

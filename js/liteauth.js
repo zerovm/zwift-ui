@@ -84,6 +84,10 @@ var liteauth = (function () {
 		xhr.send('{"user-key": "' + userKey + '"}');
 	}
 
+	SwiftV1.setUnauthorizedCallback(function () {
+		window.location.reload(true);
+	});
+
 	return {
 		AUTH_TYPES: AUTH_TYPES,
 		login: login,
