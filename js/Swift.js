@@ -771,10 +771,4 @@ var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
 		SwiftV1.listFiles(newArgs);
 	};
 
-	SwiftAdvancedFunctionality.move = function () {
-
-	};
-
-	SwiftAdvancedFunctionality.rename = SwiftAdvancedFunctionality.move;
-
 })();
