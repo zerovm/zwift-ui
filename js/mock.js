@@ -194,7 +194,8 @@ var liteauth = {};
 		var contentType = getContentType(args.path);
 		var contentLength = 0;
 		var lastModified = 'test';
-		args.success(metadata, contentType, contentLength, lastModified);
+		//args.success(metadata, contentType, contentLength, lastModified);
+		args.notExist();
 		//args.error(111, 'Test Ajax Error');
 	};
 
