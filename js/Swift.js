@@ -4,7 +4,6 @@
 */
 var SwiftV1 = {};
 var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
-var ZeroAppsOnSwift = {};
 
 (function () {
 	'use strict';
