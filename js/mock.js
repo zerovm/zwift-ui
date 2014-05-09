@@ -5,6 +5,7 @@
 var SwiftV1 = {};
 var ZeroVmOnSwift = {};
 var recursiveDelete; // recursive delete, rename, move, etc.
+var liteauth = {};
 
 (function () {
 	'use strict';
@@ -507,4 +508,12 @@ var recursiveDelete; // recursive delete, rename, move, etc.
 		}
 		return metadata;
 	}
+
+	liteauth.getLoginInfo = function () {
+		return 'id_example_123456:example@example.com';
+	};
+
+	liteauth.getProfile = function (args) {
+		args.success('{"auth": "plaintext:blah blah blah"}');
+	};
 })();
