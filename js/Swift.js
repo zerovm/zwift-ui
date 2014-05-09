@@ -747,34 +747,4 @@ var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
 		}
 	};
 
-	SwiftAdvancedFunctionality.checkPathHasFiles = function (args) {
-		var newArgs = {};
-		newArgs.containerName = args.containerName;
-		if (args.hasOwnProperty('path') && args.path) {
-			newArgs.path = args.path;
-		}
-		newArgs.limit = 2;
-		newArgs.notExist = args.notExist;
-		newArgs.format = 'json';
-		newArgs.success = function (responseText) {
-
-			var max = args.hasOwnProperty('path') && args.path ? 1 : 0;
-
-			if (JSON.parse(responseText).length <= max) {
-				args.hasNotFiles();
-				return;
-			}
-
-			args.hasFiles();
-		};
-		newArgs.error = args.error;
-		SwiftV1.listFiles(newArgs);
-	};
-
-	SwiftAdvancedFunctionality.move = function () {
-
-	};
-
-	SwiftAdvancedFunctionality.rename = SwiftAdvancedFunctionality.move;
-
 })();
