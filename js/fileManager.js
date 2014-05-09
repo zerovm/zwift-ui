@@ -435,7 +435,7 @@ FileManager.ContainersList.list = function () {
 			FileManager.LoadMoreButton.show();
 		}
 
-		if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
+		if (document.documentElement.clientHeight - document.documentElement.scrollHeight <= 0) {
 			FileManager.ContainersList.loadMore();
 		}
 	}
@@ -475,7 +475,7 @@ FileManager.ContainersList.loadMore = function () {
 			FileManager.LoadMoreButton.loadMoreMessage();
 			FileManager.LoadMoreButton.enable();
 
-			if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
+			if (document.documentElement.clientHeight - document.documentElement.scrollHeight <= 0) {
 				FileManager.ContainersList.loadMore();
 			}
 		},
@@ -550,7 +550,7 @@ FileManager.FilesList.list = function () {
 				FileManager.LoadMoreButton.show();
 			}
 
-			if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
+			if (document.documentElement.clientHeight - document.documentElement.scrollHeight <= 0) {
 				FileManager.FilesList.loadMore();
 			}
 
@@ -623,7 +623,7 @@ FileManager.FilesList.loadMore = function () {
 		FileManager.LoadMoreButton.loadMoreMessage();
 		FileManager.LoadMoreButton.enable();
 
-		if (document.documentElement.scrollHeight - document.documentElement.clientHeight <= 0) {
+		if (document.documentElement.clientHeight - document.documentElement.scrollHeight <= 0) {
 			FileManager.FilesList.loadMore();
 		}
 	};
