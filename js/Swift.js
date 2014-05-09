@@ -515,6 +515,26 @@ var recursiveDelete;
 		});
 	};
 
+	SwiftV1.delete = function (args) {
+		if (args.path.split('/').length == 1) {
+			SwiftV1.deleteContainer({
+				containerName: args.path,
+				deleted: args.deleted,
+				error: args.error,
+				notExist: args.notExist
+			});
+		} else {
+			var accountId = args.hasOwnProperty('account') ? args.account : account;
+			SwiftV1.deleteFile({
+				account: accountId,
+				path: args.path,
+				deleted: args.deleted,
+				error: args.error,
+				notExist: args.notExist
+			});
+		}
+	};
+
 	SwiftV1.getAccountMetadata = SwiftV1.Account.head;
 	SwiftV1.updateAccountMetadata = SwiftV1.Account.post;
 	SwiftV1.listContainers = SwiftV1.Account.get;
@@ -554,26 +574,6 @@ var recursiveDelete;
 		}
 		return headers;
 	}
-
-	SwiftV1.delete = function (args) {
-		if (args.path.split('/').length == 1) {
-			SwiftV1.deleteContainer({
-				containerName: args.path,
-				deleted: args.deleted,
-				error: args.error,
-				notExist: args.notExist
-			});
-		} else {
-			var accountId = args.hasOwnProperty('account') ? args.account : account;
-			SwiftV1.deleteFile({
-				account: accountId,
-				path: args.path,
-				deleted: args.deleted,
-				error: args.error,
-				notExist: args.notExist
-			});
-		}
-	};
 
 	function headersToMetadata(headers, prefix) {
 		var metadata = {};
