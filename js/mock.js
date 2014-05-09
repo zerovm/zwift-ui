@@ -63,7 +63,6 @@ var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
 		xAuthToken = 'test-token';
 		xStorageUrl = 'test-storage-url';
 		account = 'test account';
-		SwiftV1.xAuthToken = xAuthToken;
 		args.ok();
 		//args.error(e.target.status, e.target.statusText);
 	};
