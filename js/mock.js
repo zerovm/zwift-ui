@@ -4,7 +4,7 @@
  */
 var SwiftV1 = {};
 var ZeroVmOnSwift = {};
-var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
+var recursiveDelete; // recursive delete, rename, move, etc.
 
 (function () {
 	'use strict';
