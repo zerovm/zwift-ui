@@ -483,7 +483,7 @@ var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
 		}
 	};
 
-	SwiftAdvancedFunctionality.deleteAll = function (args) {
+	recursiveDelete = function (args) {
 		var accountId = args.hasOwnProperty('account') ? args.account : account;
 		SwiftV1.delete({
 			account: accountId,

@@ -3,7 +3,7 @@
 * http://docs.openstack.org/api/openstack-object-storage/1.0/content/
 */
 var SwiftV1 = {};
-var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
+var recursiveDelete;
 
 (function () {
 	'use strict';
@@ -657,7 +657,7 @@ var SwiftAdvancedFunctionality = {}; // recursive delete, rename, move, etc.
 		}
 	};
 
-	SwiftAdvancedFunctionality.deleteAll = function (args) {
+	recursiveDelete = function (args) {
 		var accountId = args.hasOwnProperty('account') ? args.account : account;
 		var levels = [];
 		var files;

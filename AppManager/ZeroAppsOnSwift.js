@@ -142,7 +142,7 @@ ZeroAppsOnSwift.removeApp = function (appPath, callback, progress) {
 	ZeroAppsOnSwift.removeAppLocation({
 		appLocation: appPath
 	});
-	SwiftAdvancedFunctionality.deleteAll({
+	recursiveDelete({
 		path: '.gui/' + appPath + '/',
 		success: callback,
 		error: function () {

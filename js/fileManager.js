@@ -959,7 +959,7 @@ FileManager.ConfirmDeleteForm.submit = function (e) {
 			}
 		});
 	} else {
-		SwiftAdvancedFunctionality.deleteAll({
+		recursiveDelete({
 			path: FileManager.Path(itemPath).withoutAccount(),
 			deleted: function () {
 				FileManager.changeContent();
