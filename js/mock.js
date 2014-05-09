@@ -36,6 +36,8 @@ var liteauth = {};
 		'python': {}
 	};
 
+	var __rights = {};
+
 	//var __contentType = {};
 
 	var __fileContent = {
@@ -168,6 +170,23 @@ var liteauth = {};
 		}
 	};
 
+	SwiftV1.Container.getRights = function (args) {
+		var rights = __rights[args.containerName] || {};
+		args.success({
+			read: rights.hasOwnProperty('readRights') ? rights['readRights'] : '',
+			write: rights.hasOwnProperty('readRights') ? rights['writeRights'] : ''
+		});
+	};
+
+	SwiftV1.Container.updateRights = function (args) {
+		__rights[args.containerName] = {
+			readRights: args.readRights,
+			writeRights: args.writeRights
+		};
+		args.updated();
+		//args.error('9999', 'test ajax error...');
+	};
+
 	SwiftV1.File = {};
 
 	SwiftV1.File.head = function (args) {
@@ -175,7 +194,8 @@ var liteauth = {};
 		var contentType = getContentType(args.path);
 		var contentLength = 0;
 		var lastModified = 'test';
-		args.success(metadata, contentType, contentLength, lastModified);
+		//args.success(metadata, contentType, contentLength, lastModified);
+		args.notExist();
 		//args.error(111, 'Test Ajax Error');
 	};
 
