@@ -36,6 +36,8 @@ var liteauth = {};
 		'python': {}
 	};
 
+	var __rights = {};
+
 	//var __contentType = {};
 
 	var __fileContent = {
@@ -166,6 +168,23 @@ var liteauth = {};
 				__continers.splice(index, 1);
 			}
 		}
+	};
+
+	SwiftV1.Container.getRights = function (args) {
+		var rights = __rights[args.containerName] || {};
+		args.success({
+			read: rights.hasOwnProperty('readRights') ? rights['readRights'] : '',
+			write: rights.hasOwnProperty('readRights') ? rights['writeRights'] : ''
+		});
+	};
+
+	SwiftV1.Container.updateRights = function (args) {
+		__rights[args.containerName] = {
+			readRights: args.readRights,
+			writeRights: args.writeRights
+		};
+		args.updated();
+		//args.error('9999', 'test ajax error...');
 	};
 
 	SwiftV1.File = {};
