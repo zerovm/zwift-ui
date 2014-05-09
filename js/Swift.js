@@ -11,9 +11,7 @@ var recursiveDelete;
 	var xStorageUrl = null;
 	var xAuthToken = null;
 	var account = '';
-	var unauthorized = function () {
-		window.location.reload(true);
-	};
+	var unauthorized = function () {};
 
 	var METADATA_PREFIX = {
 		ACCOUNT: 'X-Account-Meta-',
