@@ -38,6 +38,11 @@ Last time tested on:
 * Firefox 29
 * Safari 7
 
+License
+-------
+
+Apache License - Version 2.0
+
 Files Description
 -----------------
 
