@@ -19,8 +19,8 @@ Configuration
 
 ### config.js.sample
 
-Copy "config.js.sample" file into "config.js".
-Change the auth endpoint.
+1. Copy "config.js.sample" file into "config.js".
+2. Change the auth endpoint.
 
 ### Enable and Disable Execute Feature
 
@@ -28,7 +28,6 @@ The Execute feature can be enabled/disabled by changing the following variable i
 ```
 FileManager.ENABLE_ZEROVM = true;
 ```
-
 
 Supported Browsers
 ------------------
