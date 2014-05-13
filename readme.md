@@ -14,6 +14,22 @@ I.e. if Swift is under "https://something.domain.org/v1/" then FileManager shoul
 2. Install it by copying it into your account on Swift. Can be accomplished by command line tool, for example.
 I.e. `swift -A https://auth/url -U mytenenat:myuser -K mypassword upload file_manager_container file/manager/path/on/local/disk
 
+Configuration
+-------------
+
+### config.js.sample
+
+Copy "config.js.sample" file into "config.js".
+Change the auth endpoint.
+
+### Enable and Disable Execute Feature
+
+The Execute feature can be enabled/disabled by changing the following variable in FileManager.js file:
+```
+FileManager.ENABLE_ZEROVM = true;
+```
+
+
 Supported Browsers
 ------------------
 
@@ -40,14 +56,6 @@ Backend
 * OpenStack Swift - https://github.com/openstack/swift
 * Zwift - https://github.com/zerovm/zerocloud
 * Liteauth - https://github.com/zerovm/liteauth
-
-Enable and Disable Execute Feature
-----------------------------------
-
-The Execute feature can be enabled/disabled by changing the following variable in FileManager.js file:
-```
-FileManager.ENABLE_ZEROVM = true;
-```
 
 Screenshots
 -----------
