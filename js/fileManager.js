@@ -857,6 +857,9 @@ FileManager.ActionsMenu = {};
 FileManager.ActionsMenu.click = function (e) {
 	var itemEl = e.currentTarget.parentNode;
 	FileManager.Item.selectedEl = itemEl;
+	var filename = itemEl.getAttribute('title');
+	FileManager.Item.selectedPath = FileManager.CurrentPath().add(filename);
+    var href = SwiftV1.getStorageUrl() + FileManager.Item.selectedPath;
 	var isNext = itemEl.nextSibling && itemEl.nextSibling.classList.contains('actions-menu');
 
 	FileManager.ActionsMenu.removeForms();
@@ -876,11 +879,16 @@ FileManager.ActionsMenu.click = function (e) {
 			FileManager.ActionsMenu.deleteAction);
 		var contentTypeActionEl = newActionsMenu.querySelector('button.content-type-action');
 		var rightsActionEl = newActionsMenu.querySelector('button.rights-action');
+        var downloadActionEl = newActionsMenu.querySelector('a.download-action');
 		contentTypeActionEl.setAttribute('hidden', 'hidden');
 		rightsActionEl.setAttribute('hidden', 'hidden');
+        downloadActionEl.setAttribute('hidden', 'hidden');
 		if (FileManager.Item.selectedEl.classList.contains('file')) {
 			contentTypeActionEl.removeAttribute('hidden');
 			contentTypeActionEl.addEventListener('click', FileManager.ActionsMenu.contentTypeAction);
+			downloadActionEl.setAttribute('href', href);
+			downloadActionEl.setAttribute('download', filename);
+            downloadActionEl.removeAttribute('hidden');
 		} else if (FileManager.Item.selectedEl.classList.contains('container')) {
 			rightsActionEl.removeAttribute('hidden');
 			rightsActionEl.addEventListener('click', FileManager.ActionsMenu.rightsAction);
