@@ -1816,7 +1816,9 @@ FileManager.ExecuteReport.create = function (report) {
 
 FileManager.ExecuteReport.remove = function () {
 	var billingEl = document.querySelector('#report');
-	billingEl.parentNode.removeChild(billingEl);
+    if (billingEl) {
+        billingEl.parentNode.removeChild(billingEl);
+    }
 };
 
 FileManager.ExecuteReport.showFullReport = function (el) {
@@ -2261,6 +2263,7 @@ FileManager.changeContent = function () {
 	fileEditor.setAttribute('hidden', 'hidden');
 	fileEditor.innerHTML = '';
 	FileManager.LoadMoreButton.hide();
+    FileManager.ExecuteReport.remove();
 
 	if (FileManager.CurrentPath().isContainersList()) {
 		FileManager.ContainersList.list();
