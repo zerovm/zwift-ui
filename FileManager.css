@@ -839,12 +839,18 @@ template {
 	margin-bottom: 1px;
 }
 
-.actions-menu button {
+.actions-menu button,
+.actions-menu a {
 	margin: 0 1px 0 0;
 	border: none;
 	background-color: rgba(248,248,248,0.6);
 	height: 35px;
 	min-width: 100px;
+	vertical-align: middle;
+	text-align: center;
+	font-size: 12px !important;
+	padding: 10px;
+	box-sizing: border-box;
 }
 
 .blue-form .one-label {
