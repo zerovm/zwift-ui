@@ -615,6 +615,7 @@ button.sign-out-button {
 
 #report {
 	background-color: rgba(220, 220, 220, 0.5);
+    overflow: scroll;
 }
 
 #report table {
