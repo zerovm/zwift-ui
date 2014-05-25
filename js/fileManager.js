@@ -1711,7 +1711,14 @@ FileManager.execute = function (data, contentType) {
 		FileManager.File.hideMenu();
 		var el = document.querySelector('.scrolling-content');
 
-		FileManager.File.codeMirror.setValue(result);
+		var editorEl = document.querySelector('.file-editor');
+        editorEl.innerHTML = '';
+		FileManager.File.codeMirror = CodeMirror(editorEl, {
+			value: result,
+			mode: 'text/plain',
+			lineNumbers: true
+		});
+        
 		FileManager.Layout.adjust();
 
 	}
