@@ -11,10 +11,10 @@ FileManager.Authentication.el = document.querySelector('#Authentication');
 FileManager.Authentication.el.onsubmit = function (e) {
 	e.preventDefault();
 
-	var v1AuthUrl = this.querySelector('input.v1-auth-url').value;
-	var tenant = this.querySelector('input.tenant').value;
-	var xAuthUser = this.querySelector('input.x-auth-user').value;
-	var xAuthKey = this.querySelector('input.x-auth-key').value;
+	var v1AuthUrl = this.querySelector('#v1-auth-url').value;
+	var tenant = this.querySelector('#tenant').value;
+	var xAuthUser = this.querySelector('#x-auth-user').value;
+	var xAuthKey = this.querySelector('#x-auth-key').value;
 
 	SwiftV1.retrieveTokens({
 		v1AuthUrl: v1AuthUrl,
@@ -44,15 +44,15 @@ FileManager.Authentication.el.querySelector('button.login-with-google').addEvent
 	liteauth.login(liteauth.AUTH_TYPES.GOOGLE);
 });
 FileManager.Authentication.load = function () {
-	FileManager.Authentication.el.querySelector('input.v1-auth-url').value =
+	FileManager.Authentication.el.querySelector('#v1-auth-url').value =
 		document.location.protocol + '//' + document.location.host + '/auth/v1.0';
 	if (liteauth.getLoginInfo()) {
-		FileManager.Authentication.el.querySelector('input.tenant').value = liteauth.getLoginInfo().split(':')[1];
-		FileManager.Authentication.el.querySelector('input.x-auth-user').value = liteauth.getLoginInfo().split(':')[0];
+		FileManager.Authentication.el.querySelector('#tenant').value = liteauth.getLoginInfo().split(':')[1];
+		FileManager.Authentication.el.querySelector('#x-auth-user').value = liteauth.getLoginInfo().split(':')[0];
 
 		liteauth.getProfile({
 			success: function (response) {
-				FileManager.Authentication.el.querySelector('input.x-auth-key').value =
+				FileManager.Authentication.el.querySelector('#x-auth-key').value =
 					JSON.parse(response)['auth'].split('plaintext:')[1];
 			},
 			error: function (status, statusText) {
