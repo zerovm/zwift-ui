@@ -30,7 +30,7 @@ FileManager.Authentication.el.onsubmit = function (e) {
 		if (!location.hash) {
 			location.hash = SwiftV1.getAccount();
 		} else {
-			FileManager.changeContent();
+			FileManager.Content.change();
 		}
 		FileManager.Layout.adjust();
 		FileManager.Authentication.refresh();
@@ -122,7 +122,7 @@ FileManager.CreateContainerForm.el.addEventListener('submit', function (e) {
 				account: inputEl.value.split('/')[0],
 				container: inputEl.value.split('/')[1],
 				added: function () {
-					FileManager.changeContent();
+					FileManager.Content.change();
 					FileManager.CreateContainerForm.el.setAttribute('hidden', 'hidden');
 					FileManager.Layout.adjust();
 				},
@@ -138,7 +138,7 @@ FileManager.CreateContainerForm.el.addEventListener('submit', function (e) {
 	SwiftV1.createContainer({
 		containerName: inputEl.value,
 		created: function () {
-			FileManager.changeContent();
+			FileManager.Content.change();
 			FileManager.CreateContainerForm.el.setAttribute('hidden', 'hidden');
 			FileManager.Layout.adjust();
 		},
@@ -266,7 +266,7 @@ FileManager.CreateDirectoryForm.el.addEventListener('submit', function (e) {
 		SwiftV1.createDirectory({
 			path: dirPathWithoutAccount,
 			created: function () {
-				FileManager.changeContent();
+				FileManager.Content.change();
 				FileManager.CreateDirectoryForm.close();
 			},
 			error: function (status, statusText) {
@@ -352,7 +352,7 @@ FileManager.CreateFileForm.el.addEventListener('submit', function (e) {
 
 	requestArgs.created = function () {
 		FileManager.CreateFileForm.close();
-		FileManager.changeContent();
+		FileManager.Content.change();
 		FileManager.CreateFileForm.clearErrors();
 	};
 
@@ -696,6 +696,7 @@ FileManager.FilesList.listHtml = function (files, filesListEl) {
 		newEl.querySelector('span.file-icon').classList.add(icon);
 		newEl.querySelector('.name').textContent = name;
 		newEl.setAttribute('title', title);
+        newEl.setAttribute('data-content-type', file.content_type);
 		newEl.querySelector('.size').textContent = size;
 		newEl.querySelector('.modified').textContent = modified;
 		newEl.querySelector('.default-action').addEventListener('click', FileManager.DefaultAction.click);
@@ -880,15 +881,24 @@ FileManager.ActionsMenu.click = function (e) {
 		var contentTypeActionEl = newActionsMenu.querySelector('button.content-type-action');
 		var rightsActionEl = newActionsMenu.querySelector('button.rights-action');
         var downloadActionEl = newActionsMenu.querySelector('a.download-action');
+        var executeActionEl = newActionsMenu.querySelector('button.execute-action');
 		contentTypeActionEl.setAttribute('hidden', 'hidden');
 		rightsActionEl.setAttribute('hidden', 'hidden');
         downloadActionEl.setAttribute('hidden', 'hidden');
+        executeActionEl.setAttribute('hidden', 'hidden');
 		if (FileManager.Item.selectedEl.classList.contains('file')) {
 			contentTypeActionEl.removeAttribute('hidden');
 			contentTypeActionEl.addEventListener('click', FileManager.ActionsMenu.contentTypeAction);
 			downloadActionEl.setAttribute('href', href);
 			downloadActionEl.setAttribute('download', filename);
             downloadActionEl.removeAttribute('hidden');
+            if (FileManager.ENABLE_ZEROVM && 
+                itemEl.getAttribute('data-content-type').indexOf('text/x-python') != -1) {
+                executeActionEl.removeAttribute('hidden');
+                executeActionEl.addEventListener('click', function () {
+                    FileManager.executePython(FileManager.Item.selectedPath);
+                });
+            }
 		} else if (FileManager.Item.selectedEl.classList.contains('container')) {
 			rightsActionEl.removeAttribute('hidden');
 			rightsActionEl.addEventListener('click', FileManager.ActionsMenu.rightsAction);
@@ -956,21 +966,21 @@ FileManager.ConfirmDeleteForm.submit = function (e) {
 		SwiftV1.delete({
 			path: FileManager.Path(itemPath).withoutAccount(),
 			deleted: function () {
-				FileManager.changeContent();
+				FileManager.Content.change();
 			},
 			error: function(status, statusText) {
 				var el = document.querySelector('.delete-error-ajax');
 				FileManager.AjaxError.show(el, status, statusText);
 			},
 			notExist: function () {
-				FileManager.changeContent();
+				FileManager.Content.change();
 			}
 		});
 	} else {
 		recursiveDelete({
 			path: FileManager.Path(itemPath).withoutAccount(),
 			deleted: function () {
-				FileManager.changeContent();
+				FileManager.Content.change();
 			},
 			progress: function (total, deleted, status) {
 				formEl.querySelector('.delete-status').innerHTML += total + '/' + deleted + ': ' + status + '<br>';
@@ -980,7 +990,7 @@ FileManager.ConfirmDeleteForm.submit = function (e) {
 				FileManager.AjaxError.show(el, status, statusText);
 			},
 			notExist: function () {
-				FileManager.changeContent();
+				FileManager.Content.change();
 			}
 		});
 	}
@@ -1310,7 +1320,7 @@ FileManager.ContentTypeForm.submit = function (e) {
 		updated: function () {
 			contentTypeForm.querySelector('.updating').setAttribute('hidden', 'hidden');
 			FileManager.ContentTypeForm.removeEl();
-			FileManager.changeContent();
+			FileManager.Content.change();
 		},
 		error: function (status, statusText) {
 			contentTypeForm.querySelector('.err-ajax').textContent = 'Error: ' + status + ' ' + statusText;
@@ -1678,6 +1688,9 @@ FileManager.CurrentDirLabel.showLoading = function () {
 
 FileManager.execute = function (data, contentType) {
 
+    FileManager.Content.clear();
+	var fileEditor = document.querySelector('.file-editor');
+    fileEditor.removeAttribute('hidden');
 	FileManager.disableAll();
 	FileManager.ExecuteButton.hide();
 	FileManager.ExecutingLabel.show();
@@ -1711,7 +1724,14 @@ FileManager.execute = function (data, contentType) {
 		FileManager.File.hideMenu();
 		var el = document.querySelector('.scrolling-content');
 
-		FileManager.File.codeMirror.setValue(result);
+		var editorEl = document.querySelector('.file-editor');
+        editorEl.innerHTML = '';
+		FileManager.File.codeMirror = CodeMirror(editorEl, {
+			value: result,
+			mode: 'text/plain',
+			lineNumbers: true
+		});
+        
 		FileManager.Layout.adjust();
 
 	}
@@ -1878,7 +1898,7 @@ FileManager.UploadFiles.uploadFile = function (file, name, contentType) {
 		created: function () {
 			var el = document.querySelector('#upload-' + index);
 			el.parentNode.removeChild(el);
-			FileManager.changeContent();
+			FileManager.Content.change();
 			FileManager.Layout.adjust();
 		},
 		progress: function (percent, loaded, total) {
@@ -2240,7 +2260,18 @@ FileManager.SaveAs.clearErrors = function () {
 };
 
 
-FileManager.changeContent = function () {
+FileManager.Content = {};
+FileManager.Content.change = function () {
+    FileManager.Content.clear();
+	if (FileManager.CurrentPath().isContainersList()) {
+        FileManager.Content.containers();
+	} else if (FileManager.CurrentPath().isFilesList()) {
+        FileManager.Content.files();
+	} else {
+        FileManager.Content.file();
+	}
+};
+FileManager.Content.clear = function () {
 	document.querySelector('span.upload-files').setAttribute('hidden', 'hidden');
 	document.querySelector('span.upload-as').setAttribute('hidden', 'hidden');
 	document.querySelector('span.upload-execute').setAttribute('hidden', 'hidden');
@@ -2264,26 +2295,31 @@ FileManager.changeContent = function () {
 	fileEditor.innerHTML = '';
 	FileManager.LoadMoreButton.hide();
     FileManager.ExecuteReport.remove();
-
-	if (FileManager.CurrentPath().isContainersList()) {
-		FileManager.ContainersList.list();
-		FileManager.CreateContainerButton.show();
-		containersList.removeAttribute('hidden');
-
-	} else if (FileManager.CurrentPath().isFilesList()) {
-		FileManager.FilesList.list();
-		FileManager.CreateDirectoryButton.show();
-		FileManager.CreateFileButton.show();
-		document.querySelector('span.upload-files').removeAttribute('hidden');
-		document.querySelector('span.upload-as').removeAttribute('hidden');
-		document.querySelector('span.upload-execute').removeAttribute('hidden');
-		filesList.removeAttribute('hidden');
-	} else {
-		// load file
-		document.querySelector('.menu-file').removeAttribute('hidden');
-		FileManager.File.open();
-		fileEditor.removeAttribute('hidden');
-	}
+	FileManager.Layout.adjust();
+};
+FileManager.Content.containers = function () {
+	var containersList = document.querySelector('.containers-list');
+    FileManager.ContainersList.list();
+    FileManager.CreateContainerButton.show();
+    containersList.removeAttribute('hidden');
+	FileManager.Layout.adjust();
+};
+FileManager.Content.files = function () {
+	var filesList = document.querySelector('.files-list');
+    FileManager.FilesList.list();
+    FileManager.CreateDirectoryButton.show();
+    FileManager.CreateFileButton.show();
+    document.querySelector('span.upload-files').removeAttribute('hidden');
+    document.querySelector('span.upload-as').removeAttribute('hidden');
+    document.querySelector('span.upload-execute').removeAttribute('hidden');
+    filesList.removeAttribute('hidden');
+	FileManager.Layout.adjust();
+};
+FileManager.Content.file = function () {
+	var fileEditor = document.querySelector('.file-editor');
+    document.querySelector('.menu-file').removeAttribute('hidden');
+    FileManager.File.open();
+    fileEditor.removeAttribute('hidden');
 	FileManager.Layout.adjust();
 };
 
@@ -2367,7 +2403,7 @@ FileManager.AjaxError.show = function (el, status, statusText) {
 
 
 window.addEventListener('hashchange', function (e) {
-	FileManager.changeContent();
+	FileManager.Content.change();
 });
 
 window.addEventListener('scroll', function (e) {
@@ -2585,7 +2621,7 @@ FileManager.AddShared.click = function () {
 		account: account,
 		container: container,
 		added: function () {
-			FileManager.changeContent();
+			FileManager.Content.change();
 			FileManager.AddShared.clear();
 		},
 		notAuthorized: function () {
