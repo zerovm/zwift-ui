@@ -45,7 +45,7 @@ FileManager.Authentication.el.querySelector('button.login-with-google').addEvent
 });
 FileManager.Authentication.load = function () {
 	FileManager.Authentication.el.querySelector('input.v1-auth-url').value =
-		document.location.protocol + '//' + document.location.host + '/auth/v1.0';
+		"https://" + config.authEndpoint + "/auth/v1.0";
 	if (liteauth.getLoginInfo()) {
 		FileManager.Authentication.el.querySelector('input.tenant').value = liteauth.getLoginInfo().split(':')[1];
 		FileManager.Authentication.el.querySelector('input.x-auth-user').value = liteauth.getLoginInfo().split(':')[0];
