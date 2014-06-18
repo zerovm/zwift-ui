@@ -1,0 +1,43 @@
+#main .window {
+        background: rgba(255, 255, 255, 0.3);
+        padding: 15px;
+        border-radius: 2px;
+        margin: 15px;
+}
+
+#main label {
+        cursor: default;
+        color: #476786;
+        font-size: 14px;
+        margin-top: 10px;
+        margin-bottom: 2px;
+        display: block;
+        margin-left: 5px;
+}
+
+#main input {
+        font-size: 12px;
+        line-height: 22px;
+        width: 250px;
+        padding: 0 5px;
+        height: 25px;
+}
+
+#main button {
+        margin-top: 10px;
+        font-size: 12px;
+        padding: 5px 20px;
+}
+
+.test {
+    position: absolute;
+    left: 50%;
+    top: 0;
+/*    right: 80em;*/
+    overflow: auto;
+    -webkit-transform: translateX(-50%);
+    -moz-transform: translateX(-50%);
+    -ms-transform: translateX(-50%);
+    -o-transform: translateX(-50%);
+    transform: translateX(-50%);
+}
