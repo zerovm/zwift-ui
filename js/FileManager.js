@@ -892,7 +892,7 @@ FileManager.ActionsMenu.click = function (e) {
 			downloadActionEl.setAttribute('href', href);
 			downloadActionEl.setAttribute('download', filename);
             downloadActionEl.removeAttribute('hidden');
-            if (FileManager.ENABLE_ZEROVM && 
+            if (FileManager.ENABLE_ZEROVM &&
                 itemEl.getAttribute('data-content-type').indexOf('text/x-python') != -1) {
                 executeActionEl.removeAttribute('hidden');
                 executeActionEl.addEventListener('click', function () {
@@ -1731,7 +1731,7 @@ FileManager.execute = function (data, contentType) {
 			mode: 'text/plain',
 			lineNumbers: true
 		});
-        
+
 		FileManager.Layout.adjust();
 
 	}
@@ -1784,7 +1784,7 @@ FileManager.ExecuteReport.create = function (report) {
 
 	executionReport();
 	billingReport();
-	
+
 	function executionReport() {
 		if (report.execution.status) {
 			document.querySelector('#execute-status-val').textContent = report.execution.status;
