@@ -2028,6 +2028,7 @@ FileManager.File.open = function () {
 				|| contentType == 'application/json'
 				|| contentType == 'application/php'
 				|| contentType == 'application/x-php'
+				|| contentType == 'application/x-yaml'
 				|| contentType.indexOf('text') == 0);
 		}
 	}
