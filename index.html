@@ -135,7 +135,8 @@
 			<label>V1 AUTH URL: </label><input class="v1-auth-url blue-input" value=""><br>
 			<label>Tenant: </label><input class="tenant blue-input"><br>
 			<label>X Auth User: </label><input class="x-auth-user blue-input"><br>
-			<label>X Auth Key: </label><input class="x-auth-key blue-input"><br>
+			<label>X Auth Key: </label><input id="auth_key" class="x-auth-key blue-input" type="password"><span id="show_key" class="blue-button">Show Key</span>
+<br>
 			<button type="submit" class="btn blue-button">Login</button>
 			<a href="register.html">
 				<button type="button" class="btn blue-button">Register</button>
@@ -458,6 +459,7 @@
 	</div>
 </template>
 	<script src="js/liteauth.js"></script>
+	<script src="js/index.js"></script>
 	<script src="js/Swift.js"></script>
 	<script src="js/Zwift.js"></script>
 	<!--<script src="js/mock.js"></script>-->
